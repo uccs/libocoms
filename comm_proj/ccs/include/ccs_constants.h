@@ -1,0 +1,13 @@
+#ifndef CCS_CONSTANTS_H
+#define CCS_CONSTANTS_H
+
+#define CCS_ERROR_CODE_BASE 0
+
+enum {
+
+CCS_SUCCESS = (CCS_ERROR_CODE_BASE),
+CCS_ERROR = (CCS_ERROR_CODE_BASE-1)
+
+};
+
+#endif /* CCS_CONSTANTS_H */
