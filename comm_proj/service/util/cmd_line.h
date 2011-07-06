@@ -49,7 +49,7 @@
  * "foo":
  *
  * \code
- * opal_cmd_line_make_opt3(cmd, 'a', NULL, 'add', 1, "Add a user");
+ * service_cmd_line_make_opt3(cmd, 'a', NULL, 'add', 1, "Add a user");
  * \endcode
  *
  * In this case, the following command lines are exactly equivalent:
@@ -68,10 +68,10 @@
  * \endverbatim
  *
  * The caller to this interface creates a command line handle
- * (opal_cmd_line_t) with OBJ_NEW() and then uses it to register the
- * desired parameters via opal_cmd_line_make_opt3() (or the deprecated
- * opal_cmd_line_make_opt()).  Once all the parameters have been
- * registered, the user invokes opal_cmd_line_parse() with the command
+ * (service_cmd_line_t) with OBJ_NEW() and then uses it to register the
+ * desired parameters via service_cmd_line_make_opt3() (or the deprecated
+ * service_cmd_line_make_opt()).  Once all the parameters have been
+ * registered, the user invokes service_cmd_line_parse() with the command
  * line handle and the argv/argc pair to be parsed (typically the
  * arguments from main()).  The parser will examine the argv and find
  * registered options and parameters.  It will stop parsing when it
@@ -81,39 +81,39 @@
  * used to determine which options were selected, what parameters were
  * passed to them, etc.:
  *
- * - opal_cmd_line_get_usage_msg() returns a string suitable for "help"
+ * - service_cmd_line_get_usage_msg() returns a string suitable for "help"
  *   kinds of messages.
- * - opal_cmd_line_is_taken() returns a true or false indicating
+ * - service_cmd_line_is_taken() returns a true or false indicating
  *   whether a given command line option was found on the command
  *   line.
- * - opal_cmd_line_get_argc() returns the number of tokens parsed on
+ * - service_cmd_line_get_argc() returns the number of tokens parsed on
  *   the handle.
- * - opal_cmd_line_get_argv() returns any particular string from the
+ * - service_cmd_line_get_argv() returns any particular string from the
  *   original argv.
- * - opal_cmd_line_get_ninsts() returns the number of times a
+ * - service_cmd_line_get_ninsts() returns the number of times a
  *   particular option was found on a command line.
- * - opal_cmd_line_get_param() returns the Nth parameter in the Mth
+ * - service_cmd_line_get_param() returns the Nth parameter in the Mth
  *   instance of a given parameter.
- * - opal_cmd_line_get_tail() returns an array of tokens not parsed
+ * - service_cmd_line_get_tail() returns an array of tokens not parsed
  *   (i.e., if the parser ran into "--" or an unrecognized token).
  *
  * Note that a shortcut to creating a large number of options exists
- * -- one can make a table of opal_cmd_line_init_t instances and the
- * table to opal_cmd_line_create().  This creates an opal_cmd_line_t
+ * -- one can make a table of service_cmd_line_init_t instances and the
+ * table to service_cmd_line_create().  This creates an service_cmd_line_t
  * handle that is pre-seeded with all the options from the table
- * without the need to repeatedly invoke opal_cmd_line_make_opt3() (or
- * equivalent).  This opal_cmd_line_t instance is just like any other;
+ * without the need to repeatedly invoke service_cmd_line_make_opt3() (or
+ * equivalent).  This service_cmd_line_t instance is just like any other;
  * it is still possible to add more options via
- * opal_cmd_line_make_opt3(), etc.
+ * service_cmd_line_make_opt3(), etc.
  */
 
-#ifndef OPAL_CMD_LINE_H
-#define OPAL_CMD_LINE_H
+#ifndef CCS_CMD_LINE_H
+#define CCS_CMD_LINE_H
 
-#include "opal_config.h"
+#include "service_config.h"
 
-#include "opal/class/opal_object.h"
-#include "opal/class/opal_list.h"
+#include "opal/class/service_object.h"
+#include "opal/class/service_list.h"
 #include "opal/threads/mutex.h"
 
 BEGIN_C_DECLS
@@ -122,23 +122,23 @@ BEGIN_C_DECLS
      *
      * Main top-level handle.  This interface should not be used by users!
      */
-    struct opal_cmd_line_t {
+    struct service_cmd_line_t {
         /** Make this an OBJ handle */
-        opal_object_t super;
+        service_object_t super;
         
         /** Thread safety */
-        opal_mutex_t lcl_mutex;
+        service_mutex_t lcl_mutex;
         
         /** List of cmd_line_option_t's (defined internally) */
-        opal_list_t lcl_options;
+        service_list_t lcl_options;
         
-        /** Duplicate of argc from opal_cmd_line_parse() */
+        /** Duplicate of argc from service_cmd_line_parse() */
         int lcl_argc;
-        /** Duplicate of argv from opal_cmd_line_parse() */
+        /** Duplicate of argv from service_cmd_line_parse() */
         char **lcl_argv;
         
         /** Parsed output; list of cmd_line_param_t's (defined internally) */
-        opal_list_t lcl_params;
+        service_list_t lcl_params;
         
         /** List of tail (unprocessed) arguments */
         int lcl_tail_argc;
@@ -150,32 +150,32 @@ BEGIN_C_DECLS
      *
      * Convenience typedef
      */
-    typedef struct opal_cmd_line_t opal_cmd_line_t;
+    typedef struct service_cmd_line_t service_cmd_line_t;
 
     /**
      * Data types supported by the parser
      */
-    enum opal_cmd_line_type_t {
-        OPAL_CMD_LINE_TYPE_NULL,
-        OPAL_CMD_LINE_TYPE_STRING,
-        OPAL_CMD_LINE_TYPE_INT,
-        OPAL_CMD_LINE_TYPE_SIZE_T,
-        OPAL_CMD_LINE_TYPE_BOOL,
+    enum service_cmd_line_type_t {
+        CCS_CMD_LINE_TYPE_NULL,
+        CCS_CMD_LINE_TYPE_STRING,
+        CCS_CMD_LINE_TYPE_INT,
+        CCS_CMD_LINE_TYPE_SIZE_T,
+        CCS_CMD_LINE_TYPE_BOOL,
 
-        OPAL_CMD_LINE_TYPE_MAX
+        CCS_CMD_LINE_TYPE_MAX
     };
     /**
      * \internal
      *
      * Convenience typedef
      */
-    typedef enum opal_cmd_line_type_t opal_cmd_line_type_t;
+    typedef enum service_cmd_line_type_t service_cmd_line_type_t;
 
     /**
      * Datatype used to construct a command line handle; see
-     * opal_cmd_line_create().
+     * service_cmd_line_create().
      */
-    struct opal_cmd_line_init_t {
+    struct service_cmd_line_init_t {
         /** If want to set an MCA parameter, set its type name here.
             WARNING: This MCA tuple (type, component, param) will
             eventually be replaced with a single name! */
@@ -206,10 +206,10 @@ BEGIN_C_DECLS
         void *ocl_variable_dest;
         /** If an ocl_variable_dest is given, its datatype must be
             supplied as well. */
-        opal_cmd_line_type_t ocl_variable_type;
+        service_cmd_line_type_t ocl_variable_type;
 
         /** Description of the command line option, to be used with
-            opal_cmd_line_get_usage_msg(). */
+            service_cmd_line_get_usage_msg(). */
         const char *ocl_description;
     };
     /**
@@ -217,38 +217,38 @@ BEGIN_C_DECLS
      *
      * Convenience typedef
      */
-    typedef struct opal_cmd_line_init_t opal_cmd_line_init_t;
+    typedef struct service_cmd_line_init_t service_cmd_line_init_t;
     
     /**
      * Top-level command line handle.
      *
      * This handle is used for accessing all command line functionality
-     * (i.e., all opal_cmd_line*() functions).  Multiple handles can be
+     * (i.e., all service_cmd_line*() functions).  Multiple handles can be
      * created and simultaneously processed; each handle is independant
      * from others.
      *
-     * The opal_cmd_line_t handles are [simplisticly] thread safe;
+     * The service_cmd_line_t handles are [simplisticly] thread safe;
      * processing is guaranteed to be mutually exclusive if multiple
      * threads invoke functions on the same handle at the same time --
      * access will be serialized in an unspecified order.
      *
      * Once finished, handles should be released with OBJ_RELEASE().  The
-     * destructor for opal_cmd_line_t handles will free all memory
+     * destructor for service_cmd_line_t handles will free all memory
      * associated with the handle.
      */
-    OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_cmd_line_t);
+    CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_cmd_line_t);
 
     /**
      * Make a command line handle from a table of initializers.
      *
      * @param cmd OPAL command line handle.
-     * @param table Table of opal_cmd_line_init_t instances for all
+     * @param table Table of service_cmd_line_init_t instances for all
      * the options to be included in the resulting command line
      * handler.
      *
-     * @retval OPAL_SUCCESS Upon success.
+     * @retval CCS_SUCCESS Upon success.
      *
-     * This function takes a table of opal_cmd_line_init_t instances
+     * This function takes a table of service_cmd_line_init_t instances
      * to pre-seed an OPAL command line handle.  The last instance in
      * the table must have '\0' for the short name and NULL for the
      * single-dash and long names.  The handle is expected to have
@@ -258,22 +258,22 @@ BEGIN_C_DECLS
      * sample using this syntax:
      *
      * \code
-     * opal_cmd_line_init_t cmd_line_init[] = {
+     * service_cmd_line_init_t cmd_line_init[] = {
      *    { NULL, NULL, NULL, 'h', NULL, "help", 0, 
-     *      &orterun_globals.help, OPAL_CMD_LINE_TYPE_BOOL,
+     *      &orterun_globals.help, CCS_CMD_LINE_TYPE_BOOL,
      *      "This help message" },
      *
      *    { NULL, NULL, NULL, '\0', NULL, "wd", 1,
-     *      &orterun_globals.wd, OPAL_CMD_LINE_TYPE_STRING,
+     *      &orterun_globals.wd, CCS_CMD_LINE_TYPE_STRING,
      *      "Set the working directory of the started processes" },
      *
      *    { NULL, NULL, NULL, '\0', NULL, NULL, 0,
-     *      NULL, OPAL_CMD_LINE_TYPE_NULL, NULL }
+     *      NULL, CCS_CMD_LINE_TYPE_NULL, NULL }
      * };
      * \endcode
      */
-    OPAL_DECLSPEC int opal_cmd_line_create(opal_cmd_line_t *cmd,
-                                           opal_cmd_line_init_t *table);
+    CCS_DECLSPEC int service_cmd_line_create(service_cmd_line_t *cmd,
+                                           service_cmd_line_init_t *table);
 
     /**
      * Create a command line option.
@@ -281,11 +281,11 @@ BEGIN_C_DECLS
      * @param cmd OPAL command line handle.
      * @param entry Command line entry to add to the command line.
      *
-     * @retval OPAL_SUCCESS Upon success.
+     * @retval CCS_SUCCESS Upon success.
      *
      */
-    OPAL_DECLSPEC int opal_cmd_line_make_opt_mca(opal_cmd_line_t *cmd,
-                                                 opal_cmd_line_init_t entry);
+    CCS_DECLSPEC int service_cmd_line_make_opt_mca(service_cmd_line_t *cmd,
+                                                 service_cmd_line_init_t entry);
 
     /**
      * \deprecated
@@ -293,15 +293,15 @@ BEGIN_C_DECLS
      * Create a command line option.
      *
      * This function is an older [deprecated] form of
-     * opal_cmd_line_make_opt3().  It is exactly equivalent to
-     * opal_cmd_line_make_opt3(cmd, short_name, NULL, long_name,
+     * service_cmd_line_make_opt3().  It is exactly equivalent to
+     * service_cmd_line_make_opt3(cmd, short_name, NULL, long_name,
      * num_params, desc).
      */
-    OPAL_DECLSPEC int opal_cmd_line_make_opt(opal_cmd_line_t *cmd,
+    CCS_DECLSPEC int service_cmd_line_make_opt(service_cmd_line_t *cmd,
                                              char short_name, 
                                              const char *long_name,
                                              int num_params, 
-                                             const char *desc) __opal_attribute_deprecated__;
+                                             const char *desc) __service_attribute_deprecated__;
 
     /**
      * Create a command line option.
@@ -313,9 +313,9 @@ BEGIN_C_DECLS
      * @param num_params How many parameters this option takes.
      * @param dest Short string description of this option.
      *
-     * @retval OPAL_ERR_OUT_OF_RESOURCE If out of memory.
-     * @retval OPAL_ERR_BAD_PARAM If bad parameters passed.
-     * @retval OPAL_SUCCESS Upon success.
+     * @retval CCS_ERR_OUT_OF_RESOURCE If out of memory.
+     * @retval CCS_ERR_BAD_PARAM If bad parameters passed.
+     * @retval CCS_SUCCESS Upon success.
      *
      * Adds a command line option to the list of options that a a OPAL
      * command line handle will accept.  The short_name may take the
@@ -328,10 +328,10 @@ BEGIN_C_DECLS
      * must be greater than or equal to 0.
      *
      * Finally, desc is a short string description of this option.  It is
-     * used to generate the output from opal_cmd_line_get_usage_msg().
+     * used to generate the output from service_cmd_line_get_usage_msg().
      *
      */
-    OPAL_DECLSPEC int opal_cmd_line_make_opt3(opal_cmd_line_t *cmd, 
+    CCS_DECLSPEC int service_cmd_line_make_opt3(service_cmd_line_t *cmd, 
                                               char short_name, 
                                               const char *sd_name,
                                               const char *long_name, 
@@ -348,7 +348,7 @@ BEGIN_C_DECLS
      * @param argc Length of the argv array.
      * @param argv Array of strings from the command line.
      *
-     * @retval OPAL_SUCCESS Upon success.
+     * @retval CCS_SUCCESS Upon success.
      *
      * Parse a series of command line tokens according to the option
      * descriptions from a OPAL command line handle.  The OPAL command line
@@ -374,7 +374,7 @@ BEGIN_C_DECLS
      * Upon any of these conditions, any remaining tokens will be placed
      * in the "tail" (and therefore not examined by the parser),
      * regardless of the value of ignore_unknown.  The set of tail
-     * tokens is available from the opal_cmd_line_get_tail() function.
+     * tokens is available from the service_cmd_line_get_tail() function.
      *
      * Note that "--" is ignored if it is found in the middle an expected
      * number of arguments.  For example, if "--foo" is expected to have 3
@@ -389,7 +389,7 @@ BEGIN_C_DECLS
      * Invoking this function multiple times on different sets of argv
      * tokens is safe, but will erase any previous parsing results.
      */
-    OPAL_DECLSPEC int opal_cmd_line_parse(opal_cmd_line_t *cmd, 
+    CCS_DECLSPEC int service_cmd_line_parse(service_cmd_line_t *cmd, 
                                           bool ignore_unknown,
                                           int argc, char **argv);
 
@@ -403,18 +403,18 @@ BEGIN_C_DECLS
      * Returns a formatted string suitable for printing that lists the
      * expected usage message and a short description of each option on
      * the OPAL command line handle.  Options that passed a NULL
-     * description to opal_cmd_line_make_opt() will not be included in the
+     * description to service_cmd_line_make_opt() will not be included in the
      * display (to allow for undocumented options).
      *
      * This function is typically only invoked internally by the
-     * opal_show_help() function.
+     * service_show_help() function.
      *
      * This function should probably be fixed up to produce prettier
      * output.
      *
      * The returned string must be freed by the caller.
      */
-    OPAL_DECLSPEC char *opal_cmd_line_get_usage_msg(opal_cmd_line_t *cmd) __opal_attribute_malloc__ __opal_attribute_warn_unused_result__;
+    CCS_DECLSPEC char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
 
     /**
      * Test if a given option was taken on the parsed command line.
@@ -423,33 +423,33 @@ BEGIN_C_DECLS
      * @param opt Short or long name of the option to check for.
      *
      * @retval true If the command line option was found during
-     * opal_cmd_line_parse().
+     * service_cmd_line_parse().
      *
      * @retval false If the command line option was not found during
-     * opal_cmd_line_parse(), or opal_cmd_line_parse() was not invoked on
+     * service_cmd_line_parse(), or service_cmd_line_parse() was not invoked on
      * this handle.
      *
-     * This function should only be called after opal_cmd_line_parse().  
+     * This function should only be called after service_cmd_line_parse().  
      *
      * The function will return true if the option matching opt was found
      * (either by its short or long name) during token parsing.
      * Otherwise, it will return false.
      */
-    OPAL_DECLSPEC bool opal_cmd_line_is_taken(opal_cmd_line_t *cmd, 
-                                              const char *opt) __opal_attribute_nonnull__(1) __opal_attribute_nonnull__(2);
+    CCS_DECLSPEC bool service_cmd_line_is_taken(service_cmd_line_t *cmd, 
+                                              const char *opt) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
 
     /**
      * Return the number of arguments parsed on a OPAL command line handle.
      *
      * @param cmd A pointer to the OPAL command line handle.
      *
-     * @retval OPAL_ERROR If cmd is NULL.
+     * @retval CCS_ERROR If cmd is NULL.
      * @retval argc Number of arguments previously added to the handle.
      *
-     * Arguments are added to the handle via the opal_cmd_line_parse()
+     * Arguments are added to the handle via the service_cmd_line_parse()
      * function.
      */
-    OPAL_DECLSPEC int opal_cmd_line_get_argc(opal_cmd_line_t *cmd) __opal_attribute_unused__;
+    CCS_DECLSPEC int service_cmd_line_get_argc(service_cmd_line_t *cmd) __service_attribute_unused__;
 
     /**
      * Return a string argument parsed on a OPAL command line handle.
@@ -463,12 +463,12 @@ BEGIN_C_DECLS
      *
      * This function returns a single token from the arguments parsed
      * on this handle.  Arguments are added bia the
-     * opal_cmd_line_parse() function.
+     * service_cmd_line_parse() function.
      *
      * What is returned is a pointer to the actual string that is on
      * the handle; it should not be modified or freed.
      */
-    OPAL_DECLSPEC char *opal_cmd_line_get_argv(opal_cmd_line_t *cmd, 
+    CCS_DECLSPEC char *service_cmd_line_get_argv(service_cmd_line_t *cmd, 
                                                int index);
 
     /**
@@ -478,21 +478,21 @@ BEGIN_C_DECLS
      * @param opt Short or long name of the option to check for.
      *
      * @retval num Number of instances (to include 0) of a given potion
-     * found during opal_cmd_line_parse().
+     * found during service_cmd_line_parse().
      *
-     * @retval OPAL_ERR If the command line option was not found during
-     * opal_cmd_line_parse(), or opal_cmd_line_parse() was not invoked on
+     * @retval CCS_ERR If the command line option was not found during
+     * service_cmd_line_parse(), or service_cmd_line_parse() was not invoked on
      * this handle.
      *
-     * This function should only be called after opal_cmd_line_parse().
+     * This function should only be called after service_cmd_line_parse().
      *
      * The function will return the number of instances of a given option
-     * (either by its short or long name) -- to include 0 -- or OPAL_ERR if
+     * (either by its short or long name) -- to include 0 -- or CCS_ERR if
      * either the option was not specified as part of the OPAL command line
-     * handle, or opal_cmd_line_parse() was not invoked on this handle.
+     * handle, or service_cmd_line_parse() was not invoked on this handle.
      */
-    OPAL_DECLSPEC int opal_cmd_line_get_ninsts(opal_cmd_line_t *cmd, 
-                                               const char *opt) __opal_attribute_nonnull__(1) __opal_attribute_nonnull__(2);
+    CCS_DECLSPEC int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, 
+                                               const char *opt) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
 
     /**
      * Return a specific parameter for a specific instance of a option
@@ -506,7 +506,7 @@ BEGIN_C_DECLS
      * @retval param String of the parameter.
      * @retval NULL If any of the input values are invalid.
      *
-     * This function should only be called after opal_cmd_line_parse().  
+     * This function should only be called after service_cmd_line_parse().  
      *
      * This function returns the Nth parameter for the Ith instance of a
      * given option on the parsed command line (both N and I are
@@ -514,14 +514,14 @@ BEGIN_C_DECLS
      *
      * executable --foo bar1 bar2 --foo bar3 bar4
      *
-     * The call to opal_cmd_line_get_param(cmd, "foo", 1, 1) would return
-     * "bar4".  opal_cmd_line_get_param(cmd, "bar", 0, 0) would return
-     * NULL, as would opal_cmd_line_get_param(cmd, "foo", 2, 2);
+     * The call to service_cmd_line_get_param(cmd, "foo", 1, 1) would return
+     * "bar4".  service_cmd_line_get_param(cmd, "bar", 0, 0) would return
+     * NULL, as would service_cmd_line_get_param(cmd, "foo", 2, 2);
      *
      * The returned string should \em not be modified or freed by the
      * caller.
      */
-    OPAL_DECLSPEC char *opal_cmd_line_get_param(opal_cmd_line_t *cmd, 
+    CCS_DECLSPEC char *service_cmd_line_get_param(service_cmd_line_t *cmd, 
                                                 const char *opt, 
                                                 int instance_num,
                                                 int param_num);
@@ -536,8 +536,8 @@ BEGIN_C_DECLS
      * @param tailv Pointer to the output null-terminated argv of all
      * unprocessed arguments from the command line.
      *
-     * @retval OPAL_ERROR If cmd is NULL or otherwise invalid.
-     * @retval OPAL_SUCCESS Upon success.
+     * @retval CCS_ERROR If cmd is NULL or otherwise invalid.
+     * @retval CCS_SUCCESS Upon success.
      *
      * The "tail" is all the arguments on the command line that were
      * not processed for some reason.  Reasons for not processing
@@ -551,12 +551,12 @@ BEGIN_C_DECLS
      * length of the null-terminated tailv array (length including the
      * final NULL entry).  The output tailv parameter will be a copy
      * of the tail parameters, and must be freed (likely with a call
-     * to opal_argv_free()) by the caller.
+     * to service_argv_free()) by the caller.
      */
-    OPAL_DECLSPEC int opal_cmd_line_get_tail(opal_cmd_line_t *cmd, int *tailc, 
-                                             char ***tailv) __opal_attribute_nonnull__(1) __opal_attribute_nonnull__(2);
+    CCS_DECLSPEC int service_cmd_line_get_tail(service_cmd_line_t *cmd, int *tailc, 
+                                             char ***tailv) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
 
 END_C_DECLS
 
 
-#endif /* OPAL_CMD_LINE_H */
+#endif /* CCS_CMD_LINE_H */

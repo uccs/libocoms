@@ -29,7 +29,7 @@
 
 #ifndef CCS_ARGV_H
 #define CCS_ARGV_H
-#include "service_config.h"
+#include "ccs_config.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
