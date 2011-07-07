@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "ompi_config.h"
+#include "ccs_config.h"
 
 #include "ompi/class/ompi_free_list.h"
 #include "opal/align.h"

@@ -87,6 +87,7 @@
 #define CCS_MCA_H
 
 #include "ccs_config.h"
+#include <stdint.h>
 
 
 /**

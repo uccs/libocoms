@@ -34,15 +34,15 @@
  * If we build a static library, Visual C define the _LIB symbol. In the
  * case of a shared library _USERDLL get defined.
  *
- * OMPI_BUILDING and _LIB define how ompi_config.h
+ * OMPI_BUILDING and _LIB define how ccs_config.h
  * handles configuring all of Open MPI's "compatibility" code.  Both
- * constants will always be defined by the end of ompi_config.h.
+ * constants will always be defined by the end of ccs_config.h.
  *
  * OMPI_BUILDING affects how much compatibility code is included by
- * ompi_config.h.  It will always be 1 or 0.  The user can set the
- * value before including either mpi.h or ompi_config.h and it will be
- * respected.  If ompi_config.h is included before mpi.h, it will
- * default to 1.  If mpi.h is included before ompi_config.h, it will
+ * ccs_config.h.  It will always be 1 or 0.  The user can set the
+ * value before including either mpi.h or ccs_config.h and it will be
+ * respected.  If ccs_config.h is included before mpi.h, it will
+ * default to 1.  If mpi.h is included before ccs_config.h, it will
  * default to 0.
  */
 #ifndef OMPI_BUILDING
