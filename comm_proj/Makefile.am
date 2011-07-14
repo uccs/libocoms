@@ -17,10 +17,10 @@
 # $HEADER$
 #
 
-SUBDIRS = config $(MCA_PROJECT_SUBDIRS) test
-EXTRA_DIST = README INSTALL VERSION Doxyfile LICENSE autogen.pl autogen.sh CMakeLists.txt README.WINDOWS.txt
+SUBDIRS = config contrib $(MCA_PROJECT_SUBDIRS) test
+EXTRA_DIST = README INSTALL VERSION Doxyfile LICENSE autogen.pl CMakeLists.txt README.WINDOWS.txt
 
-#include examples/Makefile.include
+include examples/Makefile.include
 
 dist-hook:
 	csh "$(top_srcdir)/config/distscript.csh" "$(top_srcdir)" "$(distdir)" "$(OMPI_VERSION)" "$(OMPI_SVN_R)"
