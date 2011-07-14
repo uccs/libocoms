@@ -18,20 +18,20 @@
 #
 
 headers = \
-	opal_config_top.h \
-	opal_config_bottom.h \
-	opal_stdint.h \
-        opal_portable_platform.h
+	service_config_top.h \
+	service_config_bottom.h \
+	service_stdint.h \
+        service_portable_platform.h
 
-nodist_headers = opal_config.h
+nodist_headers = service_config.h
 
-include opal/Makefile.am
+include service/Makefile.am
 
 EXTRA_DIST = CMakeLists.txt $(headers)
 
 if WANT_INSTALL_HEADERS 
-opaldir = $(includedir)/openmpi
-nobase_dist_opal_HEADERS = $(headers)
-nobase_nodist_opal_HEADERS = $(nodist_headers)
+servicedir = $(includedir)/ccs
+nobase_dist_service_HEADERS = $(headers)
+nobase_nodist_service_HEADERS = $(nodist_headers)
 endif
 

@@ -24,13 +24,7 @@ SUBDIRS = \
         $(LIBLTDL_SUBDIR) \
 	asm \
         datatype \
-        etc \
-        util \
-	mca/base \
-	$(MCA_opal_FRAMEWORKS_SUBDIRS) \
-	$(MCA_opal_FRAMEWORK_COMPONENT_STATIC_SUBDIRS) \
-        . \
-	$(MCA_opal_FRAMEWORK_COMPONENT_DSO_SUBDIRS)
+        util 
 
 # libltdl is included by variable because if --disable-dlopen was
 # used, there will be no generated Makefile in that directory (and
@@ -40,42 +34,38 @@ DIST_SUBDIRS = \
 	$(LIBLTDL_SUBDIR) \
 	asm \
         datatype \
-        etc \
-	util \
-	mca/base \
-	$(MCA_opal_FRAMEWORKS_SUBDIRS) \
-	$(MCA_opal_FRAMEWORK_COMPONENT_ALL_SUBDIRS)
+	util 
 
 # Build the main OPAL library
 
-lib_LTLIBRARIES = libopen-pal.la
-libopen_pal_la_SOURCES =
-libopen_pal_la_LIBADD = \
+lib_LTLIBRARIES = libservice.la
+libservice_la_SOURCES =
+libservice_la_LIBADD = \
         $(LIBLTDL) \
         asm/libasm.la \
         datatype/libdatatype.la \
         mca/base/libmca_base.la \
-        util/libopalutil.la \
-	$(MCA_opal_FRAMEWORK_LIBS)
-libopen_pal_la_DEPENDENCIES = $(libopen_pal_la_LIBADD)
-libopen_pal_la_LDFLAGS = -version-info $(libopen_pal_so_version)
+        util/libserviceutil.la \
+	$(MCA_service_FRAMEWORK_LIBS)
+libservice_la_DEPENDENCIES = $(libservice_la_LIBADD)
+libservice_la_LDFLAGS = -version-info $(libservice_so_version)
 
 # included subdirectory Makefile.am's and appended-to variables
 headers =
 noinst_LTLIBRARIES =
 dist_pkgdata_DATA =
-libopen_pal_la_SOURCES += $(headers)
+libservice_la_SOURCES += $(headers)
 
 # Conditionally install the header files
 
 if WANT_INSTALL_HEADERS
-opaldir = $(includedir)/openmpi/$(subdir)
-nobase_opal_HEADERS = $(headers)
+servicedir = $(includedir)/ccs/$(subdir)
+nobase_service_HEADERS = $(headers)
 
 # This is somewhat of a hack -- libltdl is installed by libtoolize,
 # and us installing the header here is slightly less kludgey than
 # hacking their Makefile.am.
-nobase_opal_HEADERS += libltdl/ltdl.h
+nobase_service_HEADERS += libltdl/ltdl.h
 endif
 
 include class/Makefile.am
@@ -94,9 +84,6 @@ include dss/Makefile.am
 # project is being built (i.e., if there is an upper layer that needs
 # to slurp in OPAL as a convenience library).
 
-if PROJECT_ORTE
-noinst_LTLIBRARIES += libopen-pal-lt.la
-endif
-libopen_pal_lt_la_SOURCES = $(libopen_pal_la_SOURCES)
-libopen_pal_lt_la_LIBADD = $(libopen_pal_la_LIBADD)
-libopen_pal_lt_la_DEPENDENCIES = $(libopen_pal_la_DEPENDENCIES)
+libservice_lt_la_SOURCES = $(libservice_la_SOURCES)
+libservice_lt_la_LIBADD = $(libservice_la_LIBADD)
+libservice_lt_la_DEPENDENCIES = $(libservice_la_DEPENDENCIES)
