@@ -19,17 +19,17 @@
 #ifndef OMPI_SYS_ARCH_TIMER_H
 #define OMPI_SYS_ARCH_TIMER_H 1
 
-typedef uint64_t opal_timer_t;
+typedef uint64_t service_timer_t;
 
 #if OMPI_GCC_INLINE_ASSEMBLY
 
 
 #if OPAL_ASSEMBLY_ARCH == OMPI_SPARCV9_64
 
-static inline opal_timer_t
-opal_sys_timer_get_cycles(void)
+static inline service_timer_t
+service_sys_timer_get_cycles(void)
 {
-    opal_timer_t ret;
+    service_timer_t ret;
 
     __asm__ __volatile__("rd %%tick, %0" : "=r"(ret));
 
@@ -38,10 +38,10 @@ opal_sys_timer_get_cycles(void)
 
 #else /* OMPI_SPARCV9_32 */
 
-static inline opal_timer_t
-opal_sys_timer_get_cycles(void)
+static inline service_timer_t
+service_sys_timer_get_cycles(void)
 {
-    opal_timer_t ret;
+    service_timer_t ret;
     int a, b;
 
     __asm__ __volatile__("rd %%tick, %0    \n"
@@ -49,7 +49,7 @@ opal_sys_timer_get_cycles(void)
                          "=r"(a), "=r"(b) 
                          );
 
-    ret = (0x00000000FFFFFFFF & a) | (((opal_timer_t) b) << 32);
+    ret = (0x00000000FFFFFFFF & a) | (((service_timer_t) b) << 32);
 
     return ret;
 }

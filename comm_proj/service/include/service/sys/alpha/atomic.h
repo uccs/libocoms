@@ -57,19 +57,19 @@
  *********************************************************************/
 #if OMPI_GCC_INLINE_ASSEMBLY
 
-static inline void opal_atomic_mb(void)
+static inline void service_atomic_mb(void)
 {
     MB();
 }
 
 
-static inline void opal_atomic_rmb(void)
+static inline void service_atomic_rmb(void)
 {
     RMB();
 }
 
 
-static inline void opal_atomic_wmb(void)
+static inline void service_atomic_wmb(void)
 {
     WMB();
 }
@@ -84,7 +84,7 @@ static inline void opal_atomic_wmb(void)
  *********************************************************************/
 #if OMPI_GCC_INLINE_ASSEMBLY
 
-static inline int opal_atomic_cmpset_32( volatile int32_t *addr,
+static inline int service_atomic_cmpset_32( volatile int32_t *addr,
                                          int32_t oldval, int32_t newval)
 {
    int32_t ret;
@@ -107,29 +107,29 @@ static inline int opal_atomic_cmpset_32( volatile int32_t *addr,
 }
 
 
-static inline int opal_atomic_cmpset_acq_32(volatile int32_t *addr,
+static inline int service_atomic_cmpset_acq_32(volatile int32_t *addr,
                                            int32_t oldval,
                                            int32_t newval)
 {
     int rc;
 
-    rc = opal_atomic_cmpset_32(addr, oldval, newval);
-    opal_atomic_rmb();
+    rc = service_atomic_cmpset_32(addr, oldval, newval);
+    service_atomic_rmb();
 
     return rc;
 }
 
 
-static inline int opal_atomic_cmpset_rel_32(volatile int32_t *addr,
+static inline int service_atomic_cmpset_rel_32(volatile int32_t *addr,
                                            int32_t oldval,
                                            int32_t newval)
 {
-    opal_atomic_wmb();
-    return opal_atomic_cmpset_32(addr, oldval, newval);
+    service_atomic_wmb();
+    return service_atomic_cmpset_32(addr, oldval, newval);
 }
 
 
-static inline int opal_atomic_cmpset_64( volatile int64_t *addr,
+static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
 {
     int32_t ret;
@@ -152,25 +152,25 @@ static inline int opal_atomic_cmpset_64( volatile int64_t *addr,
 }
 
 
-static inline int opal_atomic_cmpset_acq_64(volatile int64_t *addr,
+static inline int service_atomic_cmpset_acq_64(volatile int64_t *addr,
                                            int64_t oldval,
                                            int64_t newval)
 {
     int rc;
 
-    rc = opal_atomic_cmpset_64(addr, oldval, newval);
-    opal_atomic_rmb();
+    rc = service_atomic_cmpset_64(addr, oldval, newval);
+    service_atomic_rmb();
 
     return rc;
 }
 
 
-static inline int opal_atomic_cmpset_rel_64(volatile int64_t *addr,
+static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
                                            int64_t oldval,
                                            int64_t newval)
 {
-    opal_atomic_wmb();
-    return opal_atomic_cmpset_64(addr, oldval, newval);
+    service_atomic_wmb();
+    return service_atomic_cmpset_64(addr, oldval, newval);
 }
 
 

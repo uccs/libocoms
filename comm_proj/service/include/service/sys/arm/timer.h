@@ -14,12 +14,12 @@
 
 #include <sys/times.h>
 
-typedef uint64_t opal_timer_t;
+typedef uint64_t service_timer_t;
 
-static inline opal_timer_t
-opal_sys_timer_get_cycles(void)
+static inline service_timer_t
+service_sys_timer_get_cycles(void)
 {
-    opal_timer_t ret;
+    service_timer_t ret;
     struct tms accurate_clock;
 
     times(&accurate_clock);

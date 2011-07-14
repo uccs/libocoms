@@ -20,15 +20,15 @@
 #define OMPI_SYS_ARCH_TIMER_H 1
 
 
-typedef uint64_t opal_timer_t;
+typedef uint64_t service_timer_t;
 
 
 #if OMPI_GCC_INLINE_ASSEMBLY
 
-static inline opal_timer_t
-opal_sys_timer_get_cycles(void)
+static inline service_timer_t
+service_sys_timer_get_cycles(void)
 {
-    opal_timer_t ret;
+    service_timer_t ret;
 
     __asm__ __volatile__ ("mov %0=ar.itc" : "=r"(ret));
 
@@ -39,7 +39,7 @@ opal_sys_timer_get_cycles(void)
 
 #else
 
-opal_timer_t opal_sys_timer_get_cycles(void);
+service_timer_t service_sys_timer_get_cycles(void);
 
 #define OPAL_HAVE_SYS_TIMER_GET_CYCLES 1
 

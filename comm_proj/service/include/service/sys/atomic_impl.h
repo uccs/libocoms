@@ -41,13 +41,13 @@
 #if !defined(OPAL_HAVE_ATOMIC_ADD_32)
 #define OPAL_HAVE_ATOMIC_ADD_32 1
 static inline int32_t
-opal_atomic_add_32(volatile int32_t *addr, int delta)
+service_atomic_add_32(volatile int32_t *addr, int delta)
 {
    int32_t oldval;
    
    do {
       oldval = *addr;
-   } while (0 == opal_atomic_cmpset_32(addr, oldval, oldval + delta));
+   } while (0 == service_atomic_cmpset_32(addr, oldval, oldval + delta));
    return (oldval + delta);
 }
 #endif  /* OPAL_HAVE_ATOMIC_ADD_32 */
@@ -56,13 +56,13 @@ opal_atomic_add_32(volatile int32_t *addr, int delta)
 #if !defined(OPAL_HAVE_ATOMIC_SUB_32)
 #define OPAL_HAVE_ATOMIC_SUB_32 1
 static inline int32_t
-opal_atomic_sub_32(volatile int32_t *addr, int delta)
+service_atomic_sub_32(volatile int32_t *addr, int delta)
 {
    int32_t oldval;
    
    do {
       oldval = *addr;
-   } while (0 == opal_atomic_cmpset_32(addr, oldval, oldval - delta));
+   } while (0 == service_atomic_cmpset_32(addr, oldval, oldval - delta));
    return (oldval - delta);
 }
 #endif  /* OPAL_HAVE_ATOMIC_SUB_32 */
@@ -75,13 +75,13 @@ opal_atomic_sub_32(volatile int32_t *addr, int delta)
 #if !defined(OPAL_HAVE_ATOMIC_ADD_64)
 #define OPAL_HAVE_ATOMIC_ADD_64 1
 static inline int64_t
-opal_atomic_add_64(volatile int64_t *addr, int64_t delta)
+service_atomic_add_64(volatile int64_t *addr, int64_t delta)
 {
    int64_t oldval;
    
    do {
       oldval = *addr;
-   } while (0 == opal_atomic_cmpset_64(addr, oldval, oldval + delta));
+   } while (0 == service_atomic_cmpset_64(addr, oldval, oldval + delta));
    return (oldval + delta);
 }
 #endif  /* OPAL_HAVE_ATOMIC_ADD_64 */
@@ -90,13 +90,13 @@ opal_atomic_add_64(volatile int64_t *addr, int64_t delta)
 #if !defined(OPAL_HAVE_ATOMIC_SUB_64)
 #define OPAL_HAVE_ATOMIC_SUB_64 1
 static inline int64_t
-opal_atomic_sub_64(volatile int64_t *addr, int64_t delta)
+service_atomic_sub_64(volatile int64_t *addr, int64_t delta)
 {
     int64_t oldval;
 
     do {
         oldval = *addr;
-    } while (0 == opal_atomic_cmpset_64(addr, oldval, oldval - delta));
+    } while (0 == service_atomic_cmpset_64(addr, oldval, oldval - delta));
     return (oldval - delta);
 }
 #endif  /* OPAL_HAVE_ATOMIC_SUB_64 */
@@ -117,19 +117,19 @@ opal_atomic_sub_64(volatile int64_t *addr, int64_t delta)
 #if (OPAL_HAVE_ATOMIC_CMPSET_32 || OPAL_HAVE_ATOMIC_CMPSET_64)
 
 static inline int
-opal_atomic_cmpset_xx(volatile void* addr, int64_t oldval,
+service_atomic_cmpset_xx(volatile void* addr, int64_t oldval,
                       int64_t newval, size_t length)
 {
    switch( length ) {
 #if OPAL_HAVE_ATOMIC_CMPSET_32
    case 4:
-      return opal_atomic_cmpset_32( (volatile int32_t*)addr,
+      return service_atomic_cmpset_32( (volatile int32_t*)addr,
                                     (int32_t)oldval, (int32_t)newval );
 #endif  /* OPAL_HAVE_ATOMIC_CMPSET_32 */
 
 #if OPAL_HAVE_ATOMIC_CMPSET_64
    case 8:
-      return opal_atomic_cmpset_64( (volatile int64_t*)addr,
+      return service_atomic_cmpset_64( (volatile int64_t*)addr,
                                     (int64_t)oldval, (int64_t)newval );
 #endif  /* OPAL_HAVE_ATOMIC_CMPSET_64 */
    default:
@@ -142,19 +142,19 @@ opal_atomic_cmpset_xx(volatile void* addr, int64_t oldval,
 
 
 static inline int
-opal_atomic_cmpset_acq_xx(volatile void* addr, int64_t oldval,
+service_atomic_cmpset_acq_xx(volatile void* addr, int64_t oldval,
                           int64_t newval, size_t length)
 {
    switch( length ) {
 #if OPAL_HAVE_ATOMIC_CMPSET_32
    case 4:
-      return opal_atomic_cmpset_acq_32( (volatile int32_t*)addr,
+      return service_atomic_cmpset_acq_32( (volatile int32_t*)addr,
                                         (int32_t)oldval, (int32_t)newval );
 #endif  /* OPAL_HAVE_ATOMIC_CMPSET_32 */
 
 #if OPAL_HAVE_ATOMIC_CMPSET_64
    case 8:
-      return opal_atomic_cmpset_acq_64( (volatile int64_t*)addr,
+      return service_atomic_cmpset_acq_64( (volatile int64_t*)addr,
                                         (int64_t)oldval, (int64_t)newval );
 #endif  /* OPAL_HAVE_ATOMIC_CMPSET_64 */
    default:
@@ -167,19 +167,19 @@ opal_atomic_cmpset_acq_xx(volatile void* addr, int64_t oldval,
 
 
 static inline int
-opal_atomic_cmpset_rel_xx(volatile void* addr, int64_t oldval,
+service_atomic_cmpset_rel_xx(volatile void* addr, int64_t oldval,
                           int64_t newval, size_t length)
 {
    switch( length ) {
 #if OPAL_HAVE_ATOMIC_CMPSET_32
    case 4:
-      return opal_atomic_cmpset_rel_32( (volatile int32_t*)addr,
+      return service_atomic_cmpset_rel_32( (volatile int32_t*)addr,
                                         (int32_t)oldval, (int32_t)newval );
 #endif  /* OPAL_HAVE_ATOMIC_CMPSET_32 */
 
 #if OPAL_HAVE_ATOMIC_CMPSET_64
    case 8:
-      return opal_atomic_cmpset_rel_64( (volatile int64_t*)addr,
+      return service_atomic_cmpset_rel_64( (volatile int64_t*)addr,
                                         (int64_t)oldval, (int64_t)newval );
 #endif  /* OPAL_HAVE_ATOMIC_CMPSET_64 */
    default:
@@ -192,15 +192,15 @@ opal_atomic_cmpset_rel_xx(volatile void* addr, int64_t oldval,
 
 
 static inline int
-opal_atomic_cmpset_ptr(volatile void* addr, 
+service_atomic_cmpset_ptr(volatile void* addr, 
                        void* oldval, 
                        void* newval)
 {
 #if SIZEOF_VOID_P == 4 && OPAL_HAVE_ATOMIC_CMPSET_32
-    return opal_atomic_cmpset_32((int32_t*) addr, (unsigned long) oldval, 
+    return service_atomic_cmpset_32((int32_t*) addr, (unsigned long) oldval, 
                                  (unsigned long) newval);
 #elif SIZEOF_VOID_P == 8 && OPAL_HAVE_ATOMIC_CMPSET_64
-    return opal_atomic_cmpset_64((int64_t*) addr, (unsigned long) oldval, 
+    return service_atomic_cmpset_64((int64_t*) addr, (unsigned long) oldval, 
                                  (unsigned long) newval);
 #else
     abort();
@@ -210,15 +210,15 @@ opal_atomic_cmpset_ptr(volatile void* addr,
 
 
 static inline int
-opal_atomic_cmpset_acq_ptr(volatile void* addr, 
+service_atomic_cmpset_acq_ptr(volatile void* addr, 
                            void* oldval, 
                            void* newval)
 {
 #if SIZEOF_VOID_P == 4 && OPAL_HAVE_ATOMIC_CMPSET_32
-    return opal_atomic_cmpset_acq_32((int32_t*) addr, (unsigned long) oldval, 
+    return service_atomic_cmpset_acq_32((int32_t*) addr, (unsigned long) oldval, 
                                      (unsigned long) newval);
 #elif SIZEOF_VOID_P == 8 && OPAL_HAVE_ATOMIC_CMPSET_64
-    return opal_atomic_cmpset_acq_64((int64_t*) addr, (unsigned long) oldval, 
+    return service_atomic_cmpset_acq_64((int64_t*) addr, (unsigned long) oldval, 
                                      (unsigned long) newval);
 #else
     abort();
@@ -227,15 +227,15 @@ opal_atomic_cmpset_acq_ptr(volatile void* addr,
 }
 
 
-static inline int opal_atomic_cmpset_rel_ptr(volatile void* addr, 
+static inline int service_atomic_cmpset_rel_ptr(volatile void* addr, 
                                              void* oldval, 
                                              void* newval)
 {
 #if SIZEOF_VOID_P == 4 && OPAL_HAVE_ATOMIC_CMPSET_32
-    return opal_atomic_cmpset_rel_32((int32_t*) addr, (unsigned long) oldval, 
+    return service_atomic_cmpset_rel_32((int32_t*) addr, (unsigned long) oldval, 
                                      (unsigned long) newval);
 #elif SIZEOF_VOID_P == 8 && OPAL_HAVE_ATOMIC_CMPSET_64
-    return opal_atomic_cmpset_rel_64((int64_t*) addr, (unsigned long) oldval, 
+    return service_atomic_cmpset_rel_64((int64_t*) addr, (unsigned long) oldval, 
                                      (unsigned long) newval);
 #else
     abort();
@@ -249,18 +249,18 @@ static inline int opal_atomic_cmpset_rel_ptr(volatile void* addr,
 
 
 static inline void
-opal_atomic_add_xx(volatile void* addr, int32_t value, size_t length)
+service_atomic_add_xx(volatile void* addr, int32_t value, size_t length)
 {
    switch( length ) {
 #if OPAL_HAVE_ATOMIC_ADD_32
    case 4:
-      opal_atomic_add_32( (volatile int32_t*)addr, (int32_t)value );
+      service_atomic_add_32( (volatile int32_t*)addr, (int32_t)value );
       break;
 #endif  /* OPAL_HAVE_ATOMIC_CMPSET_32 */
 
 #if OPAL_HAVE_ATOMIC_ADD_64
    case 8:
-      opal_atomic_add_64( (volatile int64_t*)addr, (int64_t)value );
+      service_atomic_add_64( (volatile int64_t*)addr, (int64_t)value );
       break;
 #endif  /* OPAL_HAVE_ATOMIC_ADD_64 */
    default:
@@ -272,18 +272,18 @@ opal_atomic_add_xx(volatile void* addr, int32_t value, size_t length)
 
 
 static inline void
-opal_atomic_sub_xx(volatile void* addr, int32_t value, size_t length)
+service_atomic_sub_xx(volatile void* addr, int32_t value, size_t length)
 {
    switch( length ) {
 #if OPAL_HAVE_ATOMIC_SUB_32
    case 4:
-      opal_atomic_sub_32( (volatile int32_t*)addr, (int32_t)value );
+      service_atomic_sub_32( (volatile int32_t*)addr, (int32_t)value );
       break;
 #endif  /* OPAL_HAVE_ATOMIC_SUB_32 */
 
 #if OPAL_HAVE_ATOMIC_SUB_64
    case 8:
-      opal_atomic_sub_64( (volatile int64_t*)addr, (int64_t)value );
+      service_atomic_sub_64( (volatile int64_t*)addr, (int64_t)value );
       break;
 #endif  /* OPAL_HAVE_ATOMIC_SUB_64 */
    default:
@@ -294,19 +294,19 @@ opal_atomic_sub_xx(volatile void* addr, int32_t value, size_t length)
 }
 
 #if SIZEOF_VOID_P == 4 && OPAL_HAVE_ATOMIC_ADD_32
-static inline int32_t opal_atomic_add_ptr( volatile void* addr, 
+static inline int32_t service_atomic_add_ptr( volatile void* addr, 
                                            void* delta )
 {
-    return opal_atomic_add_32((int32_t*) addr, (unsigned long) delta);
+    return service_atomic_add_32((int32_t*) addr, (unsigned long) delta);
 }
 #elif SIZEOF_VOID_P == 8 && OPAL_HAVE_ATOMIC_ADD_64
-static inline int64_t opal_atomic_add_ptr( volatile void* addr, 
+static inline int64_t service_atomic_add_ptr( volatile void* addr, 
                                            void* delta )
 {
-    return opal_atomic_add_64((int64_t*) addr, (unsigned long) delta);
+    return service_atomic_add_64((int64_t*) addr, (unsigned long) delta);
 }
 #else
-static inline int32_t opal_atomic_add_ptr( volatile void* addr, 
+static inline int32_t service_atomic_add_ptr( volatile void* addr, 
                                            void* delta )
 {
     abort();
@@ -315,19 +315,19 @@ static inline int32_t opal_atomic_add_ptr( volatile void* addr,
 #endif
 
 #if SIZEOF_VOID_P == 4 && OPAL_HAVE_ATOMIC_SUB_32
-static inline int32_t opal_atomic_sub_ptr( volatile void* addr, 
+static inline int32_t service_atomic_sub_ptr( volatile void* addr, 
                                            void* delta )
 {
-    return opal_atomic_sub_32((int32_t*) addr, (unsigned long) delta);
+    return service_atomic_sub_32((int32_t*) addr, (unsigned long) delta);
 }
 #elif SIZEOF_VOID_P == 8 && OPAL_HAVE_ATOMIC_SUB_32
-static inline int64_t opal_atomic_sub_ptr( volatile void* addr, 
+static inline int64_t service_atomic_sub_ptr( volatile void* addr, 
                                            void* delta )
 {
-    return opal_atomic_sub_64((int64_t*) addr, (unsigned long) delta);
+    return service_atomic_sub_64((int64_t*) addr, (unsigned long) delta);
 }
 #else
-static inline int32_t opal_atomic_sub_ptr( volatile void* addr, 
+static inline int32_t service_atomic_sub_ptr( volatile void* addr, 
                                            void* delta )
 {
     abort();
@@ -348,24 +348,24 @@ static inline int32_t opal_atomic_sub_ptr( volatile void* addr,
  * Lock initialization function. It set the lock to UNLOCKED.
  */
 static inline void
-opal_atomic_init( opal_atomic_lock_t* lock, int32_t value )
+service_atomic_init( service_atomic_lock_t* lock, int32_t value )
 {
    lock->u.lock = value;
 }
 
 
 static inline int
-opal_atomic_trylock(opal_atomic_lock_t *lock)
+service_atomic_trylock(service_atomic_lock_t *lock)
 {
-   return opal_atomic_cmpset_acq_32( &(lock->u.lock),
+   return service_atomic_cmpset_acq_32( &(lock->u.lock),
                                      OPAL_ATOMIC_UNLOCKED, OPAL_ATOMIC_LOCKED);
 }
 
 
 static inline void
-opal_atomic_lock(opal_atomic_lock_t *lock)
+service_atomic_lock(service_atomic_lock_t *lock)
 {
-   while( !opal_atomic_cmpset_acq_32( &(lock->u.lock),
+   while( !service_atomic_cmpset_acq_32( &(lock->u.lock),
                                       OPAL_ATOMIC_UNLOCKED, OPAL_ATOMIC_LOCKED) ) {
       while (lock->u.lock == OPAL_ATOMIC_LOCKED) {
          /* spin */ ;
@@ -375,9 +375,9 @@ opal_atomic_lock(opal_atomic_lock_t *lock)
 
 
 static inline void
-opal_atomic_unlock(opal_atomic_lock_t *lock)
+service_atomic_unlock(service_atomic_lock_t *lock)
 {
-   opal_atomic_wmb();
+   service_atomic_wmb();
    lock->u.lock=OPAL_ATOMIC_UNLOCKED;
 }
 

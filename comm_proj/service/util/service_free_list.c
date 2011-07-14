@@ -29,48 +29,48 @@
 static void ompi_free_list_construct(ompi_free_list_t* fl);
 static void ompi_free_list_destruct(ompi_free_list_t* fl);
 
-OBJ_CLASS_INSTANCE(ompi_free_list_t, opal_atomic_lifo_t,
+OBJ_CLASS_INSTANCE(ompi_free_list_t, service_atomic_lifo_t,
         ompi_free_list_construct, ompi_free_list_destruct);
 
-typedef struct ompi_free_list_item_t ompi_free_list_memory_t;
+typedef struct service_free_list_item_t ompi_free_list_memory_t;
 
-OBJ_CLASS_INSTANCE(ompi_free_list_item_t, 
-                   opal_list_item_t,
+OBJ_CLASS_INSTANCE(service_free_list_item_t, 
+                   service_list_item_t,
                    NULL, NULL); 
 
 static void ompi_free_list_construct(ompi_free_list_t* fl)
 {
-    OBJ_CONSTRUCT(&fl->fl_lock, opal_mutex_t);
-    OBJ_CONSTRUCT(&fl->fl_condition, opal_condition_t);
+    OBJ_CONSTRUCT(&fl->fl_lock, service_mutex_t);
+    OBJ_CONSTRUCT(&fl->fl_condition, service_condition_t);
     fl->fl_max_to_alloc = 0;
     fl->fl_num_allocated = 0;
     fl->fl_num_per_alloc = 0;
     fl->fl_num_waiting = 0;
-    fl->fl_frag_size = sizeof(ompi_free_list_item_t);
+    fl->fl_frag_size = sizeof(service_free_list_item_t);
     fl->fl_frag_alignment = 0;
     fl->fl_payload_buffer_size=0;
     fl->fl_payload_buffer_alignment=0;
-    fl->fl_frag_class = OBJ_CLASS(ompi_free_list_item_t);
+    fl->fl_frag_class = OBJ_CLASS(service_free_list_item_t);
     fl->fl_mpool = 0;
     fl->ctx = NULL;
-    OBJ_CONSTRUCT(&(fl->fl_allocations), opal_list_t);
+    OBJ_CONSTRUCT(&(fl->fl_allocations), service_list_t);
 }
 
 static void ompi_free_list_destruct(ompi_free_list_t* fl)
 {
-    opal_list_item_t *item;
+    service_list_item_t *item;
     ompi_free_list_memory_t *fl_mem;
 
 #if 0 && OPAL_ENABLE_DEBUG
-    if(opal_list_get_size(&fl->super) != fl->fl_num_allocated) {
-        opal_output(0, "ompi_free_list: %d allocated %d returned: %s:%d\n",
-            fl->fl_num_allocated, opal_list_get_size(&fl->super),
+    if(service_list_get_size(&fl->super) != fl->fl_num_allocated) {
+        service_output(0, "ompi_free_list: %d allocated %d returned: %s:%d\n",
+            fl->fl_num_allocated, service_list_get_size(&fl->super),
             fl->super.super.cls_init_file_name, fl->super.super.cls_init_lineno);
     }
 #endif
 
     if( NULL != fl->fl_mpool ) {
-        while(NULL != (item = opal_list_remove_first(&(fl->fl_allocations)))) {
+        while(NULL != (item = service_list_remove_first(&(fl->fl_allocations)))) {
             fl_mem = (ompi_free_list_memory_t*)item;
 
             fl->fl_mpool->mpool_free(fl->fl_mpool, fl_mem->ptr,
@@ -81,7 +81,7 @@ static void ompi_free_list_destruct(ompi_free_list_t* fl)
             free(item);
         }
     } else {
-        while(NULL != (item = opal_list_remove_first(&(fl->fl_allocations)))) {
+        while(NULL != (item = service_list_remove_first(&(fl->fl_allocations)))) {
             /* destruct the item (we constructed it), then free the memory chunk */
             OBJ_DESTRUCT(item);
             free(item);
@@ -97,7 +97,7 @@ int ompi_free_list_init_ex(
     ompi_free_list_t *flist,
     size_t elem_size,
     size_t alignment,
-    opal_class_t* elem_class,
+    service_class_t* elem_class,
     int num_elements_to_alloc,
     int max_elements_to_alloc,
     int num_elements_per_alloc,
@@ -133,7 +133,7 @@ int ompi_free_list_init_ex_new(
     ompi_free_list_t *flist,
     size_t frag_size,
     size_t frag_alignment,
-    opal_class_t* frag_class,
+    service_class_t* frag_class,
     size_t payload_buffer_size,
     size_t payload_buffer_alignment,
     int num_elements_to_alloc,
@@ -212,8 +212,8 @@ int ompi_free_list_grow(ompi_free_list_t* flist, size_t num_elements)
 
     /* make the alloc_ptr a list item, save the chunk in the allocations list,
      * and have ptr point to memory right after the list item structure */
-    OBJ_CONSTRUCT(alloc_ptr, ompi_free_list_item_t);
-    opal_list_append(&(flist->fl_allocations), (opal_list_item_t*)alloc_ptr);
+    OBJ_CONSTRUCT(alloc_ptr, service_free_list_item_t);
+    service_list_append(&(flist->fl_allocations), (service_list_item_t*)alloc_ptr);
 
     alloc_ptr->registration = reg;
     alloc_ptr->ptr = mpool_alloc_ptr;
@@ -222,7 +222,7 @@ int ompi_free_list_grow(ompi_free_list_t* flist, size_t num_elements)
     ptr = OPAL_ALIGN_PTR(ptr, flist->fl_frag_alignment, unsigned char*);
 
     for(i=0; i<num_elements; i++) {
-        ompi_free_list_item_t* item = (ompi_free_list_item_t*)ptr;
+        service_free_list_item_t* item = (service_free_list_item_t*)ptr;
         item->registration = reg;
         item->ptr = mpool_alloc_ptr;
 
@@ -233,7 +233,7 @@ int ompi_free_list_grow(ompi_free_list_t* flist, size_t num_elements)
             flist->item_init(item, flist->ctx);
         }
 
-        opal_atomic_lifo_push(&(flist->super), &(item->super));
+        service_atomic_lifo_push(&(flist->super), &(item->super));
         ptr += head_size;
         mpool_alloc_ptr += elem_size;
         

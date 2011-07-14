@@ -51,19 +51,19 @@
  *********************************************************************/
 #if OMPI_GCC_INLINE_ASSEMBLY
 
-static inline void opal_atomic_mb(void)
+static inline void service_atomic_mb(void)
 {
     MB();
 }
 
 
-static inline void opal_atomic_rmb(void)
+static inline void service_atomic_rmb(void)
 {
     MB();
 }
 
 
-static inline void opal_atomic_wmb(void)
+static inline void service_atomic_wmb(void)
 {
     MB();
 }
@@ -78,7 +78,7 @@ static inline void opal_atomic_wmb(void)
  *********************************************************************/
 #if OMPI_GCC_INLINE_ASSEMBLY
 
-static inline int opal_atomic_cmpset_32( volatile int32_t *addr,
+static inline int service_atomic_cmpset_32( volatile int32_t *addr,
                                         int32_t oldval, int32_t newval)
 {
    unsigned char ret;
@@ -94,12 +94,12 @@ static inline int opal_atomic_cmpset_32( volatile int32_t *addr,
 
 #endif /* OMPI_GCC_INLINE_ASSEMBLY */
 
-#define opal_atomic_cmpset_acq_32 opal_atomic_cmpset_32
-#define opal_atomic_cmpset_rel_32 opal_atomic_cmpset_32
+#define service_atomic_cmpset_acq_32 service_atomic_cmpset_32
+#define service_atomic_cmpset_rel_32 service_atomic_cmpset_32
 
 #if OMPI_GCC_INLINE_ASSEMBLY
 
-static inline int opal_atomic_cmpset_64( volatile int64_t *addr,
+static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
 {
    unsigned char ret;
@@ -116,8 +116,8 @@ static inline int opal_atomic_cmpset_64( volatile int64_t *addr,
 
 #endif /* OMPI_GCC_INLINE_ASSEMBLY */
 
-#define opal_atomic_cmpset_acq_64 opal_atomic_cmpset_64
-#define opal_atomic_cmpset_rel_64 opal_atomic_cmpset_64
+#define service_atomic_cmpset_acq_64 service_atomic_cmpset_64
+#define service_atomic_cmpset_rel_64 service_atomic_cmpset_64
 
 #if OMPI_GCC_INLINE_ASSEMBLY
 
@@ -133,7 +133,7 @@ static inline int opal_atomic_cmpset_64( volatile int64_t *addr,
  *
  * Atomically adds @i to @v.
  */
-static inline int32_t opal_atomic_add_32(volatile int32_t* v, int i)
+static inline int32_t service_atomic_add_32(volatile int32_t* v, int i)
 {
     int ret = i;
    __asm__ __volatile__(
@@ -154,7 +154,7 @@ static inline int32_t opal_atomic_add_32(volatile int32_t* v, int i)
  *
  * Atomically adds @i to @v.
  */
-static inline int64_t opal_atomic_add_64(volatile int64_t* v, int64_t i)
+static inline int64_t service_atomic_add_64(volatile int64_t* v, int64_t i)
 {
     int64_t ret = i;
    __asm__ __volatile__(
@@ -175,7 +175,7 @@ static inline int64_t opal_atomic_add_64(volatile int64_t* v, int64_t i)
  *
  * Atomically subtracts @i from @v.
  */
-static inline int32_t opal_atomic_sub_32(volatile int32_t* v, int i)
+static inline int32_t service_atomic_sub_32(volatile int32_t* v, int i)
 {
     int ret = -i;
    __asm__ __volatile__(
@@ -196,7 +196,7 @@ static inline int32_t opal_atomic_sub_32(volatile int32_t* v, int i)
  *
  * Atomically subtracts @i from @v.
  */
-static inline int64_t opal_atomic_sub_64(volatile int64_t* v, int64_t i)
+static inline int64_t service_atomic_sub_64(volatile int64_t* v, int64_t i)
 {
     int64_t ret = -i;
    __asm__ __volatile__(

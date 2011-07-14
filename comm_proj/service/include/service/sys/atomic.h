@@ -38,14 +38,14 @@
  *  - \c OPAL_HAVE_ATOMIC_MATH_64 if 32 bit add/sub/cmpset can be done "atomicly"
  *
  * Note that for the Atomic math, atomic add/sub may be implemented as
- * C code using opal_atomic_cmpset.  The appearance of atomic
+ * C code using service_atomic_cmpset.  The appearance of atomic
  * operation will be upheld in these cases.
  */
 
 #ifndef OPAL_SYS_ATOMIC_H
 #define OPAL_SYS_ATOMIC_H 1
 
-#include "opal_config.h"
+#include "service_config.h"
 
 #include "opal/sys/architecture.h"
 
@@ -98,14 +98,14 @@ BEGIN_C_DECLS
  * to use an int or unsigned char as the lock value - the user is not
  * informed either way.
  */
-struct opal_atomic_lock_t {
+struct service_atomic_lock_t {
     union {
         volatile int32_t lock;     /**< The lock address (an integer) */
         volatile unsigned char sparc_lock; /**< The lock address on sparc */
         char padding[sizeof(int)]; /**< Array for optional padding */
     } u;
 };
-typedef struct opal_atomic_lock_t opal_atomic_lock_t;
+typedef struct service_atomic_lock_t service_atomic_lock_t;
 
 /**********************************************************************
  *
@@ -195,7 +195,7 @@ typedef struct opal_atomic_lock_t opal_atomic_lock_t;
  *
  * Will use system-specific features to instruct the processor and
  * memory controller that all writes and reads that have been posted
- * before the call to \c opal_atomic_mb() must appear to have
+ * before the call to \c service_atomic_mb() must appear to have
  * completed before the next read or write.
  *
  * \note This can have some expensive side effects, including flushing
@@ -207,37 +207,37 @@ typedef struct opal_atomic_lock_t opal_atomic_lock_t;
 #if OPAL_HAVE_INLINE_ATOMIC_MEM_BARRIER
 static inline 
 #endif
-void opal_atomic_mb(void);
+void service_atomic_mb(void);
 
 /**
  * Read memory barrier
  *
  * Use system-specific features to instruct the processor and memory
  * conrtoller that all reads that have been posted before the call to
- * \c opal_atomic_rmb() must appear to have been completed before the
+ * \c service_atomic_rmb() must appear to have been completed before the
  * next read.  Nothing is said about the ordering of writes when using
- * \c opal_atomic_rmb().
+ * \c service_atomic_rmb().
  */
 
 #if OPAL_HAVE_INLINE_ATOMIC_MEM_BARRIER
 static inline 
 #endif
-void opal_atomic_rmb(void);
+void service_atomic_rmb(void);
 
 /**
  * Write memory barrier.
  *
  * Use system-specific features to instruct the processor and memory
  * conrtoller that all writes that have been posted before the call to
- * \c opal_atomic_wmb() must appear to have been completed before the
+ * \c service_atomic_wmb() must appear to have been completed before the
  * next write.  Nothing is said about the ordering of reads when using
- * \c opal_atomic_wmb().
+ * \c service_atomic_wmb().
  */
 
 #if OPAL_HAVE_INLINE_ATOMIC_MEM_BARRIER
 static inline 
 #endif
-void opal_atomic_wmb(void);
+void service_atomic_wmb(void);
 
 #endif /* defined(DOXYGEN) || OPAL_HAVE_ATOMIC_MEM_BARRIER */
 
@@ -274,7 +274,7 @@ enum {
 #if OPAL_HAVE_ATOMIC_SPINLOCKS == 0
 static inline 
 #endif
-void opal_atomic_init(opal_atomic_lock_t* lock, int32_t value);
+void service_atomic_init(service_atomic_lock_t* lock, int32_t value);
 
 
 /**
@@ -286,7 +286,7 @@ void opal_atomic_init(opal_atomic_lock_t* lock, int32_t value);
 #if OPAL_HAVE_ATOMIC_SPINLOCKS == 0
 static inline
 #endif
-int opal_atomic_trylock(opal_atomic_lock_t *lock);
+int service_atomic_trylock(service_atomic_lock_t *lock);
 
 
 /**
@@ -297,7 +297,7 @@ int opal_atomic_trylock(opal_atomic_lock_t *lock);
 #if OPAL_HAVE_ATOMIC_SPINLOCKS == 0
 static inline
 #endif
-void opal_atomic_lock(opal_atomic_lock_t *lock);
+void service_atomic_lock(service_atomic_lock_t *lock);
 
 
 /**
@@ -308,7 +308,7 @@ void opal_atomic_lock(opal_atomic_lock_t *lock);
 #if OPAL_HAVE_ATOMIC_SPINLOCKS == 0
 static inline
 #endif
-void opal_atomic_unlock(opal_atomic_lock_t *lock);
+void service_atomic_unlock(service_atomic_lock_t *lock);
 
 
 #if OPAL_HAVE_ATOMIC_SPINLOCKS == 0
@@ -333,19 +333,19 @@ void opal_atomic_unlock(opal_atomic_lock_t *lock);
 #if OPAL_HAVE_INLINE_ATOMIC_CMPSET_32
 static inline 
 #endif
-int opal_atomic_cmpset_32(volatile int32_t *addr, int32_t oldval,
+int service_atomic_cmpset_32(volatile int32_t *addr, int32_t oldval,
                           int32_t newval);
 
 #if OPAL_HAVE_INLINE_ATOMIC_CMPSET_32
 static inline 
 #endif
-int opal_atomic_cmpset_acq_32(volatile int32_t *addr, int32_t oldval,
+int service_atomic_cmpset_acq_32(volatile int32_t *addr, int32_t oldval,
                               int32_t newval);
 
 #if OPAL_HAVE_INLINE_ATOMIC_CMPSET_32
 static inline 
 #endif
-int opal_atomic_cmpset_rel_32(volatile int32_t *addr, int32_t oldval,
+int service_atomic_cmpset_rel_32(volatile int32_t *addr, int32_t oldval,
                               int32_t newval);
 #endif
 
@@ -358,19 +358,19 @@ int opal_atomic_cmpset_rel_32(volatile int32_t *addr, int32_t oldval,
 #if OPAL_HAVE_INLINE_ATOMIC_CMPSET_64
 static inline 
 #endif
-int opal_atomic_cmpset_64(volatile int64_t *addr, int64_t oldval,
+int service_atomic_cmpset_64(volatile int64_t *addr, int64_t oldval,
                           int64_t newval);
 
 #if OPAL_HAVE_INLINE_ATOMIC_CMPSET_64
 static inline 
 #endif
-int opal_atomic_cmpset_acq_64(volatile int64_t *addr, int64_t oldval,
+int service_atomic_cmpset_acq_64(volatile int64_t *addr, int64_t oldval,
                               int64_t newval);
 
 #if OPAL_HAVE_INLINE_ATOMIC_CMPSET_64
 static inline 
 #endif
-int opal_atomic_cmpset_rel_64(volatile int64_t *addr, int64_t oldval,
+int service_atomic_cmpset_rel_64(volatile int64_t *addr, int64_t oldval,
                               int64_t newval);
 
 #endif
@@ -390,7 +390,7 @@ int opal_atomic_cmpset_rel_64(volatile int64_t *addr, int64_t oldval,
 #if OPAL_HAVE_INLINE_ATOMIC_ADD_32 || OPAL_HAVE_ATOMIC_CMPSET_32
 static inline
 #endif
-int32_t opal_atomic_add_32(volatile int32_t *addr, int delta);
+int32_t service_atomic_add_32(volatile int32_t *addr, int delta);
 
 /* OPAL_HAVE_INLINE_ATOMIC_*_32 will be 1 if <arch>/atomic.h provides
    a static inline version of it (in assembly).  If it's 0 but
@@ -400,7 +400,7 @@ int32_t opal_atomic_add_32(volatile int32_t *addr, int delta);
 #if OPAL_HAVE_INLINE_ATOMIC_SUB_32 || OPAL_HAVE_ATOMIC_CMPSET_32
 static inline
 #endif
-int32_t opal_atomic_sub_32(volatile int32_t *addr, int delta);
+int32_t service_atomic_sub_32(volatile int32_t *addr, int delta);
 
 #endif /* OPAL_HAVE_ATOMIC_MATH_32 */
 
@@ -425,7 +425,7 @@ int32_t opal_atomic_sub_32(volatile int32_t *addr, int delta);
 #if OPAL_HAVE_INLINE_ATOMIC_ADD_64 || OPAL_HAVE_ATOMIC_CMPSET_64
 static inline
 #endif
-int64_t opal_atomic_add_64(volatile int64_t *addr, int64_t delta);
+int64_t service_atomic_add_64(volatile int64_t *addr, int64_t delta);
 
 /* OPAL_HAVE_INLINE_ATOMIC_*_64 will be 1 if <arch>/atomic.h provides
    a static inline version of it (in assembly).  If it's 0 but
@@ -435,7 +435,7 @@ int64_t opal_atomic_add_64(volatile int64_t *addr, int64_t delta);
 #if OPAL_HAVE_INLINE_ATOMIC_SUB_64 || OPAL_HAVE_ATOMIC_CMPSET_64
 static inline
 #endif
-int64_t opal_atomic_sub_64(volatile int64_t *addr, int64_t delta);
+int64_t service_atomic_sub_64(volatile int64_t *addr, int64_t delta);
 
 #endif /* OPAL_HAVE_ATOMIC_MATH_32 */
 
@@ -452,34 +452,34 @@ int64_t opal_atomic_sub_64(volatile int64_t *addr, int64_t delta);
  */
 #if defined(DOXYGEN) || OPAL_ENABLE_DEBUG
 static inline size_t
-opal_atomic_add_size_t(volatile size_t *addr, int delta)
+service_atomic_add_size_t(volatile size_t *addr, int delta)
 {
 #if SIZEOF_SIZE_T == 4
-    return (size_t) opal_atomic_add_32((int32_t*) addr, delta);
+    return (size_t) service_atomic_add_32((int32_t*) addr, delta);
 #elif SIZEOF_SIZE_T == 8
-    return (size_t) opal_atomic_add_64((int64_t*) addr, delta);
+    return (size_t) service_atomic_add_64((int64_t*) addr, delta);
 #else
 #error "Unknown size_t size"
 #endif
 }
 static inline size_t
-opal_atomic_sub_size_t(volatile size_t *addr, int delta)
+service_atomic_sub_size_t(volatile size_t *addr, int delta)
 {
 #if SIZEOF_SIZE_T == 4
-    return (size_t) opal_atomic_sub_32((int32_t*) addr, delta);
+    return (size_t) service_atomic_sub_32((int32_t*) addr, delta);
 #elif SIZEOF_SIZE_T == 8
-    return (size_t) opal_atomic_sub_64((int64_t*) addr, delta);
+    return (size_t) service_atomic_sub_64((int64_t*) addr, delta);
 #else
 #error "Unknown size_t size"
 #endif
 }
 #else
 #if SIZEOF_SIZE_T == 4
-#define opal_atomic_add_size_t(addr, delta) ((size_t) opal_atomic_add_32((int32_t*) addr, delta))
-#define opal_atomic_sub_size_t(addr, delta) ((size_t) opal_atomic_sub_32((int32_t*) addr, delta))
+#define service_atomic_add_size_t(addr, delta) ((size_t) service_atomic_add_32((int32_t*) addr, delta))
+#define service_atomic_sub_size_t(addr, delta) ((size_t) service_atomic_sub_32((int32_t*) addr, delta))
 #elif SIZEOF_SIZE_T ==8
-#define opal_atomic_add_size_t(addr, delta) ((size_t) opal_atomic_add_64((int64_t*) addr, delta))
-#define opal_atomic_sub_size_t(addr, delta) ((size_t) opal_atomic_sub_64((int64_t*) addr, delta))
+#define service_atomic_add_size_t(addr, delta) ((size_t) service_atomic_add_64((int64_t*) addr, delta))
+#define service_atomic_sub_size_t(addr, delta) ((size_t) service_atomic_sub_64((int64_t*) addr, delta))
 #else
 #error "Unknown size_t size"
 #endif
@@ -488,22 +488,22 @@ opal_atomic_sub_size_t(volatile size_t *addr, int delta)
 #if defined(DOXYGEN) || (OPAL_HAVE_ATOMIC_CMPSET_32 || OPAL_HAVE_ATOMIC_CMPSET_64)
 /* these are always done with inline functions, so always mark as
    static inline */
-static inline int opal_atomic_cmpset_xx(volatile void* addr, int64_t oldval,
+static inline int service_atomic_cmpset_xx(volatile void* addr, int64_t oldval,
                                         int64_t newval, size_t length);
-static inline int opal_atomic_cmpset_acq_xx(volatile void* addr, 
+static inline int service_atomic_cmpset_acq_xx(volatile void* addr, 
                                             int64_t oldval,  int64_t newval, 
                                             size_t length);
-static inline int opal_atomic_cmpset_rel_xx(volatile void* addr, 
+static inline int service_atomic_cmpset_rel_xx(volatile void* addr, 
                                             int64_t oldval, int64_t newval, 
                                             size_t length);
 
-static inline int opal_atomic_cmpset_ptr(volatile void* addr, 
+static inline int service_atomic_cmpset_ptr(volatile void* addr, 
                                          void* oldval, 
                                          void* newval);
-static inline int opal_atomic_cmpset_acq_ptr(volatile void* addr, 
+static inline int service_atomic_cmpset_acq_ptr(volatile void* addr, 
                                              void* oldval, 
                                              void* newval);
-static inline int opal_atomic_cmpset_rel_ptr(volatile void* addr, 
+static inline int service_atomic_cmpset_rel_ptr(volatile void* addr, 
                                              void* oldval, 
                                              void* newval);
 
@@ -518,10 +518,10 @@ static inline int opal_atomic_cmpset_rel_ptr(volatile void* addr,
  * @param oldval        Comparison value <TYPE>.
  * @param newval        New value to set if comparision is true <TYPE>.
  *
- * See opal_atomic_cmpset_* for pseudo-code.
+ * See service_atomic_cmpset_* for pseudo-code.
  */
-#define opal_atomic_cmpset( ADDR, OLDVAL, NEWVAL )                  \
-   opal_atomic_cmpset_xx( (volatile void*)(ADDR), (intptr_t)(OLDVAL), \
+#define service_atomic_cmpset( ADDR, OLDVAL, NEWVAL )                  \
+   service_atomic_cmpset_xx( (volatile void*)(ADDR), (intptr_t)(OLDVAL), \
                           (intptr_t)(NEWVAL), sizeof(*(ADDR)) )
 
 /**
@@ -535,10 +535,10 @@ static inline int opal_atomic_cmpset_rel_ptr(volatile void* addr,
  * @param oldval        Comparison value <TYPE>.
  * @param newval        New value to set if comparision is true <TYPE>.
  *
- * See opal_atomic_cmpset_acq_* for pseudo-code.
+ * See service_atomic_cmpset_acq_* for pseudo-code.
  */
-#define opal_atomic_cmpset_acq( ADDR, OLDVAL, NEWVAL )           \
-   opal_atomic_cmpset_acq_xx( (volatile void*)(ADDR), (int64_t)(OLDVAL), \
+#define service_atomic_cmpset_acq( ADDR, OLDVAL, NEWVAL )           \
+   service_atomic_cmpset_acq_xx( (volatile void*)(ADDR), (int64_t)(OLDVAL), \
                               (int64_t)(NEWVAL), sizeof(*(ADDR)) )
 
 
@@ -553,26 +553,26 @@ static inline int opal_atomic_cmpset_rel_ptr(volatile void* addr,
  * @param oldval        Comparison value <TYPE>.
  * @param newval        New value to set if comparision is true <TYPE>.
  *
- * See opal_atomic_cmpsetrel_* for pseudo-code.
+ * See service_atomic_cmpsetrel_* for pseudo-code.
  */
-#define opal_atomic_cmpset_rel( ADDR, OLDVAL, NEWVAL )           \
-   opal_atomic_cmpset_rel_xx( (volatile void*)(ADDR), (int64_t)(OLDVAL), \
+#define service_atomic_cmpset_rel( ADDR, OLDVAL, NEWVAL )           \
+   service_atomic_cmpset_rel_xx( (volatile void*)(ADDR), (int64_t)(OLDVAL), \
                               (int64_t)(NEWVAL), sizeof(*(ADDR)) )
 
 #endif /* (OPAL_HAVE_ATOMIC_CMPSET_32 || OPAL_HAVE_ATOMIC_CMPSET_64) */
 
 #if defined(DOXYGEN) || (OPAL_HAVE_ATOMIC_MATH_32 || OPAL_HAVE_ATOMIC_MATH_64)
 
-static inline void opal_atomic_add_xx(volatile void* addr, 
+static inline void service_atomic_add_xx(volatile void* addr, 
                                       int32_t value, size_t length);
-static inline void opal_atomic_sub_xx(volatile void* addr, 
+static inline void service_atomic_sub_xx(volatile void* addr, 
                                       int32_t value, size_t length);
 #if SIZEOF_VOID_P == 4 && OPAL_HAVE_ATOMIC_CMPSET_32
-static inline int32_t opal_atomic_add_ptr( volatile void* addr, void* delta );
-static inline int32_t opal_atomic_sub_ptr( volatile void* addr, void* delta );
+static inline int32_t service_atomic_add_ptr( volatile void* addr, void* delta );
+static inline int32_t service_atomic_sub_ptr( volatile void* addr, void* delta );
 #elif SIZEOF_VOID_P == 8 && OPAL_HAVE_ATOMIC_CMPSET_64
-static inline int64_t opal_atomic_add_ptr( volatile void* addr, void* delta );
-static inline int64_t opal_atomic_sub_ptr( volatile void* addr, void* delta );
+static inline int64_t service_atomic_add_ptr( volatile void* addr, void* delta );
+static inline int64_t service_atomic_sub_ptr( volatile void* addr, void* delta );
 #else
 #error Atomic arithmetic on pointers not supported
 #endif
@@ -587,8 +587,8 @@ static inline int64_t opal_atomic_sub_ptr( volatile void* addr, void* delta );
  * @param addr          Address of <TYPE>
  * @param delta         Value to add (converted to <TYPE>).
  */
-#define opal_atomic_add( ADDR, VALUE )                                  \
-   opal_atomic_add_xx( (volatile void*)(ADDR), (int32_t)(VALUE), \
+#define service_atomic_add( ADDR, VALUE )                                  \
+   service_atomic_add_xx( (volatile void*)(ADDR), (int32_t)(VALUE), \
                        sizeof(*(ADDR)) )
 
 /**
@@ -601,8 +601,8 @@ static inline int64_t opal_atomic_sub_ptr( volatile void* addr, void* delta );
  * @param addr          Address of <TYPE>
  * @param delta         Value to substract (converted to <TYPE>).
  */
-#define opal_atomic_sub( ADDR, VALUE )                                  \
-   opal_atomic_sub_xx( (volatile void*)(ADDR), (int32_t)(VALUE),        \
+#define service_atomic_sub( ADDR, VALUE )                                  \
+   service_atomic_sub_xx( (volatile void*)(ADDR), (int32_t)(VALUE),        \
                       sizeof(*(ADDR)) )
 
 #endif /* OPAL_HAVE_ATOMIC_MATH_32 || OPAL_HAVE_ATOMIC_MATH_64 */

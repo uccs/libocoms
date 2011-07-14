@@ -25,7 +25,7 @@
 #ifndef OPAL_SYS_TIMER_H
 #define OPAL_SYS_TIMER_H 1
 
-#include "opal_config.h"
+#include "service_config.h"
 
 #include "opal/sys/architecture.h"
 
@@ -103,7 +103,7 @@ BEGIN_C_DECLS
 #ifndef OPAL_HAVE_SYS_TIMER_GET_CYCLES
 #define OPAL_HAVE_SYS_TIMER_GET_CYCLES 0
 
-typedef int opal_timer_t;
+typedef int service_timer_t;
 #endif
 #endif
 

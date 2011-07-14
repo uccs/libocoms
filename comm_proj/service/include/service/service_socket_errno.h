@@ -20,17 +20,17 @@
 
 /* In windows, sockets return differnt error codes than the linux counter parts. Although,
    one can find there are some similarities in the naming, there are definite differences.
-   opal_socket_errno is defined to be errno under linux and opal_get_socket_errno under
+   service_socket_errno is defined to be errno under linux and service_get_socket_errno under
    windows to ensure that the code which uses errno does not have to be changed. In windows,
-   the mapping is taken care of by opal_get_socket_errno().
+   the mapping is taken care of by service_get_socket_errno().
    
-   ANYONE USING SOCKET FUNCTIONS' RETURN VALUE PLEASE USE opal_socket_errno INSTEAD
+   ANYONE USING SOCKET FUNCTIONS' RETURN VALUE PLEASE USE service_socket_errno INSTEAD
    OF errno FOR COMPATIBILITY  */
 
 #include <errno.h>
 #include "opal/constants.h"
 #ifdef __WINDOWS__
-#define opal_socket_errno opal_get_socket_errno()
+#define service_socket_errno service_get_socket_errno()
 
 /* some of these have been defined in newer version of errno.h*/
 #if (defined(__WINDOWS__) && !defined(_MSC_VER)) || _MSC_VER < 1600
@@ -75,13 +75,13 @@
 #define EREMOTE           WSAEREMOTE
 
 /*
- * pound define opal_get_error() to be opal_errno. so, in windows land
+ * pound define service_get_error() to be service_errno. so, in windows land
  * this simply defaults to being errno
  */
 
 /* return directly from the case statments */
 
-static __inline int opal_get_socket_errno(void) {
+static __inline int service_get_socket_errno(void) {
     int ret = WSAGetLastError();
     switch (ret) {
       case WSAEINTR: return EINTR; 
@@ -132,7 +132,7 @@ static __inline int opal_get_socket_errno(void) {
 }
 
 #else 
-#define opal_socket_errno errno
+#define service_socket_errno errno
 #endif
 
 #endif /* OPAL_GET_ERROR_H */

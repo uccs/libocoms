@@ -58,19 +58,19 @@
  *********************************************************************/
 #if OMPI_GCC_INLINE_ASSEMBLY
 
-static inline void opal_atomic_mb(void)
+static inline void service_atomic_mb(void)
 {
     MB();
 }
 
 
-static inline void opal_atomic_rmb(void)
+static inline void service_atomic_rmb(void)
 {
     MB();
 }
 
 
-static inline void opal_atomic_wmb(void)
+static inline void service_atomic_wmb(void)
 {
     MB();
 }
@@ -85,7 +85,7 @@ static inline void opal_atomic_wmb(void)
  *********************************************************************/
 #if OMPI_GCC_INLINE_ASSEMBLY
 
-static inline int opal_atomic_cmpset_32(volatile int32_t *addr,
+static inline int service_atomic_cmpset_32(volatile int32_t *addr,
                                         int32_t oldval,
                                         int32_t newval)
 {
@@ -102,8 +102,8 @@ static inline int opal_atomic_cmpset_32(volatile int32_t *addr,
 
 #endif /* OMPI_GCC_INLINE_ASSEMBLY */
 
-#define opal_atomic_cmpset_acq_32 opal_atomic_cmpset_32
-#define opal_atomic_cmpset_rel_32 opal_atomic_cmpset_32
+#define service_atomic_cmpset_acq_32 service_atomic_cmpset_32
+#define service_atomic_cmpset_rel_32 service_atomic_cmpset_32
 
 #if OMPI_GCC_INLINE_ASSEMBLY
 
@@ -124,7 +124,7 @@ static inline int opal_atomic_cmpset_32(volatile int32_t *addr,
  * This conflict force us to save the EBX before the cmpxchg8b 
  * and to restore it afterward.
  */
-static inline int opal_atomic_cmpset_64(volatile int64_t *addr,
+static inline int service_atomic_cmpset_64(volatile int64_t *addr,
                                         int64_t oldval,
                                         int64_t newval)
 {
@@ -150,8 +150,8 @@ static inline int opal_atomic_cmpset_64(volatile int64_t *addr,
 
 #endif /* OMPI_GCC_INLINE_ASSEMBLY */
 
-#define opal_atomic_cmpset_acq_64 opal_atomic_cmpset_64
-#define opal_atomic_cmpset_rel_64 opal_atomic_cmpset_64
+#define service_atomic_cmpset_acq_64 service_atomic_cmpset_64
+#define service_atomic_cmpset_rel_64 service_atomic_cmpset_64
 
 #if OMPI_GCC_INLINE_ASSEMBLY
 
@@ -162,7 +162,7 @@ static inline int opal_atomic_cmpset_64(volatile int64_t *addr,
  *
  * Atomically adds @i to @v.
  */
-static inline int32_t opal_atomic_add_32(volatile int32_t* v, int i)
+static inline int32_t service_atomic_add_32(volatile int32_t* v, int i)
 {
     int ret = i;
    __asm__ __volatile__(
@@ -182,7 +182,7 @@ static inline int32_t opal_atomic_add_32(volatile int32_t* v, int i)
  *
  * Atomically subtracts @i from @v.
  */
-static inline int32_t opal_atomic_sub_32(volatile int32_t* v, int i)
+static inline int32_t service_atomic_sub_32(volatile int32_t* v, int i)
 {
     int ret = -i;
    __asm__ __volatile__(
