@@ -17,17 +17,17 @@
  * 
  * $HEADER$
  *
- * This file is included at the bottom of opal_config.h, and is
+ * This file is included at the bottom of service_config.h, and is
  * therefore a) after all the #define's that were output from
  * configure, and b) included in most/all files in Open MPI.
  *
- * Since this file is *only* ever included by opal_config.h, and
- * opal_config.h already has #ifndef/#endif protection, there is no
+ * Since this file is *only* ever included by service_config.h, and
+ * service_config.h already has #ifndef/#endif protection, there is no
  * need to #ifndef/#endif protection here.
  */
 
 #ifndef OPAL_CONFIG_H 
-#error "opal_config_bottom.h should only be included from opal_config.h"
+#error "service_config_bottom.h should only be included from service_config.h"
 #endif
 
 /*
@@ -89,135 +89,135 @@
  * usage.
  */
 #if OPAL_HAVE_ATTRIBUTE_ALIGNED
-#    define __opal_attribute_aligned__(a)    __attribute__((__aligned__(a)))
-#    define __opal_attribute_aligned_max__   __attribute__((__aligned__))
+#    define __service_attribute_aligned__(a)    __attribute__((__aligned__(a)))
+#    define __service_attribute_aligned_max__   __attribute__((__aligned__))
 #else
-#    define __opal_attribute_aligned__(a)
-#    define __opal_attribute_aligned_max__
+#    define __service_attribute_aligned__(a)
+#    define __service_attribute_aligned_max__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_ALWAYS_INLINE
-#    define __opal_attribute_always_inline__ __attribute__((__always_inline__))
+#    define __service_attribute_always_inline__ __attribute__((__always_inline__))
 #else
-#    define __opal_attribute_always_inline__
+#    define __service_attribute_always_inline__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_COLD
-#    define __opal_attribute_cold__          __attribute__((__cold__))
+#    define __service_attribute_cold__          __attribute__((__cold__))
 #else
-#    define __opal_attribute_cold__
+#    define __service_attribute_cold__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_CONST
-#    define __opal_attribute_const__         __attribute__((__const__))
+#    define __service_attribute_const__         __attribute__((__const__))
 #else
-#    define __opal_attribute_const__
+#    define __service_attribute_const__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_DEPRECATED
-#    define __opal_attribute_deprecated__    __attribute__((__deprecated__))
+#    define __service_attribute_deprecated__    __attribute__((__deprecated__))
 #else
-#    define __opal_attribute_deprecated__
+#    define __service_attribute_deprecated__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_FORMAT
-#    define __opal_attribute_format__(a,b,c) __attribute__((__format__(a, b, c)))
+#    define __service_attribute_format__(a,b,c) __attribute__((__format__(a, b, c)))
 #else
-#    define __opal_attribute_format__(a,b,c)
+#    define __service_attribute_format__(a,b,c)
 #endif
 
 /* Use this __atribute__ on function-ptr declarations, only */
 #if OPAL_HAVE_ATTRIBUTE_FORMAT_FUNCPTR
-#    define __opal_attribute_format_funcptr__(a,b,c) __attribute__((__format__(a, b, c)))
+#    define __service_attribute_format_funcptr__(a,b,c) __attribute__((__format__(a, b, c)))
 #else
-#    define __opal_attribute_format_funcptr__(a,b,c)
+#    define __service_attribute_format_funcptr__(a,b,c)
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_HOT
-#    define __opal_attribute_hot__           __attribute__((__hot__))
+#    define __service_attribute_hot__           __attribute__((__hot__))
 #else
-#    define __opal_attribute_hot__
+#    define __service_attribute_hot__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_MALLOC
-#    define __opal_attribute_malloc__        __attribute__((__malloc__))
+#    define __service_attribute_malloc__        __attribute__((__malloc__))
 #else
-#    define __opal_attribute_malloc__
+#    define __service_attribute_malloc__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_MAY_ALIAS
-#    define __opal_attribute_may_alias__     __attribute__((__may_alias__))
+#    define __service_attribute_may_alias__     __attribute__((__may_alias__))
 #else
-#    define __opal_attribute_may_alias__
+#    define __service_attribute_may_alias__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_NO_INSTRUMENT_FUNCTION
-#    define __opal_attribute_no_instrument_function__  __attribute__((__no_instrument_function__))
+#    define __service_attribute_no_instrument_function__  __attribute__((__no_instrument_function__))
 #else
-#    define __opal_attribute_no_instrument_function__
+#    define __service_attribute_no_instrument_function__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_NONNULL
-#    define __opal_attribute_nonnull__(a)    __attribute__((__nonnull__(a)))
-#    define __opal_attribute_nonnull_all__   __attribute__((__nonnull__))
+#    define __service_attribute_nonnull__(a)    __attribute__((__nonnull__(a)))
+#    define __service_attribute_nonnull_all__   __attribute__((__nonnull__))
 #else
-#    define __opal_attribute_nonnull__(a)
-#    define __opal_attribute_nonnull_all__
+#    define __service_attribute_nonnull__(a)
+#    define __service_attribute_nonnull_all__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_NORETURN
-#    define __opal_attribute_noreturn__      __attribute__((__noreturn__))
+#    define __service_attribute_noreturn__      __attribute__((__noreturn__))
 #else
-#    define __opal_attribute_noreturn__
+#    define __service_attribute_noreturn__
 #endif
 
 /* Use this __atribute__ on function-ptr declarations, only */
 #if OPAL_HAVE_ATTRIBUTE_NORETURN_FUNCPTR
-#    define __opal_attribute_noreturn_funcptr__  __attribute__((__noreturn__))
+#    define __service_attribute_noreturn_funcptr__  __attribute__((__noreturn__))
 #else
-#    define __opal_attribute_noreturn_funcptr__
+#    define __service_attribute_noreturn_funcptr__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_PACKED
-#    define __opal_attribute_packed__        __attribute__((__packed__))
+#    define __service_attribute_packed__        __attribute__((__packed__))
 #else
-#    define __opal_attribute_packed__
+#    define __service_attribute_packed__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_PURE
-#    define __opal_attribute_pure__          __attribute__((__pure__))
+#    define __service_attribute_pure__          __attribute__((__pure__))
 #else
-#    define __opal_attribute_pure__
+#    define __service_attribute_pure__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_SENTINEL
-#    define __opal_attribute_sentinel__      __attribute__((__sentinel__))
+#    define __service_attribute_sentinel__      __attribute__((__sentinel__))
 #else
-#    define __opal_attribute_sentinel__
+#    define __service_attribute_sentinel__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_UNUSED
-#    define __opal_attribute_unused__        __attribute__((__unused__))
+#    define __service_attribute_unused__        __attribute__((__unused__))
 #else
-#    define __opal_attribute_unused__
+#    define __service_attribute_unused__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_VISIBILITY
-#    define __opal_attribute_visibility__(a) __attribute__((__visibility__(a)))
+#    define __service_attribute_visibility__(a) __attribute__((__visibility__(a)))
 #else
-#    define __opal_attribute_visibility__(a)
+#    define __service_attribute_visibility__(a)
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_WARN_UNUSED_RESULT
-#    define __opal_attribute_warn_unused_result__ __attribute__((__warn_unused_result__))
+#    define __service_attribute_warn_unused_result__ __attribute__((__warn_unused_result__))
 #else
-#    define __opal_attribute_warn_unused_result__
+#    define __service_attribute_warn_unused_result__
 #endif
 
 #if OPAL_HAVE_ATTRIBUTE_WEAK_ALIAS
-#    define __opal_attribute_weak_alias__(a) __attribute__((__weak__, __alias__(a)))
+#    define __service_attribute_weak_alias__(a) __attribute__((__weak__, __alias__(a)))
 #else
-#    define __opal_attribute_weak_alias__(a)
+#    define __service_attribute_weak_alias__(a)
 #endif
 
 /***********************************************************************
@@ -260,8 +260,8 @@
 #  include "opal/win32/win_compat.h"
 #else
 #  if OPAL_C_HAVE_VISIBILITY
-#    define OPAL_DECLSPEC           __opal_attribute_visibility__("default")
-#    define OPAL_MODULE_DECLSPEC    __opal_attribute_visibility__("default")
+#    define OPAL_DECLSPEC           __service_attribute_visibility__("default")
+#    define OPAL_MODULE_DECLSPEC    __service_attribute_visibility__("default")
 #  else
 #    define OPAL_DECLSPEC
 #    define OPAL_MODULE_DECLSPEC
@@ -278,10 +278,10 @@
    including stdint.h */
 #define __STDC_LIMIT_MACROS
 #endif
-#include "opal_config.h"
+#include "service_config.h"
 #include <stdint.h>
 #else
-#include "opal_stdint.h"
+#include "service_stdint.h"
 #endif
 
 /***********************************************************************
@@ -409,19 +409,19 @@ typedef unsigned char bool;
 #    if defined(malloc)
 #        undef malloc
 #    endif
-#    define malloc(size) opal_malloc((size), __FILE__, __LINE__)
+#    define malloc(size) service_malloc((size), __FILE__, __LINE__)
 #    if defined(calloc)
 #        undef calloc
 #    endif
-#    define calloc(nmembers, size) opal_calloc((nmembers), (size), __FILE__, __LINE__)
+#    define calloc(nmembers, size) service_calloc((nmembers), (size), __FILE__, __LINE__)
 #    if defined(realloc)
 #        undef realloc
 #    endif
-#    define realloc(ptr, size) opal_realloc((ptr), (size), __FILE__, __LINE__)
+#    define realloc(ptr, size) service_realloc((ptr), (size), __FILE__, __LINE__)
 #    if defined(free)
 #        undef free
 #    endif
-#    define free(ptr) opal_free((ptr), __FILE__, __LINE__)
+#    define free(ptr) service_free((ptr), __FILE__, __LINE__)
 
 /*
  * If we're mem debugging, make the OPAL_DEBUG_ZERO resolve to memset
@@ -445,19 +445,19 @@ typedef unsigned char bool;
 #endif
 
 #ifndef HAVE_ASPRINTF
-# define asprintf opal_asprintf
+# define asprintf service_asprintf
 #endif
 
 #ifndef HAVE_SNPRINTF
-# define snprintf opal_snprintf
+# define snprintf service_snprintf
 #endif
 
 #ifndef HAVE_VASPRINTF
-# define vasprintf opal_vasprintf
+# define vasprintf service_vasprintf
 #endif
 
 #ifndef HAVE_VSNPRINTF
-# define vsnprintf opal_vsnprintf
+# define vsnprintf service_vsnprintf
 #endif
 
 /*
@@ -470,7 +470,7 @@ typedef unsigned char bool;
 #endif
 
 #include "opal/util/qsort.h"
-#define qsort opal_qsort
+#define qsort service_qsort
 #endif
 
 /*
@@ -499,7 +499,7 @@ static inline uint16_t ntohs(uint16_t netvar) { return netvar; }
 #endif
 
 /**
- * Because of the way we're using the opal_object inside Open MPI (i.e.
+ * Because of the way we're using the service_object inside Open MPI (i.e.
  * dynamic resolution at run-time to derive all objects from the basic
  * type), on Windows we have to build everything on C++ mode, simply
  * because the C mode does not support dynamic resolution in DLL. Therefore,
@@ -620,10 +620,10 @@ static inline uint16_t ntohs(uint16_t netvar) { return netvar; }
 
 #else
 
-/* For a similar reason to what is listed in opal_config_top.h, we
+/* For a similar reason to what is listed in service_config_top.h, we
    want to protect others from the autoconf/automake-generated
-   PACKAGE_<foo> macros in opal_config.h.  We can't put these undef's
-   directly in opal_config.h because they'll be turned into #defines'
+   PACKAGE_<foo> macros in service_config.h.  We can't put these undef's
+   directly in service_config.h because they'll be turned into #defines'
    via autoconf.  
 
    So put them here in case any only else includes OMPI/ORTE/OPAL's
