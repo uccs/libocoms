@@ -68,14 +68,9 @@ nobase_service_HEADERS = $(headers)
 nobase_service_HEADERS += libltdl/ltdl.h
 endif
 
-include class/Makefile.am
 include memoryhooks/Makefile.am
-include runtime/Makefile.am
 include threads/Makefile.am
 include mca/Makefile.am
-include win32/Makefile.am
-include tools/Makefile.am
-include dss/Makefile.am
 
 # Set the convenience library to be the same as the non-convenience
 # library, but a) it's marked as "noinst", so LT knows it's a
