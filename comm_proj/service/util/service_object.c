@@ -22,12 +22,12 @@
  * Implementation of service_object_t, the base opal foundation class
  */
 
-#include "service_config.h"
+#include "ccs_config.h"
 
 #include <stdio.h>
 
 #include "opal/sys/atomic.h"
-#include "opal/class/service_object.h"
+#include "service/util/service_object.h"
 #include "opal/constants.h"
 
 /*

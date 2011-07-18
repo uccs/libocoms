@@ -19,7 +19,7 @@
 #ifndef OPAL_TYPES_H
 #define OPAL_TYPES_H
 
-#include "service_config.h"
+#include "ccs_config.h"
 
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
@@ -54,7 +54,7 @@ typedef union {
        uint32_t uval;
        uint32_t lval;
    } sval;
-} ompi_ptr_t;
+} ccs_ptr_t;
 
 /*
  * handle differences in iovec

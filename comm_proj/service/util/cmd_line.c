@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service_config.h"
+#include "ccs_config.h"
 
 #include <stdio.h>
 #ifdef HAVE_STRING_H
@@ -24,9 +24,9 @@
 #endif  /* HAVE_STRING_H */
 #include <ctype.h>
 
-#include "opal/class/service_object.h"
+#include "service/util/service_object.h"
 #include "opal/class/service_list.h"
-#include "opal/threads/mutex.h"
+#include "service/threads/mutex.h"
 #include "opal/util/argv.h"
 #include "opal/util/cmd_line.h"
 #include "opal/util/output.h"

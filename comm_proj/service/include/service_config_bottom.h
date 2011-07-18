@@ -17,17 +17,17 @@
  * 
  * $HEADER$
  *
- * This file is included at the bottom of service_config.h, and is
+ * This file is included at the bottom of ccs_config.h, and is
  * therefore a) after all the #define's that were output from
  * configure, and b) included in most/all files in Open MPI.
  *
- * Since this file is *only* ever included by service_config.h, and
- * service_config.h already has #ifndef/#endif protection, there is no
+ * Since this file is *only* ever included by ccs_config.h, and
+ * ccs_config.h already has #ifndef/#endif protection, there is no
  * need to #ifndef/#endif protection here.
  */
 
 #ifndef OPAL_CONFIG_H 
-#error "service_config_bottom.h should only be included from service_config.h"
+#error "service_config_bottom.h should only be included from ccs_config.h"
 #endif
 
 /*
@@ -278,7 +278,7 @@
    including stdint.h */
 #define __STDC_LIMIT_MACROS
 #endif
-#include "service_config.h"
+#include "ccs_config.h"
 #include <stdint.h>
 #else
 #include "service_stdint.h"
@@ -622,8 +622,8 @@ static inline uint16_t ntohs(uint16_t netvar) { return netvar; }
 
 /* For a similar reason to what is listed in service_config_top.h, we
    want to protect others from the autoconf/automake-generated
-   PACKAGE_<foo> macros in service_config.h.  We can't put these undef's
-   directly in service_config.h because they'll be turned into #defines'
+   PACKAGE_<foo> macros in ccs_config.h.  We can't put these undef's
+   directly in ccs_config.h because they'll be turned into #defines'
    via autoconf.  
 
    So put them here in case any only else includes OMPI/ORTE/OPAL's

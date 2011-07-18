@@ -110,11 +110,11 @@
 #ifndef CCS_CMD_LINE_H
 #define CCS_CMD_LINE_H
 
-#include "service_config.h"
+#include "ccs_config.h"
 
-#include "opal/class/service_object.h"
+#include "service/util/service_object.h"
 #include "opal/class/service_list.h"
-#include "opal/threads/mutex.h"
+#include "service/threads/mutex.h"
 
 BEGIN_C_DECLS
     /**

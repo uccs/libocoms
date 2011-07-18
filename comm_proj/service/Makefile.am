@@ -71,6 +71,7 @@ endif
 include memoryhooks/Makefile.am
 include threads/Makefile.am
 include mca/Makefile.am
+include util/Makefile.am
 
 # Set the convenience library to be the same as the non-convenience
 # library, but a) it's marked as "noinst", so LT knows it's a

@@ -27,7 +27,7 @@
 #include "service/threads/condition.h"
 #if 0
 #include "opal/prefetch.h"
-#include "opal/threads/condition.h"
+#include "service/threads/condition.h"
 #include "ompi/constants.h"
 #include "opal/runtime/opal.h"
 #endif

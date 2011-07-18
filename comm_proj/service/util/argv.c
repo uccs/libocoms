@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service_config.h"
+#include "ccs_config.h"
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif  /* HAVE_STDLIB_H */

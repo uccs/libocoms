@@ -6,17 +6,17 @@
  * 
  * $HEADER$
  *
- * This file is included at the top of service_config.h, and is
+ * This file is included at the top of ccs_config.h, and is
  * therefore a) before all the #define's that were output from
  * configure, and b) included in most/all files in Open MPI.
  *
- * Since this file is *only* ever included by service_config.h, and
- * service_config.h already has #ifndef/#endif protection, there is no
+ * Since this file is *only* ever included by ccs_config.h, and
+ * ccs_config.h already has #ifndef/#endif protection, there is no
  * need to #ifndef/#endif protection here.
  */
 
 #ifndef OPAL_CONFIG_H 
-#error "service_config_top.h should only be included from service_config.h"
+#error "service_config_top.h should only be included from ccs_config.h"
 #endif
 
 /* The only purpose of this file is to undef the PACKAGE_<foo> macros
@@ -26,7 +26,7 @@
    you'll get a preprocessor conflict.  So put these undef's here to
    protect us from other package's PACKAGE_<foo> macros.  
 
-   Note that we can't put them directly in service_config.h (e.g., via
+   Note that we can't put them directly in ccs_config.h (e.g., via
    AH_TOP) because they will be turned into #define's by autoconf. */
 
 #undef PACKAGE_BUGREPORT

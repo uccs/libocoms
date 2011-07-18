@@ -45,7 +45,7 @@
 #ifndef OPAL_SYS_ATOMIC_H
 #define OPAL_SYS_ATOMIC_H 1
 
-#include "service_config.h"
+#include "ccs_config.h"
 
 #include "opal/sys/architecture.h"
 

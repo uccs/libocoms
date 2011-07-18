@@ -25,7 +25,7 @@
 #ifndef OPAL_SYS_TIMER_H
 #define OPAL_SYS_TIMER_H 1
 
-#include "service_config.h"
+#include "ccs_config.h"
 
 #include "opal/sys/architecture.h"
 

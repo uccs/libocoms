@@ -18,7 +18,7 @@
 
 #include "ccs_config.h"
 
-#include "opal/threads/condition.h"
+#include "service/threads/condition.h"
 
 
 static void service_condition_construct(service_condition_t *c)
