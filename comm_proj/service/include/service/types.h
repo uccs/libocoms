@@ -16,8 +16,8 @@
  * $HEADER$
  */
 
-#ifndef OPAL_TYPES_H
-#define OPAL_TYPES_H
+#ifndef CCS_TYPES_H
+#define CCS_TYPES_H
 
 #include "ccs_config.h"
 
@@ -37,8 +37,8 @@
 #include <arpa/inet.h>
 #endif
 
-#if OPAL_ENABLE_DEBUG
-#include "opal/util/output.h"
+#if CCS_ENABLE_DEBUG
+#include "service/util/output.h"
 #endif
 
 
@@ -137,7 +137,7 @@ static inline uint64_t ompi_ptr_ptol( void* ptr )
 static inline void* ompi_ptr_ltop( uint64_t value ) __service_attribute_const__;
 static inline void* ompi_ptr_ltop( uint64_t value )
 {
-#if SIZEOF_VOID_P == 4 && OPAL_ENABLE_DEBUG
+#if SIZEOF_VOID_P == 4 && CCS_ENABLE_DEBUG
     if (value > ((1ULL << 32) - 1ULL)) {
         service_output(0, "Warning: truncating value in ompi_ptr_ltop");
     }
@@ -202,4 +202,4 @@ static inline uint64_t service_swap_bytes8(uint64_t val)
 #define service_swap_bytes8 hton64
 #endif /* WORDS_BIGENDIAN || !HAVE_UNIX_BYTESWAP */
 
-#endif /* OPAL_TYPES_H */
+#endif /* CCS_TYPES_H */

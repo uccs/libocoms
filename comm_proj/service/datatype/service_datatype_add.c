@@ -22,8 +22,8 @@
 
 #include <stddef.h>
 
-#include "opal/constants.h"
-#include "opal/util/output.h"
+#include "service/include/service/constants.h"
+#include "service/util/output.h"
 #include "opal/datatype/ccs_datatype.h"
 #include "opal/datatype/service_datatype_internal.h"
 
@@ -57,7 +57,7 @@ static inline int  IMIN( int a, int b ) { return ( a < b ? a : b ); }
                 /* The data-type contain too many elements. We will be unable \
                  * to handle it, so let's just complain by now. \
                  */ \
-                ccs_output( 0, "Too many elements in the datatype. The limit is %ud\n", \
+                service_output( 0, "Too many elements in the datatype. The limit is %ud\n", \
                              MAX_DT_COMPONENT_COUNT ); \
                 return CCS_ERROR; \
             } \

@@ -12,8 +12,8 @@
  * a .in file...
  * ---------------------------------------------------------------------------
  */
-#ifndef OPAL_PORTABLE_PLATFORM_H
-#define OPAL_PORTABLE_PLATFORM_H
+#ifndef CCS_PORTABLE_PLATFORM_H
+#define CCS_PORTABLE_PLATFORM_H
 
 /* All files in this directory and all sub-directories (except where otherwise noted)
  * are subject to the following licensing terms:
@@ -398,4 +398,4 @@
 #endif
 
 
-#endif /* OPAL_PORTABLE_PLATFORM_H */
+#endif /* CCS_PORTABLE_PLATFORM_H */

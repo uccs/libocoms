@@ -23,7 +23,7 @@
  * On alpha, everything is load-locked, store-conditional...
  */
 
-#if OPAL_WANT_SMP_LOCKS
+#if CCS_WANT_SMP_LOCKS
 
 #define MB()  __asm__ __volatile__ ("mb");
 #define RMB() __asm__ __volatile__ ("mb");
@@ -43,11 +43,11 @@
  * Define constants for PowerPC 32
  *
  *********************************************************************/
-#define OPAL_HAVE_ATOMIC_MEM_BARRIER 1
+#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_32 1
+#define CCS_HAVE_ATOMIC_CMPSET_32 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_64 1
+#define CCS_HAVE_ATOMIC_CMPSET_64 1
 
 
 /**********************************************************************

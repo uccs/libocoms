@@ -20,8 +20,8 @@
  * gathered by configure.
  */
 
-#ifndef OPAL_STDINT_H
-#define OPAL_STDINT_H 1
+#ifndef CCS_STDINT_H
+#define CCS_STDINT_H 1
 
 /*
  * Include what we can and define what is missing.
@@ -321,5 +321,5 @@ typedef unsigned long long uintptr_t;
 # endif
 #endif
 
-#endif /* OPAL_STDINT_H */
+#endif /* CCS_STDINT_H */
 

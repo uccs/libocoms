@@ -32,10 +32,10 @@
  * Define constants for IA64
  *
  *********************************************************************/
-#define OPAL_HAVE_ATOMIC_MEM_BARRIER 1
+#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_32 1
-#define OPAL_HAVE_ATOMIC_CMPSET_64 1
+#define CCS_HAVE_ATOMIC_CMPSET_32 1
+#define CCS_HAVE_ATOMIC_CMPSET_64 1
 
 /**********************************************************************
  *

@@ -30,7 +30,7 @@
 
 #include "opal/prefetch.h"
 #include "opal/util/arch.h"
-#include "opal/util/output.h"
+#include "service/util/output.h"
 
 #include "opal/datatype/service_datatype_internal.h"
 #include "opal/datatype/ccs_datatype.h"
@@ -141,7 +141,7 @@ service_convertor_master_t* service_convertor_find_or_create_master( uint32_t re
     } else if( service_arch_checkmask( &master->remote_arch, CCS_ARCH_BOOLIS32 ) ) {
         remote_sizes[CCS_DATATYPE_BOOL] = 4;
     } else {
-        ccs_output( 0, "Unknown sizeof(bool) for the remote architecture\n" );
+        service_output( 0, "Unknown sizeof(bool) for the remote architecture\n" );
     }
 
     /**
@@ -678,17 +678,17 @@ void service_convertor_dump( service_convertor_t* convertor )
 void service_datatype_dump_stack( const dt_stack_t* pStack, int stack_pos,
                                const union dt_elem_desc* pDesc, const char* name )
 {
-    ccs_output( 0, "\nStack %p stack_pos %d name %s\n", (void*)pStack, stack_pos, name );
+    service_output( 0, "\nStack %p stack_pos %d name %s\n", (void*)pStack, stack_pos, name );
     for( ; stack_pos >= 0; stack_pos-- ) {
-        ccs_output( 0, "%d: pos %d count %d disp %ld ", stack_pos, pStack[stack_pos].index,
+        service_output( 0, "%d: pos %d count %d disp %ld ", stack_pos, pStack[stack_pos].index,
                      (int)pStack[stack_pos].count, (long)pStack[stack_pos].disp );
         if( pStack->index != -1 )
-            ccs_output( 0, "\t[desc count %d disp %ld extent %ld]\n",
+            service_output( 0, "\t[desc count %d disp %ld extent %ld]\n",
                          pDesc[pStack[stack_pos].index].elem.count,
                          (long)pDesc[pStack[stack_pos].index].elem.disp,
                          (long)pDesc[pStack[stack_pos].index].elem.extent );
         else
-            ccs_output( 0, "\n" );
+            service_output( 0, "\n" );
     }
-    ccs_output( 0, "\n" );
+    service_output( 0, "\n" );
 }

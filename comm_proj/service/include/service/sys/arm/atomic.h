@@ -21,7 +21,7 @@
 #ifndef OMPI_SYS_ARCH_ATOMIC_H
 #define OMPI_SYS_ARCH_ATOMIC_H 1
 
-#if OPAL_WANT_SMP_LOCKS
+#if CCS_WANT_SMP_LOCKS
 
 #define MB()  __asm__ __volatile__ ("dmb" : : : "memory")
 #define RMB() __asm__ __volatile__ ("dmb" : : : "memory")
@@ -41,15 +41,15 @@
  * Define constants for ARMv7
  *
  *********************************************************************/
-#define OPAL_HAVE_ATOMIC_MEM_BARRIER 1
+#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_32 1
+#define CCS_HAVE_ATOMIC_CMPSET_32 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_64 1
+#define CCS_HAVE_ATOMIC_CMPSET_64 1
 
-#define OPAL_HAVE_ATOMIC_MATH_32 1
-#define OPAL_HAVE_ATOMIC_ADD_32 1
-#define OPAL_HAVE_ATOMIC_SUB_32 1
+#define CCS_HAVE_ATOMIC_MATH_32 1
+#define CCS_HAVE_ATOMIC_ADD_32 1
+#define CCS_HAVE_ATOMIC_SUB_32 1
 
 
 /**********************************************************************

@@ -26,7 +26,7 @@
  * need to #ifndef/#endif protection here.
  */
 
-#ifndef OPAL_CONFIG_H 
+#ifndef CCS_CONFIG_H 
 #error "service_config_bottom.h should only be included from ccs_config.h"
 #endif
 
@@ -67,7 +67,7 @@
  **********************************************************************/
 
 /* Do we have posix or solaris thread lib */
-#define OPAL_HAVE_THREADS (OPAL_HAVE_POSIX_THREADS || OPAL_HAVE_SOLARIS_THREADS)
+#define CCS_HAVE_THREADS (CCS_HAVE_POSIX_THREADS || CCS_HAVE_SOLARIS_THREADS)
 
 /*
  * BEGIN_C_DECLS should be used at the beginning of your declarations,
@@ -88,7 +88,7 @@
  * The attribute definition should be included before any potential
  * usage.
  */
-#if OPAL_HAVE_ATTRIBUTE_ALIGNED
+#if CCS_HAVE_ATTRIBUTE_ALIGNED
 #    define __service_attribute_aligned__(a)    __attribute__((__aligned__(a)))
 #    define __service_attribute_aligned_max__   __attribute__((__aligned__))
 #else
@@ -96,68 +96,68 @@
 #    define __service_attribute_aligned_max__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_ALWAYS_INLINE
+#if CCS_HAVE_ATTRIBUTE_ALWAYS_INLINE
 #    define __service_attribute_always_inline__ __attribute__((__always_inline__))
 #else
 #    define __service_attribute_always_inline__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_COLD
+#if CCS_HAVE_ATTRIBUTE_COLD
 #    define __service_attribute_cold__          __attribute__((__cold__))
 #else
 #    define __service_attribute_cold__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_CONST
+#if CCS_HAVE_ATTRIBUTE_CONST
 #    define __service_attribute_const__         __attribute__((__const__))
 #else
 #    define __service_attribute_const__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_DEPRECATED
+#if CCS_HAVE_ATTRIBUTE_DEPRECATED
 #    define __service_attribute_deprecated__    __attribute__((__deprecated__))
 #else
 #    define __service_attribute_deprecated__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_FORMAT
+#if CCS_HAVE_ATTRIBUTE_FORMAT
 #    define __service_attribute_format__(a,b,c) __attribute__((__format__(a, b, c)))
 #else
 #    define __service_attribute_format__(a,b,c)
 #endif
 
 /* Use this __atribute__ on function-ptr declarations, only */
-#if OPAL_HAVE_ATTRIBUTE_FORMAT_FUNCPTR
+#if CCS_HAVE_ATTRIBUTE_FORMAT_FUNCPTR
 #    define __service_attribute_format_funcptr__(a,b,c) __attribute__((__format__(a, b, c)))
 #else
 #    define __service_attribute_format_funcptr__(a,b,c)
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_HOT
+#if CCS_HAVE_ATTRIBUTE_HOT
 #    define __service_attribute_hot__           __attribute__((__hot__))
 #else
 #    define __service_attribute_hot__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_MALLOC
+#if CCS_HAVE_ATTRIBUTE_MALLOC
 #    define __service_attribute_malloc__        __attribute__((__malloc__))
 #else
 #    define __service_attribute_malloc__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_MAY_ALIAS
+#if CCS_HAVE_ATTRIBUTE_MAY_ALIAS
 #    define __service_attribute_may_alias__     __attribute__((__may_alias__))
 #else
 #    define __service_attribute_may_alias__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_NO_INSTRUMENT_FUNCTION
+#if CCS_HAVE_ATTRIBUTE_NO_INSTRUMENT_FUNCTION
 #    define __service_attribute_no_instrument_function__  __attribute__((__no_instrument_function__))
 #else
 #    define __service_attribute_no_instrument_function__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_NONNULL
+#if CCS_HAVE_ATTRIBUTE_NONNULL
 #    define __service_attribute_nonnull__(a)    __attribute__((__nonnull__(a)))
 #    define __service_attribute_nonnull_all__   __attribute__((__nonnull__))
 #else
@@ -165,56 +165,56 @@
 #    define __service_attribute_nonnull_all__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_NORETURN
+#if CCS_HAVE_ATTRIBUTE_NORETURN
 #    define __service_attribute_noreturn__      __attribute__((__noreturn__))
 #else
 #    define __service_attribute_noreturn__
 #endif
 
 /* Use this __atribute__ on function-ptr declarations, only */
-#if OPAL_HAVE_ATTRIBUTE_NORETURN_FUNCPTR
+#if CCS_HAVE_ATTRIBUTE_NORETURN_FUNCPTR
 #    define __service_attribute_noreturn_funcptr__  __attribute__((__noreturn__))
 #else
 #    define __service_attribute_noreturn_funcptr__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_PACKED
+#if CCS_HAVE_ATTRIBUTE_PACKED
 #    define __service_attribute_packed__        __attribute__((__packed__))
 #else
 #    define __service_attribute_packed__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_PURE
+#if CCS_HAVE_ATTRIBUTE_PURE
 #    define __service_attribute_pure__          __attribute__((__pure__))
 #else
 #    define __service_attribute_pure__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_SENTINEL
+#if CCS_HAVE_ATTRIBUTE_SENTINEL
 #    define __service_attribute_sentinel__      __attribute__((__sentinel__))
 #else
 #    define __service_attribute_sentinel__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_UNUSED
+#if CCS_HAVE_ATTRIBUTE_UNUSED
 #    define __service_attribute_unused__        __attribute__((__unused__))
 #else
 #    define __service_attribute_unused__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_VISIBILITY
+#if CCS_HAVE_ATTRIBUTE_VISIBILITY
 #    define __service_attribute_visibility__(a) __attribute__((__visibility__(a)))
 #else
 #    define __service_attribute_visibility__(a)
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_WARN_UNUSED_RESULT
+#if CCS_HAVE_ATTRIBUTE_WARN_UNUSED_RESULT
 #    define __service_attribute_warn_unused_result__ __attribute__((__warn_unused_result__))
 #else
 #    define __service_attribute_warn_unused_result__
 #endif
 
-#if OPAL_HAVE_ATTRIBUTE_WEAK_ALIAS
+#if CCS_HAVE_ATTRIBUTE_WEAK_ALIAS
 #    define __service_attribute_weak_alias__(a) __attribute__((__weak__, __alias__(a)))
 #else
 #    define __service_attribute_weak_alias__(a)
@@ -234,37 +234,37 @@
 #if defined(__WINDOWS__)
 
 #  if defined(_USRDLL)    /* building shared libraries (.DLL) */
-#    if defined(OPAL_EXPORTS)
-#      define OPAL_DECLSPEC        __declspec(dllexport)
-#      define OPAL_MODULE_DECLSPEC
+#    if defined(CCS_EXPORTS)
+#      define CCS_DECLSPEC        __declspec(dllexport)
+#      define CCS_MODULE_DECLSPEC
 #    else
-#      if defined(OPAL_IMPORTS)
-#        define OPAL_DECLSPEC      __declspec(dllimport)
+#      if defined(CCS_IMPORTS)
+#        define CCS_DECLSPEC      __declspec(dllimport)
 #      else
-#        define OPAL_DECLSPEC
-#      endif  /*defined(OPAL_IMPORTS)*/
-#      if defined(OPAL_MODULE_EXPORTS)
-#        define OPAL_MODULE_DECLSPEC __declspec(dllexport)
+#        define CCS_DECLSPEC
+#      endif  /*defined(CCS_IMPORTS)*/
+#      if defined(CCS_MODULE_EXPORTS)
+#        define CCS_MODULE_DECLSPEC __declspec(dllexport)
 #      else
-#        define OPAL_MODULE_DECLSPEC __declspec(dllimport)
-#      endif  /* defined(OPAL_MODULE_EXPORTS) */
-#    endif  /* defined(OPAL_EXPORTS) */
+#        define CCS_MODULE_DECLSPEC __declspec(dllimport)
+#      endif  /* defined(CCS_MODULE_EXPORTS) */
+#    endif  /* defined(CCS_EXPORTS) */
 #  else          /* building static library */
-#    if defined(OPAL_IMPORTS)
-#      define OPAL_DECLSPEC        __declspec(dllimport)
+#    if defined(CCS_IMPORTS)
+#      define CCS_DECLSPEC        __declspec(dllimport)
 #    else
-#      define OPAL_DECLSPEC
-#    endif  /* defined(OPAL_IMPORTS) */
-#    define OPAL_MODULE_DECLSPEC
+#      define CCS_DECLSPEC
+#    endif  /* defined(CCS_IMPORTS) */
+#    define CCS_MODULE_DECLSPEC
 #  endif  /* defined(_USRDLL) */
 #  include "opal/win32/win_compat.h"
 #else
-#  if OPAL_C_HAVE_VISIBILITY
-#    define OPAL_DECLSPEC           __service_attribute_visibility__("default")
-#    define OPAL_MODULE_DECLSPEC    __service_attribute_visibility__("default")
+#  if CCS_C_HAVE_VISIBILITY
+#    define CCS_DECLSPEC           __service_attribute_visibility__("default")
+#    define CCS_MODULE_DECLSPEC    __service_attribute_visibility__("default")
 #  else
-#    define OPAL_DECLSPEC
-#    define OPAL_MODULE_DECLSPEC
+#    define CCS_DECLSPEC
+#    define CCS_MODULE_DECLSPEC
 #  endif
 #endif  /* defined(__WINDOWS__) */
 
@@ -294,17 +294,17 @@
 #if OMPI_BUILDING
 
 #ifndef HAVE_PTRDIFF_T
-typedef OPAL_PTRDIFF_TYPE ptrdiff_t;
+typedef CCS_PTRDIFF_TYPE ptrdiff_t;
 #endif
 
 /*
  * If we're in C, we may need to bring in the bool type and true/false
- * constants.  OPAL_NEED_C_BOOL will be true if the compiler either
+ * constants.  CCS_NEED_C_BOOL will be true if the compiler either
  * needs <stdbool.h> or doesn't define the bool type at all.
  */
 #if !(defined(c_plusplus) || defined(__cplusplus))
-#    if OPAL_NEED_C_BOOL
-#        if OPAL_USE_STDBOOL_H
+#    if CCS_NEED_C_BOOL
+#        if CCS_USE_STDBOOL_H
              /* If we're using <stdbool.h>, there is an implicit
                 assumption that the C++ bool is the same size and has
                 the same alignment.  However, configure may have
@@ -327,15 +327,15 @@ typedef OPAL_PTRDIFF_TYPE ptrdiff_t;
                 alignment */
 #            define false 0
 #            define true 1
-#            if SIZEOF_BOOL == SIZEOF_CHAR && OPAL_ALIGNMENT_CXX_BOOL == OPAL_ALIGNMENT_CHAR
+#            if SIZEOF_BOOL == SIZEOF_CHAR && CCS_ALIGNMENT_CXX_BOOL == CCS_ALIGNMENT_CHAR
 typedef unsigned char bool;
-#            elif SIZEOF_BOOL == SIZEOF_SHORT && OPAL_ALIGNMENT_CXX_BOOL == OPAL_ALIGNMENT_SHORT
+#            elif SIZEOF_BOOL == SIZEOF_SHORT && CCS_ALIGNMENT_CXX_BOOL == CCS_ALIGNMENT_SHORT
 typedef short bool;
-#            elif SIZEOF_BOOL == SIZEOF_INT && OPAL_ALIGNMENT_CXX_BOOL == OPAL_ALIGNMENT_INT
+#            elif SIZEOF_BOOL == SIZEOF_INT && CCS_ALIGNMENT_CXX_BOOL == CCS_ALIGNMENT_INT
 typedef int bool;
-#            elif SIZEOF_BOOL == SIZEOF_LONG && OPAL_ALIGNMENT_CXX_BOOL == OPAL_ALIGNMENT_LONG
+#            elif SIZEOF_BOOL == SIZEOF_LONG && CCS_ALIGNMENT_CXX_BOOL == CCS_ALIGNMENT_LONG
 typedef long bool;
-#            elif defined(SIZEOF_LONG_LONG) && defined(OPAL_ALIGNMENT_LONG) && SIZEOF_BOOL == SIZEOF_LONG && OPAL_ALIGNMENT_CXX_BOOL == OPAL_ALIGNMENT_LONG
+#            elif defined(SIZEOF_LONG_LONG) && defined(CCS_ALIGNMENT_LONG) && SIZEOF_BOOL == SIZEOF_LONG && CCS_ALIGNMENT_CXX_BOOL == CCS_ALIGNMENT_LONG
 typedef long long bool;
              /* If we have _Bool, use that */
 #            elif SIZEOF__BOOL > 0
@@ -348,8 +348,8 @@ typedef long long bool;
 typedef unsigned char bool;
 #                define SIZEOF_BOOL 1
 #            endif
-#        endif  /* OPAL_USE_STDBOOL_H */
-#    endif  /* OPAL_NEED_C_BOOL */
+#        endif  /* CCS_USE_STDBOOL_H */
+#    endif  /* CCS_NEED_C_BOOL */
 #endif
 
 /*
@@ -360,22 +360,22 @@ typedef unsigned char bool;
 #include <sys/param.h>
 #endif
 #if defined(PATH_MAX)
-#define OPAL_PATH_MAX	(PATH_MAX + 1)
+#define CCS_PATH_MAX	(PATH_MAX + 1)
 #elif defined(_POSIX_PATH_MAX)
-#define OPAL_PATH_MAX	(_POSIX_PATH_MAX + 1)
+#define CCS_PATH_MAX	(_POSIX_PATH_MAX + 1)
 #else
-#define OPAL_PATH_MAX	256
+#define CCS_PATH_MAX	256
 #endif
 
 /*
  * Set the compile-time path-separator on this system and variable separator
  */
 #ifdef __WINDOWS__
-#define OPAL_PATH_SEP "\\"
-#define OPAL_ENV_SEP  ';'
+#define CCS_PATH_SEP "\\"
+#define CCS_ENV_SEP  ';'
 #else
-#define OPAL_PATH_SEP "/"
-#define OPAL_ENV_SEP  ':'
+#define CCS_PATH_SEP "/"
+#define CCS_ENV_SEP  ':'
 #endif
 
 
@@ -398,7 +398,7 @@ typedef unsigned char bool;
  * this stuff enabled (like the memory manager code) a way to turn us
  * off
  */
-#if OPAL_ENABLE_MEM_DEBUG && !defined(OPAL_DISABLE_ENABLE_MEM_DEBUG)
+#if CCS_ENABLE_MEM_DEBUG && !defined(CCS_DISABLE_ENABLE_MEM_DEBUG)
 
 /* It is safe to include opal/util/malloc.h here because a) it will only
    happen when we are building OMPI and therefore have a full OMPI
@@ -424,12 +424,12 @@ typedef unsigned char bool;
 #    define free(ptr) service_free((ptr), __FILE__, __LINE__)
 
 /*
- * If we're mem debugging, make the OPAL_DEBUG_ZERO resolve to memset
+ * If we're mem debugging, make the CCS_DEBUG_ZERO resolve to memset
  */
 #    include <string.h>
-#    define OPAL_DEBUG_ZERO(obj) memset(&(obj), 0, sizeof(obj))
+#    define CCS_DEBUG_ZERO(obj) memset(&(obj), 0, sizeof(obj))
 #else
-#    define OPAL_DEBUG_ZERO(obj)
+#    define CCS_DEBUG_ZERO(obj)
 #endif
 
 /*
@@ -464,7 +464,7 @@ typedef unsigned char bool;
  * Some platforms (Solaris) have a broken qsort implementation.  Work
  * around by using our own.
  */
-#if OPAL_HAVE_BROKEN_QSORT
+#if CCS_HAVE_BROKEN_QSORT
 #ifdef qsort
 #undef qsort
 #endif
@@ -523,9 +523,9 @@ static inline uint16_t ntohs(uint16_t netvar) { return netvar; }
  * complain about int to bool conversions is the Microsoft compiler.
  */
 #if defined(__WINDOWS__)
-#  define OPAL_INT_TO_BOOL(VALUE)  ((VALUE) != 0 ? true : false)
+#  define CCS_INT_TO_BOOL(VALUE)  ((VALUE) != 0 ? true : false)
 #else
-#  define OPAL_INT_TO_BOOL(VALUE)  (bool)(VALUE)
+#  define CCS_INT_TO_BOOL(VALUE)  (bool)(VALUE)
 #endif  /* defined(__WINDOWS__) */
 
 /**
@@ -533,10 +533,10 @@ static inline uint16_t ntohs(uint16_t netvar) { return netvar; }
  * b) the underlying system supports ipv6.  Having one #define for
  * this makes it simpler to check throughout the code base.
  */
-#if OPAL_ENABLE_IPV6 && defined(HAVE_STRUCT_SOCKADDR_IN6)
-#define OPAL_WANT_IPV6 1
+#if CCS_ENABLE_IPV6 && defined(HAVE_STRUCT_SOCKADDR_IN6)
+#define CCS_WANT_IPV6 1
 #else
-#define OPAL_WANT_IPV6 0
+#define CCS_WANT_IPV6 0
 #endif
 
 #if !defined(HAVE_STRUCT_SOCKADDR_STORAGE) && defined(HAVE_STRUCT_SOCKADDR_IN)

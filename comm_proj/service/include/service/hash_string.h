@@ -15,8 +15,8 @@
  *
  */
 
-#ifndef OPAL_HASH_STRING_H
-#define OPAL_HASH_STRING_H
+#ifndef CCS_HASH_STRING_H
+#define CCS_HASH_STRING_H
 
 /**
  *  Compute the hash value and the string length simultaneously
@@ -25,7 +25,7 @@
  *  @param hash (OUT)   Where the hash value will be stored (uint32_t)
  *  @param length (OUT) The computed length of the string (uint32_t)
  */
-#define OPAL_HASH_STRLEN( str, hash, length ) \
+#define CCS_HASH_STRLEN( str, hash, length ) \
     do {                                      \
         register const char *_str = (str);    \
         register uint32_t    _hash = 0;       \
@@ -50,7 +50,7 @@
  *  @param str (IN)     The string which will be parsed   (char*)
  *  @param hash (OUT)   Where the hash value will be stored (uint32_t)
  */
-#define OPAL_HASH_STR( str, hash )            \
+#define CCS_HASH_STR( str, hash )            \
     do {                                      \
         register const char *_str = (str);    \
         register uint32_t    _hash = 0;       \
@@ -66,4 +66,4 @@
         (hash) = (_hash + (_hash << 15));     \
     } while(0)
 
-#endif  /* OPAL_HASH_STRING_H */
+#endif  /* CCS_HASH_STRING_H */

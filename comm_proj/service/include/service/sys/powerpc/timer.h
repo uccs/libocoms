@@ -39,13 +39,13 @@ service_sys_timer_get_cycles(void)
     return (((unsigned long long)tbu0) << 32) | tbl;
 }
 
-#define OPAL_HAVE_SYS_TIMER_GET_CYCLES 1
+#define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
 
 #else
 
 service_timer_t service_sys_timer_get_cycles(void);
 
-#define OPAL_HAVE_SYS_TIMER_GET_CYCLES 1
+#define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
 
 #endif /* OMPI_GCC_INLINE_ASSEMBLY */
 

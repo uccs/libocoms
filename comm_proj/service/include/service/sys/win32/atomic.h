@@ -29,7 +29,7 @@
  * Memory Barriers
  *
  *********************************************************************/
-#define OPAL_HAVE_ATOMIC_MEM_BARRIER 1
+#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
 
 static inline void service_atomic_mb(void)
 {    
@@ -58,7 +58,7 @@ static inline void service_atomic_wmb(void)
  *
  *********************************************************************/
 
-#define OPAL_HAVE_ATOMIC_CMPSET_32 1
+#define CCS_HAVE_ATOMIC_CMPSET_32 1
 static inline int service_atomic_cmpset_acq_32( volatile int32_t *addr,
                                              int32_t oldval, int32_t newval)
 {
@@ -95,16 +95,16 @@ static inline int service_atomic_cmpset_32( volatile int32_t *addr,
    return (oldval == ret) ? 1: 0;
 }
 
-#define OPAL_HAVE_ATOMIC_MATH_32 1
+#define CCS_HAVE_ATOMIC_MATH_32 1
 
-#define OPAL_HAVE_ATOMIC_ADD_32 1
+#define CCS_HAVE_ATOMIC_ADD_32 1
 static inline int32_t service_atomic_add_32(volatile int32_t *addr, int32_t delta)
 {
    return InterlockedExchangeAdd ((LONG volatile *) addr,
                                   (LONG) delta);
 }
 
-#define OPAL_HAVE_ATOMIC_SUB_32 1
+#define CCS_HAVE_ATOMIC_SUB_32 1
 static inline int32_t service_atomic_sub_32(volatile int32_t *addr, int32_t delta)
 {
    return InterlockedExchangeAdd( (LONG volatile *) addr,
@@ -112,7 +112,7 @@ static inline int32_t service_atomic_sub_32(volatile int32_t *addr, int32_t delt
 }
 
 #if HAVE_INTERLOCKEDCOMPAREEXCHANGE64
-#define OPAL_HAVE_ATOMIC_CMPSET_64 1
+#define CCS_HAVE_ATOMIC_CMPSET_64 1
 static inline int service_atomic_cmpset_acq_64( volatile int64_t *addr,
                                              int64_t oldval, int64_t newval)
 {
@@ -151,15 +151,15 @@ static inline int service_atomic_cmpset_64( volatile int64_t *addr,
     return (oldval == ret) ? 1: 0;
 }
 
-#define OPAL_HAVE_ATOMIC_MATH_64 1
-#define OPAL_HAVE_ATOMIC_ADD_64 1
+#define CCS_HAVE_ATOMIC_MATH_64 1
+#define CCS_HAVE_ATOMIC_ADD_64 1
 static inline int64_t service_atomic_add_64(volatile int64_t *addr, int64_t delta)
 {
     return InterlockedExchangeAdd64 ((int64_t volatile *) addr,
                                      (int64_t) delta);
 }
 
-#define OPAL_HAVE_ATOMIC_SUB_64 1
+#define CCS_HAVE_ATOMIC_SUB_64 1
 static inline int64_t service_atomic_sub_64(volatile int64_t *addr, int64_t delta)
 {
     return InterlockedExchangeAdd64 ((int64_t volatile *) addr,
@@ -168,10 +168,10 @@ static inline int64_t service_atomic_sub_64(volatile int64_t *addr, int64_t delt
 
 #else
 
-#define OPAL_HAVE_ATOMIC_CMPSET_64 0
-#define OPAL_HAVE_ATOMIC_MATH_64 0
-#define OPAL_HAVE_ATOMIC_ADD_64 0
-#define OPAL_HAVE_ATOMIC_SUB_64 0
+#define CCS_HAVE_ATOMIC_CMPSET_64 0
+#define CCS_HAVE_ATOMIC_MATH_64 0
+#define CCS_HAVE_ATOMIC_ADD_64 0
+#define CCS_HAVE_ATOMIC_SUB_64 0
 
 #endif  /* HAVE_INTERLOCKEDCOMPAREEXCHANGE64 */
 

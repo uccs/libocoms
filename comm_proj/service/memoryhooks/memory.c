@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "opal_config.h"
+#include "ccs_config.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -25,11 +25,11 @@
 #include <sys/mman.h>
 #endif  /* HAVE_SYS_MMAN_H */
 
-#include "opal/constants.h"
+#include "service/include/service/constants.h"
 #include "opal/memoryhooks/memory.h"
 #include "opal/memoryhooks/memory_internal.h"
 #include "opal/class/opal_list.h"
-#include "opal/class/opal_object.h"
+#include "service/util/service_object.h"
 #include "opal/sys/atomic.h"
 
 /* 
@@ -57,14 +57,14 @@ opal_mem_hooks_init(void)
 {
     OBJ_CONSTRUCT(&release_cb_list, opal_list_t);
 
-    opal_atomic_init(&release_lock, OPAL_ATOMIC_UNLOCKED);
+    opal_atomic_init(&release_lock, CCS_ATOMIC_UNLOCKED);
 
     /* delay running callbacks until there is something in the
        registration */
     release_run_callbacks = false;
     opal_atomic_mb();
 
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -90,7 +90,7 @@ opal_mem_hooks_finalize(void)
 
     opal_atomic_unlock(&release_lock);
 
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -147,10 +147,10 @@ opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, void *cbdata
 {
     opal_list_item_t *item;
     callback_list_item_t *cbitem, *new_cbitem;
-    int ret = OPAL_SUCCESS;
+    int ret = CCS_SUCCESS;
 
-    if (0 == ((OPAL_MEMORY_FREE_SUPPORT|OPAL_MEMORY_MUNMAP_SUPPORT) & hooks_support)) {
-        return OPAL_ERR_NOT_SUPPORTED;
+    if (0 == ((CCS_MEMORY_FREE_SUPPORT|CCS_MEMORY_MUNMAP_SUPPORT) & hooks_support)) {
+        return CCS_ERR_NOT_SUPPORTED;
     }
 
     /* pre-allocate a callback item on the assumption it won't be
@@ -158,7 +158,7 @@ opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, void *cbdata
        call alloc / realloc */
     new_cbitem = OBJ_NEW(callback_list_item_t);
     if (NULL == new_cbitem) {
-        ret = OPAL_ERR_OUT_OF_RESOURCE;
+        ret = CCS_ERR_OUT_OF_RESOURCE;
         goto done;
     }
 
@@ -176,7 +176,7 @@ opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, void *cbdata
         cbitem = (callback_list_item_t*) item;
 
         if (cbitem->cbfunc == func) {
-            ret = OPAL_EXISTS;
+            ret = CCS_EXISTS;
             goto done;
         }
     }
@@ -189,7 +189,7 @@ opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, void *cbdata
  done:
     opal_atomic_unlock(&release_lock);
 
-    if (OPAL_EXISTS == ret && NULL != new_cbitem) {
+    if (CCS_EXISTS == ret && NULL != new_cbitem) {
         OBJ_RELEASE(new_cbitem);
     }
 
@@ -203,7 +203,7 @@ opal_mem_hooks_unregister_release(opal_mem_hooks_callback_fn_t* func)
     opal_list_item_t *item;
     opal_list_item_t *found_item = NULL;
     callback_list_item_t *cbitem;
-    int ret = OPAL_ERR_NOT_FOUND;
+    int ret = CCS_ERR_NOT_FOUND;
 
     opal_atomic_lock(&release_lock);
 
@@ -216,7 +216,7 @@ opal_mem_hooks_unregister_release(opal_mem_hooks_callback_fn_t* func)
         if (cbitem->cbfunc == func) {
             opal_list_remove_item(&release_cb_list, item);
             found_item = item;
-            ret = OPAL_SUCCESS;
+            ret = CCS_SUCCESS;
             break;
         }
     }

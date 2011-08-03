@@ -28,6 +28,6 @@ service_sys_timer_get_cycles(void)
     return ret;
 }
 
-#define OPAL_HAVE_SYS_TIMER_GET_CYCLES 1
+#define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
 
 #endif /* ! OMPI_SYS_ARCH_TIMER_H */

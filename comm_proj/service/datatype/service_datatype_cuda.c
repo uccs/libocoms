@@ -14,8 +14,8 @@
 #include <cuda.h>
 
 #include "opal/align.h"
-#include "opal/mca/base/mca_base_param.h"
-#include "opal/util/output.h"
+#include "service/mca/mca_base_param.h"
+#include "service/util/output.h"
 #include "orte/util/show_help.h"
 #include "opal/datatype/ccs_convertor.h"
 #include "opal/datatype/service_datatype_cuda.h"
@@ -84,7 +84,7 @@ void *service_cuda_memcpy(void *dest, void *src, size_t size)
     int res;
     res = cuMemcpy((CUdeviceptr)dest, (CUdeviceptr)src, size);
     if (res != CUDA_SUCCESS) {
-        ccs_output(0, "CUDA: Error in cuMemcpy: res=%d, dest=%p, src=%p, size=%d",
+        service_output(0, "CUDA: Error in cuMemcpy: res=%d, dest=%p, src=%p, size=%d",
                     res, dest, src, (int)size);
         abort();
     } else {
@@ -104,13 +104,13 @@ void *service_cuda_memmove(void *dest, void *src, size_t size)
     res = cuMemAlloc(&tmp,size);
     res = cuMemcpy(tmp, (CUdeviceptr) src, size);
     if(res != CUDA_SUCCESS){
-        ccs_output(0, "CUDA: memmove-Error in cuMemcpy: res=%d, dest=%p, src=%p, size=%d",
+        service_output(0, "CUDA: memmove-Error in cuMemcpy: res=%d, dest=%p, src=%p, size=%d",
                     res, (void *)tmp, src, (int)size);
         abort();
     }
     res = cuMemcpy((CUdeviceptr) dest, tmp, size);
     if(res != CUDA_SUCCESS){
-        ccs_output(0, "CUDA: memmove-Error in cuMemcpy: res=%d, dest=%p, src=%p, size=%d",
+        service_output(0, "CUDA: memmove-Error in cuMemcpy: res=%d, dest=%p, src=%p, size=%d",
                     res, dest, (void *)tmp, (int)size);
         abort();
     }
@@ -136,18 +136,18 @@ static void service_cuda_support_init(void)
     id = mca_base_param_reg_int_name("opal", "cuda_verbose", 
                                      "Set level of opal cuda verbosity",
                                      false, false, 0, &service_cuda_verbose);
-    service_cuda_output = ccs_output_open(NULL);
-    ccs_output_set_verbosity(service_cuda_output, service_cuda_verbose);
+    service_cuda_output = service_output_open(NULL);
+    service_output_set_verbosity(service_cuda_output, service_cuda_verbose);
 
     /* Check to see if this process is running in a CUDA context.  If so,
      * all is good.  Currently, just print out a message in verbose mode
      * to help with debugging. */
     res = cuCtxGetCurrent(&cuContext);
     if (CUDA_SUCCESS != res) {
-        ccs_output_verbose(10, service_cuda_output,
+        service_output_verbose(10, service_cuda_output,
                             "CUDA: cuCtxGetCurrent failed, CUDA device pointers will not work");
     } else {
-        ccs_output_verbose(10, service_cuda_output,
+        service_output_verbose(10, service_cuda_output,
                             "CUDA: cuCtxGetCurrent succeeded, CUDA device pointers will work");
     }
 

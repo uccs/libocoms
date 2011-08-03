@@ -20,8 +20,8 @@
  * List of supported architectures
  */
 
-#ifndef OPAL_SYS_ARCHITECTURE_H
-#define OPAL_SYS_ARCHITECTURE_H
+#ifndef CCS_SYS_ARCHITECTURE_H
+#define CCS_SYS_ARCHITECTURE_H
 
 /* Architectures */
 #define OMPI_UNSUPPORTED    0000
@@ -44,4 +44,4 @@
 #define OMPI_PPC_LINUX      1002  /* Linux on PowerPC */
 #define OMPI_AIX            1003  /* AIX on Power / PowerPC */
 
-#endif /* #ifndef OPAL_SYS_ARCHITECTURE_H */
+#endif /* #ifndef CCS_SYS_ARCHITECTURE_H */

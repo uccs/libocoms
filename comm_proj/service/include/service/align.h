@@ -19,11 +19,11 @@
  * $HEADER$
  */
 
-#ifndef OPAL_ALIGN_H
-#define OPAL_ALIGN_H
+#ifndef CCS_ALIGN_H
+#define CCS_ALIGN_H
 
-#define OPAL_ALIGN(x,a,t) (((x)+((t)(a)-1)) & ~(((t)(a)-1)))
-#define OPAL_ALIGN_PTR(x,a,t) ((t)OPAL_ALIGN((uintptr_t)x, a, uintptr_t))
-#define OPAL_ALIGN_PAD_AMOUNT(x,s) ((~((uintptr_t)(x))+1) & ((uintptr_t)(s)-1))
+#define CCS_ALIGN(x,a,t) (((x)+((t)(a)-1)) & ~(((t)(a)-1)))
+#define CCS_ALIGN_PTR(x,a,t) ((t)CCS_ALIGN((uintptr_t)x, a, uintptr_t))
+#define CCS_ALIGN_PAD_AMOUNT(x,s) ((~((uintptr_t)(x))+1) & ((uintptr_t)(s)-1))
 
-#endif /* OPAL_ALIGN_H */
+#endif /* CCS_ALIGN_H */

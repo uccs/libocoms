@@ -57,7 +57,7 @@ static void service_list_item_construct(service_list_item_t *item)
 {
     item->service_list_next = item->service_list_prev = NULL;
     item->item_free = 1;
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
     item->service_list_item_refcount = 0;
     item->service_list_item_belong_to = NULL;
 #endif
@@ -65,10 +65,10 @@ static void service_list_item_construct(service_list_item_t *item)
 
 static void service_list_item_destruct(service_list_item_t *item)
 {
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
     assert( 0 == item->service_list_item_refcount );
     assert( NULL == item->service_list_item_belong_to );
-#endif  /* OPAL_ENABLE_DEBUG */
+#endif  /* CCS_ENABLE_DEBUG */
 }
 
 
@@ -80,7 +80,7 @@ static void service_list_item_destruct(service_list_item_t *item)
 
 static void service_list_construct(service_list_t *list)
 {
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
     /* These refcounts should never be used in assertions because they
        should never be removed from this list, added to another list,
        etc.  So set them to sentinel values. */
@@ -123,7 +123,7 @@ bool service_list_insert(service_list_t *list, service_list_item_t *item, long l
     {
         service_list_prepend(list, item);
     } else {
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
         /* Spot check: ensure that this item is previously on no
            lists */
 
@@ -140,7 +140,7 @@ bool service_list_insert(service_list_t *list, service_list_item_t *item, long l
         next->service_list_prev = item;
         ptr->service_list_next = item;
 
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
         /* Spot check: ensure this item is only on the list that we
            just insertted it into */
 
@@ -173,7 +173,7 @@ service_list_transfer(service_list_item_t *pos, service_list_item_t *begin,
         pos->service_list_prev = end->service_list_prev;
         end->service_list_prev = begin->service_list_prev;
         begin->service_list_prev = tmp;
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
         {
             volatile service_list_item_t* item = begin;
             while( pos != item ) {
@@ -182,7 +182,7 @@ service_list_transfer(service_list_item_t *pos, service_list_item_t *begin,
                 assert(NULL != item);
             }
         }
-#endif  /* OPAL_ENABLE_DEBUG */
+#endif  /* CCS_ENABLE_DEBUG */
     }
 }
 
@@ -235,13 +235,13 @@ int service_list_sort(service_list_t* list, service_list_item_compare_fn_t compa
     size_t i, index=0;
 
     if (0 == list->service_list_length) {
-        return OPAL_SUCCESS;
+        return CCS_SUCCESS;
     }
     items = (service_list_item_t**)malloc(sizeof(service_list_item_t*) * 
                                        list->service_list_length);
 
     if (NULL == items) {
-        return OPAL_ERR_OUT_OF_RESOURCE;
+        return CCS_ERR_OUT_OF_RESOURCE;
     }
 
     while(NULL != (item = service_list_remove_first(list))) {
@@ -254,5 +254,5 @@ int service_list_sort(service_list_t* list, service_list_item_compare_fn_t compa
         service_list_append(list,items[i]);
     }
     free(items);
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }

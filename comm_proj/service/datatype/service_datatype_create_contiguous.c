@@ -20,7 +20,7 @@
  */
 
 #include "ccs_config.h"
-#include "opal/constants.h"
+#include "service/include/service/constants.h"
 #include "opal/datatype/ccs_datatype.h"
 #include "opal/datatype/service_datatype_internal.h"
 

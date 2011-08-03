@@ -52,7 +52,7 @@ static inline void pack_predefined_data( service_convertor_t* CONVERTOR,
         /* the extent and the size of the basic datatype are equal */
         CCS_DATATYPE_SAFEGUARD_POINTER( _source, _copy_blength, (CONVERTOR)->pBaseBuf,
                                     (CONVERTOR)->pDesc, (CONVERTOR)->count );
-        DO_DEBUG( ccs_output( 0, "pack 1. memcpy( %p, %p, %lu ) => space %lu\n",
+        DO_DEBUG( service_output( 0, "pack 1. memcpy( %p, %p, %lu ) => space %lu\n",
                                *(DESTINATION), _source, (unsigned long)_copy_blength, (unsigned long)(*(SPACE)) ); );
         MEMCPY_CSUM( *(DESTINATION), _source, _copy_blength, (CONVERTOR) );
         _source        += _copy_blength;
@@ -62,7 +62,7 @@ static inline void pack_predefined_data( service_convertor_t* CONVERTOR,
         for( _i = 0; _i < _copy_count; _i++ ) {
             CCS_DATATYPE_SAFEGUARD_POINTER( _source, _copy_blength, (CONVERTOR)->pBaseBuf,
                                         (CONVERTOR)->pDesc, (CONVERTOR)->count );
-            DO_DEBUG( ccs_output( 0, "pack 2. memcpy( %p, %p, %lu ) => space %lu\n",
+            DO_DEBUG( service_output( 0, "pack 2. memcpy( %p, %p, %lu ) => space %lu\n",
                                    *(DESTINATION), _source, (unsigned long)_copy_blength, (unsigned long)(*(SPACE) - (_i * _copy_blength)) ); );
             MEMCPY_CSUM( *(DESTINATION), _source, _copy_blength, (CONVERTOR) );
             *(DESTINATION) += _copy_blength;
@@ -93,7 +93,7 @@ static inline void pack_contiguous_loop( service_convertor_t* CONVERTOR,
     for( _i = 0; _i < _copy_loops; _i++ ) {
         CCS_DATATYPE_SAFEGUARD_POINTER( _source, _end_loop->size, (CONVERTOR)->pBaseBuf,
                                     (CONVERTOR)->pDesc, (CONVERTOR)->count );
-        DO_DEBUG( ccs_output( 0, "pack 3. memcpy( %p, %p, %lu ) => space %lu\n",
+        DO_DEBUG( service_output( 0, "pack 3. memcpy( %p, %p, %lu ) => space %lu\n",
                                *(DESTINATION), _source, (unsigned long)_end_loop->size, (unsigned long)(*(SPACE) - _i * _end_loop->size) ); );
         MEMCPY_CSUM( *(DESTINATION), _source, _end_loop->size, (CONVERTOR) );
         *(DESTINATION) += _end_loop->size;

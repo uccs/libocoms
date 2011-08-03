@@ -24,7 +24,7 @@
  * On ia32, we use cmpxchg.
  */
 
-#if OPAL_WANT_SMP_LOCKS
+#if CCS_WANT_SMP_LOCKS
 #define SMPLOCK "lock; "
 #define MB() __asm__ __volatile__("": : :"memory")
 #else
@@ -38,18 +38,18 @@
  * Define constants for IA32
  *
  *********************************************************************/
-#define OPAL_HAVE_ATOMIC_MEM_BARRIER 1
+#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_32 1
+#define CCS_HAVE_ATOMIC_CMPSET_32 1
 
-#define OPAL_HAVE_ATOMIC_MATH_32 1
-#define OPAL_HAVE_ATOMIC_ADD_32 1
-#define OPAL_HAVE_ATOMIC_SUB_32 1
+#define CCS_HAVE_ATOMIC_MATH_32 1
+#define CCS_HAVE_ATOMIC_ADD_32 1
+#define CCS_HAVE_ATOMIC_SUB_32 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_64 1
+#define CCS_HAVE_ATOMIC_CMPSET_64 1
 
-#undef OPAL_HAVE_INLINE_ATOMIC_CMPSET_64
-#define OPAL_HAVE_INLINE_ATOMIC_CMPSET_64 0
+#undef CCS_HAVE_INLINE_ATOMIC_CMPSET_64
+#define CCS_HAVE_INLINE_ATOMIC_CMPSET_64 0
 
 /**********************************************************************
  *

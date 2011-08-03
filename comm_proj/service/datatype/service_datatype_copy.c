@@ -28,7 +28,7 @@
 #include <stdlib.h>
 
 #include "opal/prefetch.h"
-#include "opal/util/output.h"
+#include "service/util/output.h"
 #include "opal/datatype/ccs_datatype.h"
 #include "opal/datatype/ccs_convertor.h"
 #include "opal/datatype/service_datatype_internal.h"
@@ -108,7 +108,7 @@ int32_t service_datatype_copy_content_same_ddt( const service_datatype_t* dataty
     bool cuda_device_bufs = service_cuda_check_bufs(destination_base, source_base);
 #endif
 
-    DO_DEBUG( ccs_output( 0, "service_datatype_copy_content_same_ddt( %p, %d, dst %p, src %p )\n",
+    DO_DEBUG( service_output( 0, "service_datatype_copy_content_same_ddt( %p, %d, dst %p, src %p )\n",
                            (void*)datatype, count, destination_base, source_base ); );
 
     /* empty data ? then do nothing. This should normally be trapped

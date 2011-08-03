@@ -15,7 +15,7 @@
  * need to #ifndef/#endif protection here.
  */
 
-#ifndef OPAL_CONFIG_H 
+#ifndef CCS_CONFIG_H 
 #error "service_config_top.h should only be included from ccs_config.h"
 #endif
 

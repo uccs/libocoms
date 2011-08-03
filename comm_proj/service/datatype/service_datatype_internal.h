@@ -34,24 +34,24 @@
 #endif
 
 #if defined(VERBOSE)
-#include "opal/util/output.h"
+#include "service/util/output.h"
 
 extern int service_datatype_dfd;
 
 #  define DDT_DUMP_STACK( PSTACK, STACK_POS, PDESC, NAME ) \
      service_datatype_dump_stack( (PSTACK), (STACK_POS), (PDESC), (NAME) )
 #  if defined(ACCEPT_C99)
-#    define DUMP( ARGS... )          ccs_output(service_datatype_dfd, __VA_ARGS__)
+#    define DUMP( ARGS... )          service_output(service_datatype_dfd, __VA_ARGS__)
 #  else
 #    if defined(__GNUC__) && !defined(__STDC__)
-#      define DUMP(ARGS...)          ccs_output( service_datatype_dfd, ARGS)
+#      define DUMP(ARGS...)          service_output( service_datatype_dfd, ARGS)
 #  else
 static inline void DUMP( char* fmt, ... )
 {
    va_list list;
 
    va_start( list, fmt );
-   ccs_output( service_datatype_dfd, fmt, list );
+   service_output( service_datatype_dfd, fmt, list );
    va_end( list );
 }
 #      define DUMP                   printf
@@ -568,7 +568,7 @@ do { \
             ((PDATA)->ub - (PDATA)->lb) * ((COUNT) - 1);                \
         if( ((ACTPTR) < __lower_bound) || ((ACTPTR) >= __upper_bound) ) { \
             service_datatype_safeguard_pointer_debug_breakpoint( (ACTPTR), (LENGTH), (INITPTR), (PDATA), (COUNT) ); \
-            ccs_output( 0, "%s:%d\n\tPointer %p size %lu is outside [%p,%p] for\n\tbase ptr %p count %d and data \n", \
+            service_output( 0, "%s:%d\n\tPointer %p size %lu is outside [%p,%p] for\n\tbase ptr %p count %d and data \n", \
                          __FILE__, __LINE__, (ACTPTR), (unsigned long)(LENGTH), __lower_bound, __upper_bound, \
                          (INITPTR), (COUNT) );                          \
             service_datatype_dump( (PDATA) );                                   \

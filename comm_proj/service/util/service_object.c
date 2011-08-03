@@ -28,7 +28,7 @@
 
 #include "opal/sys/atomic.h"
 #include "service/util/service_object.h"
-#include "opal/constants.h"
+#include "service/include/service/constants.h"
 
 /*
  * Instantiation of class descriptor for the base class.  This is
@@ -50,7 +50,7 @@ service_class_t service_object_t_class = {
 /*
  * Local variables
  */
-static service_atomic_lock_t class_lock = { { OPAL_ATOMIC_UNLOCKED } };
+static service_atomic_lock_t class_lock = { { CCS_ATOMIC_UNLOCKED } };
 static void** classes = NULL;
 static int num_classes = 0;
 static int max_classes = 0;
@@ -179,7 +179,7 @@ int service_class_finalize(void)
         max_classes = 0;
     }
 
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 

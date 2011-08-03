@@ -24,7 +24,7 @@
  * On powerpc ...
  */
 
-#if OPAL_WANT_SMP_LOCKS
+#if CCS_WANT_SMP_LOCKS
 
 #define MB()  __asm__ __volatile__ ("sync" : : : "memory")
 #define RMB() __asm__ __volatile__ ("lwsync" : : : "memory")
@@ -48,17 +48,17 @@
  * Define constants for PowerPC 32
  *
  *********************************************************************/
-#define OPAL_HAVE_ATOMIC_MEM_BARRIER 1
+#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_32 1
+#define CCS_HAVE_ATOMIC_CMPSET_32 1
 
-#define OPAL_HAVE_ATOMIC_MATH_32 1
-#define OPAL_HAVE_ATOMIC_ADD_32 1
-#define OPAL_HAVE_ATOMIC_SUB_32 1
+#define CCS_HAVE_ATOMIC_MATH_32 1
+#define CCS_HAVE_ATOMIC_ADD_32 1
+#define CCS_HAVE_ATOMIC_SUB_32 1
 
 
-#if (OPAL_ASSEMBLY_ARCH == OMPI_POWERPC64) || OPAL_ASM_SUPPORT_64BIT
-#define OPAL_HAVE_ATOMIC_CMPSET_64 1
+#if (CCS_ASSEMBLY_ARCH == OMPI_POWERPC64) || CCS_ASM_SUPPORT_64BIT
+#define CCS_HAVE_ATOMIC_CMPSET_64 1
 #endif
 
 
@@ -97,8 +97,8 @@ void service_atomic_wmb(void)
  * containing the right hex for the instructions).
  */
 
-#undef OPAL_HAVE_INLINE_ATOMIC_MEM_BARRIER
-#define OPAL_HAVE_INLINE_ATOMIC_MEM_BARRIER 0
+#undef CCS_HAVE_INLINE_ATOMIC_MEM_BARRIER
+#define CCS_HAVE_INLINE_ATOMIC_MEM_BARRIER 0
 
 #pragma mc_func service_atomic_mb { "7c0004ac" }          /* sync  */
 #pragma reg_killed_by service_atomic_mb                   /* none */
@@ -164,7 +164,7 @@ static inline int service_atomic_cmpset_rel_32(volatile int32_t *addr,
 #endif /* OMPI_GCC_INLINE_ASSEMBLY */
 
 
-#if (OPAL_ASSEMBLY_ARCH == OMPI_POWERPC64)
+#if (CCS_ASSEMBLY_ARCH == OMPI_POWERPC64)
 
 #if  OMPI_GCC_INLINE_ASSEMBLY
 static inline int service_atomic_cmpset_64(volatile int64_t *addr,
@@ -212,7 +212,7 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
 
 #endif /* OMPI_GCC_INLINE_ASSEMBLY */
 
-#elif (OPAL_ASSEMBLY_ARCH == OMPI_POWERPC32) && OPAL_ASM_SUPPORT_64BIT
+#elif (CCS_ASSEMBLY_ARCH == OMPI_POWERPC32) && CCS_ASM_SUPPORT_64BIT
 
 #ifndef ll_low /* GLIBC provides these somewhere, so protect */
 #define ll_low(x)       *(((unsigned int*)&(x))+0)
@@ -283,7 +283,7 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
 
 #endif /* OMPI_GCC_INLINE_ASSEMBLY */
 
-#endif /* OPAL_ASM_SUPPORT_64BIT */
+#endif /* CCS_ASM_SUPPORT_64BIT */
 
 
 #if OMPI_GCC_INLINE_ASSEMBLY

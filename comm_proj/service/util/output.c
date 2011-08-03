@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "opal_config.h"
+#include "ccs_config.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -35,15 +35,15 @@
 #endif
 
 #include "opal/util/opal_environ.h"
-#include "opal/util/output.h"
+#include "service/util/output.h"
 #include "opal/threads/mutex.h"
-#include "opal/constants.h"
+#include "service/include/service/constants.h"
 
 /*
  * Private data
  */
 static int verbose_stream = -1;
-static opal_output_stream_t verbose;
+static service_stream_t verbose;
 static char *output_dir = NULL;
 static char *output_prefix = NULL;
 
@@ -84,8 +84,8 @@ typedef struct {
 /*
  * Private functions
  */
-static void construct(opal_object_t *stream);
-static int do_open(int output_id, opal_output_stream_t * lds);
+static void construct(service_object_t *stream);
+static int do_open(int output_id, service_stream_t * lds);
 static int open_file(int i);
 static void free_descriptor(int output_id);
 static int make_string(char **no_newline_string, output_desc_t *ldi, 
@@ -93,7 +93,7 @@ static int make_string(char **no_newline_string, output_desc_t *ldi,
 static int output(int output_id, const char *format, va_list arglist);
 
 
-#define OPAL_OUTPUT_MAX_STREAMS 64
+#define CCS_OUTPUT_MAX_STREAMS 64
 #if defined(__WINDOWS__) || defined(HAVE_SYSLOG)
 #define USE_SYSLOG 1
 #else
@@ -101,27 +101,27 @@ static int output(int output_id, const char *format, va_list arglist);
 #endif
 
 /* global state */
-bool opal_output_redirected_to_syslog = false;
-int opal_output_redirected_syslog_pri;
+bool service_redirected_to_syslog = false;
+int service_redirected_syslog_pri;
 
 /*
  * Local state
  */
 static bool initialized = false;
 static int default_stderr_fd = -1;
-static output_desc_t info[OPAL_OUTPUT_MAX_STREAMS];
+static output_desc_t info[CCS_OUTPUT_MAX_STREAMS];
 static char *temp_str = 0;
 static size_t temp_str_len = 0;
 static opal_mutex_t mutex;
 static bool syslog_opened = false;
 static char *redirect_syslog_ident = NULL;
 
-OBJ_CLASS_INSTANCE(opal_output_stream_t, opal_object_t, construct, NULL);
+OBJ_CLASS_INSTANCE(service_stream_t, service_object_t, construct, NULL);
 
 /*
  * Setup the output stream infrastructure
  */
-bool opal_output_init(void)
+bool service_output_init(void)
 {
     int i;
     char hostname[32];
@@ -131,46 +131,46 @@ bool opal_output_init(void)
         return true;
     }
 
-    str = getenv("OPAL_OUTPUT_STDERR_FD");
+    str = getenv("CCS_OUTPUT_STDERR_FD");
     if (NULL != str) {
         default_stderr_fd = atoi(str);
     }
-    str = getenv("OPAL_OUTPUT_REDIRECT");
+    str = getenv("CCS_OUTPUT_REDIRECT");
     if (NULL != str) {
         if (0 == strcasecmp(str, "syslog")) {
-            opal_output_redirected_to_syslog = true;
+            service_redirected_to_syslog = true;
         }
     }
-    str = getenv("OPAL_OUTPUT_SYSLOG_PRI");
+    str = getenv("CCS_OUTPUT_SYSLOG_PRI");
     if (NULL != str) {
         if (0 == strcasecmp(str, "info")) {
-            opal_output_redirected_syslog_pri = LOG_INFO;
+            service_redirected_syslog_pri = LOG_INFO;
         } else if (0 == strcasecmp(str, "error")) {
-            opal_output_redirected_syslog_pri = LOG_ERR;
+            service_redirected_syslog_pri = LOG_ERR;
         } else if (0 == strcasecmp(str, "warn")) {
-            opal_output_redirected_syslog_pri = LOG_WARNING;
+            service_redirected_syslog_pri = LOG_WARNING;
         } else {
-            opal_output_redirected_syslog_pri = LOG_ERR;
+            service_redirected_syslog_pri = LOG_ERR;
         }
     } else {
-        opal_output_redirected_syslog_pri = LOG_ERR;
+        service_redirected_syslog_pri = LOG_ERR;
     }
 
-    str = getenv("OPAL_OUTPUT_SYSLOG_IDENT");
+    str = getenv("CCS_OUTPUT_SYSLOG_IDENT");
     if (NULL != str) {
         redirect_syslog_ident = strdup(str);
     }
 
-    OBJ_CONSTRUCT(&verbose, opal_output_stream_t);
+    OBJ_CONSTRUCT(&verbose, service_stream_t);
 #if defined(__WINDOWS__)
     {
         WSADATA wsaData;
         WSAStartup( MAKEWORD(2,2), &wsaData );
     }
 #endif  /* defined(__WINDOWS__) */
-    if (opal_output_redirected_to_syslog) {
+    if (service_redirected_to_syslog) {
         verbose.lds_want_syslog = true;
-        verbose.lds_syslog_priority = opal_output_redirected_syslog_pri;
+        verbose.lds_syslog_priority = service_redirected_syslog_pri;
         if (NULL != str) {
             verbose.lds_syslog_ident = strdup(redirect_syslog_ident);
         }
@@ -182,11 +182,11 @@ bool opal_output_init(void)
     gethostname(hostname, sizeof(hostname));
     asprintf(&verbose.lds_prefix, "[%s:%05d] ", hostname, getpid());
 
-    for (i = 0; i < OPAL_OUTPUT_MAX_STREAMS; ++i) {
+    for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
         info[i].ldi_used = false;
         info[i].ldi_enabled = false;
 
-        info[i].ldi_syslog = opal_output_redirected_to_syslog;
+        info[i].ldi_syslog = service_redirected_to_syslog;
         info[i].ldi_file = false;
         info[i].ldi_file_suffix = NULL;
         info[i].ldi_file_want_append = false;
@@ -205,7 +205,7 @@ bool opal_output_init(void)
     output_dir = strdup(opal_tmp_directory());
 
     /* Open the default verbose stream */
-    verbose_stream = opal_output_open(&verbose);
+    verbose_stream = service_open(&verbose);
     return true;
 }
 
@@ -213,7 +213,7 @@ bool opal_output_init(void)
 /*
  * Open a stream
  */
-int opal_output_open(opal_output_stream_t * lds)
+int service_open(service_stream_t * lds)
 {
     return do_open(-1, lds);
 }
@@ -222,7 +222,7 @@ int opal_output_open(opal_output_stream_t * lds)
 /*
  * Reset the parameters on a stream
  */
-int opal_output_reopen(int output_id, opal_output_stream_t * lds)
+int service_reopen(int output_id, service_stream_t * lds)
 {
     return do_open(output_id, lds);
 }
@@ -231,17 +231,17 @@ int opal_output_reopen(int output_id, opal_output_stream_t * lds)
 /*
  * Enable and disable output streams
  */
-bool opal_output_switch(int output_id, bool enable)
+bool service_switch(int output_id, bool enable)
 {
     bool ret = false;
 
     /* Setup */
 
     if (!initialized) {
-        opal_output_init();
+        service_output_init();
     }
 
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS) {
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS) {
         ret = info[output_id].ldi_enabled;
         info[output_id].ldi_enabled = enable;
     }
@@ -253,12 +253,12 @@ bool opal_output_switch(int output_id, bool enable)
 /*
  * Reopen all the streams; used during checkpoint/restart.
  */
-void opal_output_reopen_all(void)
+void service_reopen_all(void)
 {
     char *str;
     char hostname[32];
 
-    str = getenv("OPAL_OUTPUT_STDERR_FD");
+    str = getenv("CCS_OUTPUT_STDERR_FD");
     if (NULL != str) {
         default_stderr_fd = atoi(str);
     } else {
@@ -273,9 +273,9 @@ void opal_output_reopen_all(void)
     asprintf(&verbose.lds_prefix, "[%s:%05d] ", hostname, getpid());
 #if 0
     int i;
-    opal_output_stream_t lds;
+    service_stream_t lds;
 
-    for (i = 0; i < OPAL_OUTPUT_MAX_STREAMS; ++i) {
+    for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
 
         /* scan till we find ldi_used == 0, which is the end-marker */
 
@@ -284,7 +284,7 @@ void opal_output_reopen_all(void)
         }
 
         /* 
-         * set this to zero to ensure that opal_output_open will
+         * set this to zero to ensure that service_open will
          * return this same index as the output stream id
          */
         info[i].ldi_used = false;
@@ -306,10 +306,10 @@ void opal_output_reopen_all(void)
         lds.lds_file_suffix = info[i].ldi_file_suffix;
 
         /* 
-         * call opal_output_open to open the stream. The return value
+         * call service_open to open the stream. The return value
          * is guaranteed to be i.  So we can ignore it.
          */
-        opal_output_open(&lds);
+        service_open(&lds);
     }
 #endif
 }
@@ -318,7 +318,7 @@ void opal_output_reopen_all(void)
 /*
  * Close a stream
  */
-void opal_output_close(int output_id)
+void service_close(int output_id)
 {
     int i;
 
@@ -331,21 +331,21 @@ void opal_output_close(int output_id)
     /* If it's valid, used, enabled, and has an open file descriptor,
      * free the resources associated with the descriptor */
 
-    OPAL_THREAD_LOCK(&mutex);
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS &&
+    CCS_THREAD_LOCK(&mutex);
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_used && info[output_id].ldi_enabled) {
         free_descriptor(output_id);
 
         /* If no one has the syslog open, we should close it */
         
-        for (i = 0; i < OPAL_OUTPUT_MAX_STREAMS; ++i) {
+        for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
             if (info[i].ldi_used && info[i].ldi_syslog) {
                 break;
             }
         }
 
 #if defined(HAVE_SYSLOG)
-        if (i >= OPAL_OUTPUT_MAX_STREAMS && syslog_opened) {
+        if (i >= CCS_OUTPUT_MAX_STREAMS && syslog_opened) {
             closelog();
         }
 #elif defined(__WINDOWS__)
@@ -362,16 +362,16 @@ void opal_output_close(int output_id)
         temp_str = NULL;
         temp_str_len = 0;
     }
-    OPAL_THREAD_UNLOCK(&mutex);
+    CCS_THREAD_UNLOCK(&mutex);
 }
 
 
 /*
  * Main function to send output to a stream
  */
-void opal_output(int output_id, const char *format, ...)
+void service(int output_id, const char *format, ...)
 {
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS) {
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS) {
         va_list arglist;
         va_start(arglist, format);
         output(output_id, format, arglist);
@@ -383,9 +383,9 @@ void opal_output(int output_id, const char *format, ...)
 /*
  * Send a message to a stream if the verbose level is high enough
  */
-void opal_output_verbose(int level, int output_id, const char *format, ...)
+void service_verbose(int level, int output_id, const char *format, ...)
 {
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
         va_list arglist;
         va_start(arglist, format);
@@ -398,10 +398,10 @@ void opal_output_verbose(int level, int output_id, const char *format, ...)
 /*
  * Send a message to a stream if the verbose level is high enough
  */
-void opal_output_vverbose(int level, int output_id, const char *format, 
+void service_vverbose(int level, int output_id, const char *format, 
                           va_list arglist)
 {
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
         output(output_id, format, arglist);
     }
@@ -411,18 +411,18 @@ void opal_output_vverbose(int level, int output_id, const char *format,
 /*
  * Send a message to a string if the verbose level is high enough
  */
-char *opal_output_string(int level, int output_id, const char *format, ...)
+char *service_string(int level, int output_id, const char *format, ...)
 {
     int rc;
     char *ret = NULL;
 
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
         va_list arglist;
         va_start(arglist, format);
         rc = make_string(&ret, &info[output_id], format, arglist);
         va_end(arglist);
-        if (OPAL_SUCCESS != rc) {
+        if (CCS_SUCCESS != rc) {
             ret = NULL;
         }
     }
@@ -434,16 +434,16 @@ char *opal_output_string(int level, int output_id, const char *format, ...)
 /*
  * Send a message to a string if the verbose level is high enough
  */
-char *opal_output_vstring(int level, int output_id, const char *format,  
+char *service_vstring(int level, int output_id, const char *format,  
                           va_list arglist)
 {
     int rc;
     char *ret = NULL;
 
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
         rc = make_string(&ret, &info[output_id], format, arglist);
-        if (OPAL_SUCCESS != rc) {
+        if (CCS_SUCCESS != rc) {
             ret = NULL;
         }
     }
@@ -455,9 +455,9 @@ char *opal_output_vstring(int level, int output_id, const char *format,
 /*
  * Set the verbosity level of a stream
  */
-void opal_output_set_verbosity(int output_id, int level)
+void service_set_verbosity(int output_id, int level)
 {
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS) {
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS) {
         info[output_id].ldi_verbose_level = level;
     }
 }
@@ -466,7 +466,7 @@ void opal_output_set_verbosity(int output_id, int level)
 /*
  * Control where output flies will go
  */
-void opal_output_set_output_file_info(const char *dir,
+void service_set_output_file_info(const char *dir,
                                       const char *prefix,
                                       char **olddir,
                                       char **oldprefix)
@@ -492,11 +492,11 @@ void opal_output_set_output_file_info(const char *dir,
 /*
  * Shut down the output stream system
  */
-void opal_output_finalize(void)
+void service_finalize(void)
 {
     if (initialized) {
         if (verbose_stream != -1) {
-            opal_output_close(verbose_stream);
+            service_close(verbose_stream);
         }
         free(verbose.lds_prefix);
         verbose_stream = -1;
@@ -516,9 +516,9 @@ void opal_output_finalize(void)
 /*
  * Constructor
  */
-static void construct(opal_object_t *obj)
+static void construct(service_object_t *obj)
 {
-    opal_output_stream_t *stream = (opal_output_stream_t*) obj;
+    service_stream_t *stream = (service_stream_t*) obj;
 
     stream->lds_verbose_level = 0;
     stream->lds_syslog_priority = 0;
@@ -539,29 +539,29 @@ static void construct(opal_object_t *obj)
  * back-end function so that we can do the thread locking properly
  * (especially upon reopen).
  */
-static int do_open(int output_id, opal_output_stream_t * lds)
+static int do_open(int output_id, service_stream_t * lds)
 {
     int i;
 
     /* Setup */
 
     if (!initialized) {
-        opal_output_init();
+        service_output_init();
     }
 
     /* If output_id == -1, find an available stream, or return
-     * OPAL_ERROR */
+     * CCS_ERROR */
 
     if (-1 == output_id) {
-        OPAL_THREAD_LOCK(&mutex);
-        for (i = 0; i < OPAL_OUTPUT_MAX_STREAMS; ++i) {
+        CCS_THREAD_LOCK(&mutex);
+        for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
             if (!info[i].ldi_used) {
                 break;
             }
         }
-        if (i >= OPAL_OUTPUT_MAX_STREAMS) {
-            OPAL_THREAD_UNLOCK(&mutex);
-            return OPAL_ERR_OUT_OF_RESOURCE;
+        if (i >= CCS_OUTPUT_MAX_STREAMS) {
+            CCS_THREAD_UNLOCK(&mutex);
+            return CCS_ERR_OUT_OF_RESOURCE;
         }
     }
 
@@ -584,17 +584,17 @@ static int do_open(int output_id, opal_output_stream_t * lds)
 
     info[i].ldi_used = true;
     if (-1 == output_id) {
-        OPAL_THREAD_UNLOCK(&mutex);
+        CCS_THREAD_UNLOCK(&mutex);
     }
     info[i].ldi_enabled = lds->lds_is_debugging ?
-        (bool) OPAL_ENABLE_DEBUG : true;
+        (bool) CCS_ENABLE_DEBUG : true;
     info[i].ldi_verbose_level = lds->lds_verbose_level;
 
 #if USE_SYSLOG
 #if defined(HAVE_SYSLOG)
-    if (opal_output_redirected_to_syslog) {
+    if (service_redirected_to_syslog) {
         info[i].ldi_syslog = true;
-        info[i].ldi_syslog_priority = opal_output_redirected_syslog_pri;
+        info[i].ldi_syslog_priority = service_redirected_syslog_pri;
         if (NULL != redirect_syslog_ident) {
             info[i].ldi_syslog_ident = strdup(redirect_syslog_ident);
             openlog(redirect_syslog_ident, LOG_PID, LOG_USER);
@@ -620,7 +620,7 @@ static int do_open(int output_id, opal_output_stream_t * lds)
             if (NULL == (info[i].ldi_syslog_ident =
                          RegisterEventSource(NULL, TEXT("opal: ")))) {
                 /* handle the error */
-                return OPAL_ERROR;
+                return CCS_ERROR;
             }
 #endif
             syslog_opened = true;
@@ -651,7 +651,7 @@ static int do_open(int output_id, opal_output_stream_t * lds)
         info[i].ldi_suffix_len = 0;
     }
     
-    if (opal_output_redirected_to_syslog) {
+    if (service_redirected_to_syslog) {
         /* since all is redirected to syslog, ensure
          * we don't duplicate the output to the std places
          */
@@ -689,11 +689,11 @@ static int open_file(int i)
     /* Setup the filename and open flags */
 
     if (NULL != output_dir) {
-        filename = (char *) malloc(OPAL_PATH_MAX);
+        filename = (char *) malloc(CCS_PATH_MAX);
         if (NULL == filename) {
-            return OPAL_ERR_OUT_OF_RESOURCE;
+            return CCS_ERR_OUT_OF_RESOURCE;
         }
-        strncpy(filename, output_dir, OPAL_PATH_MAX);
+        strncpy(filename, output_dir, CCS_PATH_MAX);
         strcat(filename, "/");
         if (NULL != output_prefix) {
             strcat(filename, output_prefix);
@@ -714,7 +714,7 @@ static int open_file(int i)
         if (-1 == info[i].ldi_fd) {
             info[i].ldi_used = false;
             free(filename);
-            return OPAL_ERR_IN_ERRNO;
+            return CCS_ERR_IN_ERRNO;
         }
 
         free(filename);
@@ -725,7 +725,7 @@ static int open_file(int i)
 #ifndef __WINDOWS__
         /* TODO: Need to find out the equivalent in windows */
         if (-1 == fcntl(info[i].ldi_fd, F_SETFD, 1)) {
-           return OPAL_ERR_IN_ERRNO;
+           return CCS_ERR_IN_ERRNO;
         }
 #endif
 
@@ -734,7 +734,7 @@ static int open_file(int i)
     /* Return successfully even if the session dir did not exist yet;
      * we'll try opening it later */
 
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -745,7 +745,7 @@ static void free_descriptor(int output_id)
 {
     output_desc_t *ldi;
 
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
 	info[output_id].ldi_used && info[output_id].ldi_enabled) {
 	ldi = &info[output_id];
 
@@ -816,7 +816,7 @@ static int make_string(char **no_newline_string, output_desc_t *ldi,
         }
         temp_str = (char *) malloc(total_len * 2);
         if (NULL == temp_str) {
-            return OPAL_ERR_OUT_OF_RESOURCE;
+            return CCS_ERR_OUT_OF_RESOURCE;
         }
         temp_str_len = total_len * 2;
     }
@@ -852,7 +852,7 @@ static int make_string(char **no_newline_string, output_desc_t *ldi,
         }
     }
     
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
     
 /*
@@ -862,26 +862,26 @@ static int make_string(char **no_newline_string, output_desc_t *ldi,
  */
 static int output(int output_id, const char *format, va_list arglist)
 {
-    int rc = OPAL_SUCCESS;
+    int rc = CCS_SUCCESS;
     char *str, *out = NULL;
     output_desc_t *ldi;
 
     /* Setup */
 
     if (!initialized) {
-        opal_output_init();
+        service_output_init();
     }
 
     /* If it's valid, used, and enabled, output */
 
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_used && info[output_id].ldi_enabled) {
-        OPAL_THREAD_LOCK(&mutex);
+        CCS_THREAD_LOCK(&mutex);
         ldi = &info[output_id];
 
         /* Make the strings */
-        if (OPAL_SUCCESS != (rc = make_string(&str, ldi, format, arglist))) {
-            OPAL_THREAD_UNLOCK(&mutex);
+        if (CCS_SUCCESS != (rc = make_string(&str, ldi, format, arglist))) {
+            CCS_THREAD_UNLOCK(&mutex);
             return rc;
         }
 
@@ -914,18 +914,18 @@ static int output(int output_id, const char *format, va_list arglist)
         /* File output -- first check to see if the file opening was
          * delayed.  If so, try to open it.  If we failed to open it,
          * then just discard (there are big warnings in the
-         * opal_output.h docs about this!). */
+         * service.h docs about this!). */
 
         if (ldi->ldi_file) {
             if (ldi->ldi_fd == -1) {
-                if (OPAL_SUCCESS != open_file(output_id)) {
+                if (CCS_SUCCESS != open_file(output_id)) {
                     ++ldi->ldi_file_num_lines_lost;
                 } else if (ldi->ldi_file_num_lines_lost > 0) {
                     char buffer[BUFSIZ];
                     char *out = buffer;
                     memset(buffer, 0, BUFSIZ);
                     snprintf(buffer, BUFSIZ - 1,
-                             "[WARNING: %d lines lost because the Open MPI process session directory did\n not exist when opal_output() was invoked]\n",
+                             "[WARNING: %d lines lost because the Open MPI process session directory did\n not exist when service() was invoked]\n",
                              ldi->ldi_file_num_lines_lost);
                    write(ldi->ldi_fd, buffer, (int)strlen(buffer));
                     ldi->ldi_file_num_lines_lost = 0;
@@ -938,16 +938,16 @@ static int output(int output_id, const char *format, va_list arglist)
                 write(ldi->ldi_fd, out, (int)strlen(out));
             }
         }
-        OPAL_THREAD_UNLOCK(&mutex);
+        CCS_THREAD_UNLOCK(&mutex);
         free(str);
     }
 
     return rc;
 }
 
-int opal_output_get_verbosity(int output_id)
+int service_get_verbosity(int output_id)
 {
-    if (output_id >= 0 && output_id < OPAL_OUTPUT_MAX_STREAMS && info[output_id].ldi_used) {
+    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS && info[output_id].ldi_used) {
         return info[output_id].ldi_verbose_level;
     } else {
         return -1;

@@ -31,7 +31,7 @@
 #include "service/sys/atomic.h"
 #endif  /* CCS_ENABLE_MULTI_THREADS */
 #if CCS_ENABLE_DEBUG
-#include "opal/util/output.h"
+#include "service/util/output.h"
 #endif
 
 BEGIN_C_DECLS
@@ -210,7 +210,7 @@ static inline bool ccs_set_using_threads(bool have)
     do {                                                                \
         (mutex)->m_lock_debug++;                                        \
         if (service_mutex_check_locks && 1 != (mutex)->m_lock_debug) {     \
-            ccs_output(0, "Warning -- mutex already locked at %s:%d,"  \
+            service_output(0, "Warning -- mutex already locked at %s:%d,"  \
                         " now at %s:%d",                                \
                         (mutex)->m_lock_file,                           \
                         (mutex)->m_lock_line,                           \
@@ -254,7 +254,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
         ret = 0;
     } else {
         if (service_mutex_check_locks) {
-            ccs_output(0, "Warning -- during trylock, mutex already locked at %s:%d "
+            service_output(0, "Warning -- during trylock, mutex already locked at %s:%d "
                         "now at %s:%d",  
                         file, line,
                         (mutex)->m_lock_file,
@@ -295,10 +295,10 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
     do {                                                                \
         (mutex)->m_lock_debug--;                                        \
         if (service_mutex_check_locks && 0 > (mutex)->m_lock_debug) {      \
-            ccs_output(0, "Warning -- mutex was double locked from %s:%d", \
+            service_output(0, "Warning -- mutex was double locked from %s:%d", \
                         __FILE__, __LINE__);                            \
         } else if (service_mutex_check_locks && 0 > (mutex)->m_lock_debug) { \
-            ccs_output(0, "Warning -- mutex not locked from %s:%d",    \
+            service_output(0, "Warning -- mutex not locked from %s:%d",    \
                         __FILE__, __LINE__);                            \
         } else {                                                        \
             (mutex)->m_lock_file = NULL;                                \
@@ -341,7 +341,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
 #define CCS_THREAD_SCOPED_LOCK(mutex, action)                          \
     do {                                                                \
         if (0 != (mutex)->m_lock_debug) {                               \
-            ccs_output(0, "scoped_lock: Warning -- mutex already "     \
+            service_output(0, "scoped_lock: Warning -- mutex already "     \
                         "locked at %s:%d, now at %s:%d",                \
                         __FILE__, __LINE__,                             \
                         (mutex)->m_lock_file,                           \

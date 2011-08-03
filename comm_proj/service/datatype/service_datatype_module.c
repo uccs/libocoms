@@ -28,7 +28,7 @@
 #include "opal/datatype/service_datatype_internal.h"
 #include "opal/datatype/ccs_datatype.h"
 #include "opal/datatype/service_convertor_internal.h"
-#include "opal/mca/base/mca_base_param.h"
+#include "service/mca/mca_base_param.h"
 
 /* by default the debuging is turned off */
 int service_datatype_dfd = -1;
@@ -228,7 +228,7 @@ int32_t service_datatype_finalize( void )
      */
 #if defined(VERBOSE)
     if( service_datatype_dfd != -1 )
-        ccs_output_close( service_datatype_dfd );
+        service_output_close( service_datatype_dfd );
     service_datatype_dfd = -1;
 #endif /* VERBOSE */
 

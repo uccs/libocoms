@@ -20,7 +20,7 @@
 #define OMPI_SYS_ARCH_ATOMIC_H 1
 
 
-#if OPAL_WANT_SMP_LOCKS
+#if CCS_WANT_SMP_LOCKS
 #define MB() __asm__  __volatile__ ("" : : : "memory")
 #else
 #define MB()
@@ -42,16 +42,16 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  * Define constants for Sparc
  *
  *********************************************************************/
-#define OPAL_HAVE_ATOMIC_MEM_BARRIER 1
+#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_32 0
-#define OPAL_HAVE_ATOMIC_CMPSET_64 0
+#define CCS_HAVE_ATOMIC_CMPSET_32 0
+#define CCS_HAVE_ATOMIC_CMPSET_64 0
 
-#define OPAL_HAVE_ATOMIC_MATH_32 1
-#define OPAL_HAVE_ATOMIC_SUB_32 1
-#define OPAL_HAVE_ATOMIC_ADD_32 1
+#define CCS_HAVE_ATOMIC_MATH_32 1
+#define CCS_HAVE_ATOMIC_SUB_32 1
+#define CCS_HAVE_ATOMIC_ADD_32 1
 
-#define OPAL_HAVE_ATOMIC_SPINLOCKS 1
+#define CCS_HAVE_ATOMIC_SPINLOCKS 1
 
 /**********************************************************************
  *
@@ -88,7 +88,7 @@ static inline void service_atomic_wmb(void)
 #if OMPI_GCC_INLINE_ASSEMBLY
 
 /* for these, the lock is held whenever lock.sparc_lock != 0.  We
-   attempt to leave it as OPAL_LOCKED whenever possible */
+   attempt to leave it as CCS_LOCKED whenever possible */
 
 
 static inline void service_atomic_init(service_atomic_lock_t* lock, int value)

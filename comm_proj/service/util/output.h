@@ -24,9 +24,9 @@
  * The OPAL output stream facility is used to send output from the OPAL
  * libraries to output devices.  It is meant to fully replace all
  * forms of printf() (and friends).  Output streams are opened via the
- * opal_output_open() function call, and then sent output via
- * opal_output_verbose(), OPAL_OUTPUT(), and opal_output().  Streams are
- * closed with opal_output_close().
+ * service_open() function call, and then sent output via
+ * service_verbose(), CCS_OUTPUT(), and service().  Streams are
+ * closed with service_close().
  *
  * Streams can multiplex output to several kinds of outputs (one of
  * each):
@@ -36,23 +36,23 @@
  * - standard error
  * - file
  *
- * Which outputs to use are specified during opal_output_open().
+ * Which outputs to use are specified during service_open().
  *
  * WARNING: When using "file" as an output destination, be aware that
  * the file may not exist until the session directory for the process
  * exists.  This is at least part of the way through MPI_INIT (for
  * example).  Most MCA components and internals of Open MPI won't be
  * affected by this, but some RTE / startup aspects of Open MPI will
- * not be able to write to a file for output.  See opal_output() for
+ * not be able to write to a file for output.  See service() for
  * details on what happens in these cases.
  *
- * opal_output_open() returns an integer handle that is used in
- * successive calls to OPAL_OUTPUT() and opal_output() to send output to
+ * service_open() returns an integer handle that is used in
+ * successive calls to CCS_OUTPUT() and service() to send output to
  * the stream.
  *
  * The default "verbose" stream is opened after invoking
- * opal_output_init() (and closed after invoking
- * opal_output_finalize()).  This stream outputs to stderr only, and
+ * service_output_init() (and closed after invoking
+ * service_finalize()).  This stream outputs to stderr only, and
  * has a stream handle ID of 0.
  *
  * It is erroneous to have one thread close a stream and have another
@@ -60,16 +60,16 @@
  * will be serialized in an unspecified order.
  */
 
-#ifndef OPAL_OUTPUT_H_
-#define OPAL_OUTPUT_H_
+#ifndef CCS_OUTPUT_H_
+#define CCS_OUTPUT_H_
 
-#include "opal_config.h"
+#include "ccs_config.h"
 
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
 #endif
 
-#include "opal/class/opal_object.h"
+#include "service/util/service_object.h"
 
 BEGIN_C_DECLS
 
@@ -77,14 +77,14 @@ BEGIN_C_DECLS
  * and away from stdout/stderr or files - e.g., embedded systems whose
  * sole file system is in flash. To support such systems, we provide
  * the following environmental variables that support redirecting -all-
- * output (both from opal_output and stdout/stderr of processes) to
+ * output (both from service and stdout/stderr of processes) to
  * syslog:
  *
- * OPAL_OUTPUT_REDIRECT - set to "syslog" to redirect to syslog. Other
+ * CCS_OUTPUT_REDIRECT - set to "syslog" to redirect to syslog. Other
  *                        options may someday be supported
- * OPAL_OUTPUT_SYSLOG_PRI - set to "info", "error", or "warn" to have
+ * CCS_OUTPUT_SYSLOG_PRI - set to "info", "error", or "warn" to have
  *                        output sent to syslog at that priority
- * OPAL_OUTPUT_SYSLOG_IDENT - a string identifier for the log
+ * CCS_OUTPUT_SYSLOG_IDENT - a string identifier for the log
  *
  * We also define two global variables that notify all other
  * layers that output is being redirected to syslog at the given
@@ -92,34 +92,34 @@ BEGIN_C_DECLS
  * subsystem to tell it to dump any collected output directly to
  * syslog instead of forwarding it to another location.
  */
-OPAL_DECLSPEC extern bool opal_output_redirected_to_syslog;
-OPAL_DECLSPEC extern int opal_output_redirected_syslog_pri;
+CCS_DECLSPEC extern bool service_redirected_to_syslog;
+CCS_DECLSPEC extern int service_redirected_syslog_pri;
 
 /**
- * \class opal_output_stream_t 
+ * \class service_stream_t 
  *
  * Structure used to request the opening of a OPAL output stream.  A
- * pointer to this structure is passed to opal_output_open() to tell
- * the opal_output subsystem where to send output for a given stream.
+ * pointer to this structure is passed to service_open() to tell
+ * the service subsystem where to send output for a given stream.
  * It is valid to specify multiple destinations of output for a stream
  * -- output streams can be multiplexed to multiple different
- * destinations through the opal_output facility.
+ * destinations through the service facility.
  *
  * Note that all strings in this struct are cached on the stream by
  * value; there is no need to keep them allocated after the return
- * from opal_output_open().
+ * from service_open().
  */
-struct opal_output_stream_t {
+struct service_stream_t {
     /** Class parent */
-    opal_object_t super;
+    service_object_t super;
 
     /**
      * Indicate the starting verbosity level of the stream.
      *
      * Verbose levels are a convenience mechanisms, and are only
      * consulted when output is sent to a stream through the
-     * opal_output_verbose() function.  Verbose levels are ignored in
-     * OPAL_OUTPUT() and opal_output().
+     * service_verbose() function.  Verbose levels are ignored in
+     * CCS_OUTPUT() and service().
      *
      * Valid verbose levels typically start at 0 (meaning "minimal
      * information").  Higher verbosity levels generally indicate that
@@ -128,7 +128,7 @@ struct opal_output_stream_t {
     int lds_verbose_level;
     
     /**
-     * When opal_output_stream_t::lds_want_syslog is true, this field is
+     * When service_stream_t::lds_want_syslog is true, this field is
      * examined to see what priority output from the stream should be
      * sent to the syslog.
      *
@@ -138,7 +138,7 @@ struct opal_output_stream_t {
      */
     int lds_syslog_priority;
     /**
-     * When opal_output_stream_t::lds_want_syslog is true, this field is
+     * When service_stream_t::lds_want_syslog is true, this field is
      * examined to see what ident value should be passed to openlog(3).
      * 
      * If a NULL value is given, the string "opal" is used.
@@ -157,7 +157,7 @@ struct opal_output_stream_t {
      * When this field is non-NULL, it is prefixed to all lines of
      * output on the stream.  When this field is NULL, no prefix is
      * added to each line of output in the stream. The prefix is copied
-     * to an internal structure in the call to opal_output_open()!
+     * to an internal structure in the call to service_open()!
      */
     char *lds_prefix;
     
@@ -167,7 +167,7 @@ struct opal_output_stream_t {
      * When this field is non-NULL, it is appended to all lines of
      * output on the stream.  When this field is NULL, no suffix is
      * added to each line of output in the stream. The suffix is copied
-     * to an internal structure in the call to opal_output_open()!
+     * to an internal structure in the call to service_open()!
      */
     char *lds_suffix;
 
@@ -220,7 +220,7 @@ struct opal_output_stream_t {
      */
     bool lds_want_file;
     /**
-     * When opal_output_stream_t::lds_want_file is true, this field
+     * When service_stream_t::lds_want_file is true, this field
      * indicates whether to append the file (if it exists) or overwrite
      * it.
      *
@@ -228,16 +228,16 @@ struct opal_output_stream_t {
      */
     bool lds_want_file_append;
     /**
-     * When opal_output_stream_t::lds_want_file is true, this field
+     * When service_stream_t::lds_want_file is true, this field
      * indicates the string suffix to add to the filename.
      *
      * The output file will be in the directory and begin with the
-     * prefix set by opal_output_set_output_file_info() (e.g.,
+     * prefix set by service_set_output_file_info() (e.g.,
      * "$dir/$prefix$suffix").  If this field is NULL and
      * lds_want_file is true, then the suffix "output.txt" is used.
      *
      * Note that it is possible that the output directory may not
-     * exist when opal_output_open() is invoked.  See opal_output()
+     * exist when service_open() is invoked.  See service()
      * for details on what happens in this situation.
      */
     char *lds_file_suffix;
@@ -247,7 +247,7 @@ struct opal_output_stream_t {
     /**
      * Convenience typedef
      */    
-    typedef struct opal_output_stream_t opal_output_stream_t;
+    typedef struct service_stream_t service_stream_t;
 
     /**
      * Initializes the output stream system and opens a default
@@ -258,13 +258,13 @@ struct opal_output_stream_t {
      *
      * This should be the first function invoked in the output
      * subsystem.  After this call, the default "verbose" stream is open
-     * and can be written to via calls to opal_output_verbose() and
-     * opal_output_error().
+     * and can be written to via calls to service_verbose() and
+     * service_error().
      *
      * By definition, the default verbose stream has a handle ID of 0,
      * and has a verbose level of 0.
      */
-    OPAL_DECLSPEC bool opal_output_init(void);
+    CCS_DECLSPEC bool service_output_init(void);
     
     /**
      * Shut down the output stream system.
@@ -272,18 +272,18 @@ struct opal_output_stream_t {
      * Shut down the output stream system, including the default verbose
      * stream.
      */
-    OPAL_DECLSPEC void opal_output_finalize(void);
+    CCS_DECLSPEC void service_finalize(void);
 
     /**
      * Opens an output stream.
      *
-     * @param lds A pointer to opal_output_stream_t describing what the
+     * @param lds A pointer to service_stream_t describing what the
      * characteristics of the output stream should be.
      *
      * This function opens an output stream and returns an integer
      * handle.  The caller is responsible for maintaining the handle and
-     * using it in successive calls to OPAL_OUTPUT(), opal_output(),
-     * opal_output_switch(), and opal_output_close().
+     * using it in successive calls to CCS_OUTPUT(), service(),
+     * service_switch(), and service_close().
      *
      * If lds is NULL, the default descriptions will be used, meaning
      * that output will only be sent to stderr.
@@ -292,17 +292,17 @@ struct opal_output_stream_t {
      * simultaneously; their execution will be serialized in an
      * unspecified manner.
      *
-     * Be sure to see opal_output() for a description of what happens
-     * when open_open() / opal_output() is directed to send output to a
+     * Be sure to see service() for a description of what happens
+     * when open_open() / service() is directed to send output to a
      * file but the process session directory does not yet exist.
      */
-    OPAL_DECLSPEC int opal_output_open(opal_output_stream_t *lds);
+    CCS_DECLSPEC int service_open(service_stream_t *lds);
 
     /**
      * Re-opens / redirects an output stream.
      *
      * @param output_id Stream handle to reopen
-     * @param lds A pointer to opal_output_stream_t describing what the
+     * @param lds A pointer to service_stream_t describing what the
      * characteristics of the reopened output stream should be.
      *
      * This function redirects an existing stream into a new [set of]
@@ -310,7 +310,7 @@ struct opal_output_stream_t {
      * passed is invalid, this call is effectively the same as opening a
      * new stream with a specific stream handle.
      */
-    OPAL_DECLSPEC int opal_output_reopen(int output_id, opal_output_stream_t *lds);
+    CCS_DECLSPEC int service_reopen(int output_id, service_stream_t *lds);
     
     /**
      * Enables and disables output streams.
@@ -325,11 +325,11 @@ struct opal_output_stream_t {
      * The output of a stream can be temporarily disabled by passing an
      * enable value to false, and later resumed by passing an enable
      * value of true.  This does not close the stream -- it simply tells
-     * the opal_output subsystem to intercept and discard any output sent
-     * to the stream via OPAL_OUTPUT() or opal_output() until the output
+     * the service subsystem to intercept and discard any output sent
+     * to the stream via CCS_OUTPUT() or service() until the output
      * is re-enabled.
      */
-    OPAL_DECLSPEC bool opal_output_switch(int output_id, bool enable);
+    CCS_DECLSPEC bool service_switch(int output_id, bool enable);
 
     /**
      * \internal
@@ -340,7 +340,7 @@ struct opal_output_stream_t {
      * typically only invoked after a restart (i.e., in a new process)
      * where output streams need to be re-initialized.
      */
-    OPAL_DECLSPEC void opal_output_reopen_all(void);
+    CCS_DECLSPEC void service_reopen_all(void);
 
     /**
      * Close an output stream.
@@ -352,19 +352,19 @@ struct opal_output_stream_t {
      * re-used; it is possible that after a stream is closed, if another
      * stream is opened, it will get the same handle value.
      */
-    OPAL_DECLSPEC void opal_output_close(int output_id);
+    CCS_DECLSPEC void service_close(int output_id);
 
     /**
      * Main function to send output to a stream.
      *
-     * @param output_id Stream id returned from opal_output_open().
+     * @param output_id Stream id returned from service_open().
      * @param format printf-style format string.
      * @param varargs printf-style varargs list to fill the string
      * specified by the format parameter.
      *
      * This is the main function to send output to custom streams (note
      * that output to the default "verbose" stream is handled through
-     * opal_output_verbose() and opal_output_error()).
+     * service_verbose() and service_error()).
      *
      * It is never necessary to send a trailing "\n" in the strings to
      * this function; some streams requires newlines, others do not --
@@ -374,18 +374,18 @@ struct opal_output_stream_t {
      *
      * Note that for output streams that are directed to files, the
      * files are stored under the process' session directory.  If the
-     * session directory does not exist when opal_output() is invoked,
+     * session directory does not exist when service() is invoked,
      * the output will be discarded!  Once the session directory is
-     * created, opal_output() will automatically create the file and
+     * created, service() will automatically create the file and
      * writing to it.
      */
-    OPAL_DECLSPEC void opal_output(int output_id, const char *format, ...) __opal_attribute_format__(__printf__, 2, 3);
+    CCS_DECLSPEC void service_output(int output_id, const char *format, ...) __service_attribute_format__(__printf__, 2, 3);
     
     /**
      * Send output to a stream only if the passed verbosity level is
      * high enough.
      *
-     * @param output_id Stream id returned from opal_output_open().
+     * @param output_id Stream id returned from service_open().
      * @param level Target verbosity level.
      * @param format printf-style format string.
      * @param varargs printf-style varargs list to fill the string
@@ -404,61 +404,61 @@ struct opal_output_stream_t {
      * This function is really a convenience wrapper around checking the
      * current verbosity level set on the stream, and if the passed
      * level is less than or equal to the stream's verbosity level, this
-     * function will effectively invoke opal_output to send the output to
+     * function will effectively invoke service to send the output to
      * the stream.
      *
-     * @see opal_output_set_verbosity()
+     * @see service_set_verbosity()
      */
-    OPAL_DECLSPEC void opal_output_verbose(int verbose_level, int output_id, 
-                                           const char *format, ...) __opal_attribute_format__(__printf__, 3, 4);
+    CCS_DECLSPEC void service_verbose(int verbose_level, int output_id, 
+                                           const char *format, ...) __service_attribute_format__(__printf__, 3, 4);
 
    /**
-    * Same as opal_output_verbose(), but takes a va_list form of varargs.
+    * Same as service_verbose(), but takes a va_list form of varargs.
     */
-    OPAL_DECLSPEC void opal_output_vverbose(int verbose_level, int output_id, 
-                                            const char *format, va_list ap) __opal_attribute_format__(__printf__, 3, 0);
+    CCS_DECLSPEC void service_vverbose(int verbose_level, int output_id, 
+                                            const char *format, va_list ap) __service_attribute_format__(__printf__, 3, 0);
 
     /**    
      * Send output to a string if the verbosity level is high enough.
      *
-     * @param output_id Stream id returned from opal_output_open().
+     * @param output_id Stream id returned from service_open().
      * @param level Target verbosity level.
      * @param format printf-style format string.
      * @param varargs printf-style varargs list to fill the string
      * specified by the format parameter.
      *
-     * Exactly the same as opal_output_verbose(), except the output it
+     * Exactly the same as service_verbose(), except the output it
      * sent to a string instead of to the stream.  If the verbose
      * level is not high enough, NULL is returned.  The caller is
      * responsible for free()'ing the returned string.
      */
-    OPAL_DECLSPEC char *opal_output_string(int verbose_level, int output_id, 
-                                           const char *format, ...) __opal_attribute_format__(__printf__, 3, 4);
+    CCS_DECLSPEC char *service_string(int verbose_level, int output_id, 
+                                           const char *format, ...) __service_attribute_format__(__printf__, 3, 4);
 
    /**
-    * Same as opal_output_string, but accepts a va_list form of varargs.
+    * Same as service_string, but accepts a va_list form of varargs.
     */
-    OPAL_DECLSPEC char *opal_output_vstring(int verbose_level, int output_id, 
-                                            const char *format, va_list ap) __opal_attribute_format__(__printf__, 3, 0);
+    CCS_DECLSPEC char *service_vstring(int verbose_level, int output_id, 
+                                            const char *format, va_list ap) __service_attribute_format__(__printf__, 3, 0);
 
     /**
      * Set the verbosity level for a stream.
      *
-     * @param output_id Stream id returned from opal_output_open().
+     * @param output_id Stream id returned from service_open().
      * @param level New verbosity level
      *
      * This function sets the verbosity level on a given stream.  It
-     * will be used for all future invocations of opal_output_verbose().
+     * will be used for all future invocations of service_verbose().
      */
-    OPAL_DECLSPEC void opal_output_set_verbosity(int output_id, int level);
+    CCS_DECLSPEC void service_set_verbosity(int output_id, int level);
 
     /**
      * Get the verbosity level for a stream
      *
-     * @param output_id Stream id returned from opal_output_open()
+     * @param output_id Stream id returned from service_open()
      * @returns Verbosity of stream
      */
-    OPAL_DECLSPEC int opal_output_get_verbosity(int output_id);
+    CCS_DECLSPEC int service_get_verbosity(int output_id);
 
     /**
      * Set characteristics for output files.
@@ -471,7 +471,7 @@ struct opal_output_stream_t {
      *
      * This function controls the final filename used for all new
      * output streams that request output files.  Specifically, when
-     * opal_output_stream_t::lds_want_file is true, the output
+     * service_stream_t::lds_want_file is true, the output
      * filename will be of the form $dir/$prefix$suffix.
      *
      * The default value for the output directory is whatever is
@@ -483,7 +483,7 @@ struct opal_output_stream_t {
      * If dir or prefix are NULL, new values are not set.  The strings
      * represented by dir and prefix are copied into internal storage;
      * it is safe to pass string constants or free() these values
-     * after opal_output_set_output_file_info() returns.
+     * after service_set_output_file_info() returns.
      *
      * If olddir or oldprefix are not NULL, copies of the old
      * directory and prefix (respectively) are returned in these
@@ -495,52 +495,52 @@ struct opal_output_stream_t {
      * Note that this function only affects the creation of \em new
      * streams -- streams that have already started writing to output
      * files are not affected (i.e., their output files are not moved
-     * to the new directory).  More specifically, the opal_output
+     * to the new directory).  More specifically, the service
      * system only opens/creates output files lazily -- so calling
      * this function affects both new streams \em and any stream that
      * was previously opened but had not yet output anything.
      */
-    OPAL_DECLSPEC void opal_output_set_output_file_info(const char *dir,
+    CCS_DECLSPEC void service_set_output_file_info(const char *dir,
                                                         const char *prefix,
                                                         char **olddir,
                                                         char **oldprefix);
     
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
     /**
      * Main macro for use in sending debugging output to output streams;
      * will be "compiled out" when OPAL is configured without
      * --enable-debug.
      *
-     * @see opal_output()
+     * @see service()
      */
-#define OPAL_OUTPUT(a) opal_output a
+#define CCS_OUTPUT(a) service a
     
     /** 
      * Macro for use in sending debugging output to the output
      * streams.  Will be "compiled out" when OPAL is configured
      * without --enable-debug.
      *
-     * @see opal_output_verbose()
+     * @see service_verbose()
      */
-#define OPAL_OUTPUT_VERBOSE(a) opal_output_verbose a
+#define CCS_OUTPUT_VERBOSE(a) service_verbose a
 #else
     /**
      * Main macro for use in sending debugging output to output streams;
      * will be "compiled out" when OPAL is configured without
      * --enable-debug.
      *
-     * @see opal_output()
+     * @see service()
      */
-#define OPAL_OUTPUT(a)
+#define CCS_OUTPUT(a)
     
     /** 
      * Macro for use in sending debugging output to the output
      * streams.  Will be "compiled out" when OPAL is configured
      * without --enable-debug.
      *
-     * @see opal_output_verbose()
+     * @see service_verbose()
      */
-#define OPAL_OUTPUT_VERBOSE(a)
+#define CCS_OUTPUT_VERBOSE(a)
 #endif
 
 /**
@@ -551,9 +551,9 @@ struct opal_output_stream_t {
  * The intended usage is to invoke the constructor and then enable
  * the output fields that you want.
  */
-OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_output_stream_t);
+CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_stream_t);
 
 END_C_DECLS
 
-#endif /* OPAL_OUTPUT_H_ */
+#endif /* CCS_OUTPUT_H_ */
 

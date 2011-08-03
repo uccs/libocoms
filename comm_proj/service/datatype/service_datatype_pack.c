@@ -27,7 +27,7 @@
 
 #if CCS_ENABLE_DEBUG
 
-#include "opal/util/output.h"
+#include "service/util/output.h"
 
 extern int service_pack_debug;
 #define DO_DEBUG(INST)  if( service_pack_debug ) { INST }
@@ -264,7 +264,7 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
     size_t iov_len_local;
     uint32_t iov_count;
 
-    DO_DEBUG( ccs_output( 0, "service_convertor_generic_simple_pack( %p, {%p, %lu}, %d )\n", (void*)pConvertor,
+    DO_DEBUG( service_output( 0, "service_convertor_generic_simple_pack( %p, {%p, %lu}, %d )\n", (void*)pConvertor,
                            iov[0].iov_base, (unsigned long)iov[0].iov_len, *out_size ); );
 
     description = pConvertor->use_desc->desc;
@@ -282,7 +282,7 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
     pElem = &(description[pos_desc]);
     source_base += pStack->disp;
 
-    DO_DEBUG( ccs_output( 0, "pack start pos_desc %d count_desc %d disp %ld\n"
+    DO_DEBUG( service_output( 0, "pack start pos_desc %d count_desc %d disp %ld\n"
                            "stack_pos %d pos_desc %d count_desc %d disp %ld\n",
                            pos_desc, count_desc, (long)(source_base - pConvertor->pBaseBuf),
                            pConvertor->stack_pos, pStack->index, (int)pStack->count, (long)pStack->disp ); );
@@ -304,7 +304,7 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
                 goto complete_loop;
             }
             if( CCS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
-                DO_DEBUG( ccs_output( 0, "pack end_loop count %d stack_pos %d"
+                DO_DEBUG( service_output( 0, "pack end_loop count %d stack_pos %d"
 				       " pos_desc %d disp %ld space %lu\n",
                                        (int)pStack->count, pConvertor->stack_pos,
 				       pos_desc, (long)pStack->disp, (unsigned long)iov_len_local ); );
@@ -330,7 +330,7 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
                 }
                 source_base = pConvertor->pBaseBuf + pStack->disp;
                 UPDATE_INTERNAL_COUNTERS( description, pos_desc, pElem, count_desc );
-                DO_DEBUG( ccs_output( 0, "pack new_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
+                DO_DEBUG( service_output( 0, "pack new_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
                                        (int)pStack->count, pConvertor->stack_pos, pos_desc, (long)pStack->disp, (unsigned long)iov_len_local ); );
             }
             if( CCS_DATATYPE_LOOP == pElem->elem.common.type ) {
@@ -370,7 +370,7 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
     /* I complete an element, next step I should go to the next one */
     PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_INT8, count_desc,
                 source_base - pStack->disp - pConvertor->pBaseBuf );
-    DO_DEBUG( ccs_output( 0, "pack save stack stack_pos %d pos_desc %d count_desc %d disp %ld\n",
+    DO_DEBUG( service_output( 0, "pack save stack stack_pos %d pos_desc %d count_desc %d disp %ld\n",
                            pConvertor->stack_pos, pStack->index, (int)pStack->count, (long)pStack->disp ); );
     return 0;
 }

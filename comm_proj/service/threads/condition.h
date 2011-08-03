@@ -73,7 +73,7 @@ static inline int service_condition_wait(service_condition_t *c, service_mutex_t
 
 #if CCS_ENABLE_DEBUG && !CCS_ENABLE_MULTI_THREADS
     if (service_mutex_check_locks && 0 == m->m_lock_debug) {                                         \
-        ccs_output(0, "Warning -- mutex not locked in condition_wait"); \
+        service_output(0, "Warning -- mutex not locked in condition_wait"); \
     }                                                                   \
     m->m_lock_debug--;
 #endif
@@ -125,7 +125,7 @@ static inline int service_condition_timedwait(service_condition_t *c,
 
 #if CCS_ENABLE_DEBUG && !CCS_ENABLE_MULTI_THREADS
     if (service_mutex_check_locks && 0 == m->m_lock_debug) {                                         \
-        ccs_output(0, "Warning -- mutex not locked in condition_wait"); \
+        service_output(0, "Warning -- mutex not locked in condition_wait"); \
     }                                                                   \
     m->m_lock_debug--;
 #endif

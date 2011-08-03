@@ -28,7 +28,7 @@
 #include "opal/datatype/service_datatype_internal.h"
 
 #if CCS_ENABLE_DEBUG
-#include "opal/util/output.h"
+#include "service/util/output.h"
 
 extern int service_unpack_debug;
 #define DO_DEBUG(INST)  if( service_unpack_debug ) { INST }
@@ -199,7 +199,7 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
     CCS_PTRDIFF_TYPE extent = pData->ub - pData->lb;
     CCS_PTRDIFF_TYPE initial_displ = pConv->use_desc->desc[pConv->use_desc->used].end_loop.first_elem_disp;
 
-    DO_DEBUG( ccs_output( 0, "unpack_homogeneous_contig( pBaseBuf %p, iov_count %d )\n",
+    DO_DEBUG( service_output( 0, "unpack_homogeneous_contig( pBaseBuf %p, iov_count %d )\n",
                            pConv->pBaseBuf, *out_size ); );
     for( iov_count = 0; iov_count < (*out_size); iov_count++ ) {
         packed_buffer = (unsigned char*)iov[iov_count].iov_base;
@@ -211,19 +211,19 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
 
         if( (CCS_PTRDIFF_TYPE)pData->size == extent ) {
             user_memory += pConv->bConverted;
-            DO_DEBUG( ccs_output( 0, "unpack_homogeneous_contig( user_memory %p, packed_buffer %p length %lu\n",
+            DO_DEBUG( service_output( 0, "unpack_homogeneous_contig( user_memory %p, packed_buffer %p length %lu\n",
                                    user_memory, packed_buffer, (unsigned long)remaining ); );
 
             /* contiguous data or basic datatype with count */
             CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, remaining,
                                         pConv->pBaseBuf, pData, pConv->count );
-            DO_DEBUG( ccs_output( 0, "1. unpack contig dest %p src %p length %lu\n",
+            DO_DEBUG( service_output( 0, "1. unpack contig dest %p src %p length %lu\n",
                                    user_memory, packed_buffer, (unsigned long)remaining ); );
             MEMCPY_CSUM( user_memory, packed_buffer, remaining, pConv );
         } else {
             user_memory += stack[0].disp + stack[1].disp;
 
-            DO_DEBUG( ccs_output( 0, "unpack_homogeneous_contig( user_memory %p, packed_buffer %p length %lu\n",
+            DO_DEBUG( service_output( 0, "unpack_homogeneous_contig( user_memory %p, packed_buffer %p length %lu\n",
                                    user_memory, packed_buffer, (unsigned long)remaining ); );
 
             length = pConv->bConverted / pData->size;  /* already done */
@@ -235,7 +235,7 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
                 if( length <= remaining ) {
                     CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, length, pConv->pBaseBuf,
                                                 pData, pConv->count );
-                    DO_DEBUG( ccs_output( 0, "2. unpack dest %p src %p length %lu\n",
+                    DO_DEBUG( service_output( 0, "2. unpack dest %p src %p length %lu\n",
                                            user_memory, packed_buffer, (unsigned long)length ); );
                     MEMCPY_CSUM( user_memory, packed_buffer, length, pConv );
                     packed_buffer += length;
@@ -246,7 +246,7 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
             for( i = 0; pData->size <= remaining; i++ ) {
                 CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, pData->size, pConv->pBaseBuf,
                                             pData, pConv->count );
-                DO_DEBUG( ccs_output( 0, "3. unpack dest %p src %p length %lu\n",
+                DO_DEBUG( service_output( 0, "3. unpack dest %p src %p length %lu\n",
                                        user_memory, packed_buffer, (unsigned long)pData->size ); );
                 MEMCPY_CSUM( user_memory, packed_buffer, pData->size, pConv );
                 packed_buffer += pData->size;
@@ -259,7 +259,7 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
             if( remaining != 0 ) {
                 CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, remaining, pConv->pBaseBuf,
                                             pData, pConv->count );
-                DO_DEBUG( ccs_output( 0, "4. unpack dest %p src %p length %lu\n",
+                DO_DEBUG( service_output( 0, "4. unpack dest %p src %p length %lu\n",
                                        user_memory, packed_buffer, (unsigned long)remaining ); );
                 MEMCPY_CSUM( user_memory, packed_buffer, remaining, pConv );
                 user_memory += remaining;
@@ -300,7 +300,7 @@ service_unpack_partial_datatype( service_convertor_t* pConvertor, dt_elem_desc_t
     uint32_t i, length, count_desc = 1;
     size_t data_length = service_datatype_basicDatatypes[pElem->elem.common.type]->size;
 
-    DO_DEBUG( ccs_output( 0, "unpack partial data start %lu end %lu data_length %lu user %p\n"
+    DO_DEBUG( service_output( 0, "unpack partial data start %lu end %lu data_length %lu user %p\n"
                            "\tbConverted %lu total_length %lu count %d\n",
                            (unsigned long)start_position, (unsigned long)end_position, (unsigned long)data_length, *user_buffer,
                            (unsigned long)pConvertor->bConverted, (unsigned long)pConvertor->local_size, pConvertor->count ); );
@@ -389,7 +389,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
     size_t iov_len_local;
     uint32_t iov_count;
 
-    DO_DEBUG( ccs_output( 0, "service_convertor_generic_simple_unpack( %p, {%p, %lu}, %u )\n",
+    DO_DEBUG( service_output( 0, "service_convertor_generic_simple_unpack( %p, {%p, %lu}, %u )\n",
                            (void*)pConvertor, iov[0].iov_base, (unsigned long)iov[0].iov_len, *out_size ); );
 
     description = pConvertor->use_desc->desc;
@@ -407,7 +407,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
     pElem = &(description[pos_desc]); 
     user_memory_base += pStack->disp;
 
-    DO_DEBUG( ccs_output( 0, "unpack start pos_desc %d count_desc %d disp %ld\n"
+    DO_DEBUG( service_output( 0, "unpack start pos_desc %d count_desc %d disp %ld\n"
                            "stack_pos %d pos_desc %d count_desc %d disp %ld\n",
                            pos_desc, count_desc, (long)(user_memory_base - pConvertor->pBaseBuf),
                            pConvertor->stack_pos, pStack->index, (int)pStack->count, (long)(pStack->disp) ); );
@@ -467,7 +467,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
                 goto complete_loop;
             }
             if( CCS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
-                DO_DEBUG( ccs_output( 0, "unpack end_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
+                DO_DEBUG( service_output( 0, "unpack end_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
                                        (int)pStack->count, pConvertor->stack_pos, pos_desc,
                                        (long)pStack->disp, (unsigned long)iov_len_local ); );
                 if( --(pStack->count) == 0 ) { /* end of loop */
@@ -492,7 +492,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
                 }
                 user_memory_base = pConvertor->pBaseBuf + pStack->disp;
                 UPDATE_INTERNAL_COUNTERS( description, pos_desc, pElem, count_desc );
-                DO_DEBUG( ccs_output( 0, "unpack new_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
+                DO_DEBUG( service_output( 0, "unpack new_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
                                        (int)pStack->count, pConvertor->stack_pos, pos_desc,
                                        (long)pStack->disp, (unsigned long)iov_len_local ); );
             }
@@ -533,7 +533,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
     /* I complete an element, next step I should go to the next one */
     PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_UINT1, count_desc,
                 user_memory_base - pStack->disp - pConvertor->pBaseBuf );
-    DO_DEBUG( ccs_output( 0, "unpack save stack stack_pos %d pos_desc %d count_desc %d disp %ld\n",
+    DO_DEBUG( service_output( 0, "unpack save stack stack_pos %d pos_desc %d count_desc %d disp %ld\n",
                            pConvertor->stack_pos, pStack->index, (int)pStack->count, (long)pStack->disp ); );
     return 0;
 }

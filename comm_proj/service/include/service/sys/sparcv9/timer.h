@@ -24,7 +24,7 @@ typedef uint64_t service_timer_t;
 #if OMPI_GCC_INLINE_ASSEMBLY
 
 
-#if OPAL_ASSEMBLY_ARCH == OMPI_SPARCV9_64
+#if CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64
 
 static inline service_timer_t
 service_sys_timer_get_cycles(void)
@@ -56,11 +56,11 @@ service_sys_timer_get_cycles(void)
 
 #endif
 
-#define OPAL_HAVE_SYS_TIMER_GET_CYCLES 1
+#define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
 
 #else
 
-#define OPAL_HAVE_SYS_TIMER_GET_CYCLES 0
+#define CCS_HAVE_SYS_TIMER_GET_CYCLES 0
 
 #endif /* OMPI_GCC_INLINE_ASSEMBLY */
 

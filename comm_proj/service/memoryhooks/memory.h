@@ -35,10 +35,10 @@
  * and that entire stack).
  */
 
-#ifndef OPAL_MEMORY_MEMORY_H
+#ifndef CCS_MEMORY_MEMORY_H
 #define OPAl_MEMORY_MEMORY_H
 
-#include "opal_config.h"
+#include "ccs_config.h"
 #include "memory_internal.h"
 
 BEGIN_C_DECLS
@@ -55,9 +55,9 @@ BEGIN_C_DECLS
  * so not calling this function does not prevent the memory hooks from
  * becoming active.
  *
- * @retval OPAL_SUCCESS Initialization completed successfully
+ * @retval CCS_SUCCESS Initialization completed successfully
  */
-OPAL_DECLSPEC int opal_mem_hooks_init(void);
+CCS_DECLSPEC int opal_mem_hooks_init(void);
 
 
 /**
@@ -73,9 +73,9 @@ OPAL_DECLSPEC int opal_mem_hooks_init(void);
  * receive a callback once the calling thread has exited
  * opal_mem_hooks_finalize().
  *
- * @retval OPAL_SUCCESS Shutdown completed successfully
+ * @retval CCS_SUCCESS Shutdown completed successfully
  */
-OPAL_DECLSPEC int opal_mem_hooks_finalize(void);
+CCS_DECLSPEC int opal_mem_hooks_finalize(void);
 
 
 /**
@@ -86,15 +86,15 @@ OPAL_DECLSPEC int opal_mem_hooks_finalize(void);
  * support is provided or a bit-wise OR of the available return values
  * if support is provided.
  *
- * @retval OPAL_MEMORY_FREE_SUPPORT   Memory hooks subsytem can trigger
+ * @retval CCS_MEMORY_FREE_SUPPORT   Memory hooks subsytem can trigger
  *                                    callback events when memory is going 
  *                                    to be released by the process, either
  *                                    by the user calling an allocator
  *                                    function or munmap.  Implies
- *                                    OPAL_MEMORY_MUNMAP_SUPPORT.
- * @retval OPAL_MEMORY_MUNMAP_SUPPORT Subsystem can trigger callback events
+ *                                    CCS_MEMORY_MUNMAP_SUPPORT.
+ * @retval CCS_MEMORY_MUNMAP_SUPPORT Subsystem can trigger callback events
  *                                    by the user calling munmap directly.
- * @retval OPAL_MEMORY_CHUNK_SUPPORT  Memory hooks subsystem will only 
+ * @retval CCS_MEMORY_CHUNK_SUPPORT  Memory hooks subsystem will only 
  *                                    trigger callback events when the
  *                                    process is giving memory back to the
  *                                    operating system, not at ever call
@@ -102,7 +102,7 @@ OPAL_DECLSPEC int opal_mem_hooks_finalize(void);
  *
  * \note This function must be called after opal_mem_hooks_init().
  */
-OPAL_DECLSPEC int opal_mem_hooks_support_level(void);
+CCS_DECLSPEC int opal_mem_hooks_support_level(void);
 
 
 /**
@@ -135,13 +135,13 @@ typedef void (opal_mem_hooks_callback_fn_t)(void *buf, size_t length,
  * @param cbdata  A pointer-length field to be passed to func when it is
  *                invoked.
  *
- * @retval OPAL_SUCCESS The registration completed successfully.
- * @retval OPAL_EXISTS  The function is already registered and will not
+ * @retval CCS_SUCCESS The registration completed successfully.
+ * @retval CCS_EXISTS  The function is already registered and will not
  *                      be registered again.
- * @retval OPAL_ERR_NOT_SUPPORTED There are no hooks available for 
+ * @retval CCS_ERR_NOT_SUPPORTED There are no hooks available for 
  *                      receiving callbacks when memory is to be released
  */
-OPAL_DECLSPEC int opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, 
+CCS_DECLSPEC int opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, 
                                                   void *cbdata);
 
 /**
@@ -151,12 +151,12 @@ OPAL_DECLSPEC int opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *
  *
  * @param func   Function pointer to registered callback to remove
  *
- * @retval OPAL_SUCCESS The function was successfully deregistered
- * @retval OPAL_ERR_NOT_FOUND The function was not previously registered
+ * @retval CCS_SUCCESS The function was successfully deregistered
+ * @retval CCS_ERR_NOT_FOUND The function was not previously registered
  */
-OPAL_DECLSPEC int opal_mem_hooks_unregister_release(opal_mem_hooks_callback_fn_t *func);
+CCS_DECLSPEC int opal_mem_hooks_unregister_release(opal_mem_hooks_callback_fn_t *func);
 
 
 END_C_DECLS
 
-#endif /* OPAL_MEMORY_MEMORY_H */
+#endif /* CCS_MEMORY_MEMORY_H */

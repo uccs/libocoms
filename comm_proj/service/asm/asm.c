@@ -16,14 +16,14 @@
  * $HEADER$
  */
 
-#include "opal_config.h"
+#include "ccs_config.h"
 
 #include "opal/sys/atomic.h"
 #include "opal/sys/architecture.h"
 
-#if OPAL_ASSEMBLY_ARCH == OMPI_SPARC
+#if CCS_ASSEMBLY_ARCH == OMPI_SPARC
 
-#if OPAL_WANT_SMP_LOCKS
+#if CCS_WANT_SMP_LOCKS
 
 #define LOCKS_TABLE_SIZE 8
 /* make sure to get into reasonably useful bits (so shift at least 5) */
@@ -32,24 +32,24 @@
 
 /* have to fix if you change LOCKS_TABLE_SIZE */
 static opal_atomic_lock_t locks_table[LOCKS_TABLE_SIZE] = {
-    { { OPAL_ATOMIC_UNLOCKED } }, 
-    { { OPAL_ATOMIC_UNLOCKED } },
-    { { OPAL_ATOMIC_UNLOCKED } },
-    { { OPAL_ATOMIC_UNLOCKED } },
-    { { OPAL_ATOMIC_UNLOCKED } },
-    { { OPAL_ATOMIC_UNLOCKED } },
-    { { OPAL_ATOMIC_UNLOCKED } },
-    { { OPAL_ATOMIC_UNLOCKED } }
+    { { CCS_ATOMIC_UNLOCKED } }, 
+    { { CCS_ATOMIC_UNLOCKED } },
+    { { CCS_ATOMIC_UNLOCKED } },
+    { { CCS_ATOMIC_UNLOCKED } },
+    { { CCS_ATOMIC_UNLOCKED } },
+    { { CCS_ATOMIC_UNLOCKED } },
+    { { CCS_ATOMIC_UNLOCKED } },
+    { { CCS_ATOMIC_UNLOCKED } }
 };
 
-# else /* OPAL_WANT_SMP_LOCKS */
+# else /* CCS_WANT_SMP_LOCKS */
 
 #define LOCKS_TABLE_SIZE 1
 #define FIND_LOCK(addr) (&(locks_table[0]))
 
-static opal_atomic_lock_t locks_table[1] = { OPAL_ATOMIC_UNLOCKED };
+static opal_atomic_lock_t locks_table[1] = { CCS_ATOMIC_UNLOCKED };
 
-#endif /* OPAL_WANT_SMP_LOCKS */
+#endif /* CCS_WANT_SMP_LOCKS */
 
 
 int32_t
@@ -82,4 +82,4 @@ opal_atomic_sub_32(volatile int32_t *addr, int delta)
 }
 
 
-#endif /* OPAL_ASSEMBLY_ARCH == OMPI_SPARC32 */
+#endif /* CCS_ASSEMBLY_ARCH == OMPI_SPARC32 */

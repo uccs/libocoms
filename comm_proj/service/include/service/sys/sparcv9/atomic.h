@@ -26,7 +26,7 @@
 
 #define ASI_P "0x80"
 
-#if OPAL_WANT_SMP_LOCKS
+#if CCS_WANT_SMP_LOCKS
 #define MEMBAR(type) __asm__  __volatile__ ("membar " type : : : "memory")
 #else
 #define MEMBAR(type)
@@ -38,11 +38,11 @@
  * Define constants for Sparc v9 (Ultra Sparc)
  *
  *********************************************************************/
-#define OPAL_HAVE_ATOMIC_MEM_BARRIER 1
+#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_32 1
+#define CCS_HAVE_ATOMIC_CMPSET_32 1
 
-#define OPAL_HAVE_ATOMIC_CMPSET_64 1
+#define CCS_HAVE_ATOMIC_CMPSET_64 1
 
 
 /**********************************************************************
@@ -119,7 +119,7 @@ static inline int service_atomic_cmpset_rel_32( volatile int32_t *addr,
 }
 
 
-#if OPAL_ASSEMBLY_ARCH == OMPI_SPARCV9_64
+#if CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64
 
 static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
@@ -139,7 +139,7 @@ static inline int service_atomic_cmpset_64( volatile int64_t *addr,
    return (ret == oldval);
 }
 
-#else /* OPAL_ASSEMBLY_ARCH == OMPI_SPARCV9_64 */
+#else /* CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64 */
 
 static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
@@ -167,7 +167,7 @@ static inline int service_atomic_cmpset_64( volatile int64_t *addr,
    return (ret == oldval);
 }
 
-#endif /* OPAL_ASSEMBLY_ARCH == OMPI_SPARCV9_64 */
+#endif /* CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64 */
 
 static inline int service_atomic_cmpset_acq_64( volatile int64_t *addr,
                                              int64_t oldval, int64_t newval)

@@ -26,8 +26,8 @@
 #include <string.h>
 #endif  /* HAVE_STRING_H */
 
-#include "opal/util/argv.h"
-#include "opal/constants.h"
+#include "service/util/argv.h"
+#include "service/include/service/constants.h"
 
 #define ARGSIZE 128
 
@@ -40,13 +40,13 @@ int service_argv_append(int *argc, char ***argv, const char *arg)
     int rc;
     
     /* add the new element */
-    if (OPAL_SUCCESS != (rc = service_argv_append_nosize(argv, arg))) {
+    if (CCS_SUCCESS != (rc = service_argv_append_nosize(argv, arg))) {
         return rc;
     }
     
     *argc = service_argv_count(*argv);
     
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 int service_argv_append_nosize(char ***argv, const char *arg)
@@ -58,7 +58,7 @@ int service_argv_append_nosize(char ***argv, const char *arg)
   if (NULL == *argv) {
     *argv = (char**) malloc(2 * sizeof(char *));
     if (NULL == *argv) {
-        return OPAL_ERR_OUT_OF_RESOURCE;
+        return CCS_ERR_OUT_OF_RESOURCE;
     }
     argc = 0;
     (*argv)[0] = NULL;
@@ -72,7 +72,7 @@ int service_argv_append_nosize(char ***argv, const char *arg)
         
         *argv = (char**) realloc(*argv, (argc + 2) * sizeof(char *));
         if (NULL == *argv) {
-            return OPAL_ERR_OUT_OF_RESOURCE;
+            return CCS_ERR_OUT_OF_RESOURCE;
         }
     }
 
@@ -80,13 +80,13 @@ int service_argv_append_nosize(char ***argv, const char *arg)
 
     (*argv)[argc] = strdup(arg);
     if (NULL == (*argv)[argc]) {
-        return OPAL_ERR_OUT_OF_RESOURCE;
+        return CCS_ERR_OUT_OF_RESOURCE;
     }
 
     argc = argc + 1;
     (*argv)[argc] = NULL;
 
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 int service_argv_prepend_nosize(char ***argv, const char *arg)
@@ -99,7 +99,7 @@ int service_argv_prepend_nosize(char ***argv, const char *arg)
     if (NULL == *argv) {
         *argv = (char**) malloc(2 * sizeof(char *));
         if (NULL == *argv) {
-            return OPAL_ERR_OUT_OF_RESOURCE;
+            return CCS_ERR_OUT_OF_RESOURCE;
         }
         (*argv)[0] = strdup(arg);
         (*argv)[1] = NULL;
@@ -109,7 +109,7 @@ int service_argv_prepend_nosize(char ***argv, const char *arg)
         
         *argv = (char**) realloc(*argv, (argc + 2) * sizeof(char *));
         if (NULL == *argv) {
-            return OPAL_ERR_OUT_OF_RESOURCE;
+            return CCS_ERR_OUT_OF_RESOURCE;
         }
         (*argv)[argc+1] = NULL;
 
@@ -120,7 +120,7 @@ int service_argv_prepend_nosize(char ***argv, const char *arg)
         (*argv)[0] = strdup(arg);
     }
 
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 int service_argv_append_unique_nosize(char ***argv, const char *arg, bool overwrite)
@@ -142,7 +142,7 @@ int service_argv_append_unique_nosize(char ***argv, const char *arg, bool overwr
                 free((*argv)[i]);
                 (*argv)[i] = strdup(arg);
             }
-            return OPAL_SUCCESS;
+            return CCS_SUCCESS;
         }
     }
 
@@ -195,7 +195,7 @@ static char **service_argv_split_inter(const char *src_string, int delimiter,
     if (src_string == p) {
       if (include_empty) {
         arg[0] = '\0';
-        if (OPAL_SUCCESS != service_argv_append(&argc, &argv, arg))
+        if (CCS_SUCCESS != service_argv_append(&argc, &argv, arg))
           return NULL;
       }
     }
@@ -203,7 +203,7 @@ static char **service_argv_split_inter(const char *src_string, int delimiter,
     /* tail argument, add straight from the original string */
 
     else if ('\0' == *p) {
-      if (OPAL_SUCCESS != service_argv_append(&argc, &argv, src_string))
+      if (CCS_SUCCESS != service_argv_append(&argc, &argv, src_string))
 	return NULL;
       src_string = p;
       continue;
@@ -219,7 +219,7 @@ static char **service_argv_split_inter(const char *src_string, int delimiter,
       strncpy(argtemp, src_string, arglen);
       argtemp[arglen] = '\0';
 
-      if (OPAL_SUCCESS != service_argv_append(&argc, &argv, argtemp)) {
+      if (CCS_SUCCESS != service_argv_append(&argc, &argv, argtemp)) {
 	free(argtemp);
 	return NULL;
       }
@@ -233,7 +233,7 @@ static char **service_argv_split_inter(const char *src_string, int delimiter,
       strncpy(arg, src_string, arglen);
       arg[arglen] = '\0';
 
-      if (OPAL_SUCCESS != service_argv_append(&argc, &argv, arg))
+      if (CCS_SUCCESS != service_argv_append(&argc, &argv, arg))
 	return NULL;
     }
 
@@ -423,7 +423,7 @@ char **service_argv_copy(char **argv)
   dupv[0] = NULL;
 
   while (NULL != *argv) {
-    if (OPAL_SUCCESS != service_argv_append(&dupc, &dupv, *argv)) {
+    if (CCS_SUCCESS != service_argv_append(&dupc, &dupv, *argv)) {
       service_argv_free(dupv);
       return NULL;
     }
@@ -446,13 +446,13 @@ int service_argv_delete(int *argc, char ***argv, int start, int num_to_delete)
 
     /* Check for the bozo cases */
     if (NULL == argv || NULL == *argv || 0 == num_to_delete) {
-        return OPAL_SUCCESS;
+        return CCS_SUCCESS;
     }
     count = service_argv_count(*argv);
     if (start > count) {
-        return OPAL_SUCCESS;
+        return CCS_SUCCESS;
     } else if (start < 0 || num_to_delete < 0) {
-        return OPAL_ERR_BAD_PARAM;
+        return CCS_ERR_BAD_PARAM;
     }
 
     /* Ok, we have some tokens to delete.  Calculate the new length of
@@ -486,7 +486,7 @@ int service_argv_delete(int *argc, char ***argv, int start, int num_to_delete)
     /* adjust the argc */
     (*argc) -= num_to_delete;
 
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -498,9 +498,9 @@ int service_argv_insert(char ***target, int start, char **source)
     /* Check for the bozo cases */
     
     if (NULL == target || NULL == *target || start < 0) {
-        return OPAL_ERR_BAD_PARAM;
+        return CCS_ERR_BAD_PARAM;
     } else if (NULL == source) {
-        return OPAL_SUCCESS;
+        return CCS_SUCCESS;
     }
 
     /* Easy case: appending to the end */
@@ -540,5 +540,5 @@ int service_argv_insert(char ***target, int start, char **source)
 
     /* All done */
 
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }

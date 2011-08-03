@@ -24,8 +24,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "opal/constants.h"
-#include "opal/util/output.h"
+#include "service/include/service/constants.h"
+#include "service/util/output.h"
 #include "opal/datatype/ccs_datatype.h"
 #include "opal/datatype/service_datatype_internal.h"
 
@@ -142,7 +142,7 @@ void service_datatype_dump( const service_datatype_t* pData )
         index += snprintf( buffer + index, length - index, "No optimized description\n" );
     }
     buffer[index] = '\0';  /* make sure we end the string with 0 */
-    ccs_output( 0, "%s\n", buffer );
+    service_output( 0, "%s\n", buffer );
 
     free(buffer);
 }
