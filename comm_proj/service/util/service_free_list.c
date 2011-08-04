@@ -180,7 +180,7 @@ int ompi_free_list_grow(service_free_list_t* flist, size_t num_elements)
             num_elements = flist->fl_max_to_alloc - flist->fl_num_allocated;
 
     if(num_elements == 0)
-        return OMPI_ERR_TEMP_OUT_OF_RESOURCE;
+        return CCS_ERR_TEMP_OUT_OF_RESOURCE;
 
     head_size = (NULL == flist->fl_mpool) ? flist->fl_frag_size:
         flist->fl_frag_class->cls_sizeof;
@@ -193,7 +193,7 @@ int ompi_free_list_grow(service_free_list_t* flist, size_t num_elements)
     alloc_ptr = (ompi_free_list_memory_t*)malloc(alloc_size);
 
     if(NULL == alloc_ptr)
-        return OMPI_ERR_TEMP_OUT_OF_RESOURCE;
+        return CCS_ERR_TEMP_OUT_OF_RESOURCE;
 
     /* allocate the rest from the mpool */
     if(flist->fl_mpool != NULL) {
@@ -205,7 +205,7 @@ int ompi_free_list_grow(service_free_list_t* flist, size_t num_elements)
                    MCA_MPOOL_FLAGS_CACHE_BYPASS, &reg);
             if(NULL == mpool_alloc_ptr) {
                 free(alloc_ptr);
-                return OMPI_ERR_TEMP_OUT_OF_RESOURCE;
+                return CCS_ERR_TEMP_OUT_OF_RESOURCE;
             }
         }
     }

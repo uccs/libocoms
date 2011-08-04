@@ -183,7 +183,7 @@ CCS_DECLSPEC int service_free_list_resize(service_free_list_t *flist, size_t siz
  * returned to the caller.
  */
  
-#define OMPI_FREE_LIST_GET(fl, item, rc) \
+#define SERVICE_FREE_LIST_GET(fl, item, rc) \
 { \
     rc = CCS_SUCCESS; \
     item = (service_free_list_item_t*) service_atomic_lifo_pop(&((fl)->super)); \
@@ -196,7 +196,7 @@ CCS_DECLSPEC int service_free_list_resize(service_free_list_t *flist, size_t siz
             service_free_list_grow((fl), (fl)->fl_num_per_alloc); \
         } \
         item = (service_free_list_item_t*) service_atomic_lifo_pop(&((fl)->super)); \
-        if( CCS_UNLIKELY(NULL == item) ) rc = OMPI_ERR_TEMP_OUT_OF_RESOURCE; \
+        if( CCS_UNLIKELY(NULL == item) ) rc = CCS_ERR_TEMP_OUT_OF_RESOURCE; \
     }  \
 } 
 
@@ -213,7 +213,7 @@ CCS_DECLSPEC int service_free_list_resize(service_free_list_t *flist, size_t siz
  * is returned to the list.
  */
 
-#define OMPI_FREE_LIST_WAIT(fl, item, rc)                                  \
+#define SERVICE_FREE_LIST_WAIT(fl, item, rc)                                  \
     rc = __service_free_list_wait( (fl), &(item) )
 
 static inline int __service_free_list_wait( service_free_list_t* fl,
@@ -263,7 +263,7 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
  *
  */
  
-#define OMPI_FREE_LIST_RETURN(fl, item)                                 \
+#define SERVICE_FREE_LIST_RETURN(fl, item)                                 \
     do {                                                                \
         service_list_item_t* original;                                     \
                                                                         \
