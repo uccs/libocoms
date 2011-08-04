@@ -278,3 +278,23 @@ typedef unsigned char bool;
 #else
   bummer
 #endif
+
+  /**
+   * Because of the way we're using the opal_object inside Open MPI (i.e.
+   * dynamic resolution at run-time to derive all objects from the basic
+   * type), on Windows we have to build everything on C++ mode, simply
+   * because the C mode does not support dynamic resolution in DLL.  Therefore,
+   * no automatic conversion is allowed. All types have to be explicitly casted
+   * or the compiler generate an error. This is true even for the void* type. As
+   * we use void* to silence others compilers in the resolution of the addr member
+   * of the iovec structure, we have now to find a way around. The simplest solution
+   * is to define a special type for this field (just for casting). It can be
+   * set to void* on all platforms with the exception of windows where it has to be
+   * char*.
+   */
+#if defined(__WINDOWS__)
+#define IOVBASE_TYPE  char
+#else
+#define IOVBASE_TYPE  void
+#endif  /* defined(__WINDOWS__) */
+

@@ -36,7 +36,7 @@ subdir_failure="$4"
 #
 
 if test "$subdir_dir" != ":" -a -d $srcdir/$subdir_dir; then
-    AC_MSG_NOTICE([CCS configuring in $subdir_dir])
+    AC_MSG_NOTICE([OMPI configuring in $subdir_dir])
 
     #
     # Gotta check where srcdir is for VPATH builds.  If srcdir is not
