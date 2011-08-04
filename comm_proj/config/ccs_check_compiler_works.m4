@@ -27,7 +27,7 @@ dnl
 # a clean exit from the application (e.g., "return 0" in C/C++, empty in
 # fortran).
 AC_DEFUN([CCS_CHECK_COMPILER_WORKS],
-[   AS_VAR_PUSHDEF([lang_var], [ompi_cv_$1_works])
+[   AS_VAR_PUSHDEF([lang_var], [ccs_cv_$1_works])
 
     AC_CACHE_CHECK([if $1 compiler works], lang_var,
         [AC_LANG_PUSH($1)

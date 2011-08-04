@@ -52,12 +52,12 @@ AC_DEFUN([CCS_CHECK_OPENIB],[
     AC_MSG_CHECKING([if want to add padding to the openib control header])
     if test "$enable_openib_control_hdr_padding" = "yes"; then
         AC_MSG_RESULT([yes])
-        ompi_openib_pad_hdr=1
+        ccs_openib_pad_hdr=1
     else
         AC_MSG_RESULT([no])
-        ompi_openib_pad_hdr=0
+        ccs_openib_pad_hdr=0
     fi
-    AC_DEFINE_UNQUOTED([CCS_OPENIB_PAD_HDR], [$ompi_openib_pad_hdr],
+    AC_DEFINE_UNQUOTED([CCS_OPENIB_PAD_HDR], [$ccs_openib_pad_hdr],
                        [Add padding bytes to the openib control header])
 
     #
@@ -84,25 +84,25 @@ dnl                        [enable_openib_ibcm="$enableval"], [enable_openib_ibc
                         [enable_openib_rdmacm="$enableval"], [enable_openib_rdmacm="yes"])
 
     AS_IF([test ! -z "$with_openib" -a "$with_openib" != "yes"],
-          [ompi_check_openib_dir="$with_openib"])
+          [ccs_check_openib_dir="$with_openib"])
     AS_IF([test ! -z "$with_openib_libdir" -a "$with_openib_libdir" != "yes"],
-          [ompi_check_openib_libdir="$with_openib_libdir"])
+          [ccs_check_openib_libdir="$with_openib_libdir"])
     AS_IF([test "$with_openib" = "no"],
-          [ompi_check_openib_happy="no"],
-          [ompi_check_openib_happy="yes"])
+          [ccs_check_openib_happy="no"],
+          [ccs_check_openib_happy="yes"])
 
-    ompi_check_openib_$1_save_CPPFLAGS="$CPPFLAGS"
-    ompi_check_openib_$1_save_LDFLAGS="$LDFLAGS"
-    ompi_check_openib_$1_save_LIBS="$LIBS"
+    ccs_check_openib_$1_save_CPPFLAGS="$CPPFLAGS"
+    ccs_check_openib_$1_save_LDFLAGS="$LDFLAGS"
+    ccs_check_openib_$1_save_LIBS="$LIBS"
 
-    AS_IF([test "$ompi_check_openib_happy" = "yes"],
+    AS_IF([test "$ccs_check_openib_happy" = "yes"],
           [AS_IF([test "$THREAD_TYPE" != "posix" -a "$memory_ptmalloc2_happy" = "yes"],
                  [AS_IF([test "$enable_ptmalloc2_internal" = "yes"],
                         [AC_MSG_WARN([POSIX threads are disabled, but])
                          AC_MSG_WARN([--enable-ptmalloc2-internal was specified.  This will])
                          AC_MSG_WARN([cause memory corruption with OpenFabrics.])
                          AC_MSG_WARN([Not building component.])
-                         ompi_check_openib_happy="no"],
+                         ccs_check_openib_happy="no"],
                         [AC_MSG_WARN([POSIX threads are disabled, but the ptmalloc2 memory])
                          AC_MSG_WARN([manager is being built.  Compiling MPI applications with])
                          AC_MSG_WARN([-lopenmpi-malloc will result in memory corruption; Open])
@@ -110,49 +110,49 @@ dnl                        [enable_openib_ibcm="$enableval"], [enable_openib_ibc
                          AC_MSG_WARN([combination is detected.])
                          AC_MSG_WARN([You have been warned.])])])])
 
-    AS_IF([test "$ompi_check_openib_happy" = "yes"], 
+    AS_IF([test "$ccs_check_openib_happy" = "yes"], 
             [AC_CHECK_HEADERS(
                 fcntl.h sys/poll.h,
                     [],
                     [AC_MSG_WARN([fcntl.h sys/poll.h not found.  Can not build component.])
-                    ompi_check_openib_happy="no"])]) 
+                    ccs_check_openib_happy="no"])]) 
 
-    AS_IF([test "$ompi_check_openib_happy" = "yes"], 
+    AS_IF([test "$ccs_check_openib_happy" = "yes"], 
           [CCS_CHECK_PACKAGE([$1],
                               [infiniband/verbs.h],
                               [ibverbs],
                               [ibv_open_device],
                               [],
-                              [$ompi_check_openib_dir],
-                              [$ompi_check_openib_libdir],
-                              [ompi_check_openib_happy="yes"],
-                              [ompi_check_openib_happy="no"])])
+                              [$ccs_check_openib_dir],
+                              [$ccs_check_openib_libdir],
+                              [ccs_check_openib_happy="yes"],
+                              [ccs_check_openib_happy="no"])])
 
     CPPFLAGS="$CPPFLAGS $$1_CPPFLAGS"
     LDFLAGS="$LDFLAGS $$1_LDFLAGS"
     LIBS="$LIBS $$1_LIBS"
 
-    AS_IF([test "$ompi_check_openib_happy" = "yes"],
+    AS_IF([test "$ccs_check_openib_happy" = "yes"],
           [AC_CACHE_CHECK(
               [number of arguments to ibv_create_cq],
-              [ompi_cv_func_ibv_create_cq_args],
+              [ccs_cv_func_ibv_create_cq_args],
               [AC_LINK_IFELSE(
                  [AC_LANG_PROGRAM(
                     [[#include <infiniband/verbs.h> ]],
                     [[ibv_create_cq(NULL, 0, NULL, NULL, 0);]])],
-                 [ompi_cv_func_ibv_create_cq_args=5],
+                 [ccs_cv_func_ibv_create_cq_args=5],
                  [AC_LINK_IFELSE(
                     [AC_LANG_PROGRAM(
                        [[#include <infiniband/verbs.h> ]],
                        [[ibv_create_cq(NULL, 0, NULL);]])],
-                    [ompi_cv_func_ibv_create_cq_args=3],
-                    [ompi_cv_func_ibv_create_cq_args="unknown"])])])
-           AS_IF([test "$ompi_cv_func_ibv_create_cq_args" = "unknown"],
+                    [ccs_cv_func_ibv_create_cq_args=3],
+                    [ccs_cv_func_ibv_create_cq_args="unknown"])])])
+           AS_IF([test "$ccs_cv_func_ibv_create_cq_args" = "unknown"],
                  [AC_MSG_WARN([Can not determine number of args to ibv_create_cq.])
                   AC_MSG_WARN([Not building component.])
-                  ompi_check_openib_happy="no"],
+                  ccs_check_openib_happy="no"],
                  [AC_DEFINE_UNQUOTED([CCS_IBV_CREATE_CQ_ARGS],
-                                     [$ompi_cv_func_ibv_create_cq_args],
+                                     [$ccs_cv_func_ibv_create_cq_args],
                                      [Number of arguments to ibv_create_cq])])])
 
     # Set these up so that we can do an AC_DEFINE below
@@ -162,7 +162,7 @@ dnl                        [enable_openib_ibcm="$enableval"], [enable_openib_ibc
     $1_have_ibcm=0
 
     # If we have the openib stuff available, find out what we've got
-    AS_IF([test "$ompi_check_openib_happy" = "yes"],
+    AS_IF([test "$ccs_check_openib_happy" = "yes"],
           [AC_CHECK_DECLS([IBV_EVENT_CLIENT_REREGISTER, IBV_ACCESS_SO], [], [],
                           [#include <infiniband/verbs.h>])
            AC_CHECK_FUNCS([ibv_get_device_list ibv_resize_cq])
@@ -232,7 +232,7 @@ dnl           fi
     # will fail if the header is present but not compilable, *but it
     # will not print the big scary warning*.  See
     # http://lists.gnu.org/archive/html/autoconf/2008-10/msg00143.html.
-    AS_IF([test "$ompi_check_openib_happy" = "yes"],
+    AS_IF([test "$ccs_check_openib_happy" = "yes"],
           [AC_CHECK_HEADERS([infiniband/driver.h], [], [], 
                             [AC_INCLUDES_DEFAULT])])
 
@@ -267,11 +267,11 @@ dnl           fi
         AC_MSG_RESULT([no])
     fi
 
-    CPPFLAGS="$ompi_check_openib_$1_save_CPPFLAGS"
-    LDFLAGS="$ompi_check_openib_$1_save_LDFLAGS"
-    LIBS="$ompi_check_openib_$1_save_LIBS"
+    CPPFLAGS="$ccs_check_openib_$1_save_CPPFLAGS"
+    LDFLAGS="$ccs_check_openib_$1_save_LDFLAGS"
+    LIBS="$ccs_check_openib_$1_save_LIBS"
 
-    AS_IF([test "$ompi_check_openib_happy" = "yes"],
+    AS_IF([test "$ccs_check_openib_happy" = "yes"],
           [$2],
           [AS_IF([test ! -z "$with_openib" -a "$with_openib" != "no"],
                  [AC_MSG_WARN([OpenFabrics support requested (via --with-openib) but not found.])

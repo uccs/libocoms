@@ -29,12 +29,12 @@ AC_DEFUN([CCS_C_COMPILER_VENDOR], [
     AC_REQUIRE([AC_PROG_CC])
 
     AC_CACHE_CHECK([for the C compiler vendor],
-        [ompi_cv_c_compiler_vendor],
+        [ccs_cv_c_compiler_vendor],
         [AC_LANG_PUSH(C)
-         _CCS_CHECK_COMPILER_VENDOR([ompi_cv_c_compiler_vendor])
+         _CCS_CHECK_COMPILER_VENDOR([ccs_cv_c_compiler_vendor])
          AC_LANG_POP(C)])
 
-    $1="$ompi_cv_c_compiler_vendor"
+    $1="$ccs_cv_c_compiler_vendor"
 ])
 
 
@@ -49,12 +49,12 @@ AC_DEFUN([CCS_CXX_COMPILER_VENDOR], [
     AC_REQUIRE([AC_PROG_CXX])
 
     AC_CACHE_CHECK([for the C++ compiler vendor],
-        [ompi_cv_cxx_compiler_vendor],
+        [ccs_cv_cxx_compiler_vendor],
         [AC_LANG_PUSH(C++)
-         _CCS_CHECK_COMPILER_VENDOR([ompi_cv_cxx_compiler_vendor])
+         _CCS_CHECK_COMPILER_VENDOR([ccs_cv_cxx_compiler_vendor])
          AC_LANG_POP(C++)])
 
-    $1="$ompi_cv_c_compiler_vendor"
+    $1="$ccs_cv_c_compiler_vendor"
 ])
 
 # workaround to avoid syntax error with Autoconf < 2.68:
@@ -96,157 +96,157 @@ choke me
 # thanks to http://predef.sourceforge.net/precomp.html for the list
 # of defines to check.
 AC_DEFUN([_CCS_CHECK_COMPILER_VENDOR], [
-    ompi_check_compiler_vendor_result="unknown"
+    ccs_check_compiler_vendor_result="unknown"
 
     # GNU is probably the most common, so check that one as soon as
     # possible.  Intel pretends to be GNU, so need to check Intel
     # before checking for GNU.
 
     # Intel
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IF_IFELSE([defined(__INTEL_COMPILER) || defined(__ICC)], 
-               [ompi_check_compiler_vendor_result="intel"])])
+               [ccs_check_compiler_vendor_result="intel"])])
 
     # GNU
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__GNUC__], 
-               [ompi_check_compiler_vendor_result="gnu"])])
+               [ccs_check_compiler_vendor_result="gnu"])])
 
     # Borland Turbo C
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__TURBOC__], 
-               [ompi_check_compiler_vendor_result="borland"])])
+               [ccs_check_compiler_vendor_result="borland"])])
 
     # Borland C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__BORLANDC__], 
-               [ompi_check_compiler_vendor_result="borland"])])
+               [ccs_check_compiler_vendor_result="borland"])])
 
     # Comeau C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__COMO__], 
-               [ompi_check_compiler_vendor_result="comeau"])])
+               [ccs_check_compiler_vendor_result="comeau"])])
 
     # Compaq C/C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IF_IFELSE([defined(__DECC) || defined(VAXC) || defined(__VAXC)],
-               [ompi_check_compiler_vendor_result="compaq"],
+               [ccs_check_compiler_vendor_result="compaq"],
                [CCS_IF_IFELSE([defined(__osf__) && defined(__LANGUAGE_C__)],
-                    [ompi_check_compiler_vendor_result="compaq"],
+                    [ccs_check_compiler_vendor_result="compaq"],
                     [CCS_IFDEF_IFELSE([__DECCXX],
-                         [ompi_check_compiler_vendor_result="compaq"])])])])
+                         [ccs_check_compiler_vendor_result="compaq"])])])])
 
     # Cray C/C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([_CRAYC], 
-               [ompi_check_compiler_vendor_result="cray"])])
+               [ccs_check_compiler_vendor_result="cray"])])
 
     # Diab C/C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__DCC__], 
-               [ompi_check_compiler_vendor_result="diab"])])
+               [ccs_check_compiler_vendor_result="diab"])])
 
     # Digital Mars
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IF_IFELSE([defined(__DMC__) || defined(__SC__) || defined(__ZTC__)],
-               [ompi_check_compiler_vendor_result="digital mars"])])
+               [ccs_check_compiler_vendor_result="digital mars"])])
 
     # HP ANSI C / aC++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IF_IFELSE([defined(__HP_cc) || defined(__HP_aCC)],
-               [ompi_check_compiler_vendor_result="hp"])])
+               [ccs_check_compiler_vendor_result="hp"])])
 
     # IBM XL C/C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IF_IFELSE([defined(__xlC__) || defined(__IBMC__) || defined(__IBMCPP__)],
-               [ompi_check_compiler_vendor_result="ibm"],
+               [ccs_check_compiler_vendor_result="ibm"],
                [CCS_IF_IFELSE([defined(_AIX) && !defined(__GNUC__)],
-                    [ompi_check_compiler_vendor_result="ibm"])])])
+                    [ccs_check_compiler_vendor_result="ibm"])])])
 
     # KAI C++ (rest in peace)
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__KCC],
-               [ompi_check_compiler_vendor_result="kai"])])
+               [ccs_check_compiler_vendor_result="kai"])])
 
     # LCC
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__LCC__],
-               [ompi_check_compiler_vendor_result="lcc"])])
+               [ccs_check_compiler_vendor_result="lcc"])])
 
     # MetaWare High C/C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__HIGHC__],
-               [ompi_check_compiler_vendor_result="metaware high"])])
+               [ccs_check_compiler_vendor_result="metaware high"])])
 
     # Metrowerks Codewarrior
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__MWERKS__],
-               [ompi_check_compiler_vendor_result="metrowerks"])])
+               [ccs_check_compiler_vendor_result="metrowerks"])])
 
     # MIPSpro (SGI)
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IF_IFELSE([defined(sgi) || defined(__sgi)], 
-               [ompi_check_compiler_vendor_result="sgi"])])
+               [ccs_check_compiler_vendor_result="sgi"])])
 
     # MPW C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IF_IFELSE([defined(__MRC__) || defined(MPW_C) || defined(MPW_CPLUS)], 
-               [ompi_check_compiler_vendor_result="mpw"])])
+               [ccs_check_compiler_vendor_result="mpw"])])
 
     # Microsoft
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [# Always use C compiler when checking for Microsoft, as 
            # Visual C++ doesn't recognize .cc as a C++ file.
            AC_LANG_PUSH(C)
            CCS_IF_IFELSE([defined(_MSC_VER) || defined(__MSC_VER)], 
-               [ompi_check_compiler_vendor_result="microsoft"])
+               [ccs_check_compiler_vendor_result="microsoft"])
            AC_LANG_POP(C)])
 
     # Norcroft C
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__CC_NORCROFT],
-               [ompi_check_compiler_vendor_result="norcroft"])])
+               [ccs_check_compiler_vendor_result="norcroft"])])
 
     # Pelles C
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__POCC__],
-               [ompi_check_compiler_vendor_result="pelles"])])
+               [ccs_check_compiler_vendor_result="pelles"])])
 
     # Portland Group
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__PGI], 
-               [ompi_check_compiler_vendor_result="portland group"])])
+               [ccs_check_compiler_vendor_result="portland group"])])
 
     # SAS/C
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IF_IFELSE([defined(SASC) || defined(__SASC) || defined(__SASC__)],
-               [ompi_check_compiler_vendor_result="sas"])])
+               [ccs_check_compiler_vendor_result="sas"])])
 
     # Sun Workshop C/C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IF_IFELSE([defined(__SUNPRO_C) || defined(__SUNPRO_CC)],
-               [ompi_check_compiler_vendor_result="sun"])])
+               [ccs_check_compiler_vendor_result="sun"])])
 
     # TenDRA C/C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__TenDRA__],
-               [ompi_check_compiler_vendor_result="tendra"])])
+               [ccs_check_compiler_vendor_result="tendra"])])
 
     # Tiny C
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__TINYC__],
-               [ompi_check_compiler_vendor_result="tiny"])])
+               [ccs_check_compiler_vendor_result="tiny"])])
 
     # USL C
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__USLC__],
-               [ompi_check_compiler_vendor_result="usl"])])
+               [ccs_check_compiler_vendor_result="usl"])])
 
     # Watcom C++
-    AS_IF([test "$ompi_check_compiler_vendor_result" = "unknown"],
+    AS_IF([test "$ccs_check_compiler_vendor_result" = "unknown"],
           [CCS_IFDEF_IFELSE([__WATCOMC__],
-               [ompi_check_compiler_vendor_result="watcom"])])
+               [ccs_check_compiler_vendor_result="watcom"])])
 
-    $1="$ompi_check_compiler_vendor_result"
-    unset ompi_check_compiler_vendor_result
+    $1="$ccs_check_compiler_vendor_result"
+    unset ccs_check_compiler_vendor_result
 ])

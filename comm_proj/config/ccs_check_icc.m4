@@ -45,9 +45,9 @@ int main ()
   return 0;
 }
 
-],[ompi_ac_icc_varargs=`test -f conftestval`],[ompi_ac_icc_varargs=1],[ompi_ac_icc_varargs=1])
+],[ccs_ac_icc_varargs=`test -f conftestval`],[ccs_ac_icc_varargs=1],[ccs_ac_icc_varargs=1])
 
-if test "$ompi_ac_icc_varargs" = "1"; then
+if test "$ccs_ac_icc_varargs" = "1"; then
     AC_MSG_WARN([*** Problem running configure test!])
     AC_MSG_WARN([*** Your icc-8.1 compiler seems to miscompile va_start!])
     AC_MSG_WARN([*** Please upgrade compiler to at least version 8.1.027])

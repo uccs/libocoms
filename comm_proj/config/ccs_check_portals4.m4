@@ -34,32 +34,32 @@ AC_DEFUN([CCS_CHECK_PORTALS4],[
              [Search for Portals4 libraries in DIR])])
     CCS_CHECK_WITHDIR([portals4-libdir], [$with_portals4_libdir], [libportals.*])
 
-    ompi_check_portals4_$1_save_CPPFLAGS="$CPPFLAGS"
-    ompi_check_portals4_$1_save_LDFLAGS="$LDFLAGS"
-    ompi_check_portals4_$1_save_LIBS="$LIBS"
+    ccs_check_portals4_$1_save_CPPFLAGS="$CPPFLAGS"
+    ccs_check_portals4_$1_save_LDFLAGS="$LDFLAGS"
+    ccs_check_portals4_$1_save_LIBS="$LIBS"
 
     AS_IF([test "$with_portals4" != "no"],
           [AS_IF([test ! -z "$with_portals4" -a "$with_portals4" != "yes"],
-                 [ompi_check_portals4_dir="$with_portals4"])
+                 [ccs_check_portals4_dir="$with_portals4"])
            AS_IF([test ! -z "$with_portals4_libdir" -a "$with_portals4_libdir" != "yes"],
-                 [ompi_check_portals4_libdir="$with_portals4_libdir"])
+                 [ccs_check_portals4_libdir="$with_portals4_libdir"])
 
            CCS_CHECK_PACKAGE([$1],
                               [portals4.h],
                               [portals],
                               [PtlLEAppend],
 			      [],
-                              [$ompi_check_portals4_dir],
-                              [$ompi_check_portals4_libdir],
-                              [ompi_check_portals4_happy="yes"],
-                              [ompi_check_portals4_happy="no"])],
-          [ompi_check_portals4_happy="no"])
+                              [$ccs_check_portals4_dir],
+                              [$ccs_check_portals4_libdir],
+                              [ccs_check_portals4_happy="yes"],
+                              [ccs_check_portals4_happy="no"])],
+          [ccs_check_portals4_happy="no"])
 
-    CPPFLAGS="$ompi_check_portals4_$1_save_CPPFLAGS"
-    LDFLAGS="$ompi_check_portals4_$1_save_LDFLAGS"
-    LIBS="$ompi_check_portals4_$1_save_LIBS"
+    CPPFLAGS="$ccs_check_portals4_$1_save_CPPFLAGS"
+    LDFLAGS="$ccs_check_portals4_$1_save_LDFLAGS"
+    LIBS="$ccs_check_portals4_$1_save_LIBS"
 
-    AS_IF([test "$ompi_check_portals4_happy" = "yes"],
+    AS_IF([test "$ccs_check_portals4_happy" = "yes"],
           [$2],
           [AS_IF([test ! -z "$with_portals4" -a "$with_portals4" != "no"],
                  [AC_MSG_ERROR([Portals4 support requested but not found.  Aborting])])

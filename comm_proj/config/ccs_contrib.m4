@@ -38,10 +38,10 @@ AC_DEFUN([CCS_CONTRIB],[
     # Option to not build some of the contributed software packages
     AC_ARG_ENABLE([contrib-no-build],
         AC_HELP_STRING([--enable-contrib-no-build=LIST],
-                        [Comma-separated list of contributed package names that will not be built.  Possible values: ompi_mpicontrib_list.  Example: "--enable-contrib-no-build=foo,bar" will disable building both the "foo" and "bar" contributed software packages (default: none -- i.e., build all possible contrib packages)]))
+                        [Comma-separated list of contributed package names that will not be built.  Possible values: ccs_mpicontrib_list.  Example: "--enable-contrib-no-build=foo,bar" will disable building both the "foo" and "bar" contributed software packages (default: none -- i.e., build all possible contrib packages)]))
 
     # Parse the list to see what we should not build
-    ompi_show_subtitle "Configuring contributed software packages"
+    ccs_show_subtitle "Configuring contributed software packages"
     AC_MSG_CHECKING([which contributed software packages should be disabled])
     if test "$enable_contrib_no_build" = "yes"; then
         AC_MSG_RESULT([yes])
@@ -68,7 +68,7 @@ AC_DEFUN([CCS_CONTRIB],[
 
     # Cycle through each of the software packages and
     # configure them if not disabled.  
-    m4_foreach(software, [ompi_mpicontrib_list],
+    m4_foreach(software, [ccs_mpicontrib_list],
               [_CCS_CONTRIB_CONFIGURE(software)])
 
     # Setup the top-level glue
@@ -95,7 +95,7 @@ AC_DEFUN([CCS_CONTRIB],[
 ######################################################################
 AC_DEFUN([_CCS_CONTRIB_CONFIGURE],[
 
-    ompi_show_subsubsubtitle "$1 (m4 configuration macro)"
+    ccs_show_subsubsubtitle "$1 (m4 configuration macro)"
 
     # Put in a convenient enable/disable switch (it's a little more
     # user friendly than

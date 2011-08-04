@@ -52,12 +52,12 @@ if test "$enable_mpi_threads" = "yes" -a "$enable_ccs_multi_threads" = "no"; the
     AC_MSG_ERROR(["*** Can not continue."])
 # if --disable-mpi-thread-multiple
 elif test "$enable_mpi_threads" = "no"; then
-    ompi_want_mpi_threads=0
+    ccs_want_mpi_threads=0
     CCS_ENABLE_THREAD_MULTIPLE=0
     AC_MSG_RESULT([Disabled])
 #if requested and CCS thread support is enabled
 elif test "$enable_mpi_threads" = "yes" -a "$enable_ccs_multi_threads" = "yes" ; then
-    ompi_want_mpi_threads=1
+    ccs_want_mpi_threads=1
     CCS_ENABLE_THREAD_MULTIPLE=1
     AC_MSG_RESULT([Enabled])
 #if requested and CCS thread support was not explicitly enabled or disabled
@@ -67,16 +67,16 @@ elif test "$enable_mpi_threads" = "yes" -a "$enable_ccs_multi_threads" = "undef"
    enable_ccs_multi_threads="yes"
    AC_DEFINE_UNQUOTED([CCS_ENABLE_MULTI_THREADS], [$CCS_ENABLE_MULTI_THREADS],
                       [Whether we should enable thread support within the CCS code base])
-    ompi_want_mpi_threads=1
+    ccs_want_mpi_threads=1
     CCS_ENABLE_THREAD_MULTIPLE=1
     AC_MSG_RESULT([Enabled - CCS thread support automatically enabled])
 else
     # Default: disable
-    ompi_want_mpi_threads=0
+    ccs_want_mpi_threads=0
     CCS_ENABLE_THREAD_MULTIPLE=0
     AC_MSG_RESULT([Disabled])
 fi
-AC_DEFINE_UNQUOTED([CCS_ENABLE_THREAD_MULTIPLE], [$ompi_want_mpi_threads],
+AC_DEFINE_UNQUOTED([CCS_ENABLE_THREAD_MULTIPLE], [$ccs_want_mpi_threads],
                    [Enable MPI_THREAD_MULTIPLE])
 
 ])dnl

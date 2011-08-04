@@ -33,7 +33,7 @@ AC_DEFUN([CCS_INTERIX],[
     AC_MSG_RESULT([$is_interix])
     if test "$is_interix" = "yes"; then
 
-        ompi_show_subtitle "Interix detection"
+        ccs_show_subtitle "Interix detection"
 
         if ! test -d /usr/include/port; then
             AC_MSG_WARN([Compiling Open MPI under Interix require an up-to-date])

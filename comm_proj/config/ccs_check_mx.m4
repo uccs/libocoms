@@ -24,7 +24,7 @@
 # figure out the mapper version and MAC for each board.
 AC_DEFUN([_CCS_CHECK_MX_MAPPER],[
     AC_CACHE_CHECK([for mx_open_board],
-        [ompi_cv_func_mx_open_board],
+        [ccs_cv_func_mx_open_board],
         [AC_LINK_IFELSE([AC_LANG_PROGRAM(
                 [
 #include <mx_extensions.h>
@@ -33,11 +33,11 @@ AC_DEFUN([_CCS_CHECK_MX_MAPPER],[
                 ], [
 mx_open_board(0, NULL);
                 ])],
-            [ompi_cv_func_mx_open_board="yes"],
-            [ompi_cv_func_mx_open_board="no"])])
+            [ccs_cv_func_mx_open_board="yes"],
+            [ccs_cv_func_mx_open_board="no"])])
 
     AC_CACHE_CHECK([for mx__get_mapper_state],
-        [ompi_cv_func_mx__get_mapper_state],
+        [ccs_cv_func_mx__get_mapper_state],
         [AC_LINK_IFELSE([AC_LANG_PROGRAM(
                 [
 #include <mx_extensions.h>
@@ -46,10 +46,10 @@ mx_open_board(0, NULL);
                 ], [
 mx__get_mapper_state(NULL, NULL);
                 ])],
-             [ompi_cv_func_mx__get_mapper_state="yes"],
-             [ompi_cv_func_mx__get_mapper_state="no"])])
+             [ccs_cv_func_mx__get_mapper_state="yes"],
+             [ccs_cv_func_mx__get_mapper_state="no"])])
 
-    AS_IF([test "$ompi_cv_func_mx_open_board" = "yes" -a "$ompi_cv_func_mx__get_mapper_state" = "yes"],
+    AS_IF([test "$ccs_cv_func_mx_open_board" = "yes" -a "$ccs_cv_func_mx__get_mapper_state" = "yes"],
           [mx_provide_mapper_state=1
            $2],
           [mx_provide_mapper_state=0
@@ -74,35 +74,35 @@ AC_DEFUN([CCS_CHECK_MX],[
              [Search for MX (Myrinet Express) libraries in DIR])])
     CCS_CHECK_WITHDIR([mx-libdir], [$with_mx_libdir], [libmyriexpress.*])
 
-    ompi_check_mx_$1_save_CPPFLAGS="$CPPFLAGS"
-    ompi_check_mx_$1_save_LDFLAGS="$LDFLAGS"
-    ompi_check_mx_$1_save_LIBS="$LIBS"
+    ccs_check_mx_$1_save_CPPFLAGS="$CPPFLAGS"
+    ccs_check_mx_$1_save_LDFLAGS="$LDFLAGS"
+    ccs_check_mx_$1_save_LIBS="$LIBS"
 
     AS_IF([test "$with_mx" != "no"],
           [AS_IF([test ! -z "$with_mx" -a "$with_mx" != "yes"],
-                 [ompi_check_mx_dir="$with_mx"])
+                 [ccs_check_mx_dir="$with_mx"])
            AS_IF([test ! -z "$with_mx_libdir" -a "$with_mx_libdir" != "yes"],
-                 [ompi_check_mx_libdir="$with_mx_libdir"])
+                 [ccs_check_mx_libdir="$with_mx_libdir"])
 
            CCS_CHECK_PACKAGE([$1],
                               [myriexpress.h],
                               [myriexpress],
                               [mx_finalize],
                               [],
-                              [$ompi_check_mx_dir],
-                              [$ompi_check_mx_libdir],
-                              [ompi_check_mx_happy="yes"],
-                              [ompi_check_mx_happy="no"])],
-          [ompi_check_mx_happy="no"])
+                              [$ccs_check_mx_dir],
+                              [$ccs_check_mx_libdir],
+                              [ccs_check_mx_happy="yes"],
+                              [ccs_check_mx_happy="no"])],
+          [ccs_check_mx_happy="no"])
 
     CPPFLAGS="$CPPFLAGS $$1_CPPFLAGS"
     LDFLAGS="$LDFLAGS $$1_LDFLAGS"
     LIBS="$LIBS $$1_LIBS"
 
     # need at least version 1.0
-    AS_IF([test "ompi_check_mx_happy" = "yes"],
+    AS_IF([test "ccs_check_mx_happy" = "yes"],
           [AC_CACHE_CHECK([for MX version 1.0 or later],
-            [ompi_cv_mx_version_ok],
+            [ccs_cv_mx_version_ok],
             [AC_PREPROC_IFELSE(
                 [AC_LANG_PROGRAM([
 #include <myriexpress.h>
@@ -111,11 +111,11 @@ AC_DEFUN([CCS_CHECK_MX],[
 #error "Version less than 0x300"
 #endif
                              ])],
-            [ompi_cv_mx_version_ok="yes"],
-            [ompi_cv_mx_version_ok="no"])])])
-    AS_IF([test "$ompi_cv_mx_version_ok" = "no"], [ompi_check_mx_happy="no"])
+            [ccs_cv_mx_version_ok="yes"],
+            [ccs_cv_mx_version_ok="no"])])])
+    AS_IF([test "$ccs_cv_mx_version_ok" = "no"], [ccs_check_mx_happy="no"])
 
-    AS_IF([test "$ompi_check_mx_happy" = "yes"],
+    AS_IF([test "$ccs_check_mx_happy" = "yes"],
           [AC_CHECK_HEADERS([mx_extensions.h],
                [AC_CHECK_FUNCS([mx_forget mx_register_unexp_handler])
                 _CCS_CHECK_MX_MAPPER()],
@@ -123,15 +123,15 @@ AC_DEFUN([CCS_CHECK_MX],[
 MX extensions, which may result in lower performance.  Please upgrade
 to at least MX 1.2.0 to enable the MX extensions.])])])
 
-    CPPFLAGS="$ompi_check_mx_$1_save_CPPFLAGS"
-    LDFLAGS="$ompi_check_mx_$1_save_LDFLAGS"
-    LIBS="$ompi_check_mx_$1_save_LIBS"
+    CPPFLAGS="$ccs_check_mx_$1_save_CPPFLAGS"
+    LDFLAGS="$ccs_check_mx_$1_save_LDFLAGS"
+    LIBS="$ccs_check_mx_$1_save_LIBS"
 
-    AS_IF([test "$ompi_check_mx_happy" = "yes" -a "$enable_progress_threads" = "yes"],
+    AS_IF([test "$ccs_check_mx_happy" = "yes" -a "$enable_progress_threads" = "yes"],
           [AC_MSG_WARN([MX driver does not currently support progress threads.  Disabling BTL.])
-           ompi_check_mx_happy="no"])
+           ccs_check_mx_happy="no"])
 
-    AS_IF([test "$ompi_check_mx_happy" = "yes"],
+    AS_IF([test "$ccs_check_mx_happy" = "yes"],
           [$2],
           [AS_IF([test ! -z "$with_mx" -a "$with_mx" != "no"],
                  [AC_MSG_ERROR([MX support requested but not found.  Aborting])])

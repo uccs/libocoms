@@ -35,7 +35,7 @@ AC_DEFUN([CCS_CHECK_PORTALS],[
     check_portals_LIBS=
 
     check_portals_configuration="none"
-    ompi_check_portals_happy="yes"
+    ccs_check_portals_happy="yes"
 
     # Get some configuration information
     AC_ARG_WITH([portals],
@@ -127,10 +127,10 @@ AC_DEFUN([CCS_CHECK_PORTALS],[
          AC_LINK_IFELSE([AC_LANG_PROGRAM([#include <${check_portals_header_prefix}portals3.h>], 
                                          [int i; PtlInit(&i);])],
               [AC_MSG_RESULT([yes])
-               ompi_check_portals_happy="yes"],
+               ccs_check_portals_happy="yes"],
               [AC_MSG_RESULT([no])
-               ompi_check_portals_happy="no"])],
-        [ompi_check_portals_happy="no"])
+               ccs_check_portals_happy="no"])],
+        [ccs_check_portals_happy="no"])
 
     # Deal with static-only Portals UTCP libs.  See note in
     # ompi/mca/common/portals/configure.m4.  Then possibly cry.
@@ -149,7 +149,7 @@ AC_DEFUN([CCS_CHECK_PORTALS],[
     $1_LDFLAGS="$check_portals_LDFLAGS"
     $1_LIBS="$check_portals_LIBS"
 
-    AS_IF([test "$ompi_check_portals_happy" = "yes"],
+    AS_IF([test "$ccs_check_portals_happy" = "yes"],
           [$2],
           [AS_IF([test ! -z "$with_portals" -a "$with_portals" != "no"],
                  [AC_MSG_ERROR([Portals support requested but not found.  Aborting])])

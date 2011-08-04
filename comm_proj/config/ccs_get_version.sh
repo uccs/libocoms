@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-# ompi_get_version is created from ompi_get_version.m4 and ompi_get_version.m4sh.
+# ccs_get_version is created from ccs_get_version.m4 and ccs_get_version.m4sh.
 #
 # Copyright (c) 2004-2006 The Trustees of Indiana University and Indiana
 #                         University Research and Technology
@@ -22,7 +22,7 @@
 
 
 
-# OMPI_GET_VERSION(version_file, variable_prefix)
+# CCS_GET_VERSION(version_file, variable_prefix)
 # -----------------------------------------------
 # parse version_file for version information, setting
 # the following shell variables:
@@ -45,10 +45,10 @@ option="$2"
 case "$option" in
     # svnversion can take a while to run.  If we don't need it, don't run it.
     --major|--minor|--release|--greek|--base|--help)
-        ompi_ver_need_svn=0
+        ccs_ver_need_svn=0
         ;;
     *)
-        ompi_ver_need_svn=1
+        ccs_ver_need_svn=1
 esac
 
 
@@ -56,47 +56,47 @@ if test -z "$srcfile"; then
     option="--help"
 else
 
-    : ${ompi_ver_need_svn=1}
+    : ${ccs_ver_need_svn=1}
     : ${svnversion_result=-1}
 
         if test -f "$srcfile"; then
         srcdir=`dirname $srcfile`
-        ompi_vers=`sed -n "
+        ccs_vers=`sed -n "
 	t clear
 	: clear
-	s/^major/OMPI_MAJOR_VERSION/
-	s/^minor/OMPI_MINOR_VERSION/
-	s/^release/OMPI_RELEASE_VERSION/
-	s/^greek/OMPI_GREEK_VERSION/
-	s/^want_svn/OMPI_WANT_SVN/
-	s/^svn_r/OMPI_SVN_R/
-	s/^date/OMPI_RELEASE_DATE/
+	s/^major/CCS_MAJOR_VERSION/
+	s/^minor/CCS_MINOR_VERSION/
+	s/^release/CCS_RELEASE_VERSION/
+	s/^greek/CCS_GREEK_VERSION/
+	s/^want_svn/CCS_WANT_SVN/
+	s/^svn_r/CCS_SVN_R/
+	s/^date/CCS_RELEASE_DATE/
 	t print
 	b
 	: print
 	p" < "$srcfile"`
-	eval "$ompi_vers"
+	eval "$ccs_vers"
 
         # Only print release version if it isn't 0
-        if test $OMPI_RELEASE_VERSION -ne 0 ; then
-            OMPI_VERSION="$OMPI_MAJOR_VERSION.$OMPI_MINOR_VERSION.$OMPI_RELEASE_VERSION"
+        if test $CCS_RELEASE_VERSION -ne 0 ; then
+            CCS_VERSION="$CCS_MAJOR_VERSION.$CCS_MINOR_VERSION.$CCS_RELEASE_VERSION"
         else
-            OMPI_VERSION="$OMPI_MAJOR_VERSION.$OMPI_MINOR_VERSION"
+            CCS_VERSION="$CCS_MAJOR_VERSION.$CCS_MINOR_VERSION"
         fi
-        OMPI_VERSION="${OMPI_VERSION}${OMPI_GREEK_VERSION}"
-        OMPI_BASE_VERSION=$OMPI_VERSION
+        CCS_VERSION="${CCS_VERSION}${CCS_GREEK_VERSION}"
+        CCS_BASE_VERSION=$CCS_VERSION
 
-        if test $OMPI_WANT_SVN -eq 1 && test $ompi_ver_need_svn -eq 1 ; then
+        if test $CCS_WANT_SVN -eq 1 && test $ccs_ver_need_svn -eq 1 ; then
             if test "$svnversion_result" != "-1" ; then
-                OMPI_SVN_R=$svnversion_result
+                CCS_SVN_R=$svnversion_result
             fi
-            if test "$OMPI_SVN_R" = "-1" ; then
+            if test "$CCS_SVN_R" = "-1" ; then
 
                 d=`date '+%m-%d-%Y'`
                 if test -d "$srcdir/.svn" ; then
-                    OMPI_SVN_R=r`svnversion "$srcdir"`
+                    CCS_SVN_R=r`svnversion "$srcdir"`
                     if test $? != 0; then
-                        OMPI_SVN_R="unknown svn version (svnversion not found); $d"
+                        CCS_SVN_R="unknown svn version (svnversion not found); $d"
                     fi
                 elif test -d "$srcdir/.hg" ; then
                     # Check to see if we can find the hg command
@@ -107,17 +107,17 @@ else
                     # found.  So test for hg specifically first.
                     hg --version > /dev/null 2>&1
                     if test $? = 0; then
-                        OMPI_SVN_R=hg`hg -v -R "$srcdir" tip | grep ^changeset: | head -n 1 | cut -d: -f3`
+                        CCS_SVN_R=hg`hg -v -R "$srcdir" tip | grep ^changeset: | head -n 1 | cut -d: -f3`
                     else
-                        OMPI_SVN_R="unknown hg version (hg not found); $d"
+                        CCS_SVN_R="unknown hg version (hg not found); $d"
                     fi
                 fi
-                if test "OMPI_SVN_R" = ""; then
-                    OMPI_SVN_R="svn$d"
+                if test "CCS_SVN_R" = ""; then
+                    CCS_SVN_R="svn$d"
                 fi
 
             fi
-            OMPI_VERSION="${OMPI_VERSION}${OMPI_SVN_R}"
+            CCS_VERSION="${CCS_VERSION}${CCS_SVN_R}"
         fi
     fi
 
@@ -129,31 +129,31 @@ fi
 
 case "$option" in
     --full|-v|--version)
-	echo $OMPI_VERSION
+	echo $CCS_VERSION
 	;;
     --major)
-	echo $OMPI_MAJOR_VERSION
+	echo $CCS_MAJOR_VERSION
 	;;
     --minor)
-	echo $OMPI_MINOR_VERSION
+	echo $CCS_MINOR_VERSION
 	;;
     --release)
-	echo $OMPI_RELEASE_VERSION
+	echo $CCS_RELEASE_VERSION
 	;;
     --greek)
-	echo $OMPI_GREEK_VERSION
+	echo $CCS_GREEK_VERSION
 	;;
     --svn)
-	echo $OMPI_SVN_R
+	echo $CCS_SVN_R
 	;;
     --base)
-        echo $OMPI_BASE_VERSION
+        echo $CCS_BASE_VERSION
         ;;
     --release-date)
-        echo $OMPI_RELEASE_DATE
+        echo $CCS_RELEASE_DATE
         ;;
     --all)
-        echo ${OMPI_VERSION} ${OMPI_MAJOR_VERSION} ${OMPI_MINOR_VERSION} ${OMPI_RELEASE_VERSION} ${OMPI_GREEK_VERSION} ${OMPI_SVN_R}
+        echo ${CCS_VERSION} ${CCS_MAJOR_VERSION} ${CCS_MINOR_VERSION} ${CCS_RELEASE_VERSION} ${CCS_GREEK_VERSION} ${CCS_SVN_R}
         ;;
     -h|--help)
 	cat <<EOF

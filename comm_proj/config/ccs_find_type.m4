@@ -22,7 +22,7 @@ dnl
 #                target size, variable to set)
 # -----------------------------------------------------------
 AC_DEFUN([CCS_FIND_TYPE],[
-    AS_VAR_PUSHDEF([type_var], [ompi_cv_find_type_$1])
+    AS_VAR_PUSHDEF([type_var], [ccs_cv_find_type_$1])
 
     oft_abort_on_fail="$3"
     oft_target_size="$4"

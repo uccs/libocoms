@@ -46,7 +46,7 @@ cat > foo.c <<EOF
 int foo(void) { return 0; }
 EOF
 
-ompi_check_linker_flags_work() {
+ccs_check_linker_flags_work() {
     CCS_LOG_MSG([$cmd], [yes])
     eval $cmd >&5 2>&5
     if test -n "[$]1"; then
@@ -65,16 +65,16 @@ ompi_check_linker_flags_work() {
 #
 
 cmd="$libtool --mode=compile --tag=CC $CC $CFLAGS -c -o foo.o foo.c"
-ompi_check_linker_flags_work
+ccs_check_linker_flags_work
 cmd="$libtool --mode=link --tag=CC $CC $CFLAGS foo.lo $LDFLAGS $LIBS -o libfoo.la"
-ompi_check_linker_flags_work
+ccs_check_linker_flags_work
 
 #
 # Now fake linking to it and capture the output from libtool
 #
 
 cmd="$libtool --dry-run --mode=link --tag=CC $CC bar.lo libfoo.la -o bar $extra_flags"
-ompi_check_linker_flags_work yes
+ccs_check_linker_flags_work yes
 
 # eat any extra whitespace in CC, as libtool will do the same
 tmpCC=`echo $CC | sed -e 's/\//\\\\\//g'`

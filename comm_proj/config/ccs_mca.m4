@@ -221,8 +221,8 @@ AC_DEFUN([CCS_MCA],[
                 MCA_CONFIGURE_PROJECT(mca_project)])
 
     # BWB - fix me...  need to automate this somehow
-    MCA_SETUP_DIRECT_CALL(ompi, pml)
-    MCA_SETUP_DIRECT_CALL(ompi, mtl)
+    MCA_SETUP_DIRECT_CALL(ccs, pml)
+    MCA_SETUP_DIRECT_CALL(ccs, mtl)
 
     AC_SUBST(MCA_PROJECT_SUBDIRS)
 ])
@@ -245,7 +245,7 @@ AC_DEFUN([MCA_CONFIGURE_PROJECT],[
     # can't use a variable rename here because these need to be evaled
     # at auto* time.
 
-    ompi_show_subtitle "Configuring MCA for $1"
+    ccs_show_subtitle "Configuring MCA for $1"
 
     AC_MSG_CHECKING([for frameworks for $1])
     AC_MSG_RESULT([mca_$1_framework_list])
@@ -308,7 +308,7 @@ AC_DEFUN([MCA_ORDER_COMPONENT_LIST], [
                     [m4_ifdef([MCA_]$1[_]$2[_]mca_component[_PRIORITY], [], 
                          [m4_fatal([MCA_$1_$2_]mca_component[_PRIORITY not found, but required.])])])])
     m4_define([component_list], 
-              [esyscmd([config/ompi_mca_priority_sort.pl] m4_foreach([mca_component], [mca_$1_$2_m4_config_component_list],
+              [esyscmd([config/ccs_mca_priority_sort.pl] m4_foreach([mca_component], [mca_$1_$2_m4_config_component_list],
                         [m4_ifval(mca_component, [mca_component ]CCS_EVAL_ARG([MCA_]$1[_]$2[_]mca_component[_PRIORITY ]))]))])
 ])
 
@@ -337,7 +337,7 @@ AC_DEFUN([MCA_CHECK_IGNORED_PRIORITY], [
 #
 ######################################################################
 AC_DEFUN([MCA_CONFIGURE_FRAMEWORK],[
-    ompi_show_subsubtitle "Configuring MCA framework $2"
+    ccs_show_subsubtitle "Configuring MCA framework $2"
 
     m4_ifdef([mca_$1_$2_no_config_component_list], [], 
              [m4_fatal([Could not find mca_$1_$2_no_config_component_list - please rerun autogen.pl])])
@@ -401,6 +401,9 @@ AC_DEFUN([MCA_CONFIGURE_FRAMEWORK],[
                 [m4_if(CCS_EVAL_ARG([MCA_$1_$2_CONFIGURE_MODE]), [PRIORITY], [MCA_ORDER_COMPONENT_LIST($1, $2)],
                        [m4_define([component_list], [mca_$1_$2_m4_config_component_list])])])])
 
+    AC_MSG_NOTICE([ZZZ here I am : [$(component_list)]])
+    AC_MSG_NOTICE([ AA component_list])
+    AC_MSG_NOTICE([ AA1 mca_$1_$2_m4_config_component_list])
     best_mca_component_priority=0
     components_looking_for_succeed=$3
     components_last_result=0
@@ -435,6 +438,7 @@ AC_DEFUN([MCA_CONFIGURE_FRAMEWORK],[
                                                [static_components], [dso_components],
                                                [static_ltlibs])])])])])
 
+    AC_MSG_NOTICE([ZZZ here I am - 2])
     MCA_$1_$2_ALL_COMPONENTS="$all_components"
     MCA_$1_$2_STATIC_COMPONENTS="$static_components"
     MCA_$1_$2_DSO_COMPONENTS="$dso_components"
@@ -448,6 +452,7 @@ AC_DEFUN([MCA_CONFIGURE_FRAMEWORK],[
     CCS_MCA_MAKE_DIR_LIST(MCA_$1_$2_ALL_SUBDIRS, $2, [$all_components])
     CCS_MCA_MAKE_DIR_LIST(MCA_$1_$2_STATIC_SUBDIRS, $2, [$static_components])
     CCS_MCA_MAKE_DIR_LIST(MCA_$1_$2_DSO_SUBDIRS, $2, [$dso_components])
+    AC_MSG_NOTICE([ZZZ here I am - 3])
 
     # Create the final .h file that will be included in the type's
     # top-level glue.  This lists all the static components.  We don't
@@ -485,6 +490,9 @@ EOF
             rm -f $outfile
         fi
     fi
+    echo " outfile.struct " $outfile.struct
+    more $outfile.struct
+    echo "done"
     rm -f $outfile.struct $outfile.extern 
 
     unset all_components static_components dso_components outfile outfile_real
@@ -512,7 +520,7 @@ EOF
 #
 ######################################################################
 AC_DEFUN([MCA_CONFIGURE_NO_CONFIG_COMPONENT],[
-    ompi_show_subsubsubtitle "MCA component $2:$3 (no configuration)"
+    ccs_show_subsubsubtitle "MCA component $2:$3 (no configuration)"
 
     MCA_COMPONENT_BUILD_CHECK($1, $2, $3, 
                               [should_build=$8], [should_build=0])
@@ -558,8 +566,8 @@ AC_DEFUN([MCA_CONFIGURE_NO_CONFIG_COMPONENT],[
 ######################################################################
 AC_DEFUN([MCA_CONFIGURE_M4_CONFIG_COMPONENT],[
     m4_ifdef([MCA_$1_$2_$3_PRIORITY],
-        [ompi_show_subsubsubtitle "MCA component $2:$3 (m4 configuration macro, priority MCA_$1_$2_$3_PRIORITY)"],
-        [ompi_show_subsubsubtitle "MCA component $2:$3 (m4 configuration macro)"])
+        [ccs_show_subsubsubtitle "MCA component $2:$3 (m4 configuration macro, priority MCA_$1_$2_$3_PRIORITY)"],
+        [ccs_show_subsubsubtitle "MCA component $2:$3 (m4 configuration macro)"])
 
     MCA_COMPONENT_BUILD_CHECK($1, $2, $3, [should_build=$8], [should_build=0])
     # Allow the component to override the build mode if it really wants to.
@@ -616,7 +624,7 @@ AC_DEFUN([MCA_CONFIGURE_ALL_CONFIG_COMPONENTS],[
     for component_path in $srcdir/$1/mca/$2/* ; do
         component="`basename $component_path`"
         if test -d $component_path -a -x $component_path/configure ; then
-            ompi_show_subsubsubtitle "MCA component $2:$component (need to configure)"
+            ccs_show_subsubsubtitle "MCA component $2:$component (need to configure)"
 
             MCA_COMPONENT_BUILD_CHECK($1, $2, $component, 
                                       [should_build=1], [should_build=0])
@@ -624,7 +632,7 @@ AC_DEFUN([MCA_CONFIGURE_ALL_CONFIG_COMPONENTS],[
 
             if test "$should_build" = "1" ; then
                 CCS_CONFIG_SUBDIR([$1/mca/$2/$component],
-                                   [$ompi_subdir_args],
+                                   [$ccs_subdir_args],
                                    [should_build=1], [should_build=0])
             fi
 
@@ -869,28 +877,28 @@ AC_DEFUN([MCA_COMPONENT_BUILD_CHECK],[
 
     # build if:
     # - the component type is direct and we are that component
-    # - there is no ompi_ignore file
-    # - there is an ompi_ignore, but there is an empty ompi_unignore
-    # - there is an ompi_ignore, but username is in ompi_unignore
+    # - there is no ccs_ignore file
+    # - there is an ccs_ignore, but there is an empty ccs_unignore
+    # - there is an ccs_ignore, but username is in ccs_unignore
     if test -d $component_path ; then
         # decide if we want the component to be built or not.  This
         # is spread out because some of the logic is a little complex
         # and test's syntax isn't exactly the greatest.  We want to
         # build the component by default.
         want_component=1
-        if test -f $component_path/.ompi_ignore ; then
-            # If there is an ompi_ignore file, don't build
+        if test -f $component_path/.ccs_ignore ; then
+            # If there is an ccs_ignore file, don't build
             # the component.  Note that this decision can be
             # overridden by the unignore logic below.
             want_component=0
         fi
-        if test -f $component_path/.ompi_unignore ; then
-            # if there is an empty ompi_unignore, that is
+        if test -f $component_path/.ccs_unignore ; then
+            # if there is an empty ccs_unignore, that is
             # equivalent to having your userid in the unignore file.
             # If userid is in the file, unignore the ignore file.
-            if test ! -s $component_path/.ompi_unignore ; then
+            if test ! -s $component_path/.ccs_unignore ; then
                 want_component=1
-            elif test ! -z "`$GREP $OPAL_CONFIGURE_USER $component_path/.ompi_unignore`" ; then
+            elif test ! -z "`$GREP $OPAL_CONFIGURE_USER $component_path/.ccs_unignore`" ; then
                 want_component=1
             fi
         fi

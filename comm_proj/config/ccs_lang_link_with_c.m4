@@ -16,16 +16,16 @@ dnl
 # sure the compiler for the given language is compatible with the C
 # compiler.
 AC_DEFUN([CCS_LANG_LINK_WITH_C], [
-  AS_VAR_PUSHDEF([lang_var], [ompi_cv_c_link_$1])
+  AS_VAR_PUSHDEF([lang_var], [ccs_cv_c_link_$1])
 
   AC_CACHE_CHECK([if C and $1 are link compatible],
     lang_var,
     [m4_if([$1], [Fortran], 
-       [m4_define([ompi_lang_link_with_c_fortran], 1)],
+       [m4_define([ccs_lang_link_with_c_fortran], 1)],
        [m4_if([$1], [Fortran 77],
-          [m4_define([ompi_lang_link_with_c_fortran], 1)],
-          [m4_define([ompi_lang_link_with_c_fortran], 0)])])
-     m4_if(ompi_lang_link_with_c_fortran, 1,
+          [m4_define([ccs_lang_link_with_c_fortran], 1)],
+          [m4_define([ccs_lang_link_with_c_fortran], 0)])])
+     m4_if(ccs_lang_link_with_c_fortran, 1,
        [CCS_F77_MAKE_C_FUNCTION([testfunc_name], [testfunc])],
        [testfunc_name="testfunc"])
 
@@ -40,9 +40,9 @@ EOF
      # Now compile both parts
      CCS_LOG_COMMAND([$CC -c $CFLAGS $CPPFLAGS conftest_c.$ac_ext],
        [AC_LANG_PUSH($1)
-        ompi_lang_link_with_c_libs="$LIBS"
+        ccs_lang_link_with_c_libs="$LIBS"
         LIBS="conftest_c.o $LIBS"
-        m4_if(ompi_lang_link_with_c_fortran, 1, 
+        m4_if(ccs_lang_link_with_c_fortran, 1, 
           [AC_LINK_IFELSE([AC_LANG_PROGRAM([], [
        external testfunc
        call testfunc(1)
@@ -57,7 +57,7 @@ extern int testfunc(int);
 ], 
              [return testfunc(0);])],
              [AS_VAR_SET(lang_var, ["yes"])], [AS_VAR_SET(lang_var, ["no"])])])
-        LIBS="$ompi_lang_link_with_c_libs"
+        LIBS="$ccs_lang_link_with_c_libs"
         AC_LANG_POP($1)],
        [AS_VAR_SET(lang_var, ["no"])])
      rm -f conftest_c.$ac_ext
