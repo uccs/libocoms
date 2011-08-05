@@ -37,14 +37,14 @@ BEGIN_C_DECLS
 /**
  * Prototype for callback when tsd data is being destroyed
  */
-typedef void (*opal_tsd_destructor_t)(void *value);
+typedef void (*service_tsd_destructor_t)(void *value);
 
 #if defined(DOXYGEN)
 
 /**
  * Typedef for thread-specific data key
  */
-typedef void* opal_tsd_key_t;
+typedef void* service_tsd_key_t;
 
 
 /**
@@ -52,7 +52,7 @@ typedef void* opal_tsd_key_t;
  *
  * Create a thread-specific data key visible to all threads in the
  * current process.  The returned key is valid in all threads,
- * although the values bound to the key by opal_tsd_setspecific() are
+ * although the values bound to the key by service_tsd_setspecific() are
  * allocated on a per-thread basis and persist for the life of the
  * calling thread.
  *
@@ -73,15 +73,15 @@ typedef void* opal_tsd_key_t;
  *                       create another thread specific data key
  * @retval ENOMEM        Insufficient memory exists to create the key
  */
-CCS_DECLSPEC int opal_tsd_key_create(opal_tsd_key_t *key, 
-                                      opal_tsd_destructor_t destructor);
+CCS_DECLSPEC int service_tsd_key_create(service_tsd_key_t *key, 
+                                      service_tsd_destructor_t destructor);
 
 
 /**
  * Delete a thread-specific data key
  *
  * Delete a thread-specific data key previously returned by
- * opal_tsd_key_create().  The destructor associated with the key is
+ * service_tsd_key_create().  The destructor associated with the key is
  * not fired in any thread and memory cleanup is the responsibility of
  * the caller.
  *
@@ -94,7 +94,7 @@ CCS_DECLSPEC int opal_tsd_key_create(opal_tsd_key_t *key,
  * @retval CCS_SUCCESS Success
  * @retval EINVAL       Invalid key
  */
-CCS_DECLSPEC int opal_tsd_key_delete(opal_tsd_key_t key);
+CCS_DECLSPEC int service_tsd_key_delete(service_tsd_key_t key);
 
 
 /**
@@ -105,7 +105,7 @@ CCS_DECLSPEC int opal_tsd_key_delete(opal_tsd_key_t key);
  * different values to the same key.
  *
  * @note This function should not be called within
- * opal_tsd_key_delete().
+ * service_tsd_key_delete().
  *
  * @param key[in]       Thread specific data key to modify
  * @param value[in]     Value to associate with key
@@ -115,14 +115,14 @@ CCS_DECLSPEC int opal_tsd_key_delete(opal_tsd_key_t key);
  *                      value with the key
  * @retval EINVAL       Invalid key
  */
-CCS_DECLSPEC int opal_tsd_setspecific(opal_tsd_key_t key, void *value);
+CCS_DECLSPEC int service_tsd_setspecific(service_tsd_key_t key, void *value);
 
 
 /**
  * Get a thread-specific data value
  *
  * Get the data associated with the given key, as set by
- * opal_tsd_setspecific().  If opal_tsd_setspecific() hasn't been
+ * service_tsd_setspecific().  If service_tsd_setspecific() hasn't been
  * called in the current thread with the given key, NULL is returned
  * in valuep.
  *
@@ -134,33 +134,33 @@ CCS_DECLSPEC int opal_tsd_setspecific(opal_tsd_key_t key, void *value);
  *                      value with the key
  * @retval EINVAL       Invalid key
  */
-CCS_DECLSPEC int opal_tsd_getspecific(opal_tsd_key_t key, void **valuep);
+CCS_DECLSPEC int service_tsd_getspecific(service_tsd_key_t key, void **valuep);
 
 #elif CCS_HAVE_POSIX_THREADS
 
-typedef pthread_key_t opal_tsd_key_t;
+typedef pthread_key_t service_tsd_key_t;
 
 static inline int
-opal_tsd_key_create(opal_tsd_key_t *key,
-                    opal_tsd_destructor_t destructor)
+service_tsd_key_create(service_tsd_key_t *key,
+                    service_tsd_destructor_t destructor)
 {
     return pthread_key_create(key, destructor);
 }
 
 static inline int
-opal_tsd_key_delete(opal_tsd_key_t key)
+service_tsd_key_delete(service_tsd_key_t key)
 {
     return pthread_key_delete(key);
 }
 
 static inline int
-opal_tsd_setspecific(opal_tsd_key_t key, void *value)
+service_tsd_setspecific(service_tsd_key_t key, void *value)
 {
     return pthread_setspecific(key, value);
 }
 
 static inline int
-opal_tsd_getspecific(opal_tsd_key_t key, void **valuep)
+service_tsd_getspecific(service_tsd_key_t key, void **valuep)
 {
     *valuep = pthread_getspecific(key);
     return CCS_SUCCESS;
@@ -168,29 +168,29 @@ opal_tsd_getspecific(opal_tsd_key_t key, void **valuep)
 
 #elif CCS_HAVE_SOLARIS_THREADS
 
-typedef thread_key_t opal_tsd_key_t;
+typedef thread_key_t service_tsd_key_t;
 
 static inline int
-opal_tsd_key_create(opal_tsd_key_t *key,
-                    opal_tsd_destructor_t destructor)
+service_tsd_key_create(service_tsd_key_t *key,
+                    service_tsd_destructor_t destructor)
 {
     return thr_keycreate(key, destructor);
 }
 
 static inline int
-opal_tsd_key_delete(opal_tsd_key_t key)
+service_tsd_key_delete(service_tsd_key_t key)
 {
     return CCS_SUCCESS;
 }
 
 static inline int
-opal_tsd_setspecific(opal_tsd_key_t key, void *value)
+service_tsd_setspecific(service_tsd_key_t key, void *value)
 {
     return thr_setspecific(key, value);
 }
 
 static inline int
-opal_tsd_getspecific(opal_tsd_key_t key, void **valuep)
+service_tsd_getspecific(service_tsd_key_t key, void **valuep)
 {
     return thr_getspecific(key, valuep);
 }
@@ -201,11 +201,11 @@ opal_tsd_getspecific(opal_tsd_key_t key, void **valuep)
    implement support for running the destructors when a thread exits,
    but I'm not sure we have a framework for doing that just yet. */
 
-typedef DWORD opal_tsd_key_t;
+typedef DWORD service_tsd_key_t;
 
 static inline int
-opal_tsd_key_create(opal_tsd_key_t *key,
-                    opal_tsd_destructor_t destructor)
+service_tsd_key_create(service_tsd_key_t *key,
+                    service_tsd_destructor_t destructor)
 {
     *key = TlsAlloc();
 
@@ -213,7 +213,7 @@ opal_tsd_key_create(opal_tsd_key_t *key,
 }
 
 static inline int
-opal_tsd_key_delete(opal_tsd_key_t key)
+service_tsd_key_delete(service_tsd_key_t key)
 {
     key = TlsFree(key);
 
@@ -221,7 +221,7 @@ opal_tsd_key_delete(opal_tsd_key_t key)
 }
 
 static inline int
-opal_tsd_setspecific(opal_tsd_key_t key, void *value)
+service_tsd_setspecific(service_tsd_key_t key, void *value)
 {
     BOOL ret = TlsSetValue(key, (LPVOID) value);
 
@@ -229,7 +229,7 @@ opal_tsd_setspecific(opal_tsd_key_t key, void *value)
 }
 
 static inline int
-opal_tsd_getspecific(opal_tsd_key_t key, void **valuep)
+service_tsd_getspecific(service_tsd_key_t key, void **valuep)
 {
     *valuep = TlsGetValue(key);
     return CCS_SUCCESS;
@@ -237,16 +237,16 @@ opal_tsd_getspecific(opal_tsd_key_t key, void **valuep)
 
 #else
 
-typedef int opal_tsd_key_t;
+typedef int service_tsd_key_t;
 
-CCS_DECLSPEC int opal_tsd_key_create(opal_tsd_key_t *key, 
-                                      opal_tsd_destructor_t destructor);
+CCS_DECLSPEC int service_tsd_key_create(service_tsd_key_t *key, 
+                                      service_tsd_destructor_t destructor);
 
-CCS_DECLSPEC int opal_tsd_key_delete(opal_tsd_key_t key);
+CCS_DECLSPEC int service_tsd_key_delete(service_tsd_key_t key);
 
-CCS_DECLSPEC int opal_tsd_setspecific(opal_tsd_key_t key, void *value);
+CCS_DECLSPEC int service_tsd_setspecific(service_tsd_key_t key, void *value);
 
-CCS_DECLSPEC int opal_tsd_getspecific(opal_tsd_key_t key, void **valuep);
+CCS_DECLSPEC int service_tsd_getspecific(service_tsd_key_t key, void **valuep);
 
 #endif
 

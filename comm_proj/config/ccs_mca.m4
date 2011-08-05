@@ -37,7 +37,7 @@ AC_DEFUN([CCS_EVAL_ARG], [$1])
 ######################################################################
 AC_DEFUN([CCS_MCA],[
     dnl for OPAL_CONFIGURE_USER env variable
-    AC_REQUIRE([OPAL_CONFIGURE_SETUP])
+    AC_REQUIRE([CCS_CONFIGURE_SETUP])
 
     # Find which components should be built as run-time loadable components
     # Acceptable combinations:
@@ -401,9 +401,6 @@ AC_DEFUN([MCA_CONFIGURE_FRAMEWORK],[
                 [m4_if(CCS_EVAL_ARG([MCA_$1_$2_CONFIGURE_MODE]), [PRIORITY], [MCA_ORDER_COMPONENT_LIST($1, $2)],
                        [m4_define([component_list], [mca_$1_$2_m4_config_component_list])])])])
 
-    AC_MSG_NOTICE([ZZZ here I am : [$(component_list)]])
-    AC_MSG_NOTICE([ AA component_list])
-    AC_MSG_NOTICE([ AA1 mca_$1_$2_m4_config_component_list])
     best_mca_component_priority=0
     components_looking_for_succeed=$3
     components_last_result=0
@@ -438,7 +435,6 @@ AC_DEFUN([MCA_CONFIGURE_FRAMEWORK],[
                                                [static_components], [dso_components],
                                                [static_ltlibs])])])])])
 
-    AC_MSG_NOTICE([ZZZ here I am - 2])
     MCA_$1_$2_ALL_COMPONENTS="$all_components"
     MCA_$1_$2_STATIC_COMPONENTS="$static_components"
     MCA_$1_$2_DSO_COMPONENTS="$dso_components"
@@ -452,7 +448,6 @@ AC_DEFUN([MCA_CONFIGURE_FRAMEWORK],[
     CCS_MCA_MAKE_DIR_LIST(MCA_$1_$2_ALL_SUBDIRS, $2, [$all_components])
     CCS_MCA_MAKE_DIR_LIST(MCA_$1_$2_STATIC_SUBDIRS, $2, [$static_components])
     CCS_MCA_MAKE_DIR_LIST(MCA_$1_$2_DSO_SUBDIRS, $2, [$dso_components])
-    AC_MSG_NOTICE([ZZZ here I am - 3])
 
     # Create the final .h file that will be included in the type's
     # top-level glue.  This lists all the static components.  We don't

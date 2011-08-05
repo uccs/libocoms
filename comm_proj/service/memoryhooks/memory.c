@@ -28,7 +28,7 @@
 #include "service/include/service/constants.h"
 #include "opal/memoryhooks/memory.h"
 #include "opal/memoryhooks/memory_internal.h"
-#include "opal/class/opal_list.h"
+#include "opal/class/service_list.h"
 #include "service/util/service_object.h"
 #include "opal/sys/atomic.h"
 
@@ -36,59 +36,59 @@
  * local types
  */
 struct callback_list_item_t {
-    opal_list_item_t super;
-    opal_mem_hooks_callback_fn_t *cbfunc;
+    service_list_item_t super;
+    service_mem_hooks_callback_fn_t *cbfunc;
     void *cbdata;
 };
 typedef struct callback_list_item_t callback_list_item_t;
-static OBJ_CLASS_INSTANCE(callback_list_item_t, opal_list_item_t, NULL, NULL);
+static OBJ_CLASS_INSTANCE(callback_list_item_t, service_list_item_t, NULL, NULL);
 
 /*
  * local data
  */
 static int hooks_support = 0;
 
-static opal_list_t release_cb_list;
-static opal_atomic_lock_t release_lock;
+static service_list_t release_cb_list;
+static service_atomic_lock_t release_lock;
 static int release_run_callbacks;
 
 int
-opal_mem_hooks_init(void)
+service_mem_hooks_init(void)
 {
-    OBJ_CONSTRUCT(&release_cb_list, opal_list_t);
+    OBJ_CONSTRUCT(&release_cb_list, service_list_t);
 
-    opal_atomic_init(&release_lock, CCS_ATOMIC_UNLOCKED);
+    service_atomic_init(&release_lock, CCS_ATOMIC_UNLOCKED);
 
     /* delay running callbacks until there is something in the
        registration */
     release_run_callbacks = false;
-    opal_atomic_mb();
+    service_atomic_mb();
 
     return CCS_SUCCESS;
 }
 
 
 int
-opal_mem_hooks_finalize(void)
+service_mem_hooks_finalize(void)
 {
-    opal_list_item_t *item;
+    service_list_item_t *item;
 
     /* don't try to run callbacks any more */
     release_run_callbacks = false;
-    opal_atomic_mb();
+    service_atomic_mb();
 
     /* aquire the lock, just to make sure no one is currently
        twiddling with the list.  We know this won't last long, since
        no new calls will come in after we set run_callbacks to false */
-    opal_atomic_lock(&release_lock);
+    service_atomic_lock(&release_lock);
 
     /* clean out the lists */
-    while (NULL != (item = opal_list_remove_first(&release_cb_list))) {
+    while (NULL != (item = service_list_remove_first(&release_cb_list))) {
         OBJ_RELEASE(item);
     }
     OBJ_DESTRUCT(&release_cb_list);
 
-    opal_atomic_unlock(&release_lock);
+    service_atomic_unlock(&release_lock);
 
     return CCS_SUCCESS;
 }
@@ -96,7 +96,7 @@ opal_mem_hooks_finalize(void)
 
 /* called from memory manager / memory-manager specific hooks */
 void
-opal_mem_hooks_set_support(int support)
+service_mem_hooks_set_support(int support)
 {
     hooks_support = support;
 }
@@ -104,9 +104,9 @@ opal_mem_hooks_set_support(int support)
 
 /* called from the memory manager / memory-manager specific hooks */
 void
-opal_mem_hooks_release_hook(void *buf, size_t length, bool from_alloc)
+service_mem_hooks_release_hook(void *buf, size_t length, bool from_alloc)
 {
-    opal_list_item_t *item;
+    service_list_item_t *item;
 
     if (!release_run_callbacks) return;
 
@@ -120,32 +120,32 @@ opal_mem_hooks_release_hook(void *buf, size_t length, bool from_alloc)
      * the initial callback to dispatch this
      */
 
-    opal_atomic_lock(&release_lock);
-    item = opal_list_get_first(&release_cb_list);
-    while(item != opal_list_get_end(&release_cb_list)) {
-        opal_list_item_t* next = opal_list_get_next(item);
+    service_atomic_lock(&release_lock);
+    item = service_list_get_first(&release_cb_list);
+    while(item != service_list_get_end(&release_cb_list)) {
+        service_list_item_t* next = service_list_get_next(item);
         callback_list_item_t *cbitem = (callback_list_item_t*) item;
         item = next;
 
-        opal_atomic_unlock(&release_lock);
+        service_atomic_unlock(&release_lock);
         cbitem->cbfunc(buf, length, cbitem->cbdata, (bool) from_alloc);
-        opal_atomic_lock(&release_lock);
+        service_atomic_lock(&release_lock);
     }
-    opal_atomic_unlock(&release_lock);
+    service_atomic_unlock(&release_lock);
 }
 
 
 int
-opal_mem_hooks_support_level(void)
+service_mem_hooks_support_level(void)
 {
     return hooks_support;
 }
 
 
 int
-opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, void *cbdata)
+service_mem_hooks_register_release(service_mem_hooks_callback_fn_t *func, void *cbdata)
 {
-    opal_list_item_t *item;
+    service_list_item_t *item;
     callback_list_item_t *cbitem, *new_cbitem;
     int ret = CCS_SUCCESS;
 
@@ -162,17 +162,17 @@ opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, void *cbdata
         goto done;
     }
 
-    opal_atomic_lock(&release_lock);
+    service_atomic_lock(&release_lock);
     /* we either have or are about to have a registration that needs
        calling back.  Let the system know it needs to run callbacks
        now */
     release_run_callbacks = true;
-    opal_atomic_mb();
+    service_atomic_mb();
 
     /* make sure the callback isn't already in the list */
-    for (item = opal_list_get_first(&release_cb_list) ;
-         item != opal_list_get_end(&release_cb_list) ;
-         item = opal_list_get_next(item)) {
+    for (item = service_list_get_first(&release_cb_list) ;
+         item != service_list_get_end(&release_cb_list) ;
+         item = service_list_get_next(item)) {
         cbitem = (callback_list_item_t*) item;
 
         if (cbitem->cbfunc == func) {
@@ -184,10 +184,10 @@ opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, void *cbdata
     new_cbitem->cbfunc = func;
     new_cbitem->cbdata = cbdata;
 
-    opal_list_append(&release_cb_list, (opal_list_item_t*) new_cbitem);
+    service_list_append(&release_cb_list, (service_list_item_t*) new_cbitem);
 
  done:
-    opal_atomic_unlock(&release_lock);
+    service_atomic_unlock(&release_lock);
 
     if (CCS_EXISTS == ret && NULL != new_cbitem) {
         OBJ_RELEASE(new_cbitem);
@@ -198,30 +198,30 @@ opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, void *cbdata
 
 
 int
-opal_mem_hooks_unregister_release(opal_mem_hooks_callback_fn_t* func)
+service_mem_hooks_unregister_release(service_mem_hooks_callback_fn_t* func)
 {
-    opal_list_item_t *item;
-    opal_list_item_t *found_item = NULL;
+    service_list_item_t *item;
+    service_list_item_t *found_item = NULL;
     callback_list_item_t *cbitem;
     int ret = CCS_ERR_NOT_FOUND;
 
-    opal_atomic_lock(&release_lock);
+    service_atomic_lock(&release_lock);
 
     /* make sure the callback isn't already in the list */
-    for (item = opal_list_get_first(&release_cb_list) ;
-         item != opal_list_get_end(&release_cb_list) ;
-         item = opal_list_get_next(item)) {
+    for (item = service_list_get_first(&release_cb_list) ;
+         item != service_list_get_end(&release_cb_list) ;
+         item = service_list_get_next(item)) {
         cbitem = (callback_list_item_t*) item;
 
         if (cbitem->cbfunc == func) {
-            opal_list_remove_item(&release_cb_list, item);
+            service_list_remove_item(&release_cb_list, item);
             found_item = item;
             ret = CCS_SUCCESS;
             break;
         }
     }
 
-    opal_atomic_unlock(&release_lock);
+    service_atomic_unlock(&release_lock);
 
     /* OBJ_RELEASE calls free, so we can't release until we get out of
        the lock */

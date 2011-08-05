@@ -26,13 +26,13 @@
  * If we have progress threads, always default to using threads.
  * Otherwise, wait and see if some upper layer wants to use threads.
  */
-bool opal_uses_threads = false;
-bool opal_mutex_check_locks = false;
+bool service_uses_threads = false;
+bool service_mutex_check_locks = false;
 
 
 #ifdef __WINDOWS__
 
-static void opal_mutex_construct(opal_mutex_t *m)
+static void service_mutex_construct(service_mutex_t *m)
 {
     InterlockedExchange(&m->m_lock, 0);
 #if !CCS_ENABLE_MULTI_THREADS && CCS_ENABLE_DEBUG
@@ -42,13 +42,13 @@ static void opal_mutex_construct(opal_mutex_t *m)
 #endif  /* !CCS_ENABLE_MULTI_THREADS && CCS_ENABLE_DEBUG */
 }
 
-static void opal_mutex_destruct(opal_mutex_t *m)
+static void service_mutex_destruct(service_mutex_t *m)
 {
 }
 
 #else
 
-static void opal_mutex_construct(opal_mutex_t *m)
+static void service_mutex_construct(service_mutex_t *m)
 {
 #if CCS_HAVE_POSIX_THREADS
 
@@ -84,11 +84,11 @@ static void opal_mutex_construct(opal_mutex_t *m)
 #endif
 
 #if CCS_HAVE_ATOMIC_SPINLOCKS
-    opal_atomic_init( &m->m_lock_atomic, CCS_ATOMIC_UNLOCKED );
+    service_atomic_init( &m->m_lock_atomic, CCS_ATOMIC_UNLOCKED );
 #endif
 }
 
-static void opal_mutex_destruct(opal_mutex_t *m)
+static void service_mutex_destruct(service_mutex_t *m)
 {
 #if CCS_HAVE_POSIX_THREADS
     pthread_mutex_destroy(&m->m_lock_pthread);
@@ -99,7 +99,7 @@ static void opal_mutex_destruct(opal_mutex_t *m)
 
 #endif /* __WINDOWS__ */
 
-OBJ_CLASS_INSTANCE(opal_mutex_t,
+OBJ_CLASS_INSTANCE(service_mutex_t,
                    service_object_t,
-                   opal_mutex_construct,
-                   opal_mutex_destruct);
+                   service_mutex_construct,
+                   service_mutex_destruct);

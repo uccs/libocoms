@@ -32,9 +32,9 @@
 
 BEGIN_C_DECLS
 
-CCS_DECLSPEC void opal_mem_hooks_set_support(int support);
+CCS_DECLSPEC void service_mem_hooks_set_support(int support);
 
-CCS_DECLSPEC void opal_mem_hooks_release_hook(void *buf, size_t length, bool from_alloc);
+CCS_DECLSPEC void service_mem_hooks_release_hook(void *buf, size_t length, bool from_alloc);
 
 END_C_DECLS
 

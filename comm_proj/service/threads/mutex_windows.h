@@ -37,7 +37,7 @@
 
 BEGIN_C_DECLS
 
-struct opal_mutex_t {
+struct service_mutex_t {
     service_object_t super;
     volatile LONG m_lock;
 
@@ -48,16 +48,16 @@ struct opal_mutex_t {
 #endif
 };
 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(opal_mutex_t);
+CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_mutex_t);
 
 
-static inline int opal_mutex_trylock(opal_mutex_t *m)
+static inline int service_mutex_trylock(service_mutex_t *m)
 {
 	return (0 == InterlockedExchange(&m->m_lock, 1) ? 1 : 0);
 }
 
 
-static inline void opal_mutex_lock(opal_mutex_t *m)
+static inline void service_mutex_lock(service_mutex_t *m)
 {
     while (InterlockedExchange(&m->m_lock, 1)) {
         while (m->m_lock == 1) {
@@ -67,27 +67,27 @@ static inline void opal_mutex_lock(opal_mutex_t *m)
 }
 
 
-static inline void opal_mutex_unlock(opal_mutex_t *m)
+static inline void service_mutex_unlock(service_mutex_t *m)
 {
     InterlockedExchange(&m->m_lock, 0);
 }
 
 
-static inline int opal_mutex_atomic_trylock(opal_mutex_t *m)
+static inline int service_mutex_atomic_trylock(service_mutex_t *m)
 {
-    return opal_mutex_trylock(m);
+    return service_mutex_trylock(m);
 }
 
 
-static inline void opal_mutex_atomic_lock(opal_mutex_t *m)
+static inline void service_mutex_atomic_lock(service_mutex_t *m)
 {
-   opal_mutex_lock(m);
+   service_mutex_lock(m);
 }
 
 
-static inline void opal_mutex_atomic_unlock(opal_mutex_t *m)
+static inline void service_mutex_atomic_unlock(service_mutex_t *m)
 {
-    opal_mutex_unlock(m);
+    service_mutex_unlock(m);
 }
 
 END_C_DECLS

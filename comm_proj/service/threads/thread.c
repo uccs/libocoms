@@ -24,17 +24,17 @@
 
 bool service_debug_threads = false;
 
-static void opal_thread_construct(service_thread_t *t);
+static void service_thread_construct(service_thread_t *t);
 
 OBJ_CLASS_INSTANCE(service_thread_t,
                    service_object_t,
-                   opal_thread_construct, NULL);
+                   service_thread_construct, NULL);
 
 
 /*
  * Constructor
  */
-static void opal_thread_construct(service_thread_t *t)
+static void service_thread_construct(service_thread_t *t)
 {
     t->t_run = 0;
 #ifdef __WINDOWS__

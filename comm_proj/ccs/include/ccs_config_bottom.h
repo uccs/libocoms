@@ -280,7 +280,7 @@ typedef unsigned char bool;
 #endif
 
   /**
-   * Because of the way we're using the opal_object inside Open MPI (i.e.
+   * Because of the way we're using the service_object inside Open MPI (i.e.
    * dynamic resolution at run-time to derive all objects from the basic
    * type), on Windows we have to build everything on C++ mode, simply
    * because the C mode does not support dynamic resolution in DLL.  Therefore,

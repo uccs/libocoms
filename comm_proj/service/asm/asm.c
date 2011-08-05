@@ -31,7 +31,7 @@
                                        (LOCKS_TABLE_SIZE - 1)]))
 
 /* have to fix if you change LOCKS_TABLE_SIZE */
-static opal_atomic_lock_t locks_table[LOCKS_TABLE_SIZE] = {
+static service_atomic_lock_t locks_table[LOCKS_TABLE_SIZE] = {
     { { CCS_ATOMIC_UNLOCKED } }, 
     { { CCS_ATOMIC_UNLOCKED } },
     { { CCS_ATOMIC_UNLOCKED } },
@@ -47,36 +47,36 @@ static opal_atomic_lock_t locks_table[LOCKS_TABLE_SIZE] = {
 #define LOCKS_TABLE_SIZE 1
 #define FIND_LOCK(addr) (&(locks_table[0]))
 
-static opal_atomic_lock_t locks_table[1] = { CCS_ATOMIC_UNLOCKED };
+static service_atomic_lock_t locks_table[1] = { CCS_ATOMIC_UNLOCKED };
 
 #endif /* CCS_WANT_SMP_LOCKS */
 
 
 int32_t
-opal_atomic_add_32(volatile int32_t *addr, int delta)
+service_atomic_add_32(volatile int32_t *addr, int delta)
 {
     int32_t ret;
 
-    opal_atomic_lock(FIND_LOCK(addr));
+    service_atomic_lock(FIND_LOCK(addr));
 
     ret = (*addr += delta);
 
-    opal_atomic_unlock(FIND_LOCK(addr));
+    service_atomic_unlock(FIND_LOCK(addr));
 
     return ret;
 }
 
 
 int32_t
-opal_atomic_sub_32(volatile int32_t *addr, int delta)
+service_atomic_sub_32(volatile int32_t *addr, int delta)
 {
     int32_t ret;
 
-    opal_atomic_lock(FIND_LOCK(addr));
+    service_atomic_lock(FIND_LOCK(addr));
 
     ret = (*addr -= delta);
 
-    opal_atomic_unlock(FIND_LOCK(addr));
+    service_atomic_unlock(FIND_LOCK(addr));
 
     return ret;
 }

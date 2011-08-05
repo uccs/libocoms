@@ -48,7 +48,7 @@ BEGIN_C_DECLS
  * Initialize the memory hooks subsystem
  *
  * Initialize the memory hooks subsystem.  This is generally called
- * during opal_init() and should be called before any other function
+ * during service_init() and should be called before any other function
  * in the interface is called.  
  *
  * \note Note that some back-end functionality is activated pre-main,
@@ -57,25 +57,25 @@ BEGIN_C_DECLS
  *
  * @retval CCS_SUCCESS Initialization completed successfully
  */
-CCS_DECLSPEC int opal_mem_hooks_init(void);
+CCS_DECLSPEC int service_mem_hooks_init(void);
 
 
 /**
  * Finalize the memory hooks subsystem
  *
  * Finalize the memory hooks subsystem.  This is generally called
- * during opal_finalize() and no other memory hooks functions should
- * be called after this function is called.  opal_mem_hooks_finalize()
+ * during service_finalize() and no other memory hooks functions should
+ * be called after this function is called.  service_mem_hooks_finalize()
  * will automatically deregister any callbacks that have not already
  * been deregistered.  In a multi-threaded application, it is possible
  * that one thread will have a memory hook callback while the other
- * thread is in opal_mem_hooks_finalize(), however, no threads will
+ * thread is in service_mem_hooks_finalize(), however, no threads will
  * receive a callback once the calling thread has exited
- * opal_mem_hooks_finalize().
+ * service_mem_hooks_finalize().
  *
  * @retval CCS_SUCCESS Shutdown completed successfully
  */
-CCS_DECLSPEC int opal_mem_hooks_finalize(void);
+CCS_DECLSPEC int service_mem_hooks_finalize(void);
 
 
 /**
@@ -100,9 +100,9 @@ CCS_DECLSPEC int opal_mem_hooks_finalize(void);
  *                                    operating system, not at ever call
  *                                    to realloc/free/etc.
  *
- * \note This function must be called after opal_mem_hooks_init().
+ * \note This function must be called after service_mem_hooks_init().
  */
-CCS_DECLSPEC int opal_mem_hooks_support_level(void);
+CCS_DECLSPEC int service_mem_hooks_support_level(void);
 
 
 /**
@@ -110,8 +110,8 @@ CCS_DECLSPEC int opal_mem_hooks_support_level(void);
  *
  * Typedef for callbacks triggered when memory has been allocated or
  * is about to be freed.  The callback will be triggered according to
- * the note in opal_mem_hooks_register_alloc() or
- * opal_mem_hooks_register_release().
+ * the note in service_mem_hooks_register_alloc() or
+ * service_mem_hooks_register_release().
  *
  * @param buf     Pointer to the start of the allocation 
  * @param lentgh  Length of the allocation
@@ -121,14 +121,14 @@ CCS_DECLSPEC int opal_mem_hooks_support_level(void);
  *                general allocation routines (malloc, calloc, free,
  *                etc.) or directly from the user (mmap, munmap, etc.)
  */
-typedef void (opal_mem_hooks_callback_fn_t)(void *buf, size_t length, 
+typedef void (service_mem_hooks_callback_fn_t)(void *buf, size_t length, 
                                             void *cbdata, bool from_alloc);
 
 
 /**
  * Register callback for when memory is to be released
  *
- * Register a \c opal_mem_hooks_callback_fn_t function pointer to be called
+ * Register a \c service_mem_hooks_callback_fn_t function pointer to be called
  * whenever the current process is about to release memory.
  *
  * @param func    Function pointer to call when memory is to be released
@@ -141,7 +141,7 @@ typedef void (opal_mem_hooks_callback_fn_t)(void *buf, size_t length,
  * @retval CCS_ERR_NOT_SUPPORTED There are no hooks available for 
  *                      receiving callbacks when memory is to be released
  */
-CCS_DECLSPEC int opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *func, 
+CCS_DECLSPEC int service_mem_hooks_register_release(service_mem_hooks_callback_fn_t *func, 
                                                   void *cbdata);
 
 /**
@@ -154,7 +154,7 @@ CCS_DECLSPEC int opal_mem_hooks_register_release(opal_mem_hooks_callback_fn_t *f
  * @retval CCS_SUCCESS The function was successfully deregistered
  * @retval CCS_ERR_NOT_FOUND The function was not previously registered
  */
-CCS_DECLSPEC int opal_mem_hooks_unregister_release(opal_mem_hooks_callback_fn_t *func);
+CCS_DECLSPEC int service_mem_hooks_unregister_release(service_mem_hooks_callback_fn_t *func);
 
 
 END_C_DECLS

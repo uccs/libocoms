@@ -34,7 +34,7 @@
 #include <sys/param.h>
 #endif
 
-#include "opal/util/opal_environ.h"
+#include "opal/util/service_environ.h"
 #include "service/util/output.h"
 #include "opal/threads/mutex.h"
 #include "service/include/service/constants.h"
@@ -112,7 +112,7 @@ static int default_stderr_fd = -1;
 static output_desc_t info[CCS_OUTPUT_MAX_STREAMS];
 static char *temp_str = 0;
 static size_t temp_str_len = 0;
-static opal_mutex_t mutex;
+static service_mutex_t mutex;
 static bool syslog_opened = false;
 static char *redirect_syslog_ident = NULL;
 
@@ -196,13 +196,13 @@ bool service_output_init(void)
 
     /* Initialize the mutex that protects the output */
 
-    OBJ_CONSTRUCT(&mutex, opal_mutex_t);
+    OBJ_CONSTRUCT(&mutex, service_mutex_t);
     initialized = true;
 
     /* Set some defaults */
 
     asprintf(&output_prefix, "output-pid%d-", getpid());
-    output_dir = strdup(opal_tmp_directory());
+    output_dir = strdup(service_tmp_directory());
 
     /* Open the default verbose stream */
     verbose_stream = service_open(&verbose);

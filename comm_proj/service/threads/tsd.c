@@ -27,7 +27,7 @@
 struct tsd_entry_t {
     bool used;
     void *value;
-    opal_tsd_destructor_t destructor;
+    service_tsd_destructor_t destructor;
 };
 typedef struct tsd_entry_t tsd_entry_t;
 
@@ -40,7 +40,7 @@ run_destructors(void)
     int i;
 
     for (i = 0; i < TSD_ENTRIES ; ++i) {
-        opal_tsd_destructor_t destructor;
+        service_tsd_destructor_t destructor;
         void *value;
 
         if (entries[i].used) {
@@ -57,8 +57,8 @@ run_destructors(void)
 }
 
 int
-opal_tsd_key_create(opal_tsd_key_t *key, 
-                    opal_tsd_destructor_t destructor)
+service_tsd_key_create(service_tsd_key_t *key, 
+                    service_tsd_destructor_t destructor)
 {
     int i;
 
@@ -85,7 +85,7 @@ opal_tsd_key_create(opal_tsd_key_t *key,
 
 
 int
-opal_tsd_key_delete(opal_tsd_key_t key)
+service_tsd_key_delete(service_tsd_key_t key)
 {
     if (!entries[key].used) return CCS_ERR_BAD_PARAM;
 
@@ -98,7 +98,7 @@ opal_tsd_key_delete(opal_tsd_key_t key)
 
 
 int
-opal_tsd_setspecific(opal_tsd_key_t key, void *value)
+service_tsd_setspecific(service_tsd_key_t key, void *value)
 {
     if (!entries[key].used) return CCS_ERR_BAD_PARAM;
     entries[key].value = value;
@@ -107,7 +107,7 @@ opal_tsd_setspecific(opal_tsd_key_t key, void *value)
 
 
 int
-opal_tsd_getspecific(opal_tsd_key_t key, void **valuep)
+service_tsd_getspecific(service_tsd_key_t key, void **valuep)
 {
     if (!entries[key].used) return CCS_ERR_BAD_PARAM;
     *valuep = entries[key].value;
