@@ -58,15 +58,15 @@ libservice_la_SOURCES += $(headers)
 
 # Conditionally install the header files
 
-if WANT_INSTALL_HEADERS
-servicedir = $(includedir)/ccs/$(subdir)
-nobase_service_HEADERS = $(headers)
-
-# This is somewhat of a hack -- libltdl is installed by libtoolize,
-# and us installing the header here is slightly less kludgey than
-# hacking their Makefile.am.
-nobase_service_HEADERS += libltdl/ltdl.h
-endif
+#if WANT_INSTALL_HEADERS
+#servicedir = $(includedir)/ccs/$(subdir)
+#nobase_service_HEADERS = $(headers)
+#
+## This is somewhat of a hack -- libltdl is installed by libtoolize,
+## and us installing the header here is slightly less kludgey than
+## hacking their Makefile.am.
+#nobase_service_HEADERS += libltdl/ltdl.h
+#endif
 
 include memoryhooks/Makefile.am
 include threads/Makefile.am

@@ -55,7 +55,7 @@ libserviceutil_la_DEPENDENCIES =
 
 # Conditionally install the header files
 
-if WANT_INSTALL_HEADERS
-opaldir = $(includedir)/ccs/$(subdir)
-opal_HEADERS = $(headers)
-endif
+#if WANT_INSTALL_HEADERS
+#opaldir = $(includedir)/ccs/$(subdir)
+#opal_HEADERS = $(headers)
+#endif

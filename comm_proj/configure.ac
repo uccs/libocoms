@@ -51,7 +51,7 @@ AC_CONFIG_MACRO_DIR(config)
 #
 
 CCS_CONFIGURE_SETUP
-ompi_show_title "Configuring project_name_long"
+ccs_show_title "Configuring project_name_long"
 
 #
 # Setup some things that must be done before AM-INIT-AUTOMAKE
@@ -246,7 +246,7 @@ esac
 ############################################################################
 # Check for compilers and preprocessors
 ############################################################################
-ompi_show_title "Compiler and preprocessor tests"
+ccs_show_title "Compiler and preprocessor tests"
 
 ##################################
 # C compiler characteristics
@@ -505,7 +505,7 @@ AC_CACHE_SAVE
 # Header files
 ##################################
 
-ompi_show_title "Header file tests"
+ccs_show_title "Header file tests"
 
 AC_CHECK_HEADERS([alloca.h aio.h arpa/inet.h dirent.h \
     dlfcn.h execinfo.h err.h fcntl.h grp.h inttypes.h libgen.h \
@@ -574,7 +574,7 @@ AC_CACHE_SAVE
 # Types
 ##################################
 
-ompi_show_title "Type tests"
+ccs_show_title "Type tests"
 
 # Size of pid_t
 AC_CHECK_SIZEOF(pid_t)
@@ -631,7 +631,7 @@ AC_CACHE_SAVE
 # Libraries
 ##################################
 
-ompi_show_title "Library and Function tests"
+ccs_show_title "Library and Function tests"
 
 # Darwin doesn't need -lutil, as it's something other than this -lutil.
 CCS_CHECK_FUNC_LIB([openpty], [util])
@@ -700,7 +700,7 @@ AC_CACHE_SAVE
 # System-specific tests
 ##################################
 
-ompi_show_title "System-specific tests"
+ccs_show_title "System-specific tests"
 
 #
 # Test to determine type of MPI_Offset. This is searched in the following order
@@ -917,7 +917,7 @@ AC_CACHE_SAVE
 # MCA
 ##################################
 
-ompi_show_title "Modular Component Architecture (MCA) setup"
+ccs_show_title "Modular Component Architecture (MCA) setup"
 
 AC_MSG_CHECKING([for subdir args])
 CCS_CONFIG_SUBDIR_ARGS([ccs_subdir_args])
@@ -953,7 +953,7 @@ AC_CACHE_SAVE
 # Check the visibility declspec at the end to avoid problem with
 # the previous tests that are not necessarily prepared for
 # the visibility feature.
-ompi_show_title "Symbol visibility feature"
+ccs_show_title "Symbol visibility feature"
 
 CCS_CHECK_VISIBILITY
 
@@ -963,7 +963,7 @@ CCS_CHECK_VISIBILITY
 # Final top-level CCS configuration
 ############################################################################
 
-ompi_show_title "Final top-level CCS configuration"
+ccs_show_title "Final top-level CCS configuration"
 
 ############################################################################
 # Libtool: part two
