@@ -25,6 +25,7 @@
 #include "service/util/service_atomic_lifo.h"
 #include "service/threads/mutex.h"
 #include "service/threads/condition.h"
+#include "ccs/include/ccs_constants.h"
 #if 0
 #include "opal/prefetch.h"
 #include "service/threads/condition.h"
