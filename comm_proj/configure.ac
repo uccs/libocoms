@@ -57,7 +57,7 @@ ccs_show_title "Configuring project_name_long"
 # Setup some things that must be done before AM-INIT-AUTOMAKE
 #
 
-ompi_show_subtitle "Startup tests"
+ccs_show_subtitle "Startup tests"
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 AC_DEFINE_UNQUOTED(CCS_ARCH, "$target", [CCS architecture string])
@@ -131,7 +131,7 @@ PACKAGE_VERSION="$CCS_VERSION"
 PACKAGE_STRING="${PACKAGE_NAME} ${PACKAGE_VERSION}"
 VERSION="${PACKAGE_VERSION}"
 
-ompi_show_subtitle "Initialization, setup"
+ccs_show_subtitle "Initialization, setup"
 
 CCS_TOP_BUILDDIR="`pwd`"
 AC_SUBST(CCS_TOP_BUILDDIR)
@@ -469,7 +469,7 @@ m4_ifdef([project_ccs], [CCS_SETUP_CXX
 # C and C++ check compiler attributes.
 ##################################
 
-ompi_show_subtitle "Compiler characteristics"
+ccs_show_subtitle "Compiler characteristics"
 
 CCS_CHECK_ATTRIBUTES
 CCS_CHECK_COMPILER_VERSION_ID
@@ -479,7 +479,7 @@ CCS_CHECK_COMPILER_VERSION_ID
 # Assembler Configuration
 ##################################
 
-ompi_show_subtitle "Assembler"
+ccs_show_subtitle "Assembler"
 
 AM_PROG_AS
 CCS_CONFIG_ASM
@@ -970,7 +970,7 @@ ccs_show_title "Final top-level CCS configuration"
 # (after C compiler setup = no compiler/linker tests after this)
 ############################################################################
 
-ompi_show_subtitle "Libtool configuration"
+ccs_show_subtitle "Libtool configuration"
 
 # Use the undocumented solaris_use_stlport4 libtool variable to turn off any
 # Cstd/stlport4 linkage. This allows Open MPI to be C++ STL agnostic.
@@ -1055,7 +1055,7 @@ AC_SUBST([AMCA_PARAM_SETS_DIR], ['$(pkgdatadir)/amca-param-sets'])
 # final wrapper compiler config
 ############################################################################
 
-ompi_show_subtitle "Wrapper compiler final setup"
+ccs_show_subtitle "Wrapper compiler final setup"
 # The ORTE and CCS wrapper scripts (i.e., not the C-compiled
 # executables) need perl.
 AC_PATH_PROG(PERL, perl, perl)
@@ -1114,7 +1114,7 @@ m4_ifdef([ccs_CONFIG_LOCAL], [ccs_CONFIG_LOCAL])
 
 RTE_CONFIG
 
-ompi_show_subtitle "Final output"
+ccs_show_subtitle "Final output"
 
 AC_CONFIG_FILES([
     Makefile
@@ -1125,7 +1125,7 @@ AC_CONFIG_FILES([
     ccs/proc/Makefile
 ])
 
-#CCS_CONFIG_FILES
+CCS_CONFIG_FILES
 #m4_ifdef([project_orte], [ORTE_CONFIG_FILES])
 #m4_ifdef([project_ompi], [CCS_CONFIG_FILES])
 
