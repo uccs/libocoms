@@ -27,7 +27,8 @@ headers =
 nodist_headers = ccs_config.h
 
 # Install these in $(includedir)
-include_HEADERS = mpi_portable_platform.h
+#include_HEADERS = mpi_portable_platform.h
+include_HEADERS = 
 
 # Always install these in $(pkgincludedir)
 pkginclude_HEADERS =
