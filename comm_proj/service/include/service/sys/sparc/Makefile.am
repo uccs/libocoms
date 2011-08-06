@@ -19,4 +19,4 @@
 # This makefile.am does not stand on its own - it is included from opal/include/Makefile.am
 
 headers += \
-	opal/sys/sparc/atomic.h
+	service/sys/sparc/atomic.h

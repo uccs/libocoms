@@ -47,7 +47,7 @@
 
 #include "ccs_config.h"
 
-#include "opal/sys/architecture.h"
+#include "service/sys/architecture.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -141,29 +141,29 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
 /* don't include system-level gorp when generating doxygen files */ 
 #elif CCS_ASSEMBLY_ARCH == OMPI_WINDOWS
 /* windows first, as they have API-level primitives for this stuff */
-#include "opal/sys/win32/atomic.h"
+#include "service/sys/win32/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_ALPHA
-#include "opal/sys/alpha/atomic.h"
+#include "service/sys/alpha/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_AMD64
-#include "opal/sys/amd64/atomic.h"
+#include "service/sys/amd64/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_ARM
-#include "opal/sys/arm/atomic.h"
+#include "service/sys/arm/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_IA32
-#include "opal/sys/ia32/atomic.h"
+#include "service/sys/ia32/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_IA64
-#include "opal/sys/ia64/atomic.h"
+#include "service/sys/ia64/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_MIPS
-#include "opal/sys/mips/atomic.h"
+#include "service/sys/mips/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_POWERPC32
-#include "opal/sys/powerpc/atomic.h"
+#include "service/sys/powerpc/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_POWERPC64
-#include "opal/sys/powerpc/atomic.h"
+#include "service/sys/powerpc/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_SPARC
-#include "opal/sys/sparc/atomic.h"
+#include "service/sys/sparc/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_32
-#include "opal/sys/sparcv9/atomic.h"
+#include "service/sys/sparcv9/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64
-#include "opal/sys/sparcv9/atomic.h"
+#include "service/sys/sparcv9/atomic.h"
 #endif
 
 #ifndef DOXYGEN
@@ -614,7 +614,7 @@ static inline int64_t service_atomic_sub_ptr( volatile void* addr, void* delta )
  * the definitions are in system specific .s files in src/util.
  *
  *********************************************************************/
-#include "opal/sys/atomic_impl.h"
+#include "service/sys/atomic_impl.h"
 
 END_C_DECLS
 

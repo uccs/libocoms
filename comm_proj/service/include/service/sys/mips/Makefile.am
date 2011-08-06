@@ -19,6 +19,6 @@
 # This makefile.am does not stand on its own - it is included from opal/include/Makefile.am
 
 headers += \
-	opal/sys/mips/atomic.h \
-	opal/sys/mips/timer.h
+	service/sys/mips/atomic.h \
+	service/sys/mips/timer.h
 

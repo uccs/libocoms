@@ -19,5 +19,5 @@
 # This makefile.am does not stand on its own - it is included from opal/include/Makefile.am
 
 headers += \
-	opal/sys/win32/atomic.h \
-	opal/sys/win32/timer.h
+	service/sys/win32/atomic.h \
+	service/sys/win32/timer.h

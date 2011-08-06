@@ -17,23 +17,23 @@
 # $HEADER$
 #
 
-# This makefile.am does not stand on its own - it is included from opal/Makefile.am
+# This makefile.am does not stand on its own - it is included from service/Makefile.am
 
 headers += \
-        opal/align.h \
-	opal/constants.h \
-	opal/opal_socket_errno.h \
-	opal/types.h \
-	opal/prefetch.h \
-        opal/hash_string.h
+        service/align.h \
+	service/constants.h \
+	service/service_socket_errno.h \
+	service/types.h \
+	service/prefetch.h \
+        service/hash_string.h
 
 nodist_headers += \
-	opal/version.h
+	service/version.h
 
-include opal/sys/Makefile.am
+include service/sys/Makefile.am
 
-opal/install_dirs.h: $(top_builddir)/config.status $(srcdir)/opal/install_dirs.h.in
+service/install_dirs.h: $(top_builddir)/config.status $(srcdir)/service/install_dirs.h.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
-opal/version.h: $(top_builddir)/config.status $(srcdir)/opal/version.h.in
+service/version.h: $(top_builddir)/config.status $(srcdir)/service/version.h.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@

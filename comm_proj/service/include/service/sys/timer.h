@@ -27,7 +27,7 @@
 
 #include "ccs_config.h"
 
-#include "opal/sys/architecture.h"
+#include "service/sys/architecture.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -78,25 +78,25 @@ BEGIN_C_DECLS
 #if defined(DOXYGEN)
 /* don't include system-level gorp when generating doxygen files */ 
 #elif CCS_ASSEMBLY_ARCH == OMPI_AMD64
-#include "opal/sys/amd64/timer.h"
+#include "service/sys/amd64/timer.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_ARM
-#include "opal/sys/arm/timer.h"
+#include "service/sys/arm/timer.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_IA32
-#include "opal/sys/ia32/timer.h"
+#include "service/sys/ia32/timer.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_IA64
-#include "opal/sys/ia64/timer.h"
+#include "service/sys/ia64/timer.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_POWERPC32
-#include "opal/sys/powerpc/timer.h"
+#include "service/sys/powerpc/timer.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_POWERPC64
-#include "opal/sys/powerpc/timer.h"
+#include "service/sys/powerpc/timer.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_32
-#include "opal/sys/sparcv9/timer.h"
+#include "service/sys/sparcv9/timer.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64
-#include "opal/sys/sparcv9/timer.h"
+#include "service/sys/sparcv9/timer.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_WINDOWS
-#include "opal/sys/win32/timer.h"
+#include "service/sys/win32/timer.h"
 #elif CCS_ASSEMBLY_ARCH == OMPI_MIPS
-#include "opal/sys/mips/timer.h"
+#include "service/sys/mips/timer.h"
 #endif
 
 #ifndef DOXYGEN

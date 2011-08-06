@@ -19,5 +19,5 @@
 # This makefile.am does not stand on its own - it is included from opal/include/Makefile.am
 
 headers += \
-	opal/sys/powerpc/atomic.h \
-	opal/sys/powerpc/timer.h
+	service/sys/powerpc/atomic.h \
+	service/sys/powerpc/timer.h

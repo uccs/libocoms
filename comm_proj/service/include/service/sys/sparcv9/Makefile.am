@@ -19,5 +19,5 @@
 # This makefile.am does not stand on its own - it is included from opal/include/Makefile.am
 
 headers += \
-	opal/sys/sparcv9/atomic.h \
-	opal/sys/sparcv9/timer.h
+	service/sys/sparcv9/atomic.h \
+	service/sys/sparcv9/timer.h
