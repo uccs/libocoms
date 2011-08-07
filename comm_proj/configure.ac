@@ -1123,6 +1123,7 @@ AC_CONFIG_FILES([
     service/Makefile
     ccs/include/Makefile
     ccs/proc/Makefile
+    ccs/ctl/Makefile
 ])
 
 CCS_CONFIG_FILES
