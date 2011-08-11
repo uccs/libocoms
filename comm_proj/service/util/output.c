@@ -36,7 +36,7 @@
 
 #include "opal/util/service_environ.h"
 #include "service/util/output.h"
-#include "opal/threads/mutex.h"
+#include "service/threads/mutex.h"
 #include "service/include/service/constants.h"
 
 /*

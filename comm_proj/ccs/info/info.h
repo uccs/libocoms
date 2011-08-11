@@ -74,7 +74,7 @@ typedef struct ccs_predefined_info_t ccs_predefined_info_t;
  * type. It contains (key,value) pairs
  */
 struct ccs_info_entry_t {
-    opal_list_item_t super; /**< required for service_list_t type */
+    service_list_item_t super; /**< required for service_list_t type */
     char *ie_value; /**< value part of the (key, value) pair.
                   * Maximum length is MPI_MAX_INFO_VAL */
     char ie_key[MPI_MAX_INFO_KEY + 1]; /**< "key" part of the (key, value)
@@ -91,7 +91,7 @@ BEGIN_C_DECLS
 /**
  * Table for Fortran <-> C translation table
  */ 
-extern opal_pointer_array_t ccs_info_f_to_c_table;
+extern service_pointer_array_t ccs_info_f_to_c_table;
 
 /**
  * Global instance for MPI_INFO_NULL
@@ -314,7 +314,7 @@ static inline bool ccs_info_is_freed(ccs_info_t *info)
 static inline int 
 ccs_info_get_nkeys(ccs_info_t *info, int *nkeys) 
 {
-    *nkeys = (int) opal_list_get_size(&(info->super));
+    *nkeys = (int) service_list_get_size(&(info->super));
     return MPI_SUCCESS;
 }
 

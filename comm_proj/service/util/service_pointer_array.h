@@ -29,24 +29,24 @@
  * INTEGER max)), just to be sure.
  */
 
-#ifndef OPAL_POINTER_ARRAY_H
-#define OPAL_POINTER_ARRAY_H
+#ifndef SERVICE_POINTER_ARRAY_H
+#define SERVICE_POINTER_ARRAY_H
 
-#include "opal_config.h"
+#include "ccs_config.h"
 
-#include "opal/threads/mutex.h"
-#include "opal/class/opal_object.h"
+#include "service/threads/mutex.h"
+#include "service/util/service_object.h"
 
 BEGIN_C_DECLS
 
 /**
  * dynamic pointer array
  */
-struct opal_pointer_array_t {
+struct service_pointer_array_t {
     /** base class */
-    opal_object_t super;
+    service_object_t super;
     /** synchronization object */
-    opal_mutex_t lock;
+    service_mutex_t lock;
     /** Index of lowest free element.  NOTE: This is only an
         optimization to know where to search for the first free slot.
         It does \em not necessarily imply indices all above this index
@@ -66,11 +66,11 @@ struct opal_pointer_array_t {
 /**
  * Convenience typedef
  */
-typedef struct opal_pointer_array_t opal_pointer_array_t;
+typedef struct service_pointer_array_t service_pointer_array_t;
 /**
  * Class declaration
  */
-OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_pointer_array_t);
+CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_pointer_array_t);
 
 /**
  * Initialize the pointer array with an initial size of initial_allocation.
@@ -86,7 +86,7 @@ OPAL_DECLSPEC OBJ_CLASS_DECLARATION(opal_pointer_array_t);
  * @return OPAL_SUCCESS if all initializations were succesfull. Otherwise,
  *  the error indicate what went wrong in the function.
  */
-OPAL_DECLSPEC int opal_pointer_array_init( opal_pointer_array_t* array,
+CCS_DECLSPEC int opal_pointer_array_init( service_pointer_array_t* array,
                                            int initial_allocation,
                                            int max_size, int block_size );
 
@@ -99,7 +99,7 @@ OPAL_DECLSPEC int opal_pointer_array_init( opal_pointer_array_t* array,
  * @return Index of inserted array element.  Return value of
  *  (-1) indicates an error.
  */
-OPAL_DECLSPEC int opal_pointer_array_add(opal_pointer_array_t *array, void *ptr);
+CCS_DECLSPEC int opal_pointer_array_add(service_pointer_array_t *array, void *ptr);
 
 /**
  * Set the value of an element in array
@@ -110,7 +110,7 @@ OPAL_DECLSPEC int opal_pointer_array_add(opal_pointer_array_t *array, void *ptr)
  *
  * @return Error code.  (-1) indicates an error.
  */
-OPAL_DECLSPEC int opal_pointer_array_set_item(opal_pointer_array_t *array, 
+CCS_DECLSPEC int opal_pointer_array_set_item(service_pointer_array_t *array, 
                                 int index, void *value);
 
 /**
@@ -122,7 +122,7 @@ OPAL_DECLSPEC int opal_pointer_array_set_item(opal_pointer_array_t *array,
  * @return Error code.  NULL indicates an error.
  */
 
-static inline void *opal_pointer_array_get_item(opal_pointer_array_t *table, 
+static inline void *opal_pointer_array_get_item(service_pointer_array_t *table, 
                                                 int element_index)
 {
     void *p;
@@ -147,7 +147,7 @@ static inline void *opal_pointer_array_get_item(opal_pointer_array_t *table,
  * Simple inline function to return the size of the array in order to
  * hide the member field from external users.
  */
-static inline int opal_pointer_array_get_size(opal_pointer_array_t *array)
+static inline int opal_pointer_array_get_size(service_pointer_array_t *array)
 {
   return array->size;
 }
@@ -162,7 +162,7 @@ static inline int opal_pointer_array_get_size(opal_pointer_array_t *array)
  * Simple function to set the size of the array in order to
  * hide the member field from external users.
  */
-OPAL_DECLSPEC int opal_pointer_array_set_size(opal_pointer_array_t *array, int size);
+CCS_DECLSPEC int opal_pointer_array_set_size(service_pointer_array_t *array, int size);
 
 /**
  * Test whether a certain element is already in use. If not yet
@@ -178,7 +178,7 @@ OPAL_DECLSPEC int opal_pointer_array_set_size(opal_pointer_array_t *array, int s
  * In contrary to array_set, this function does not allow to overwrite 
  * a value, unless the previous value is NULL ( equiv. to free ).
  */
-OPAL_DECLSPEC bool opal_pointer_array_test_and_set_item (opal_pointer_array_t *table, 
+CCS_DECLSPEC bool service_pointer_array_test_and_set_item (service_pointer_array_t *table, 
                                           int index,
                                           void *value);
 
@@ -188,7 +188,7 @@ OPAL_DECLSPEC bool opal_pointer_array_test_and_set_item (opal_pointer_array_t *t
  * @param array Pointer to array (IN)
  *
  */
-static inline void opal_pointer_array_remove_all(opal_pointer_array_t *array)
+static inline void opal_pointer_array_remove_all(service_pointer_array_t *array)
 {
     int i;
     if( array->number_free == array->size )
@@ -205,4 +205,4 @@ static inline void opal_pointer_array_remove_all(opal_pointer_array_t *array)
 
 END_C_DECLS
 
-#endif /* OPAL_POINTER_ARRAY_H */
+#endif /* SERVICE_POINTER_ARRAY_H */

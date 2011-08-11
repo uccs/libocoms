@@ -29,20 +29,20 @@
 
 enum { TABLE_INIT = 1, TABLE_GROW = 2 };
 
-static void opal_pointer_array_construct(opal_pointer_array_t *);
-static void opal_pointer_array_destruct(opal_pointer_array_t *);
-static bool grow_table(opal_pointer_array_t *table, int soft, int hard);
+static void opal_pointer_array_construct(service_pointer_array_t *);
+static void opal_pointer_array_destruct(service_pointer_array_t *);
+static bool grow_table(service_pointer_array_t *table, int soft, int hard);
 
-OBJ_CLASS_INSTANCE(opal_pointer_array_t, opal_object_t,
+OBJ_CLASS_INSTANCE(service_pointer_array_t, service_object_t,
                    opal_pointer_array_construct,
                    opal_pointer_array_destruct);
 
 /*
  * opal_pointer_array constructor
  */
-static void opal_pointer_array_construct(opal_pointer_array_t *array)
+static void opal_pointer_array_construct(service_pointer_array_t *array)
 {
-    OBJ_CONSTRUCT(&array->lock, opal_mutex_t);
+    OBJ_CONSTRUCT(&array->lock, service_mutex_t);
     array->lowest_free = 0;
     array->number_free = 0;
     array->size = 0;
@@ -54,7 +54,7 @@ static void opal_pointer_array_construct(opal_pointer_array_t *array)
 /*
  * opal_pointer_array destructor
  */
-static void opal_pointer_array_destruct(opal_pointer_array_t *array)
+static void opal_pointer_array_destruct(service_pointer_array_t *array)
 {
     /* free table */
     if( NULL != array->addr) {
@@ -70,7 +70,7 @@ static void opal_pointer_array_destruct(opal_pointer_array_t *array)
 /**
  * initialize an array object
  */
-int opal_pointer_array_init(opal_pointer_array_t* array,
+int opal_pointer_array_init(service_pointer_array_t* array,
                             int initial_allocation,
                             int max_size, int block_size)
 {
@@ -101,12 +101,12 @@ int opal_pointer_array_init(opal_pointer_array_t* array,
 /**
  * add a pointer to dynamic pointer table
  *
- * @param table Pointer to opal_pointer_array_t object (IN)
+ * @param table Pointer to service_pointer_array_t object (IN)
  * @param ptr Pointer to be added to table    (IN)
  *
  * @return Array index where ptr is inserted or OPAL_ERROR if it fails
  */
-int opal_pointer_array_add(opal_pointer_array_t *table, void *ptr)
+int opal_pointer_array_add(service_pointer_array_t *table, void *ptr)
 {
     int i, index;
 
@@ -154,14 +154,14 @@ int opal_pointer_array_add(opal_pointer_array_t *table, void *ptr)
  * Set the value of the dynamic array at a specified location.
  *
  *
- * @param table Pointer to opal_pointer_array_t object (IN)
+ * @param table Pointer to service_pointer_array_t object (IN)
  * @param ptr Pointer to be added to table    (IN)
  *
  * @return Error code
  *
  * Assumption: NULL element is free element.
  */
-int opal_pointer_array_set_item(opal_pointer_array_t *table, int index,
+int opal_pointer_array_set_item(service_pointer_array_t *table, int index,
                                 void * value)
 {
     assert(table != NULL);
@@ -230,14 +230,14 @@ int opal_pointer_array_set_item(opal_pointer_array_t *table, int index,
  * In contrary to array_set, this function does not allow to overwrite 
  * a value, unless the previous value is NULL ( equiv. to free ).
  */
-bool opal_pointer_array_test_and_set_item (opal_pointer_array_t *table, 
+bool service_pointer_array_test_and_set_item (service_pointer_array_t *table, 
                                            int index, void *value)
 {
     assert(table != NULL);
     assert(index >= 0);
 
 #if 0
-    opal_output(0,"opal_pointer_array_test_and_set_item: IN:  "
+    opal_output(0,"service_pointer_array_test_and_set_item: IN:  "
                " table %p (size %ld, lowest free %ld, number free %ld)"
                " addr[%d] = %p\n",
                table, table->size, table->lowest_free, table->number_free,
@@ -281,7 +281,7 @@ bool opal_pointer_array_test_and_set_item (opal_pointer_array_t *table,
     }
 
 #if 0
-    opal_output(0,"opal_pointer_array_test_and_set_item: OUT: "
+    opal_output(0,"service_pointer_array_test_and_set_item: OUT: "
                " table %p (size %ld, lowest free %ld, number free %ld)"
                " addr[%d] = %p\n",
                table, table->size, table->lowest_free, table->number_free,
@@ -292,7 +292,7 @@ bool opal_pointer_array_test_and_set_item (opal_pointer_array_t *table,
     return true;
 }
 
-int opal_pointer_array_set_size(opal_pointer_array_t *array, int new_size)
+int opal_pointer_array_set_size(service_pointer_array_t *array, int new_size)
 {
     OPAL_THREAD_LOCK(&(array->lock));
     if(new_size > array->size) {
@@ -305,7 +305,7 @@ int opal_pointer_array_set_size(opal_pointer_array_t *array, int new_size)
     return OPAL_SUCCESS;
 }
 
-static bool grow_table(opal_pointer_array_t *table, int soft, int hard)
+static bool grow_table(service_pointer_array_t *table, int soft, int hard)
 {
     int new_size;
     int i, new_size_int;

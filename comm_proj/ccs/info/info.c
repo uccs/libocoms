@@ -66,14 +66,14 @@ OBJ_CLASS_INSTANCE(ccs_info_t,
  * ccs_info_entry_t classes
  */
 OBJ_CLASS_INSTANCE(ccs_info_entry_t,
-                   opal_list_item_t,
+                   service_list_item_t,
                    info_entry_constructor,
                    info_entry_destructor);
 
 /*
  * The global fortran <-> C translation table
  */
-opal_pointer_array_t ccs_info_f_to_c_table;
+service_pointer_array_t ccs_info_f_to_c_table;
 
 /*
  * This function is called during ccs_init and initializes the
@@ -83,7 +83,7 @@ int ccs_info_init(void)
 {
     /* initialize table */
 
-    OBJ_CONSTRUCT(&ccs_info_f_to_c_table, opal_pointer_array_t);
+    OBJ_CONSTRUCT(&ccs_info_f_to_c_table, service_pointer_array_t);
     if( OPAL_SUCCESS != opal_pointer_array_init(&ccs_info_f_to_c_table, 0,
                                                 OMPI_FORTRAN_HANDLE_MAX, 64) ) {
         return OMPI_ERROR;
@@ -106,7 +106,7 @@ int ccs_info_init(void)
 int ccs_info_dup (ccs_info_t *info, ccs_info_t **newinfo) 
 {
     int err;
-    opal_list_item_t *item;
+    service_list_item_t *item;
     ccs_info_entry_t *iterator;
 
     OPAL_THREAD_LOCK(info->i_lock);
@@ -155,7 +155,7 @@ int ccs_info_set (ccs_info_t *info, char *key, char *value)
         }
         strncpy (new_info->ie_key, key, MPI_MAX_INFO_KEY);
         new_info->ie_value = new_value;
-        opal_list_append (&(info->super), (opal_list_item_t *) new_info);
+        opal_list_append (&(info->super), (service_list_item_t *) new_info);
     }
     OPAL_THREAD_UNLOCK(info->i_lock);
     return MPI_SUCCESS;
@@ -270,7 +270,7 @@ int ccs_info_delete (ccs_info_t *info, char *key)
           * As this key *must* be available, we do not check for errors.
           */
           opal_list_remove_item (&(info->super),
-                                 (opal_list_item_t *)search);
+                                 (service_list_item_t *)search);
           OBJ_RELEASE(search);
     }
     OPAL_THREAD_UNLOCK(info->i_lock);
@@ -319,13 +319,13 @@ int ccs_info_get_nthkey (ccs_info_t *info, int n, char *key)
          --n) {
          iterator = (ccs_info_entry_t *)opal_list_get_next(iterator);
          if (opal_list_get_end(&(info->super)) == 
-             (opal_list_item_t *) iterator) {
+             (service_list_item_t *) iterator) {
              OPAL_THREAD_UNLOCK(info->i_lock);
              return MPI_ERR_ARG;
          }
     }
     /*
-     * iterator is of the type opal_list_item_t. We have to
+     * iterator is of the type service_list_item_t. We have to
      * cast it to ccs_info_entry_t before we can use it to
      * access the value
      */
@@ -342,7 +342,7 @@ int ccs_info_finalize(void)
 {
     size_t i, max;
     ccs_info_t *info;
-    opal_list_item_t *item;
+    service_list_item_t *item;
     ccs_info_entry_t *entry;
     bool found = false;
     
@@ -438,7 +438,7 @@ static void info_constructor(ccs_info_t *info)
  */ 
 static void info_destructor(ccs_info_t *info) 
 {
-    opal_list_item_t *item;
+    service_list_item_t *item;
     ccs_info_entry_t *iterator;
 
     /* Remove every key in the list */
@@ -501,7 +501,7 @@ static ccs_info_entry_t *info_find_key (ccs_info_t *info, char *key)
      * and NULL is returned
      */
     for (iterator = (ccs_info_entry_t *)opal_list_get_first(&(info->super));
-         opal_list_get_end(&(info->super)) != (opal_list_item_t*) iterator;
+         opal_list_get_end(&(info->super)) != (service_list_item_t*) iterator;
          iterator = (ccs_info_entry_t *)opal_list_get_next(iterator)) {
         if (0 == strcmp(key, iterator->ie_key)) {
             return iterator;
