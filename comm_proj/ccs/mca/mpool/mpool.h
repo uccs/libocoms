@@ -26,8 +26,8 @@
 #include "ccs_config.h"
 #include "service/mca/mca.h"
 #include "service/threads/mutex.h"
+#include "ccs/info/info.h"
 #if 0
-#include "ompi/info/info.h"
 #endif
 #include "service/util/service_free_list.h" 
 
@@ -44,6 +44,7 @@
 
 struct mca_mpool_base_resources_t;
 
+#if 0
 /**
  * \internal
  * mpool_info_t structure. MPI_Info is a pointer to this structure
@@ -60,6 +61,7 @@ struct mpool_info_t {
     bool i_freed;
     /**< Whether this info has been freed or not */
 };
+#endif
 
 struct mca_mpool_base_registration_t { 
     service_free_list_item_t super; 
@@ -233,7 +235,7 @@ typedef struct mca_mpool_base_module_t mca_mpool_base_module_t;
  * @retval pointer to the allocated memory
  * @retval NULL on failure
  */
-CCS_DECLSPEC void * mca_mpool_base_alloc(size_t size, struct mpool_info_t * info);
+CCS_DECLSPEC void * mca_mpool_base_alloc(size_t size, struct ccs_info_t * info);
 
 /**
  * Function to free memory previously allocated by mca_mpool_base_alloc
