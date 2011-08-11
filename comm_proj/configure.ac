@@ -1124,6 +1124,7 @@ AC_CONFIG_FILES([
     ccs/include/Makefile
     ccs/proc/Makefile
     ccs/ctl/Makefile
+    ccs/info/Makefile
 ])
 
 CCS_CONFIG_FILES

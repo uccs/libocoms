@@ -28,7 +28,7 @@ noinst_LTLIBRARIES = libopalutil.la
 
 # Source code files
 
-headers = \
+headers += \
         argv.h \
         cmd_line.h \
         output.h \
@@ -36,7 +36,8 @@ headers = \
         service_bitmap.h \
         service_free_list.h \
         service_list.h \
-        service_object.h
+        service_object.h \
+        service_pointer_array.h
 
 libopalutil_la_SOURCES = \
         $(headers) \
@@ -47,7 +48,9 @@ libopalutil_la_SOURCES = \
         service_bitmap.h \
         service_free_list.h \
         service_list.h \
-        service_object.h
+        service_object.h \
+        service_pointer_array.c \
+        service_pointer_array.h
 
 libserviceutil_la_LIBADD = 
 
