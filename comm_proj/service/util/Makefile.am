@@ -31,6 +31,7 @@ noinst_LTLIBRARIES = libopalutil.la
 headers += \
         argv.h \
         cmd_line.h \
+        fd.h \
         output.h \
         service_atomic_lifo.h \
         service_bitmap.h \
@@ -44,6 +45,8 @@ libopalutil_la_SOURCES = \
         $(headers) \
         argv.c \
         cmd_line.c \
+        fd.h \
+        fd.c \
         output.c \
         service_atomic_lifo.h \
         service_bitmap.h \
