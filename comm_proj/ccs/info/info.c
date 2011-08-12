@@ -33,8 +33,8 @@
 
 #include "opal/util/output.h"
 #include "opal/util/strncpy.h"
-#include "ompi/constants.h"
-#include "ompi/info/info.h"
+#include "ccs/include/ccs_constants.h"
+#include "ccs/info/info.h"
 #include "ompi/runtime/params.h"
 
 

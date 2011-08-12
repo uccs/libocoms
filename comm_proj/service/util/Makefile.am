@@ -37,7 +37,8 @@ headers += \
         service_free_list.h \
         service_list.h \
         service_object.h \
-        service_pointer_array.h
+        service_pointer_array.h \
+        service_rb_tree.h
 
 libopalutil_la_SOURCES = \
         $(headers) \
@@ -50,7 +51,9 @@ libopalutil_la_SOURCES = \
         service_list.h \
         service_object.h \
         service_pointer_array.c \
-        service_pointer_array.h
+        service_pointer_array.h \
+        service_rb_tree.h \
+        service_rb_tree.c
 
 libserviceutil_la_LIBADD = 
 
