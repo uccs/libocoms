@@ -73,13 +73,3 @@ include threads/Makefile.am
 #include mca/Makefile.am
 #include util/Makefile.am
 
-# Set the convenience library to be the same as the non-convenience
-# library, but a) it's marked as "noinst", so LT knows it's a
-# convenience library, and b) no .so version number is assigned here.
-# Note that we only need to make the convenience library if the ORTE
-# project is being built (i.e., if there is an upper layer that needs
-# to slurp in OPAL as a convenience library).
-
-libservice_lt_la_SOURCES = $(libservice_la_SOURCES)
-libservice_lt_la_LIBADD = $(libservice_la_LIBADD)
-libservice_lt_la_DEPENDENCIES = $(libservice_la_DEPENDENCIES)

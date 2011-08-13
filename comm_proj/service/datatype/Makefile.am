@@ -22,7 +22,7 @@
 # $HEADER$
 #
 
-headers = \
+datatype_headers = \
         service_convertor.h \
         service_convertor_internal.h \
         service_datatype_checksum.h \
@@ -45,6 +45,7 @@ libdatatype_reliable_la_CFLAGS = -DCHECKSUM $(AM_CFLAGS)
 
 # these sources will be compiled with the normal CFLAGS only
 libdatatype_la_SOURCES = \
+        $(datatype_headers) \
         service_convertor.c \
         service_convertor_raw.c \
         service_copy_functions.c \
@@ -76,7 +77,7 @@ libdatatype_la_LIBADD = libdatatype_reliable.la
 # If we have cuda support, modify file list and flags
 if CCS_cuda_support
 libdatatype_la_SOURCES += service_datatype_cuda.c
-headers += service_datatype_cuda.h
+datatype_headers += service_datatype_cuda.h
 AM_CPPFLAGS = $(service_datatype_CPPFLAGS)
 libdatatype_la_LIBADD += $(service_datatype_LIBS)
 endif
