@@ -19,8 +19,8 @@
 
 # This makefile.am does not stand on its own - it is included from ompi/Makefile.am
 
-headers = \
+headers += \
         info/info.h
 
-libccs_la_SOURCES = \
+libccs_la_SOURCES += \
         info/info.c

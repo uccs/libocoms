@@ -1121,14 +1121,11 @@ AC_CONFIG_FILES([
 
     config/Makefile
     service/Makefile
+    service/mca/Makefile
+    service/util/Makefile
     ccs/include/Makefile
-    ccs/proc/Makefile
-    ccs/ctl/Makefile
-    ccs/info/Makefile
 ])
 
 CCS_CONFIG_FILES
-#m4_ifdef([project_orte], [ORTE_CONFIG_FILES])
-#m4_ifdef([project_ompi], [CCS_CONFIG_FILES])
 
 AC_OUTPUT

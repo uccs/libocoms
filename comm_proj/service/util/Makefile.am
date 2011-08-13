@@ -17,18 +17,16 @@
 # $HEADER$
 #
 
-SUBDIRS = 
-
 dist_pkgdata_DATA = 
 
-AM_LFLAGS = -Popal_show_help_yy
-LEX_OUTPUT_ROOT = lex.opal_show_help_yy
+#AM_LFLAGS = -Popal_show_help_yy
+#LEX_OUTPUT_ROOT = lex.opal_show_help_yy
 
-noinst_LTLIBRARIES = libopalutil.la
+noinst_LTLIBRARIES = libserviceutil.la
 
 # Source code files
 
-headers += \
+util_headers = \
         argv.h \
         cmd_line.h \
         fd.h \
@@ -41,8 +39,8 @@ headers += \
         service_pointer_array.h \
         service_rb_tree.h
 
-libopalutil_la_SOURCES = \
-        $(headers) \
+libserviceutil_la_SOURCES = \
+        $(util_headers) \
         argv.c \
         cmd_line.c \
         fd.h \

@@ -44,7 +44,7 @@ libservice_la_LIBADD = \
         $(LIBLTDL) \
         asm/libasm.la \
         datatype/libdatatype.la \
-        mca/base/libmca_base.la \
+        mca/libservicemca_base.la \
         util/libserviceutil.la \
 	$(MCA_service_FRAMEWORK_LIBS)
 libservice_la_DEPENDENCIES = $(libservice_la_LIBADD)
@@ -70,8 +70,8 @@ libservice_la_SOURCES += $(headers)
 
 include memoryhooks/Makefile.am
 include threads/Makefile.am
-include mca/Makefile.am
-include util/Makefile.am
+#include mca/Makefile.am
+#include util/Makefile.am
 
 # Set the convenience library to be the same as the non-convenience
 # library, but a) it's marked as "noinst", so LT knows it's a
