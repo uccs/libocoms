@@ -97,6 +97,7 @@ ccs_show_subtitle "Checking versions"
 
 CCS_SAVE_VERSION([CCS], [Common Communication Substrate], [$srcdir/VERSION],
                           [ccs/include/version.h])
+AC_SUBST(libccs_so_version)
 
 #
 # Hardwire all progress threads to be off
