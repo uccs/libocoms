@@ -16,7 +16,6 @@ AC_DEFUN([CCS_CONFIG_FILES],[
         service/asm/Makefile
         service/datatype/Makefile
         ccs/Makefile
-        ccs/mca/base/Makefile
     ])
 ])
 #        service/util/Makefile

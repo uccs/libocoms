@@ -1202,7 +1202,6 @@ open(M4, ">$m4_output_file") ||
 print M4 $m4;
 close(M4);
 
-#m4_define(RTE_CONFIG());
 
 # Run autoreconf
 verbose "==> Running autoreconf\n";

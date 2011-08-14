@@ -31,11 +31,15 @@
 #include <limits.h>
 #include <ctype.h>
 
+#if 0
 #include "opal/util/output.h"
 #include "opal/util/strncpy.h"
+#endif
 #include "ccs/include/ccs_constants.h"
 #include "ccs/info/info.h"
+#if 0
 #include "ompi/runtime/params.h"
+#endif
 
 
 /*
@@ -83,11 +87,13 @@ int ccs_info_init(void)
 {
     /* initialize table */
 
+#if 0 /* RLG - check here */
     OBJ_CONSTRUCT(&ccs_info_f_to_c_table, service_pointer_array_t);
-    if( OPAL_SUCCESS != opal_pointer_array_init(&ccs_info_f_to_c_table, 0,
+    if( CCS_SUCCESS != opal_pointer_array_init(&ccs_info_f_to_c_table, 0,
                                                 OMPI_FORTRAN_HANDLE_MAX, 64) ) {
         return OMPI_ERROR;
     }
+#endif
 
     /* Create MPI_INFO_NULL */
 
@@ -96,7 +102,7 @@ int ccs_info_init(void)
 
     /* All done */
 
-    return OMPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -110,18 +116,18 @@ int ccs_info_dup (ccs_info_t *info, ccs_info_t **newinfo)
     ccs_info_entry_t *iterator;
 
     OPAL_THREAD_LOCK(info->i_lock);
-    for (item = opal_list_get_first(&(info->super));
-         item != opal_list_get_end(&(info->super));
-         item = opal_list_get_next(iterator)) {
+    for (item = service_list_get_first(&(info->super));
+         item != service_list_get_end(&(info->super));
+         item = service_list_get_next(iterator)) {
          iterator = (ccs_info_entry_t *) item;
          err = ccs_info_set(*newinfo, iterator->ie_key, iterator->ie_value);
-         if (MPI_SUCCESS != err) {
+         if (CCS_SUCCESS != err) {
             OPAL_THREAD_UNLOCK(info->i_lock);
             return err;
          }
      }
     OPAL_THREAD_UNLOCK(info->i_lock);
-     return MPI_SUCCESS;
+     return CCS_SUCCESS;
 }
 
 
@@ -155,10 +161,10 @@ int ccs_info_set (ccs_info_t *info, char *key, char *value)
         }
         strncpy (new_info->ie_key, key, MPI_MAX_INFO_KEY);
         new_info->ie_value = new_value;
-        opal_list_append (&(info->super), (service_list_item_t *) new_info);
+        service_list_append (&(info->super), (service_list_item_t *) new_info);
     }
     OPAL_THREAD_UNLOCK(info->i_lock);
-    return MPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -169,8 +175,8 @@ int ccs_info_free (ccs_info_t **info)
 {
     (*info)->i_freed = true;
     OBJ_RELEASE(*info);
-    *info = MPI_INFO_NULL;
-    return MPI_SUCCESS;
+    *info = NULL;
+    return CCS_SUCCESS;
 }
 
 
@@ -207,7 +213,7 @@ int ccs_info_get (ccs_info_t *info, char *key, int valuelen,
           }
     }
     OPAL_THREAD_UNLOCK(info->i_lock);
-    return MPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -248,7 +254,7 @@ int ccs_info_get_bool(ccs_info_t *info, char *key, bool *value, int *flag)
             }
         }
     }
-    return MPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 /*
@@ -269,12 +275,12 @@ int ccs_info_delete (ccs_info_t *info, char *key)
           * and free the memory allocated to it.
           * As this key *must* be available, we do not check for errors.
           */
-          opal_list_remove_item (&(info->super),
+          service_list_remove_item (&(info->super),
                                  (service_list_item_t *)search);
           OBJ_RELEASE(search);
     }
     OPAL_THREAD_UNLOCK(info->i_lock);
-    return MPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -299,7 +305,7 @@ int ccs_info_get_valuelen (ccs_info_t *info, char *key, int *valuelen,
          *valuelen = strlen(search->ie_value);
     }
     OPAL_THREAD_UNLOCK(info->i_lock);
-    return MPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -314,11 +320,11 @@ int ccs_info_get_nthkey (ccs_info_t *info, int n, char *key)
      * Iterate over and over till we get to the nth key
      */
     OPAL_THREAD_LOCK(info->i_lock);
-    for (iterator = (ccs_info_entry_t *)opal_list_get_first(&(info->super));
+    for (iterator = (ccs_info_entry_t *)service_list_get_first(&(info->super));
          n > 0;
          --n) {
-         iterator = (ccs_info_entry_t *)opal_list_get_next(iterator);
-         if (opal_list_get_end(&(info->super)) == 
+         iterator = (ccs_info_entry_t *)service_list_get_next(iterator);
+         if (service_list_get_end(&(info->super)) == 
              (service_list_item_t *) iterator) {
              OPAL_THREAD_UNLOCK(info->i_lock);
              return MPI_ERR_ARG;
@@ -331,7 +337,7 @@ int ccs_info_get_nthkey (ccs_info_t *info, int n, char *key)
      */
     strncpy(key, iterator->ie_key, MPI_MAX_INFO_KEY);
     OPAL_THREAD_UNLOCK(info->i_lock);
-    return MPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -381,9 +387,9 @@ int ccs_info_finalize(void)
             if (!info->i_freed && ccs_debug_show_handle_leaks) {
                 if (ccs_debug_show_handle_leaks) {
                     opal_output(0, "WARNING: MPI_Info still allocated at MPI_FINALIZE");
-                    for (item = opal_list_get_first(&(info->super));
-                         opal_list_get_end(&(info->super)) != item;
-                         item = opal_list_get_next(item)) {
+                    for (item = service_list_get_first(&(info->super));
+                         service_list_get_end(&(info->super)) != item;
+                         item = service_list_get_next(item)) {
                         entry = (ccs_info_entry_t *) item;
                         opal_output(0, "WARNING:   key=\"%s\", value=\"%s\"", 
                                     entry->ie_key,
@@ -407,7 +413,7 @@ int ccs_info_finalize(void)
     /* All done -- destroy the table */
 
     OBJ_DESTRUCT(&ccs_info_f_to_c_table);
-    return OMPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -443,9 +449,9 @@ static void info_destructor(ccs_info_t *info)
 
     /* Remove every key in the list */
   
-    for (item = opal_list_remove_first(&(info->super));
+    for (item = service_list_remove_first(&(info->super));
          NULL != item;
-         item = opal_list_remove_first(&(info->super))) {
+         item = service_list_remove_first(&(info->super))) {
         iterator = (ccs_info_entry_t *) item;
         OBJ_RELEASE(iterator);
     }
@@ -500,9 +506,9 @@ static ccs_info_entry_t *info_find_key (ccs_info_t *info, char *key)
      * return immediately. Else, the loop will fall of the edge
      * and NULL is returned
      */
-    for (iterator = (ccs_info_entry_t *)opal_list_get_first(&(info->super));
-         opal_list_get_end(&(info->super)) != (service_list_item_t*) iterator;
-         iterator = (ccs_info_entry_t *)opal_list_get_next(iterator)) {
+    for (iterator = (ccs_info_entry_t *)service_list_get_first(&(info->super));
+         service_list_get_end(&(info->super)) != (service_list_item_t*) iterator;
+         iterator = (ccs_info_entry_t *)service_list_get_next(iterator)) {
         if (0 == strcmp(key, iterator->ie_key)) {
             return iterator;
         }
@@ -517,18 +523,18 @@ ccs_info_value_to_int(char *value, int *interp)
     long tmp;
     char *endp;
 
-    if (NULL == value || '\0' == value[0]) return OMPI_ERR_BAD_PARAM;
+    if (NULL == value || '\0' == value[0]) return CCS_ERR_BAD_PARAM;
 
     errno = 0;
     tmp = strtol(value, &endp, 10);
     /* we found something not a number */
-    if (*endp != '\0') return OMPI_ERR_BAD_PARAM;
+    if (*endp != '\0') return CCS_ERR_BAD_PARAM;
     /* underflow */
-    if (tmp == 0 && errno == EINVAL) return OMPI_ERR_BAD_PARAM;
+    if (tmp == 0 && errno == EINVAL) return CCS_ERR_BAD_PARAM;
 
     *interp = (int) tmp;
 
-    return OMPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 
@@ -538,26 +544,26 @@ ccs_info_value_to_bool(char *value, bool *interp)
     int tmp;
 
     /* idiot case */
-    if (NULL == value || NULL == interp) return OMPI_ERR_BAD_PARAM;
+    if (NULL == value || NULL == interp) return CCS_ERR_BAD_PARAM;
 
     /* is it true / false? */
     if (0 == strcmp(value, "true")) {
         *interp = true;
-        return OMPI_SUCCESS;
+        return CCS_SUCCESS;
     } else if (0 == strcmp(value, "false")) {
         *interp = false;
-        return OMPI_SUCCESS;
+        return CCS_SUCCESS;
 
     /* is it a number? */
-    } else if (OMPI_SUCCESS == ccs_info_value_to_int(value, &tmp)) {
+    } else if (CCS_SUCCESS == ccs_info_value_to_int(value, &tmp)) {
         if (tmp == 0) {
             *interp = false;
         } else {
             *interp = true;
         } 
-        return OMPI_SUCCESS;
+        return CCS_SUCCESS;
     }
 
-    return OMPI_ERR_BAD_PARAM;
+    return CCS_ERR_BAD_PARAM;
 }
 

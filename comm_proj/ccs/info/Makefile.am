@@ -22,5 +22,5 @@
 headers += \
         info/info.h
 
-libccs_la_SOURCES += \
-        info/info.c
+#libccs_la_SOURCES += \
+#        info/info.c
