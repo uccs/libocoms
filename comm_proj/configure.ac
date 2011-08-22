@@ -177,6 +177,7 @@ AH_TOP([/* -*- c -*-
 
 AH_BOTTOM([
 #include "ccs_config_bottom.h"
+#include "service/include/service_config_bottom.h"
 #endif /* CCS_CONFIG_H */
 ])
 
