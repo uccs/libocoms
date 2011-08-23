@@ -1195,7 +1195,7 @@ find_and_delete(qw/config.guess config.sub depcomp compile install-sh ltconfig
 system("rm -rf service/libltdl");
 
 # Remove the old m4 file and write the new one
-verbose "==> Writing m4 file with autogen.pl results\n";
+verbose "==> Writing m4 file with autogen.pl results \n";
 unlink($m4_output_file);
 open(M4, ">$m4_output_file") || 
     die "Can't open $m4_output_file";

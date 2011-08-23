@@ -463,9 +463,6 @@ CCS_CHECK_OFFSETOF
 # CCS...?  Shrug.
 m4_ifdef([project_ccs], [CCS_SETUP_CXX
                           CCS_SETUP_CXX])
-#m4_ifdef([project_ompi], [CCS_SETUP_CXX
-#                          CCS_SETUP_CXX])
-
 ##################################
 # Only after setting up both
 # C and C++ check compiler attributes.
@@ -485,19 +482,6 @@ ccs_show_subtitle "Assembler"
 
 AM_PROG_AS
 CCS_CONFIG_ASM
-
-
-##################################
-# Fortran
-##################################
-
-# CCS uses ccs_fortran_logical_t and CCS_FORTRAN_HANDLE_MAX (long
-# story; yes, it's an intentional abstraction break).  So ensure to
-# define it to a valid C type if we're not building the CCS project.
-m4_ifdef([project_ompi], [CCS_SETUP_MPI_FORTRAN],
-         [AC_DEFINE([ccs_fortran_logical_t], [int], [Bogus type for CCS])
-          AC_DEFINE([CCS_FORTRAN_HANDLE_MAX], [128], [Bogus type for CCS])
-])
 
 # checkpoint results
 AC_CACHE_SAVE
@@ -591,6 +575,8 @@ AC_CHECK_TYPES([socklen_t, struct sockaddr_in, struct sockaddr_in6,
 #include <netinet/in.h>
 #endif])
 
+AC_MSG_NOTICE([ZZZ before error])
+
 AC_CHECK_DECLS([AF_UNSPEC, PF_UNSPEC, AF_INET6, PF_INET6],
                [], [], [AC_INCLUDES_DEFAULT
 #if HAVE_SYS_SOCKET_H
@@ -627,6 +613,7 @@ AC_CHECK_MEMBERS([siginfo_t.si_band],,,[#include <signal.h>])
 
 # checkpoint results
 AC_CACHE_SAVE
+AC_MSG_NOTICE([ZZZ after error])
 
 
 ##################################
@@ -972,35 +959,35 @@ ccs_show_title "Final top-level CCS configuration"
 # (after C compiler setup = no compiler/linker tests after this)
 ############################################################################
 
-ccs_show_subtitle "Libtool configuration"
+    ccs_show_subtitle "Libtool configuration"
 
 # Use the undocumented solaris_use_stlport4 libtool variable to turn off any
 # Cstd/stlport4 linkage. This allows Open MPI to be C++ STL agnostic.
-if test "x$ccs_cv_c_compiler_vendor" = "xsun"; then
-    solaris_use_stlport4="yes"
-fi
+    if test "x$ccs_cv_c_compiler_vendor" = "xsun"; then
+        solaris_use_stlport4="yes"
+    fi
 
-dnl Not all versions of LT set the PACKAGE_VERSION
-m4_ifdef([LT_PACKAGE_VERSION], [], [m4_define([LT_PACKAGE_VERSION], [1.5.22])])
+    dnl Not all versions of LT set the PACKAGE_VERSION
+    m4_ifdef([LT_PACKAGE_VERSION], [], [m4_define([LT_PACKAGE_VERSION], [1.5.22])])
 
-m4_if(m4_version_compare(m4_defn([LT_PACKAGE_VERSION]), 2.0), -1, [
-AC_LIBLTDL_CONVENIENCE(service/libltdl)
-AC_LIBTOOL_DLOPEN
-AC_PROG_LIBTOOL
-], [
-LT_CONFIG_LTDL_DIR([service/libltdl], [subproject])
-LTDL_CONVENIENCE
-LT_INIT([dlopen win32-dll])
-])
+    m4_if(m4_version_compare(m4_defn([LT_PACKAGE_VERSION]), 2.0), -1, [
+    AC_LIBLTDL_CONVENIENCE(service/libltdl)
+    AC_LIBTOOL_DLOPEN
+    AC_PROG_LIBTOOL
+    ], [
+    LT_CONFIG_LTDL_DIR([service/libltdl], [subproject])
+    LTDL_CONVENIENCE
+    LT_INIT([dlopen win32-dll])
+    ])
 
-CCS_SETUP_LIBLTDL
+    CCS_SETUP_LIBLTDL
 
 ############################################################################
 # final compiler config
 ############################################################################
 
-m4_ifdef([project_ompi], [ccs_show_subtitle "Compiler flags"],
-         [m4_ifdef([project_orte], [ccs_show_subtitle "Compiler flags"])])
+    m4_ifdef([project_ompi], [ccs_show_subtitle "Compiler flags"],
+             [m4_ifdef([project_orte], [ccs_show_subtitle "Compiler flags"])])
 
 #
 # This is needed for VPATH builds, so that it will -I the appropriate
@@ -1013,79 +1000,69 @@ m4_ifdef([project_ompi], [ccs_show_subtitle "Compiler flags"],
 # <project>/include.  If we VPATH building, we do need to include the
 # source directories, however.
 #
-if test "$CCS_TOP_BUILDDIR" != "$CCS_TOP_SRCDIR"; then
-    # Note the embedded m4 directives here -- we must embed them
-    # rather than have successive assignments to these shell
-    # variables, lest the $(foo) names try to get evaluated here.
-    # Yuck!
-    CPPFLAGS='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/service/include m4_ifdef([project_orte], [-I$(top_srcdir)/orte/include]) m4_ifdef([project_ompi], [-I$(top_srcdir)/ompi/include])'" $CPPFLAGS"
-    # C++ is only relevant if we're building CCS
-    m4_ifdef([project_ompi], [CXXCPPFLAGS='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/service/include -I$(top_srcdir)/orte/include -I$(top_srcdir)/ompi/include'" $CXXCPPFLAGS"])
-else
-    CPPFLAGS='-I$(top_srcdir)'" $CPPFLAGS"
-    # C++ is only relevant if we're building CCS
-    m4_ifdef([project_ompi], [CXXCPPFLAGS='-I$(top_srcdir)'" $CXXCPPFLAGS"])
-fi
-
-# CCS/ORTE wants some additional processing of the flags (e.g., get
-# versions without optimization for debugger modules).
-
-m4_ifdef([project_orte], [ORTE_SETUP_DEBUGGER_FLAGS],
-         [m4_ifdef([project_ompi], [ORTE_SETUP_DEBUGGER_FLAGS])])
+    if test "$CCS_TOP_BUILDDIR" != "$CCS_TOP_SRCDIR"; then
+        # Note the embedded m4 directives here -- we must embed them
+        # rather than have successive assignments to these shell
+        # variables, lest the $(foo) names try to get evaluated here.
+        # Yuck!
+        CPPFLAGS='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/service/include m4_ifdef([project_orte], [-I$(top_srcdir)/orte/include]) m4_ifdef([project_ompi], [-I$(top_srcdir)/ompi/include])'" $CPPFLAGS"
+        # C++ is only relevant if we're building CCS
+        m4_ifdef([project_ompi], [CXXCPPFLAGS='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/service/include -I$(top_srcdir)/orte/include -I$(top_srcdir)/ompi/include'" $CXXCPPFLAGS"])
+    else
+        CPPFLAGS='-I$(top_srcdir)'" $CPPFLAGS"
+        # C++ is only relevant if we're building CCS
+        m4_ifdef([project_ompi], [CXXCPPFLAGS='-I$(top_srcdir)'" $CXXCPPFLAGS"])
+    fi
 
 #
 # Delayed the substitution of CFLAGS and CXXFLAGS until now because
 # they may have been modified throughout the course of this script.
 #
 
-AC_SUBST(CFLAGS)
-AC_SUBST(CPPFLAGS)
-AC_SUBST(CXXFLAGS)
-AC_SUBST(CXXCPPFLAGS)
-m4_ifdef([project_ompi], [AC_SUBST(FFLAGS)
-                          AC_SUBST(FCFLAGS)
+    AC_SUBST(CFLAGS)
+    AC_SUBST(CPPFLAGS)
+    AC_SUBST(CXXFLAGS)
+    AC_SUBST(CXXCPPFLAGS)
+    m4_ifdef([project_ompi], [AC_SUBST(FFLAGS)
+                              AC_SUBST(FCFLAGS)
 
-                          AC_SUBST(CCS_LIBMPI_EXTRA_LIBS)
-                          AC_SUBST(CCS_LIBMPI_EXTRA_LDFLAGS)])
+                              AC_SUBST(CCS_LIBMPI_EXTRA_LIBS)
+                              AC_SUBST(CCS_LIBMPI_EXTRA_LDFLAGS)])
 
 #
 # Aggregate MCA parameters directory
 #
-AC_SUBST([AMCA_PARAM_SETS_DIR], ['$(pkgdatadir)/amca-param-sets'])
+    AC_SUBST([AMCA_PARAM_SETS_DIR], ['$(pkgdatadir)/amca-param-sets'])
 
 ############################################################################
 # final wrapper compiler config
 ############################################################################
 
-ccs_show_subtitle "Wrapper compiler final setup"
+    ccs_show_subtitle "Wrapper compiler final setup"
 # The ORTE and CCS wrapper scripts (i.e., not the C-compiled
 # executables) need perl.
-AC_PATH_PROG(PERL, perl, perl)
-
-CCS_SETUP_WRAPPER_FINAL
-m4_ifdef([project_orte], [ORTE_SETUP_WRAPPER_FINAL])
-m4_ifdef([project_ompi], [CCS_SETUP_WRAPPER_FINAL])
+    AC_PATH_PROG(PERL, perl, perl)
 
 # Recreate some defines prefixed with CCS_ so that there are no bare
 # autoconf macro defines in mpi.h.  Since AC sometimes changes whether
 # things are defined as null tokens or an integer result, two projects
 # with different versions of AC can cause problems.
-if test $ac_cv_header_stdc = yes; then
-    AC_DEFINE(CCS_STDC_HEADERS, 1,
-              [Do not use outside of mpi.h.  Define to 1 if you have the ANSI C header files.])
-fi
-if test $ac_cv_header_sys_time_h = yes ; then
-    AC_DEFINE(CCS_HAVE_SYS_TIME_H, 1,
-              [Do not use outside of mpi.h.  Define to 1 if you have the <sys/time.h> header file.])
-fi
-if test $ac_cv_type_long_long = yes ; then
-    AC_DEFINE(CCS_HAVE_LONG_LONG, 1,
-              [Do not use outside of mpi.h.  Define to 1 if the system has the type `long long'.]) dnl `
-fi
-if test $ac_cv_header_sys_synch_h = yes ; then
-    AC_DEFINE(CCS_HAVE_SYS_SYNCH_H, 1,
-              [Do not use outside of mpi.h.  Define to 1 if you have the <sys/synch.h> header file.])
-fi
+    if test $ac_cv_header_stdc = yes; then
+        AC_DEFINE(CCS_STDC_HEADERS, 1,
+                  [Do not use outside of mpi.h.  Define to 1 if you have the ANSI C header files.])
+    fi
+    if test $ac_cv_header_sys_time_h = yes ; then
+        AC_DEFINE(CCS_HAVE_SYS_TIME_H, 1,
+                  [Do not use outside of mpi.h.  Define to 1 if you have the <sys/time.h> header file.])
+    fi
+    if test $ac_cv_type_long_long = yes ; then
+        AC_DEFINE(CCS_HAVE_LONG_LONG, 1,
+                  [Do not use outside of mpi.h.  Define to 1 if the system has the type `long long'.]) dnl `
+    fi
+    if test $ac_cv_header_sys_synch_h = yes ; then
+        AC_DEFINE(CCS_HAVE_SYS_SYNCH_H, 1,
+                  [Do not use outside of mpi.h.  Define to 1 if you have the <sys/synch.h> header file.])
+    fi
 
 # If there is a local hook for each project, call it.  This allows 3rd
 # parties to add configuration steps to CCS, ORTE, and/or CCS simply
@@ -1108,26 +1085,26 @@ fi
 # automatically m4_include the corresponding in aclocal.m4.  Bummer.
 # :-\
 
-m4_ifdef([ccs_CONFIG_LOCAL], [ccs_CONFIG_LOCAL])
+    m4_ifdef([ccs_CONFIG_LOCAL], [ccs_CONFIG_LOCAL])
 
 ############################################################################
 # Party on
 ############################################################################
 
-RTE_CONFIG
+    RTE_CONFIG
 
-ccs_show_subtitle "Final output"
+    ccs_show_subtitle "Final output"
 
-AC_CONFIG_FILES([
-    Makefile
+    AC_CONFIG_FILES([
+        Makefile
 
-    config/Makefile
-    service/Makefile
-    service/mca/Makefile
-    service/util/Makefile
-    ccs/include/Makefile
-])
+        config/Makefile
+        service/Makefile
+        service/mca/Makefile
+        service/util/Makefile
+        ccs/include/Makefile
+    ])
 
-CCS_CONFIG_FILES
+    CCS_CONFIG_FILES
 
 AC_OUTPUT
