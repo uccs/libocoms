@@ -100,6 +100,9 @@ CCS_SAVE_VERSION([CCS], [Common Communication Substrate], [$srcdir/VERSION],
                           [ccs/include/version.h])
 AC_SUBST(libccs_so_version)
 AC_SUBST(libmca_ccs_common_hwloc_so_version)
+AC_SUBST(libmca_common_sm_so_version)
+AC_SUBST(libmca_common_mx_so_version)
+AC_SUBST(libmca_common_portals_so_version)
 
 #
 # Hardwire all progress threads to be off
