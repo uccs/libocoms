@@ -102,4 +102,4 @@ libccs_so_version=0:0:0
 #libmca_common_sm_so_version=0:0:0
 #libmca_common_mx_so_version=0:0:0
 #libmca_common_portals_so_version=0:0:0
-#libmca_opal_common_hwloc_so_version=0:0:0
+libmca_ccs_common_hwloc_so_version=0:0:0
