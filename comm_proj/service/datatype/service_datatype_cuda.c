@@ -14,7 +14,7 @@
 #include <cuda.h>
 
 #include "opal/align.h"
-#include "service/mca/mca_base_param.h"
+#include "service/mca/base/mca_base_param.h"
 #include "service/util/output.h"
 #include "orte/util/show_help.h"
 #include "opal/datatype/ccs_convertor.h"

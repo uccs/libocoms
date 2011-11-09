@@ -37,7 +37,7 @@
 
 #include "opal/class/ccs_object.h"
 #include "opal/class/ccs_list.h"
-#include "service/mca/mca_base_param.h"
+#include "service/mca/base/mca_base_param.h"
 
 BEGIN_C_DECLS
 

@@ -30,7 +30,7 @@
 #include "service/util/argv.h"
 #include "opal/util/cmd_line.h"
 #include "service/util/output.h"
-#include "service/mca/mca_base_param.h"
+#include "service/mca/base/mca_base_param.h"
 #include "service/include/service/constants.h"
 
 

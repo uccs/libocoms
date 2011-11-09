@@ -29,8 +29,8 @@
  * These units are large enough to warrant their own .h files
  */
 #include "service/mca/mca.h"
-#include "service/mca/mca_base_param.h"
-#include "service/mca/cmd_line.h"
+#include "service/mca/base/mca_base_param.h"
+#include "service/util/cmd_line.h"
 
 BEGIN_C_DECLS
 

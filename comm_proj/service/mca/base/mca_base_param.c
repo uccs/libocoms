@@ -38,7 +38,7 @@
 #include "opal/util/printf.h"
 #include "service/util/argv.h"
 #include "service/mca/mca.h"
-#include "service/mca/mca_base_param.h"
+#include "service/mca/base/mca_base_param.h"
 #include "opal/mca/base/mca_base_param_internal.h"
 #include "service/include/service/constants.h"
 #include "service/util/output.h"

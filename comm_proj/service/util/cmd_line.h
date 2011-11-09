@@ -113,7 +113,7 @@
 #include "ccs_config.h"
 
 #include "service/util/service_object.h"
-#include "opal/class/service_list.h"
+#include "service/util/service_list.h"
 #include "service/threads/mutex.h"
 
 BEGIN_C_DECLS
