@@ -238,17 +238,17 @@ sub mca_process_component {
 sub ignored {
     my ($dir) = @_;
 
-    # If this directory does not have .ompi_ignore, or if it has a
-    # .ompi_unignore that has my username in it, then add it to the
+    # If this directory does not have .uccs_ignore, or if it has a
+    # .uccs_unignore that has my username in it, then add it to the
     # list of components.
     my $ignored = 0;
 
-    if (-f "$dir/.ompi_ignore") {
+    if (-f "$dir/.uccs_ignore") {
         $ignored = 1;
     }
-    if (-f "$dir/.ompi_unignore") {
-        open(UNIGNORE, "$dir/.ompi_unignore") ||
-            die "Can't open $dir/.ompi_unignore file";
+    if (-f "$dir/.uccs_unignore") {
+        open(UNIGNORE, "$dir/.uccs_unignore") ||
+            die "Can't open $dir/.uccs_unignore file";
         my $unignore;
         $unignore .= $_
             while (<UNIGNORE>);
@@ -332,7 +332,7 @@ sub mca_process_framework {
 
                 # Check ignore status
                 if (ignored("$dir/$d")) {
-                    verbose "    => Ignored (found .ompi_ignore file)\n";
+                    verbose "    => Ignored (found .uccs_ignore file)\n";
                 } else {
                     mca_process_component($topdir, $project, $framework, $d);
                 }
@@ -1134,6 +1134,8 @@ print("\n BBB CWD - $rlg_dir = \n");
 # Top-level projects to examine
 my $projects;
 push(@{$projects}, { name => "ccs", dir => "ccs", need_base => 1 });
+# Pasha: We can't include servic project there becasue it does not have any componentes
+#push(@{$projects}, { name => "service", dir => "service", need_base => 1 });
 #push(@{$projects}, { name => "orte", dir => "orte", need_base => 1 })
 #    if (!$no_ompi_arg || !$no_orte_arg);
 

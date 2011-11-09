@@ -17,12 +17,12 @@
 # $HEADER$
 #
 
-SUBDIRS = config $(MCA_PROJECT_SUBDIRS) 
+SUBDIRS = config $(MCA_PROJECT_SUBDIRS) service
 EXTRA_DIST = README INSTALL VERSION Doxyfile LICENSE autogen.pl CMakeLists.txt README.WINDOWS.txt
 
 # include examples/Makefile.include
 
 dist-hook:
-	csh "$(top_srcdir)/config/distscript.csh" "$(top_srcdir)" "$(distdir)" "$(OMPI_VERSION)" "$(OMPI_SVN_R)"
+	csh "$(top_srcdir)/config/distscript.csh" "$(top_srcdir)" "$(distdir)" "$(CCS_VERSION)" "$(CCS_SVN_R)"
 
 ACLOCAL_AMFLAGS = -I config
