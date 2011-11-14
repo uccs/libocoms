@@ -25,10 +25,10 @@
 #include <ctype.h>
 
 #include "service/util/service_object.h"
-#include "opal/class/service_list.h"
+#include "service/util/service_list.h"
 #include "service/threads/mutex.h"
 #include "service/util/argv.h"
-#include "opal/util/cmd_line.h"
+#include "service/util/cmd_line.h"
 #include "service/util/output.h"
 #include "service/mca/base/mca_base_param.h"
 #include "service/include/service/constants.h"

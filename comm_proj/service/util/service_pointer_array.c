@@ -17,30 +17,31 @@
  * $HEADER$
  */
 
-#include "opal_config.h"
+#include "ccs_config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 
-#include "opal/constants.h"
-#include "opal/class/opal_pointer_array.h"
-#include "opal/util/output.h"
+#include "service/include/service/constants.h"
+#include "service/util/service_pointer_array.h"
+#include "service/util/output.h"
+#include "rlg_confdefs.h"
 
 enum { TABLE_INIT = 1, TABLE_GROW = 2 };
 
-static void opal_pointer_array_construct(service_pointer_array_t *);
-static void opal_pointer_array_destruct(service_pointer_array_t *);
+static void service_pointer_array_construct(service_pointer_array_t *);
+static void service_pointer_array_destruct(service_pointer_array_t *);
 static bool grow_table(service_pointer_array_t *table, int soft, int hard);
 
 OBJ_CLASS_INSTANCE(service_pointer_array_t, service_object_t,
-                   opal_pointer_array_construct,
-                   opal_pointer_array_destruct);
+                   service_pointer_array_construct,
+                   service_pointer_array_destruct);
 
 /*
- * opal_pointer_array constructor
+ * service_pointer_array constructor
  */
-static void opal_pointer_array_construct(service_pointer_array_t *array)
+static void service_pointer_array_construct(service_pointer_array_t *array)
 {
     OBJ_CONSTRUCT(&array->lock, service_mutex_t);
     array->lowest_free = 0;
@@ -52,9 +53,9 @@ static void opal_pointer_array_construct(service_pointer_array_t *array)
 }
 
 /*
- * opal_pointer_array destructor
+ * service_pointer_array destructor
  */
-static void opal_pointer_array_destruct(service_pointer_array_t *array)
+static void service_pointer_array_destruct(service_pointer_array_t *array)
 {
     /* free table */
     if( NULL != array->addr) {
@@ -70,7 +71,7 @@ static void opal_pointer_array_destruct(service_pointer_array_t *array)
 /**
  * initialize an array object
  */
-int opal_pointer_array_init(service_pointer_array_t* array,
+int service_pointer_array_init(service_pointer_array_t* array,
                             int initial_allocation,
                             int max_size, int block_size)
 {
@@ -78,7 +79,7 @@ int opal_pointer_array_init(service_pointer_array_t* array,
     
     /* check for errors */
     if (NULL == array || max_size < block_size) {
-        return OPAL_ERR_BAD_PARAM;
+        return CCS_ERR_BAD_PARAM;
     }
     
     array->max_size = max_size;
@@ -92,10 +93,10 @@ int opal_pointer_array_init(service_pointer_array_t* array,
     /* Allocate and set the array to NULL */   
     array->addr = (void **)calloc(num_bytes, 1);
     if (NULL == array->addr) { /* out of memory */
-        return OPAL_ERR_OUT_OF_RESOURCE;
+        return CCS_ERR_OUT_OF_RESOURCE;
     }
 
-    return OPAL_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 /**
@@ -104,21 +105,21 @@ int opal_pointer_array_init(service_pointer_array_t* array,
  * @param table Pointer to service_pointer_array_t object (IN)
  * @param ptr Pointer to be added to table    (IN)
  *
- * @return Array index where ptr is inserted or OPAL_ERROR if it fails
+ * @return Array index where ptr is inserted or CCS_ERROR if it fails
  */
-int opal_pointer_array_add(service_pointer_array_t *table, void *ptr)
+int service_pointer_array_add(service_pointer_array_t *table, void *ptr)
 {
     int i, index;
 
-    OPAL_THREAD_LOCK(&(table->lock));
+    SERVICE_THREAD_LOCK(&(table->lock));
 
     if (table->number_free == 0) {
         /* need to grow table */
         if (!grow_table(table, 
                         (NULL == table->addr ? TABLE_INIT : table->size * TABLE_GROW), 
-                        OMPI_FORTRAN_HANDLE_MAX)) {
-            OPAL_THREAD_UNLOCK(&(table->lock));
-            return OPAL_ERR_OUT_OF_RESOURCE;
+                        CCS_FORTRAN_HANDLE_MAX)) {
+            SERVICE_THREAD_UNLOCK(&(table->lock));
+            return CCS_ERR_OUT_OF_RESOURCE;
         }
     }
 
@@ -146,7 +147,7 @@ int opal_pointer_array_add(service_pointer_array_t *table, void *ptr)
         table->lowest_free = table->size;
     }
 
-    OPAL_THREAD_UNLOCK(&(table->lock));
+    SERVICE_THREAD_UNLOCK(&(table->lock));
     return index;
 }
 
@@ -161,19 +162,19 @@ int opal_pointer_array_add(service_pointer_array_t *table, void *ptr)
  *
  * Assumption: NULL element is free element.
  */
-int opal_pointer_array_set_item(service_pointer_array_t *table, int index,
+int service_pointer_array_set_item(service_pointer_array_t *table, int index,
                                 void * value)
 {
     assert(table != NULL);
 
     /* expand table if required to set a specific index */
 
-    OPAL_THREAD_LOCK(&(table->lock));
+    SERVICE_THREAD_LOCK(&(table->lock));
     if (table->size <= index) {
         if (!grow_table(table, ((index / TABLE_GROW) + 1) * TABLE_GROW,
                         index)) {
-            OPAL_THREAD_UNLOCK(&(table->lock));
-            return OPAL_ERROR;
+            SERVICE_THREAD_UNLOCK(&(table->lock));
+            return CCS_ERROR;
         }
     }
 
@@ -205,15 +206,15 @@ int opal_pointer_array_set_item(service_pointer_array_t *table, int index,
     table->addr[index] = value;	
 
 #if 0
-    opal_output(0,"opal_pointer_array_set_item: OUT: "
+    service_output(0,"service_pointer_array_set_item: OUT: "
                 " table %p (size %ld, lowest free %ld, number free %ld)"
                 " addr[%d] = %p\n",
                 table, table->size, table->lowest_free, table->number_free,
                 index, table->addr[index]);
 #endif
 
-    OPAL_THREAD_UNLOCK(&(table->lock));
-    return OPAL_SUCCESS;
+    SERVICE_THREAD_UNLOCK(&(table->lock));
+    return CCS_SUCCESS;
 }
 
 /**
@@ -237,7 +238,7 @@ bool service_pointer_array_test_and_set_item (service_pointer_array_t *table,
     assert(index >= 0);
 
 #if 0
-    opal_output(0,"service_pointer_array_test_and_set_item: IN:  "
+    service_output(0,"service_pointer_array_test_and_set_item: IN:  "
                " table %p (size %ld, lowest free %ld, number free %ld)"
                " addr[%d] = %p\n",
                table, table->size, table->lowest_free, table->number_free,
@@ -245,10 +246,10 @@ bool service_pointer_array_test_and_set_item (service_pointer_array_t *table,
 #endif
 
     /* expand table if required to set a specific index */
-    OPAL_THREAD_LOCK(&(table->lock));
+    SERVICE_THREAD_LOCK(&(table->lock));
     if ( index < table->size && table->addr[index] != NULL ) {
         /* This element is already in use */
-        OPAL_THREAD_UNLOCK(&(table->lock));
+        SERVICE_THREAD_UNLOCK(&(table->lock));
         return false;
     }
 
@@ -257,7 +258,7 @@ bool service_pointer_array_test_and_set_item (service_pointer_array_t *table,
     if (table->size <= index) {
         if (!grow_table(table, (((index / TABLE_GROW) + 1) * TABLE_GROW),
                         index)) {
-            OPAL_THREAD_UNLOCK(&(table->lock));
+            SERVICE_THREAD_UNLOCK(&(table->lock));
             return false;
         }
     }
@@ -281,28 +282,28 @@ bool service_pointer_array_test_and_set_item (service_pointer_array_t *table,
     }
 
 #if 0
-    opal_output(0,"service_pointer_array_test_and_set_item: OUT: "
+    service_output(0,"service_pointer_array_test_and_set_item: OUT: "
                " table %p (size %ld, lowest free %ld, number free %ld)"
                " addr[%d] = %p\n",
                table, table->size, table->lowest_free, table->number_free,
                index, table->addr[index]);
 #endif
 
-    OPAL_THREAD_UNLOCK(&(table->lock));
+    SERVICE_THREAD_UNLOCK(&(table->lock));
     return true;
 }
 
-int opal_pointer_array_set_size(service_pointer_array_t *array, int new_size)
+int service_pointer_array_set_size(service_pointer_array_t *array, int new_size)
 {
-    OPAL_THREAD_LOCK(&(array->lock));
+    SERVICE_THREAD_LOCK(&(array->lock));
     if(new_size > array->size) {
         if (!grow_table(array, new_size, new_size)) {
-            OPAL_THREAD_UNLOCK(&(array->lock));
-            return OPAL_ERROR;
+            SERVICE_THREAD_UNLOCK(&(array->lock));
+            return CCS_ERROR;
         }
     }
-    OPAL_THREAD_UNLOCK(&(array->lock));
-    return OPAL_SUCCESS;
+    SERVICE_THREAD_UNLOCK(&(array->lock));
+    return CCS_SUCCESS;
 }
 
 static bool grow_table(service_pointer_array_t *table, int soft, int hard)
@@ -330,7 +331,7 @@ static bool grow_table(service_pointer_array_t *table, int soft, int hard)
     }
     
     /* We've already established (above) that the arithmetic
-       below will be less than OMPI_FORTRAN_HANDLE_MAX */
+       below will be less than CCS_FORTRAN_HANDLE_MAX */
     
     new_size_int = (int) new_size;
     table->number_free += new_size_int - table->size;

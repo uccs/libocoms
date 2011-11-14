@@ -123,7 +123,7 @@
 #endif  /* HAVE_STDLIB_H */
 
 #if CCS_ENABLE_MULTI_THREADS
-#include "opal/sys/atomic.h"
+#include "service/sys/atomic.h"
 #endif  /* CCS_ENABLE_MULTI_THREADS */
 
 BEGIN_C_DECLS

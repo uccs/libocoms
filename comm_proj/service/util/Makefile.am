@@ -37,7 +37,11 @@ util_headers = \
         service_list.h \
         service_object.h \
         service_pointer_array.h \
-        service_rb_tree.h
+        service_rb_tree.h \
+        service_graph.h \
+        service_environ.h \
+        service_value_array.h \
+        printf.h
 
 libserviceutil_la_SOURCES = \
         $(util_headers) \
@@ -54,11 +58,22 @@ libserviceutil_la_SOURCES = \
         service_pointer_array.c \
         service_pointer_array.h \
         service_rb_tree.h \
-        service_rb_tree.c
+        service_rb_tree.c \
+        service_graph.c \
+        service_graph.h \
+        service_environ.h \
+        service_environ.c \
+        service_value_array.h \
+        service_value_array.c \
+        printf.c \
+        printf.h
 
 libserviceutil_la_LIBADD = 
 
 libserviceutil_la_DEPENDENCIES =
+
+CFLAGS += @RTE_CFLAGS@
+LDFLAGS += @RTE_LDFLAGS@
 
 # Conditionally install the header files
 

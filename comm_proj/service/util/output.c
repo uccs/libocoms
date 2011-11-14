@@ -34,7 +34,7 @@
 #include <sys/param.h>
 #endif
 
-#include "opal/util/service_environ.h"
+#include "service/util/service_environ.h"
 #include "service/util/output.h"
 #include "service/threads/mutex.h"
 #include "service/include/service/constants.h"
@@ -369,7 +369,7 @@ void service_close(int output_id)
 /*
  * Main function to send output to a stream
  */
-void service(int output_id, const char *format, ...)
+void service_output(int output_id, const char *format, ...)
 {
     if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS) {
         va_list arglist;

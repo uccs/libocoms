@@ -124,7 +124,7 @@ CCS_DECLSPEC void service_rb_tree_destruct(service_object_t * object);
   *  tree data structure.
   * @param comp a pointer to the function to use for comaparing 2 nodes
   *
-  * @retval OMPI_SUCCESS if it is successful
+  * @retval CCS_SUCCESS if it is successful
   * @retval CCS_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
   */
 CCS_DECLSPEC int service_rb_tree_init(service_rb_tree_t * tree, service_rb_tree_comp_fn_t comp);
@@ -137,7 +137,7 @@ CCS_DECLSPEC int service_rb_tree_init(service_rb_tree_t * tree, service_rb_tree_
   * @param key the key for the node
   * @param value the value for the node
   *
-  * @retval OMPI_SUCCESS
+  * @retval CCS_SUCCESS
   * @retval CCS_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
   */
 CCS_DECLSPEC int service_rb_tree_insert(service_rb_tree_t *tree, void * key, void * value);
@@ -175,7 +175,7 @@ static inline void * service_rb_tree_find(service_rb_tree_t *tree, void *key)
   * @param tree a pointer to the tree data structure
   * @param key a pointer to the key
   *
-  * @retval OMPI_SUCCESS if the node is found and deleted
+  * @retval CCS_SUCCESS if the node is found and deleted
   * @retval CCS_ERR_NOT_FOUND if the node is not found
   */
 CCS_DECLSPEC int service_rb_tree_delete(service_rb_tree_t *tree, void *key);
@@ -185,7 +185,7 @@ CCS_DECLSPEC int service_rb_tree_delete(service_rb_tree_t *tree, void *key);
   *
   * @param tree a pointer to the tree data structure
   *
-  * @retval OMPI_SUCCESS
+  * @retval CCS_SUCCESS
   */
 CCS_DECLSPEC int service_rb_tree_destroy(service_rb_tree_t *tree);
 
@@ -197,8 +197,8 @@ CCS_DECLSPEC int service_rb_tree_destroy(service_rb_tree_t *tree);
   * @param cond a pointer to the condition function
   * @param action a pointer to the action function
   *
-  * @retval OMPI_SUCCESS
-  * @retval OMPI_ERROR if there is an error
+  * @retval CCS_SUCCESS
+  * @retval CCS_ERROR if there is an error
   */
 CCS_DECLSPEC int service_rb_tree_traverse(service_rb_tree_t *tree,
                           service_rb_tree_condition_fn_t cond,

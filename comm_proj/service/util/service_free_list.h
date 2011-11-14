@@ -27,10 +27,10 @@
 #include "service/threads/condition.h"
 #include "ccs/include/ccs_constants.h"
 #if 0
-#include "opal/prefetch.h"
+#include "service/prefetch.h"
 #include "service/threads/condition.h"
 #include "ompi/constants.h"
-#include "opal/runtime/opal.h"
+#include "service/runtime/opal.h"
 #endif
 
 BEGIN_C_DECLS

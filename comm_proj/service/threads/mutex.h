@@ -106,7 +106,7 @@ static inline void service_mutex_atomic_lock(service_mutex_t *mutex);
  *
  * @param mutex         Address of the mutex.
  */
-static inline void service(service_mutex_t *mutex);
+static inline void service_mutex_atomic_unlock(service_mutex_t *mutex);
 
 END_C_DECLS
 

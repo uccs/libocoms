@@ -32,7 +32,7 @@ BEGIN_C_DECLS
  * Loop over reading from the fd until len bytes are read or an error
  * occurs.  EAGAIN and EINTR are transparently handled.
  */
-CCS_DECLSPEC int opal_fd_read(int fd, int len, void *buffer);
+CCS_DECLSPEC int service_fd_read(int fd, int len, void *buffer);
 
 /**
  * Write a complete buffer to a file descriptor.
@@ -47,7 +47,7 @@ CCS_DECLSPEC int opal_fd_read(int fd, int len, void *buffer);
  * Loop over writing to the fd until len bytes are written or an error
  * occurs.  EAGAIN and EINTR are transparently handled.
  */
-CCS_DECLSPEC int opal_fd_write(int fd, int len, const void *buffer);
+CCS_DECLSPEC int service_fd_write(int fd, int len, const void *buffer);
 
 END_C_DECLS
 

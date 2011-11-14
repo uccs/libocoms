@@ -26,7 +26,7 @@
 
 #include <stdio.h>
 
-#include "opal/sys/atomic.h"
+#include "service/sys/atomic.h"
 #include "service/util/service_object.h"
 #include "service/include/service/constants.h"
 

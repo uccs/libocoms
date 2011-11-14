@@ -70,7 +70,7 @@
 
 #if CCS_ENABLE_DEBUG
 /* Need atomics for debugging (reference counting) */
-#include "opal/sys/atomic.h"
+#include "service/sys/atomic.h"
 #include "service/threads/mutex.h"
 #endif
 

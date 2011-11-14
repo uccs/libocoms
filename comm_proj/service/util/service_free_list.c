@@ -22,7 +22,7 @@
 #include "ccs_config.h"
 
 #include "service/util/service_free_list.h"
-#include "opal/align.h"
+#include "service/align.h"
 #include "service/util/output.h"
 #include "ompi/mca/mpool/mpool.h"
 
