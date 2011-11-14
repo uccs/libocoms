@@ -20,7 +20,7 @@
 
 #include "ccs_config.h"
 
-#include "opal/threads/mutex.h"
+#include "service/threads/mutex.h"
 
 /*
  * If we have progress threads, always default to using threads.

@@ -125,7 +125,7 @@ CCS_DECLSPEC void service_rb_tree_destruct(service_object_t * object);
   * @param comp a pointer to the function to use for comaparing 2 nodes
   *
   * @retval OMPI_SUCCESS if it is successful
-  * @retval OMPI_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
+  * @retval CCS_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
   */
 CCS_DECLSPEC int service_rb_tree_init(service_rb_tree_t * tree, service_rb_tree_comp_fn_t comp);
 
@@ -138,7 +138,7 @@ CCS_DECLSPEC int service_rb_tree_init(service_rb_tree_t * tree, service_rb_tree_
   * @param value the value for the node
   *
   * @retval OMPI_SUCCESS
-  * @retval OMPI_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
+  * @retval CCS_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
   */
 CCS_DECLSPEC int service_rb_tree_insert(service_rb_tree_t *tree, void * key, void * value);
 
@@ -176,7 +176,7 @@ static inline void * service_rb_tree_find(service_rb_tree_t *tree, void *key)
   * @param key a pointer to the key
   *
   * @retval OMPI_SUCCESS if the node is found and deleted
-  * @retval OMPI_ERR_NOT_FOUND if the node is not found
+  * @retval CCS_ERR_NOT_FOUND if the node is not found
   */
 CCS_DECLSPEC int service_rb_tree_delete(service_rb_tree_t *tree, void *key);
 

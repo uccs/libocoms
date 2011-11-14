@@ -51,8 +51,8 @@ void service_rb_tree_construct(service_object_t * object)
     tree->root_ptr = NULL;
     OBJ_CONSTRUCT(&(tree->free_list), service_free_list_t);
     service_free_list_init_new(&(tree->free_list), sizeof(service_rb_tree_node_t),
-            opal_cache_line_size, OBJ_CLASS(service_rb_tree_node_t),
-            0,opal_cache_line_size,
+            service_cache_line_size, OBJ_CLASS(service_rb_tree_node_t),
+            0,service_cache_line_size,
             0, -1 , 128, NULL);
 }
 
@@ -223,7 +223,7 @@ int service_rb_tree_delete(service_rb_tree_t *tree, void *key)
 
     p = service_rb_tree_find_node(tree, key);
     if (NULL == p) {
-        return(OMPI_ERR_NOT_FOUND);
+        return(CCS_ERR_NOT_FOUND);
     }
     if ((p->left == tree->nill) || (p->right == tree->nill)) {
         todelete = p;
