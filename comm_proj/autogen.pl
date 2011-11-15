@@ -1135,7 +1135,7 @@ print("\n BBB CWD - $rlg_dir = \n");
 my $projects;
 push(@{$projects}, { name => "ccs", dir => "ccs", need_base => 1 });
 # Pasha: We can't include servic project there becasue it does not have any componentes
-push(@{$projects}, { name => "service", dir => "service", need_base => 1 });
+# push(@{$projects}, { name => "service", dir => "service", need_base => 1 });
 #push(@{$projects}, { name => "orte", dir => "orte", need_base => 1 })
 #    if (!$no_ompi_arg || !$no_orte_arg);
 
