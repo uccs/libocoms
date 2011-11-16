@@ -61,9 +61,9 @@ typedef union {
  */
 
 #if defined(__APPLE__) || defined(__WINDOWS__)
-typedef char* ompi_iov_base_ptr_t;
+typedef char* service_iov_base_ptr_t;
 #else
-typedef void* ompi_iov_base_ptr_t;
+typedef void* service_iov_base_ptr_t;
 #endif
 
 /*
