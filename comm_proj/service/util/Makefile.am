@@ -41,7 +41,8 @@ util_headers = \
         service_graph.h \
         service_environ.h \
         service_value_array.h \
-        printf.h
+        printf.h \
+        service_hash_table.h
 
 libserviceutil_la_SOURCES = \
         $(util_headers) \
@@ -66,7 +67,9 @@ libserviceutil_la_SOURCES = \
         service_value_array.h \
         service_value_array.c \
         printf.c \
-        printf.h
+        printf.h \
+        service_hash_table.c \
+        service_hash_table.h
 
 libserviceutil_la_LIBADD = 
 

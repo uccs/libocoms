@@ -71,7 +71,7 @@ static int guess_strlen(const char *fmt, va_list ap)
                     len += (int)strlen(sarg);
                 } else {
 #if OPAL_ENABLE_DEBUG
-                    opal_output(0, "OPAL DEBUG WARNING: Got a NULL argument to opal_vasprintf!\n");
+                    service_output(0, "OPAL DEBUG WARNING: Got a NULL argument to service_vasprintf!\n");
 #endif
                     len += 5;
                 }
@@ -185,20 +185,20 @@ static int guess_strlen(const char *fmt, va_list ap)
 }
 
 
-int opal_asprintf(char **ptr, const char *fmt, ...)
+int service_asprintf(char **ptr, const char *fmt, ...)
 {
     int length;
     va_list ap;
 
     va_start(ap, fmt);
-    length = opal_vasprintf(ptr, fmt, ap);
+    length = service_vasprintf(ptr, fmt, ap);
     va_end(ap);
 
     return length;
 }
 
 
-int opal_vasprintf(char **ptr, const char *fmt, va_list ap)
+int service_vasprintf(char **ptr, const char *fmt, va_list ap)
 {
     int length;
     va_list ap2;
@@ -248,19 +248,19 @@ int service_snprintf(char *str, size_t size, const char *fmt, ...)
     va_list ap;
 
     va_start(ap, fmt);
-    length = opal_vsnprintf(str, size, fmt, ap);
+    length = service_vsnprintf(str, size, fmt, ap);
     va_end(ap);
 
     return length;
 }
 
 
-int opal_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
+int service_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 {
     int length;
     char *buf;
 
-    length = opal_vasprintf(&buf, fmt, ap);
+    length = service_vasprintf(&buf, fmt, ap);
     if (length < 0) {
         return length;
     }
@@ -308,7 +308,7 @@ int main(int argc, char *argv[])
     printf("strlen = %d\n", (int) strlen(b));
 
     puts("test of asprintf:");
-    length = opal_asprintf(&s, "this is a string %d", 1004);
+    length = service_asprintf(&s, "this is a string %d", 1004);
     printf("string = %s\n", s);
     printf("length = %d\n", length);
     printf("strlen = %d\n", (int) strlen(s));

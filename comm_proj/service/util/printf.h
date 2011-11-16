@@ -76,7 +76,7 @@ CCS_DECLSPEC int  service_snprintf(char *str, size_t size, const char *fmt, ...)
  *
  * THIS IS A PORTABILITY FEATURE: USE vsnprintf() in CODE.
  */
-CCS_DECLSPEC int  opal_vsnprintf(char *str, size_t size, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 3, 0);
+CCS_DECLSPEC int  service_vsnprintf(char *str, size_t size, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 3, 0);
 
 /**
  * Allocates and writes to a string under the control of a format
@@ -97,7 +97,7 @@ CCS_DECLSPEC int  opal_vsnprintf(char *str, size_t size, const char *fmt, va_lis
  *
  * THIS IS A PORTABILITY FEATURE: USE asprintf() in CODE.
  */
-CCS_DECLSPEC int  opal_asprintf(char **ptr, const char *fmt, ...) __service_attribute_format__(__printf__, 2, 3);
+CCS_DECLSPEC int  service_asprintf(char **ptr, const char *fmt, ...) __service_attribute_format__(__printf__, 2, 3);
 
 
 /**
@@ -121,7 +121,7 @@ CCS_DECLSPEC int  opal_asprintf(char **ptr, const char *fmt, ...) __service_attr
  *
  * THIS IS A PORTABILITY FEATURE: USE vasprintf() in CODE.
  */
-CCS_DECLSPEC int  opal_vasprintf(char **ptr, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 2, 0);
+CCS_DECLSPEC int  service_vasprintf(char **ptr, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 2, 0);
 
 
 END_C_DECLS
