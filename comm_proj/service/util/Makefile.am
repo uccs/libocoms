@@ -43,7 +43,8 @@ util_headers = \
         service_value_array.h \
         printf.h \
         service_hash_table.h \
-        if.h
+        if.h \
+        arch.h
 
 libserviceutil_la_SOURCES = \
         $(util_headers) \
@@ -72,7 +73,10 @@ libserviceutil_la_SOURCES = \
         service_hash_table.c \
         service_hash_table.h \
         if.c \
-        if.h
+        if.h \
+        arch.c \
+        arch.h
+
 
 libserviceutil_la_LIBADD = 
 
