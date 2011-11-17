@@ -25,7 +25,7 @@
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
 #include "opal/mca/base/mca_base_param_internal.h"
-#include "opal/util/keyval_parse.h"
+#include "service/util/keyval_parse.h"
 
 static void save_value(const char *name, const char *value);
 

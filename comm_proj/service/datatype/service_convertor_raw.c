@@ -15,8 +15,8 @@
 
 #include <stddef.h>
 
-#include "opal/datatype/service_convertor_internal.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_convertor_internal.h"
+#include "service/datatype/service_datatype_internal.h"
 
 #if CCS_ENABLE_DEBUG
 #include "service/util/output.h"

@@ -53,10 +53,10 @@
 #endif
 
 #include "opal/mca/installdirs/installdirs.h"
-#include "opal/util/ccs_environ.h"
+#include "service/util/ccs_environ.h"
 #include "service/util/output.h"
 #include "service/util/argv.h"
-#include "opal/util/show_help.h"
+#include "service/util/show_help.h"
 #include "opal/class/ccs_list.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"

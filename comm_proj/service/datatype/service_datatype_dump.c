@@ -26,8 +26,8 @@
 
 #include "service/include/service/constants.h"
 #include "service/util/output.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_datatype_internal.h"
 
 /********************************************************
  * Data dumping functions

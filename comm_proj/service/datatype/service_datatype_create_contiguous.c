@@ -21,8 +21,8 @@
 
 #include "ccs_config.h"
 #include "service/include/service/constants.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_datatype_internal.h"
 
 int32_t service_datatype_create_contiguous( int count, const service_datatype_t* oldType,
                                          service_datatype_t** newType )

@@ -18,8 +18,8 @@
 
 #include "ccs_config.h"
 
-#include "opal/sys/atomic.h"
-#include "opal/sys/architecture.h"
+#include "service/sys/atomic.h"
+#include "service/sys/architecture.h"
 
 #if CCS_ASSEMBLY_ARCH == OMPI_SPARC
 

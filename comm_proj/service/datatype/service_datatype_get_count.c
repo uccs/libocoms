@@ -12,9 +12,9 @@
  */
 
 #include "ccs_config.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/ccs_convertor.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_convertor.h"
+#include "service/datatype/service_datatype_internal.h"
 
 #ifdef HAVE_ALLOCA_H
 #include <alloca.h>

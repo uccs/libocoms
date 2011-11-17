@@ -23,8 +23,8 @@
 #include <stddef.h>
 
 #include "service/include/service/constants.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_datatype_internal.h"
 #include "limits.h"
 #include "opal/prefetch.h"
 

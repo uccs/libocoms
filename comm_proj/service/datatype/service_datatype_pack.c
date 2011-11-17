@@ -22,8 +22,8 @@
 
 #include <stddef.h>
 
-#include "opal/datatype/service_convertor_internal.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_convertor_internal.h"
+#include "service/datatype/service_datatype_internal.h"
 
 #if CCS_ENABLE_DEBUG
 
@@ -35,9 +35,9 @@ extern int service_pack_debug;
 #define DO_DEBUG(INST)
 #endif  /* CCS_ENABLE_DEBUG */
 
-#include "opal/datatype/service_datatype_checksum.h"
-#include "opal/datatype/service_datatype_pack.h"
-#include "opal/datatype/service_datatype_prototypes.h"
+#include "service/datatype/service_datatype_checksum.h"
+#include "service/datatype/service_datatype_pack.h"
+#include "service/datatype/service_datatype_prototypes.h"
 
 #if defined(CHECKSUM)
 #define service_pack_homogeneous_contig_function           service_pack_homogeneous_contig_checksum

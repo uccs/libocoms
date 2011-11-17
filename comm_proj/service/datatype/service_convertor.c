@@ -29,17 +29,17 @@
 #endif
 
 #include "opal/prefetch.h"
-#include "opal/util/arch.h"
+#include "service/util/arch.h"
 #include "service/util/output.h"
 
-#include "opal/datatype/service_datatype_internal.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/ccs_convertor.h"
-#include "opal/datatype/service_datatype_checksum.h"
-#include "opal/datatype/service_datatype_prototypes.h"
-#include "opal/datatype/service_convertor_internal.h"
+#include "service/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_convertor.h"
+#include "service/datatype/service_datatype_checksum.h"
+#include "service/datatype/service_datatype_prototypes.h"
+#include "service/datatype/service_convertor_internal.h"
 #if CCS_CUDA_SUPPORT
-#include "opal/datatype/service_datatype_cuda.h"
+#include "service/datatype/service_datatype_cuda.h"
 #define MEMCPY_CUDA( DST, SRC, BLENGTH, CONVERTOR ) \
     CONVERTOR->cbmemcpy( (DST), (SRC), (BLENGTH) )
 #endif

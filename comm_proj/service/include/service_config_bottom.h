@@ -400,12 +400,12 @@ typedef unsigned char bool;
  */
 #if CCS_ENABLE_MEM_DEBUG && !defined(CCS_DISABLE_ENABLE_MEM_DEBUG)
 
-/* It is safe to include opal/util/malloc.h here because a) it will only
+/* It is safe to include service/util/malloc.h here because a) it will only
    happen when we are building OMPI and therefore have a full OMPI
    source tree [including headers] available, and b) we guaranteed to
-   *not* to include anything else via opal/util/malloc.h, so we won't
+   *not* to include anything else via service/util/malloc.h, so we won't
    have Cascading Includes Of Death. */
-#    include "opal/util/malloc.h"
+#    include "service/util/malloc.h"
 #    if defined(malloc)
 #        undef malloc
 #    endif
@@ -441,7 +441,7 @@ typedef unsigned char bool;
 #endif
 
 #if !defined(HAVE_ASPRINTF) || !defined(HAVE_SNPRINTF) || !defined(HAVE_VASPRINTF) || !defined(HAVE_VSNPRINTF)
-#include "opal/util/printf.h"
+#include "service/util/printf.h"
 #endif
 
 #ifndef HAVE_ASPRINTF
@@ -469,7 +469,7 @@ typedef unsigned char bool;
 #undef qsort
 #endif
 
-#include "opal/util/qsort.h"
+#include "service/util/qsort.h"
 #define qsort service_qsort
 #endif
 

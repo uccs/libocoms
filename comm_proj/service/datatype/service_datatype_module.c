@@ -24,10 +24,10 @@
 
 #include <stddef.h>
 
-#include "opal/util/arch.h"
-#include "opal/datatype/service_datatype_internal.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/service_convertor_internal.h"
+#include "service/util/arch.h"
+#include "service/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_convertor_internal.h"
 #include "service/mca/base/mca_base_param.h"
 
 /* by default the debuging is turned off */

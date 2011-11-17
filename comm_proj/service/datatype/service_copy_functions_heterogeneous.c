@@ -18,14 +18,14 @@
 #include <stdint.h>
 #endif
 
-#include "opal/util/arch.h"
+#include "service/util/arch.h"
 
 #include "opal/types.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/ccs_convertor.h"
-#include "opal/datatype/service_datatype_internal.h"
-#include "opal/datatype/service_datatype_checksum.h"
-#include "opal/datatype/service_convertor_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_convertor.h"
+#include "service/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype_checksum.h"
+#include "service/datatype/service_convertor_internal.h"
 
 
 /*

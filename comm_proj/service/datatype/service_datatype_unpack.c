@@ -24,8 +24,8 @@
 #include <stddef.h>
 #include <stdio.h>
 
-#include "opal/datatype/service_convertor_internal.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_convertor_internal.h"
+#include "service/datatype/service_datatype_internal.h"
 
 #if CCS_ENABLE_DEBUG
 #include "service/util/output.h"
@@ -36,9 +36,9 @@ extern int service_unpack_debug;
 #define DO_DEBUG(INST)
 #endif  /* CCS_ENABLE_DEBUG */
 
-#include "opal/datatype/service_datatype_checksum.h"
-#include "opal/datatype/service_datatype_unpack.h"
-#include "opal/datatype/service_datatype_prototypes.h"
+#include "service/datatype/service_datatype_checksum.h"
+#include "service/datatype/service_datatype_unpack.h"
+#include "service/datatype/service_datatype_prototypes.h"
 
 #if defined(CHECKSUM)
 #define service_unpack_general_function            service_unpack_general_checksum

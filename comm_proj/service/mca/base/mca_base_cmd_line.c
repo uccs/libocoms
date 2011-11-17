@@ -21,9 +21,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "opal/util/cmd_line.h"
+#include "service/util/cmd_line.h"
 #include "service/util/argv.h"
-#include "opal/util/ccs_environ.h"
+#include "service/util/ccs_environ.h"
 #include "service/mca/base/base.h"
 #include "service/include/service/constants.h"
 

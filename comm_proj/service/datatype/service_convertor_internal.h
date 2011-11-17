@@ -18,8 +18,8 @@
 #include <stddef.h>
 
 #include "service/include/service/constants.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/ccs_convertor.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_convertor.h"
 
 BEGIN_C_DECLS
 

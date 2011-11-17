@@ -30,12 +30,12 @@
 
 #include "opal/mca/installdirs/installdirs.h"
 #include "service/util/output.h"
-#include "opal/util/printf.h"
+#include "service/util/printf.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
 #include "opal/mca/base/mca_base_component_repository.h"
 #include "service/include/service/constants.h"
-#include "opal/util/ccs_environ.h"
+#include "service/util/ccs_environ.h"
 
 /*
  * Public variables

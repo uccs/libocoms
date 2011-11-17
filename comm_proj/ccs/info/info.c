@@ -32,8 +32,8 @@
 #include <ctype.h>
 
 #if 0
-#include "opal/util/output.h"
-#include "opal/util/strncpy.h"
+#include "service/util/output.h"
+#include "service/util/strncpy.h"
 #endif
 #include "ccs/include/ccs_constants.h"
 #include "ccs/info/info.h"

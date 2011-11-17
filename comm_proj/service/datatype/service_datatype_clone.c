@@ -21,8 +21,8 @@
 
 #include "ccs_config.h"
 #include "service/include/service/constants.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_datatype_internal.h"
 
 /*
  * As the new type has the same commit state as the old one, I have to copy the fake

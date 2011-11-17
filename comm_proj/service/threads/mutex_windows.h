@@ -33,7 +33,7 @@
 
 #include "ccs_config.h"
 #include "service/util/service_object.h"
-#include "opal/sys/atomic.h"
+#include "service/sys/atomic.h"
 
 BEGIN_C_DECLS
 

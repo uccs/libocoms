@@ -17,8 +17,8 @@
 #include "service/mca/base/mca_base_param.h"
 #include "service/util/output.h"
 #include "orte/util/show_help.h"
-#include "opal/datatype/ccs_convertor.h"
-#include "opal/datatype/service_datatype_cuda.h"
+#include "service/datatype/service_convertor.h"
+#include "service/datatype/service_datatype_cuda.h"
 
 static bool initialized = false;
 static int service_cuda_verbose;

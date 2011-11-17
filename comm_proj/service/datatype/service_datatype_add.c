@@ -24,8 +24,8 @@
 
 #include "service/include/service/constants.h"
 #include "service/util/output.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_datatype_internal.h"
 
 /* macros to play with the flags */
 #define SET_CONTIGUOUS_FLAG( INT_VALUE )     (INT_VALUE) = (INT_VALUE) | (CCS_DATATYPE_FLAG_CONTIGUOUS)

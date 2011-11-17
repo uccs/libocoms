@@ -30,7 +30,7 @@
 #include "opal/memoryhooks/memory_internal.h"
 #include "opal/class/service_list.h"
 #include "service/util/service_object.h"
-#include "opal/sys/atomic.h"
+#include "service/sys/atomic.h"
 
 /* 
  * local types

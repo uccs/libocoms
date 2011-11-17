@@ -30,19 +30,19 @@
 #endif
 
 #include "opal/mca/installdirs/installdirs.h"
-#include "opal/util/os_path.h"
-#include "opal/util/path.h"
+#include "service/util/os_path.h"
+#include "service/util/path.h"
 #include "opal/class/ccs_value_array.h"
-#include "opal/util/show_help.h"
+#include "service/util/show_help.h"
 #include "opal/class/ccs_hash_table.h"
-#include "opal/util/printf.h"
+#include "service/util/printf.h"
 #include "service/util/argv.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/mca_base_param.h"
 #include "opal/mca/base/mca_base_param_internal.h"
 #include "service/include/service/constants.h"
 #include "service/util/output.h"
-#include "opal/util/ccs_environ.h"
+#include "service/util/ccs_environ.h"
 
 /*
  * Local types

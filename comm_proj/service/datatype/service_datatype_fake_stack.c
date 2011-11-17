@@ -27,9 +27,9 @@
 #include <alloca.h>
 #endif
 
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/ccs_convertor.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_convertor.h"
+#include "service/datatype/service_datatype_internal.h"
 
 
 int service_convertor_create_stack_with_pos_general( service_convertor_t* pConvertor,

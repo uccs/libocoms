@@ -29,7 +29,7 @@
     CONVERTOR->cbmemcpy( (DST), (SRC), (BLENGTH) )
 #endif
 
-#include "opal/datatype/ccs_convertor.h"
+#include "service/datatype/service_convertor.h"
 
 
 static inline void unpack_predefined_data( service_convertor_t* CONVERTOR, /* the convertor */

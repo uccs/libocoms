@@ -20,8 +20,8 @@
 #define DATATYPE_CHECKSUM_H_HAS_BEEN_INCLUDED
 
 
-#include "opal/datatype/service_datatype_memcpy.h"
-#include "opal/util/crc.h"
+#include "service/datatype/service_datatype_memcpy.h"
+#include "service/util/crc.h"
 
 #if defined(CHECKSUM)
 

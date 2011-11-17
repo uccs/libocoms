@@ -13,8 +13,8 @@
 
 #include "ccs_config.h"
 #include "service/include/service/constants.h"
-#include "opal/datatype/ccs_datatype.h"
-#include "opal/datatype/service_datatype_internal.h"
+#include "service/datatype/service_datatype.h"
+#include "service/datatype/service_datatype_internal.h"
 
 int32_t service_datatype_resize( service_datatype_t* type, CCS_PTRDIFF_TYPE lb, CCS_PTRDIFF_TYPE extent )
 {
