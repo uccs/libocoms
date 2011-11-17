@@ -25,8 +25,8 @@
  *  concurrently.
  */
 
-#ifndef OPAL_HASH_TABLE_H
-#define OPAL_HASH_TABLE_H
+#ifndef CCS_HASH_TABLE_H
+#define CCS_HASH_TABLE_H
 
 #include "ccs_config.h"
 
@@ -289,4 +289,4 @@ CCS_DECLSPEC int service_hash_table_get_next_key_uint64(service_hash_table_t *ta
 
 END_C_DECLS
 
-#endif  /* OPAL_HASH_TABLE_H */
+#endif  /* CCS_HASH_TABLE_H */

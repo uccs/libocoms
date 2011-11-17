@@ -21,8 +21,8 @@
  * Buffer safe printf functions for portability to archaic platforms.
  */
 
-#ifndef OPAL_PRINTF_H
-#define OPAL_PRINTF_H
+#ifndef CCS_PRINTF_H
+#define CCS_PRINTF_H
 
 #include "ccs_config.h"
 
@@ -126,5 +126,5 @@ CCS_DECLSPEC int  service_vasprintf(char **ptr, const char *fmt, va_list ap) __s
 
 END_C_DECLS
 
-#endif /* OPAL_PRINTF_H */
+#endif /* CCS_PRINTF_H */
 

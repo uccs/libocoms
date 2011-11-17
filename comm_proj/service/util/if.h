@@ -21,8 +21,8 @@
 
 /* @file */
 
-#ifndef OPAL_IF_UTIL_
-#define OPAL_IF_UTIL_
+#ifndef CCS_IF_UTIL_
+#define CCS_IF_UTIL_
 
 #include "ccs_config.h"
 
@@ -42,11 +42,11 @@
 
 BEGIN_C_DECLS
 
-#define OPAL_IF_FORMAT_ADDR(n)                              \
+#define SERVICE_IF_FORMAT_ADDR(n)                              \
     (((n) >> 24) & 0x000000FF), (((n) >> 16) & 0x000000FF), \
     (((n) >> 8) & 0x000000FF), ((n) & 0x000000FF)
 
-#define OPAL_IF_ASSEMBLE_NETWORK(n1, n2, n3, n4)    \
+#define SERVICE_IF_ASSEMBLE_NETWORK(n1, n2, n3, n4)    \
     (((n1) << 24) & 0xFF000000) |                   \
     (((n2) << 16) & 0x00FF0000) |                   \
     (((n3) <<  8) & 0x0000FF00) |                   \

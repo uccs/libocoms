@@ -188,7 +188,7 @@ int service_ifindextokindex(int if_index)
 int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
 {
     ccs_if_t* intf;
-#if OPAL_WANT_IPV6
+#if CCS_WANT_IPV6
     int error;
     struct addrinfo hints, *res = NULL, *r;
 #else
@@ -212,7 +212,7 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
         return CCS_ERROR;
     }
 
-#if OPAL_WANT_IPV6
+#if CCS_WANT_IPV6
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = PF_UNSPEC;
     hints.ai_socktype = SOCK_STREAM;
@@ -475,7 +475,7 @@ bool
 service_ifislocal(const char *hostname)
 {
     int ret;
-#if OPAL_WANT_IPV6
+#if CCS_WANT_IPV6
     char addrname[NI_MAXHOST]; /* should be larger than ADDRLEN, but I think
                                   they really mean IFNAMESIZE */
 #else
@@ -499,7 +499,7 @@ static uint32_t parse_dots(char *addr)
     for (i=0; NULL != tuple[i]; i++) {
         n[i] = strtoul(tuple[i], NULL, 10);
     }
-    net = OPAL_IF_ASSEMBLE_NETWORK(n[0], n[1], n[2], n[3]);
+    net = SERVICE_IF_ASSEMBLE_NETWORK(n[0], n[1], n[2], n[3]);
     service_argv_free(tuple);
     return net;
 }

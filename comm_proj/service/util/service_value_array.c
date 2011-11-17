@@ -45,7 +45,7 @@ OBJ_CLASS_INSTANCE(
 
 int service_value_array_set_size(service_value_array_t* array, size_t size)
 {
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
     if(array->array_item_sizeof == 0) {
         service_output(0, "service_value_array_set_size: item size must be initialized");
         return CCS_ERR_BAD_PARAM;

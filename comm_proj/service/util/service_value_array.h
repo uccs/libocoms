@@ -16,15 +16,15 @@
  * $HEADER$
  */
 
-#ifndef OPAL_VALUE_ARRAY_H
-#define OPAL_VALUE_ARRAY_H
+#ifndef CCS_VALUE_ARRAY_H
+#define CCS_VALUE_ARRAY_H
 
 #include "ccs_config.h"
 
 #include <string.h>
 
 #include "service/util/service_object.h"
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
 #include "service/util/output.h"
 #endif
 #include "service/include/service/constants.h"
@@ -139,7 +139,7 @@ CCS_DECLSPEC int service_value_array_set_size(service_value_array_t* array, size
  *  ensuring the array index is valid (0 <= item index < array size).
  */
 
-#define OPAL_VALUE_ARRAY_GET_ITEM(array, item_type, item_index) \
+#define SERVICE_VALUE_ARRAY_GET_ITEM(array, item_type, item_index) \
     ((item_type*)((array)->array_items))[item_index]
 
 /**
@@ -177,7 +177,7 @@ static inline void* service_value_array_get_item(service_value_array_t *array, s
  * copied into the array by value.
  */
 
-#define OPAL_VALUE_ARRAY_SET_ITEM(array, item_type, item_index, item_value) \
+#define SERVICE_VALUE_ARRAY_SET_ITEM(array, item_type, item_index, item_value) \
     (((item_type*)((array)->array_items))[item_index] = item_value)
 
 /** 
@@ -239,7 +239,7 @@ static inline int service_value_array_append_item(service_value_array_t *array, 
 
 static inline int service_value_array_remove_item(service_value_array_t *array, size_t item_index)
 {
-#if OPAL_ENABLE_DEBUG
+#if CCS_ENABLE_DEBUG
     if (item_index >= array->array_size) {
         service_output(0, "service_value_array_remove_item: invalid index %lu\n", (unsigned long)item_index);
         return CCS_ERR_BAD_PARAM;
@@ -263,12 +263,12 @@ static inline int service_value_array_remove_item(service_value_array_t *array, 
  * This function is helpful when you need to iterate through an
  * entire array; simply get the base value of the array and use native
  * C to iterate through it manually.  This can have better performance
- * than looping over OPAL_VALUE_ARRAY_GET_ITEM() and
- * OPAL_VALUE_ARRAY_SET_ITEM() because it will [potentially] reduce the
+ * than looping over SERVICE_VALUE_ARRAY_GET_ITEM() and
+ * SERVICE_VALUE_ARRAY_SET_ITEM() because it will [potentially] reduce the
  * number of pointer dereferences.
  */
 
-#define OPAL_VALUE_ARRAY_GET_BASE(array, item_type) \
+#define SERVICE_VALUE_ARRAY_GET_BASE(array, item_type) \
   ((item_type*) ((array)->array_items))
 
 END_C_DECLS
