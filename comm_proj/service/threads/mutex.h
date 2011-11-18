@@ -199,14 +199,14 @@ static inline bool ccs_set_using_threads(bool have)
  */
 
 #if CCS_ENABLE_MULTI_THREADS
-#define CCS_THREAD_LOCK(mutex)                 \
+#define SERVICE_THREAD_LOCK(mutex)                 \
     do {                                        \
         if (ccs_using_threads()) {             \
             service_mutex_lock(mutex);             \
         }                                       \
     } while (0)
 #elif CCS_ENABLE_DEBUG
-#define CCS_THREAD_LOCK(mutex)                                         \
+#define SERVICE_THREAD_LOCK(mutex)                                         \
     do {                                                                \
         (mutex)->m_lock_debug++;                                        \
         if (service_mutex_check_locks && 1 != (mutex)->m_lock_debug) {     \
@@ -220,7 +220,7 @@ static inline bool ccs_set_using_threads(bool have)
         (mutex)->m_lock_line = __LINE__;                                \
     } while (0)
 #else
-#define CCS_THREAD_LOCK(mutex)
+#define SERVICE_THREAD_LOCK(mutex)
 #endif
 
 
@@ -240,7 +240,7 @@ static inline bool ccs_set_using_threads(bool have)
  * Returns 0 if mutex was locked, non-zero otherwise.
  */
 #if CCS_ENABLE_MULTI_THREADS
-#define CCS_THREAD_TRYLOCK(mutex) (ccs_using_threads() ? service_mutex_trylock(mutex) : 0)
+#define SERVICE_THREAD_TRYLOCK(mutex) (ccs_using_threads() ? service_mutex_trylock(mutex) : 0)
 #elif CCS_ENABLE_DEBUG
 static inline int
 service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
@@ -264,9 +264,9 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
 
     return ret;
 }
-#define CCS_THREAD_TRYLOCK(mutex) service_thread_debug_trylock(mutex, __FILE__, __LINE__)
+#define SERVICE_THREAD_TRYLOCK(mutex) service_thread_debug_trylock(mutex, __FILE__, __LINE__)
 #else
-#define CCS_THREAD_TRYLOCK(mutex) 0
+#define SERVICE_THREAD_TRYLOCK(mutex) 0
 #endif
 
 
@@ -284,14 +284,14 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
  * process, return immediately without modifying the mutex.
  */
 #if CCS_ENABLE_MULTI_THREADS
-#define CCS_THREAD_UNLOCK(mutex)               \
+#define SERVICE_THREAD_UNLOCK(mutex)               \
     do {                                        \
         if (ccs_using_threads()) {             \
             service_mutex_unlock(mutex);           \
         }                                       \
     } while (0)
 #elif CCS_ENABLE_DEBUG
-#define CCS_THREAD_UNLOCK(mutex)                                       \
+#define SERVICE_THREAD_UNLOCK(mutex)                                       \
     do {                                                                \
         (mutex)->m_lock_debug--;                                        \
         if (service_mutex_check_locks && 0 > (mutex)->m_lock_debug) {      \
@@ -306,7 +306,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
         }                                                               \
     } while (0)
 #else
-#define CCS_THREAD_UNLOCK(mutex)
+#define SERVICE_THREAD_UNLOCK(mutex)
 #endif
 
 
@@ -327,7 +327,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
  */
 
 #if CCS_ENABLE_MULTI_THREADS
-#define CCS_THREAD_SCOPED_LOCK(mutex, action)  \
+#define SERVICE_THREAD_SCOPED_LOCK(mutex, action)  \
     do {                                        \
         if(ccs_using_threads()) {              \
             service_mutex_lock(mutex);             \
@@ -338,7 +338,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
         }                                       \
     } while (0)
 #elif CCS_ENABLE_DEBUG
-#define CCS_THREAD_SCOPED_LOCK(mutex, action)                          \
+#define SERVICE_THREAD_SCOPED_LOCK(mutex, action)                          \
     do {                                                                \
         if (0 != (mutex)->m_lock_debug) {                               \
             service_output(0, "scoped_lock: Warning -- mutex already "     \
@@ -352,7 +352,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
         (mutex)->m_lock_debug++;                                        \
     } while (0)
 #else
-#define CCS_THREAD_SCOPED_LOCK(mutex, action) (action)
+#define SERVICE_THREAD_SCOPED_LOCK(mutex, action) (action)
 #endif
 
 /**
@@ -361,24 +361,24 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
  */
 
 #if CCS_ENABLE_MULTI_THREADS
-#define CCS_THREAD_ADD32(x,y) \
+#define SERVICE_THREAD_ADD32(x,y) \
    (ccs_using_threads() ? service_atomic_add_32(x,y) : (*x += y))
 #else
-#define CCS_THREAD_ADD32(x,y) (*x += y)
+#define SERVICE_THREAD_ADD32(x,y) (*x += y)
 #endif
 
 #if CCS_ENABLE_MULTI_THREADS
-#define CCS_THREAD_ADD64(x,y) \
+#define SERVICE_THREAD_ADD64(x,y) \
     (ccs_using_threads() ? service_atomic_add_64(x,y) : (*x += y))
 #else
-#define CCS_THREAD_ADD64(x,y) (*x += y)
+#define SERVICE_THREAD_ADD64(x,y) (*x += y)
 #endif
 
 #if CCS_ENABLE_MULTI_THREADS
-#define CCS_THREAD_ADD_SIZE_T(x,y) \
+#define SERVICE_THREAD_ADD_SIZE_T(x,y) \
     (ccs_using_threads() ? service_atomic_add_size_t(x,y) : (*x += y))
 #else
-#define CCS_THREAD_ADD_SIZE_T(x,y) (*x += y)
+#define SERVICE_THREAD_ADD_SIZE_T(x,y) (*x += y)
 #endif
 
 #define CCS_CMPSET(x, y, z) ((*(x) == (y)) ? ((*(x) = (z)), 1) : 0)

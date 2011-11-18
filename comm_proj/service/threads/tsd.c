@@ -18,7 +18,7 @@
 
 #include <errno.h>
 
-#include "opal/threads/tsd.h"
+#include "service/threads/tsd.h"
 
 #if !CCS_HAVE_POSIX_THREADS && !CCS_HAVE_SOLARIS_THREADS && !defined(__WINDOWS__)
 

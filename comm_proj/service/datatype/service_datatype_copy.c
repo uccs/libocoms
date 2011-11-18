@@ -27,7 +27,7 @@
 #endif
 #include <stdlib.h>
 
-#include "opal/prefetch.h"
+#include "service/include/service/prefetch.h"
 #include "service/util/output.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_convertor.h"

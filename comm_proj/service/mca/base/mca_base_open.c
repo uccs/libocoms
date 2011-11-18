@@ -28,14 +28,16 @@
 #include <unistd.h>
 #endif
 
+#if 0
 #include "opal/mca/installdirs/installdirs.h"
+#include "service/util/ccs_environ.h"
+#endif
 #include "service/util/output.h"
 #include "service/util/printf.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
-#include "opal/mca/base/mca_base_component_repository.h"
+#include "service/mca/base/mca_base_component_repository.h"
 #include "service/include/service/constants.h"
-#include "service/util/ccs_environ.h"
 
 /*
  * Public variables
@@ -69,8 +71,10 @@ int mca_base_open(void)
 
     /* define the system and user default paths */
 #if CCS_WANT_HOME_CONFIG_FILES
+#if 0 /* Pasha: decide later what to do with the installdir component, rightnow we do nor have one */
     mca_base_system_default_path = strdup(ccs_install_dirs.pkglibdir);
     asprintf(&mca_base_user_default_path, "%s"CCS_PATH_SEP".openmpi"CCS_PATH_SEP"components", ccs_home_directory());
+#endif
 #else
 # if defined(__WINDOWS__) && defined(_DEBUG)
     asprintf(&mca_base_system_default_path, "%s/debug", ccs_install_dirs.pkglibdir); 

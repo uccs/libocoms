@@ -18,15 +18,15 @@
 
 #include "ccs_config.h"
 
-#include "opal/class/ccs_list.h"
+#include "service/util/service_list.h"
 #include "service/mca/base/base.h"
 
 
 /* 
  * Local functions
  */
-static void cl_constructor(ccs_object_t *obj);
-static void cpl_constructor(ccs_object_t *obj);
+static void cl_constructor(service_object_t *obj);
+static void cpl_constructor(service_object_t *obj);
 
 
 /*
@@ -46,7 +46,7 @@ OBJ_CLASS_INSTANCE(mca_base_component_priority_list_item_t,
 /*
  * Just do basic sentinel intialization
  */
-static void cl_constructor(ccs_object_t *obj)
+static void cl_constructor(service_object_t *obj)
 {
   mca_base_component_list_item_t *cli = (mca_base_component_list_item_t *) obj;
   cli->cli_component = NULL;
@@ -56,7 +56,7 @@ static void cl_constructor(ccs_object_t *obj)
 /*
  * Just do basic sentinel intialization
  */
-static void cpl_constructor(ccs_object_t *obj)
+static void cpl_constructor(service_object_t *obj)
 {
   mca_base_component_priority_list_item_t *cpli = 
     (mca_base_component_priority_list_item_t *) obj;

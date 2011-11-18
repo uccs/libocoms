@@ -258,14 +258,14 @@ ompi_free_list_resize(service_free_list_t* flist, size_t size)
     if (flist->fl_num_allocated > size) {
         return CCS_SUCCESS;
     }
-    CCS_THREAD_LOCK(&((flist)->fl_lock));
+    SERVICE_THREAD_LOCK(&((flist)->fl_lock));
     inc_num = (ssize_t)size - (ssize_t)flist->fl_num_allocated;
     while( inc_num > 0 ) {
         ret = ompi_free_list_grow(flist, flist->fl_num_per_alloc);
         if( CCS_SUCCESS != ret ) break;
         inc_num = (ssize_t)size - (ssize_t)flist->fl_num_allocated;
     }
-    CCS_THREAD_UNLOCK(&((flist)->fl_lock));
+    SERVICE_THREAD_UNLOCK(&((flist)->fl_lock));
 
     return ret;
 }

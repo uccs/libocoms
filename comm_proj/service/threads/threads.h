@@ -18,8 +18,8 @@
  * $HEADER$
  */
 
-#ifndef CCS_THREAD_H
-#define CCS_THREAD_H 1
+#ifndef SERVICE_THREAD_H
+#define SERVICE_THREAD_H 1
 
 #include "ccs_config.h"
 
@@ -41,7 +41,7 @@ BEGIN_C_DECLS
 
 typedef void *(*service_thread_fn_t) (service_object_t *);
 
-#define CCS_THREAD_CANCELLED   ((void*)1);
+#define SERVICE_THREAD_CANCELLED   ((void*)1);
 
 struct service_thread_t {
     service_object_t super;
@@ -68,7 +68,7 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_thread_t);
 #if CCS_ENABLE_DEBUG
 #define CCS_ACQUIRE_THREAD(lck, cnd, act)               \
     do {                                                 \
-        CCS_THREAD_LOCK((lck));                         \
+        SERVICE_THREAD_LOCK((lck));                         \
         if (service_debug_threads) {                        \
             service_output(0, "Waiting for thread %s:%d",   \
                         __FILE__, __LINE__);             \
@@ -85,7 +85,7 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_thread_t);
 #else
 #define CCS_ACQUIRE_THREAD(lck, cnd, act)               \
     do {                                                 \
-        CCS_THREAD_LOCK((lck));                         \
+        SERVICE_THREAD_LOCK((lck));                         \
         while (*(act)) {                                 \
             service_condition_wait((cnd), (lck));           \
         }                                                \
@@ -103,14 +103,14 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_thread_t);
         }                                               \
         *(act) = false;                                 \
         service_condition_broadcast((cnd));                \
-        CCS_THREAD_UNLOCK((lck));                      \
+        SERVICE_THREAD_UNLOCK((lck));                      \
     } while(0);
 #else
 #define CCS_RELEASE_THREAD(lck, cnd, act)              \
     do {                                                \
         *(act) = false;                                 \
         service_condition_broadcast((cnd));                \
-        CCS_THREAD_UNLOCK((lck));                      \
+        SERVICE_THREAD_UNLOCK((lck));                      \
     } while(0);
 #endif
 
@@ -130,4 +130,4 @@ CCS_DECLSPEC void service_thread_kill(service_thread_t *, int sig);
 
 END_C_DECLS
 
-#endif /* CCS_THREAD_H */
+#endif /* SERVICE_THREAD_H */

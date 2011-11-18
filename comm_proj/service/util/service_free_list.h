@@ -222,7 +222,7 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
 {
     *item = (service_free_list_item_t*)service_atomic_lifo_pop(&((fl)->super));
     while( NULL == *item ) {
-        if( !CCS_THREAD_TRYLOCK(&((fl)->fl_lock)) ) {
+        if( !SERVICE_THREAD_TRYLOCK(&((fl)->fl_lock)) ) {
             if((fl)->fl_max_to_alloc <= (fl)->fl_num_allocated) {
                 (fl)->fl_num_waiting++;
                 service_condition_wait(&((fl)->fl_condition), &((fl)->fl_lock));
@@ -248,9 +248,9 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
              * the one holding the lock in the begining already grow the list. I will
              * release the lock and try to get a new element until I succeed.
              */
-            CCS_THREAD_LOCK(&((fl)->fl_lock));
+            SERVICE_THREAD_LOCK(&((fl)->fl_lock));
         }
-        CCS_THREAD_UNLOCK(&((fl)->fl_lock));
+        SERVICE_THREAD_UNLOCK(&((fl)->fl_lock));
         *item = (service_free_list_item_t*)service_atomic_lifo_pop(&((fl)->super));
     }
     return CCS_SUCCESS;
@@ -271,7 +271,7 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
         original = service_atomic_lifo_push( &(fl)->super,                 \
                                           &(item)->super);              \
         if( &(fl)->super.service_lifo_ghost == original ) {                \
-            CCS_THREAD_LOCK(&(fl)->fl_lock);                           \
+            SERVICE_THREAD_LOCK(&(fl)->fl_lock);                           \
             if((fl)->fl_num_waiting > 0) {                              \
                 if( 1 == (fl)->fl_num_waiting ) {                       \
                     service_condition_signal(&((fl)->fl_condition));       \
@@ -279,7 +279,7 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
                     service_condition_broadcast(&((fl)->fl_condition));    \
                 }                                                       \
             }                                                           \
-            CCS_THREAD_UNLOCK(&(fl)->fl_lock);                         \
+            SERVICE_THREAD_UNLOCK(&(fl)->fl_lock);                         \
         }                                                               \
     } while(0)
     

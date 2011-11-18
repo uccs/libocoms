@@ -29,7 +29,7 @@
 #if CCS_WANT_LIBLTDL
   #ifndef __WINDOWS__
     #if CCS_LIBLTDL_INTERNAL
-      #include "opal/libltdl/ltdl.h"
+      #include "service/libltdl/ltdl.h"
     #else
       #include "ltdl.h"
     #endif
@@ -38,10 +38,10 @@
   #endif
 #endif
 
-#include "opal/class/ccs_list.h"
+#include "service/util/service_list.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
-#include "opal/mca/base/mca_base_component_repository.h"
+#include "service/mca/base/mca_base_component_repository.h"
 #include "service/include/service/constants.h"
 
 #if CCS_WANT_LIBLTDL
@@ -58,8 +58,8 @@ struct repository_item_t {
   service_list_t ri_dependencies;
 };
 typedef struct repository_item_t repository_item_t;
-static void ri_constructor(ccs_object_t *obj);
-static void ri_destructor(ccs_object_t *obj);
+static void ri_constructor(service_object_t *obj);
+static void ri_destructor(service_object_t *obj);
 static OBJ_CLASS_INSTANCE(repository_item_t, service_list_item_t, 
                           ri_constructor, ri_destructor);
 
@@ -69,8 +69,8 @@ struct dependency_item_t {
   repository_item_t *di_repository_entry;
 };
 typedef struct dependency_item_t dependency_item_t;
-static void di_constructor(ccs_object_t *obj);
-static void di_destructor(ccs_object_t *obj);
+static void di_constructor(service_object_t *obj);
+static void di_destructor(service_object_t *obj);
 static OBJ_CLASS_INSTANCE(dependency_item_t, service_list_item_t, 
                           di_constructor, di_destructor);
 
@@ -359,7 +359,7 @@ static int link_items(repository_item_t *src, repository_item_t *depend)
 /*
  * Basic sentinel values, and construct the inner list
  */
-static void ri_constructor(ccs_object_t *obj)
+static void ri_constructor(service_object_t *obj)
 {
   repository_item_t *ri = (repository_item_t *) obj;
 
@@ -374,7 +374,7 @@ static void ri_constructor(ccs_object_t *obj)
 /*
  * Close a component 
  */
-static void ri_destructor(ccs_object_t *obj)
+static void ri_destructor(service_object_t *obj)
 {
   repository_item_t *ri = (repository_item_t *) obj;
   dependency_item_t *di;
@@ -405,7 +405,7 @@ static void ri_destructor(ccs_object_t *obj)
 /*
  * Basic sentinel values
  */
-static void di_constructor(ccs_object_t *obj)
+static void di_constructor(service_object_t *obj)
 {
   dependency_item_t *di = (dependency_item_t *) obj;
 
@@ -417,7 +417,7 @@ static void di_constructor(ccs_object_t *obj)
  * When a dependency item is released, go release the repository entry
  * that it points to
  */
-static void di_destructor(ccs_object_t *obj)
+static void di_destructor(service_object_t *obj)
 {
   dependency_item_t *di = (dependency_item_t *) obj;
 

@@ -43,6 +43,6 @@ static void service_condition_destruct(service_condition_t *c)
 }
 
 OBJ_CLASS_INSTANCE(service_condition_t,
-                   ccs_object_t,
+                   service_object_t,
                    service_condition_construct,
                    service_condition_destruct);

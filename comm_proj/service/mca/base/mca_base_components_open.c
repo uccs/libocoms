@@ -23,14 +23,16 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "opal/class/ccs_list.h"
+#include "service/util/service_list.h"
 #include "service/util/argv.h"
 #include "service/util/output.h"
+#if 0
 #include "service/util/show_help.h"
 #include "service/util/ccs_sos.h"
+#endif
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
-#include "opal/mca/base/mca_base_component_repository.h"
+#include "service/mca/base/mca_base_component_repository.h"
 #include "service/include/service/constants.h"
 
 struct component_name_t {

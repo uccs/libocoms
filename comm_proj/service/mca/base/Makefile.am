@@ -23,7 +23,7 @@
 AM_CPPFLAGS = \
 	$(LTDLINCL)
 
-noinst_LTLIBRARIES = libservicemca.la
+noinst_LTLIBRARIES = libservicemca_base.la
 
 #dist_pkgdata_DATA = help-mca-base.txt help-mca-param.txt
 
@@ -37,7 +37,7 @@ servicemca_headers = \
 
 # Library
 
-libservicemca_la_SOURCES = \
+libservicemca_base_la_SOURCES = \
         $(servicemca_headers) \
         mca_base_close.c \
         mca_base_cmd_line.c \

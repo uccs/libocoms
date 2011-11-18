@@ -19,7 +19,7 @@
 
 #include "ccs_config.h"
 
-#include "opal/threads/threads.h"
+#include "service/threads/threads.h"
 #include "service/include/service/constants.h"
 
 bool service_debug_threads = false;

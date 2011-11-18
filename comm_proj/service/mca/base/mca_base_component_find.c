@@ -43,7 +43,7 @@
 #if CCS_WANT_LIBLTDL
   #ifndef __WINDOWS__
     #if CCS_LIBLTDL_INTERNAL
-      #include "opal/libltdl/ltdl.h"
+      #include "service/libltdl/ltdl.h"
     #else
       #include "ltdl.h"
     #endif
@@ -52,15 +52,17 @@
   #endif
 #endif
 
+#if 0
 #include "opal/mca/installdirs/installdirs.h"
 #include "service/util/ccs_environ.h"
+#include "service/util/show_help.h"
+#endif
 #include "service/util/output.h"
 #include "service/util/argv.h"
-#include "service/util/show_help.h"
-#include "opal/class/ccs_list.h"
+#include "service/util/service_list.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
-#include "opal/mca/base/mca_base_component_repository.h"
+#include "service/mca/base/mca_base_component_repository.h"
 #include "service/include/service/constants.h"
 
 

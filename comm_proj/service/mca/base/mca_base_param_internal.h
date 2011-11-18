@@ -35,8 +35,8 @@
 
 #include "ccs_config.h"
 
-#include "opal/class/ccs_object.h"
-#include "opal/class/ccs_list.h"
+#include "service/util/service_object.h"
+#include "service/util/service_list.h"
 #include "service/mca/base/mca_base_param.h"
 
 BEGIN_C_DECLS
@@ -62,7 +62,7 @@ typedef union {
  */
 struct mca_base_param_t {
     /** Allow this to be an OPAL OBJ */
-    ccs_object_t mbp_super;
+    service_object_t mbp_super;
 
     /** Enum indicating the type of the parameter (integer or string) */
     mca_base_param_type_t mbp_type;

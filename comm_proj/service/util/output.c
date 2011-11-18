@@ -43,7 +43,7 @@
  * Private data
  */
 static int verbose_stream = -1;
-static service_stream_t verbose;
+static service_output_stream_t verbose;
 static char *output_dir = NULL;
 static char *output_prefix = NULL;
 
@@ -85,7 +85,7 @@ typedef struct {
  * Private functions
  */
 static void construct(service_object_t *stream);
-static int do_open(int output_id, service_stream_t * lds);
+static int do_open(int output_id, service_output_stream_t * lds);
 static int open_file(int i);
 static void free_descriptor(int output_id);
 static int make_string(char **no_newline_string, output_desc_t *ldi, 
@@ -100,10 +100,6 @@ static int output(int output_id, const char *format, va_list arglist);
 #define USE_SYSLOG 0
 #endif
 
-/* global state */
-bool service_redirected_to_syslog = false;
-int service_redirected_syslog_pri;
-
 /*
  * Local state
  */
@@ -114,9 +110,9 @@ static char *temp_str = 0;
 static size_t temp_str_len = 0;
 static service_mutex_t mutex;
 static bool syslog_opened = false;
-static char *redirect_syslog_ident = NULL;
 
-OBJ_CLASS_INSTANCE(service_stream_t, service_object_t, construct, NULL);
+
+OBJ_CLASS_INSTANCE(service_output_stream_t, service_object_t, construct, NULL);
 
 /*
  * Setup the output stream infrastructure
@@ -135,58 +131,23 @@ bool service_output_init(void)
     if (NULL != str) {
         default_stderr_fd = atoi(str);
     }
-    str = getenv("CCS_OUTPUT_REDIRECT");
-    if (NULL != str) {
-        if (0 == strcasecmp(str, "syslog")) {
-            service_redirected_to_syslog = true;
-        }
-    }
-    str = getenv("CCS_OUTPUT_SYSLOG_PRI");
-    if (NULL != str) {
-        if (0 == strcasecmp(str, "info")) {
-            service_redirected_syslog_pri = LOG_INFO;
-        } else if (0 == strcasecmp(str, "error")) {
-            service_redirected_syslog_pri = LOG_ERR;
-        } else if (0 == strcasecmp(str, "warn")) {
-            service_redirected_syslog_pri = LOG_WARNING;
-        } else {
-            service_redirected_syslog_pri = LOG_ERR;
-        }
-    } else {
-        service_redirected_syslog_pri = LOG_ERR;
-    }
 
-    str = getenv("CCS_OUTPUT_SYSLOG_IDENT");
-    if (NULL != str) {
-        redirect_syslog_ident = strdup(str);
-    }
-
-    OBJ_CONSTRUCT(&verbose, service_stream_t);
+    OBJ_CONSTRUCT(&verbose, service_output_stream_t);
 #if defined(__WINDOWS__)
     {
         WSADATA wsaData;
         WSAStartup( MAKEWORD(2,2), &wsaData );
     }
 #endif  /* defined(__WINDOWS__) */
-    if (service_redirected_to_syslog) {
-        verbose.lds_want_syslog = true;
-        verbose.lds_syslog_priority = service_redirected_syslog_pri;
-        if (NULL != str) {
-            verbose.lds_syslog_ident = strdup(redirect_syslog_ident);
-        }
-        verbose.lds_want_stderr = false;
-        verbose.lds_want_stdout = false;
-    } else {
-        verbose.lds_want_stderr = true;
-    }
     gethostname(hostname, sizeof(hostname));
+    verbose.lds_want_stderr = true;
     asprintf(&verbose.lds_prefix, "[%s:%05d] ", hostname, getpid());
 
     for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
         info[i].ldi_used = false;
         info[i].ldi_enabled = false;
 
-        info[i].ldi_syslog = service_redirected_to_syslog;
+        info[i].ldi_syslog = false;
         info[i].ldi_file = false;
         info[i].ldi_file_suffix = NULL;
         info[i].ldi_file_want_append = false;
@@ -205,7 +166,7 @@ bool service_output_init(void)
     output_dir = strdup(service_tmp_directory());
 
     /* Open the default verbose stream */
-    verbose_stream = service_open(&verbose);
+    verbose_stream = service_output_open(&verbose);
     return true;
 }
 
@@ -213,7 +174,7 @@ bool service_output_init(void)
 /*
  * Open a stream
  */
-int service_open(service_stream_t * lds)
+int service_output_open(service_output_stream_t * lds)
 {
     return do_open(-1, lds);
 }
@@ -222,7 +183,7 @@ int service_open(service_stream_t * lds)
 /*
  * Reset the parameters on a stream
  */
-int service_reopen(int output_id, service_stream_t * lds)
+int service_output_reopen(int output_id, service_output_stream_t * lds)
 {
     return do_open(output_id, lds);
 }
@@ -231,7 +192,7 @@ int service_reopen(int output_id, service_stream_t * lds)
 /*
  * Enable and disable output streams
  */
-bool service_switch(int output_id, bool enable)
+bool service_output_switch(int output_id, bool enable)
 {
     bool ret = false;
 
@@ -253,7 +214,7 @@ bool service_switch(int output_id, bool enable)
 /*
  * Reopen all the streams; used during checkpoint/restart.
  */
-void service_reopen_all(void)
+void service_output_reopen_all(void)
 {
     char *str;
     char hostname[32];
@@ -273,7 +234,7 @@ void service_reopen_all(void)
     asprintf(&verbose.lds_prefix, "[%s:%05d] ", hostname, getpid());
 #if 0
     int i;
-    service_stream_t lds;
+    service_output_stream_t lds;
 
     for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
 
@@ -284,7 +245,7 @@ void service_reopen_all(void)
         }
 
         /* 
-         * set this to zero to ensure that service_open will
+         * set this to zero to ensure that service_output_open will
          * return this same index as the output stream id
          */
         info[i].ldi_used = false;
@@ -306,10 +267,10 @@ void service_reopen_all(void)
         lds.lds_file_suffix = info[i].ldi_file_suffix;
 
         /* 
-         * call service_open to open the stream. The return value
+         * call service_output_open to open the stream. The return value
          * is guaranteed to be i.  So we can ignore it.
          */
-        service_open(&lds);
+        service_output_open(&lds);
     }
 #endif
 }
@@ -318,7 +279,7 @@ void service_reopen_all(void)
 /*
  * Close a stream
  */
-void service_close(int output_id)
+void service_output_close(int output_id)
 {
     int i;
 
@@ -331,7 +292,7 @@ void service_close(int output_id)
     /* If it's valid, used, enabled, and has an open file descriptor,
      * free the resources associated with the descriptor */
 
-    CCS_THREAD_LOCK(&mutex);
+    SERVICE_THREAD_LOCK(&mutex);
     if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_used && info[output_id].ldi_enabled) {
         free_descriptor(output_id);
@@ -362,7 +323,7 @@ void service_close(int output_id)
         temp_str = NULL;
         temp_str_len = 0;
     }
-    CCS_THREAD_UNLOCK(&mutex);
+    SERVICE_THREAD_UNLOCK(&mutex);
 }
 
 
@@ -383,7 +344,7 @@ void service_output(int output_id, const char *format, ...)
 /*
  * Send a message to a stream if the verbose level is high enough
  */
-void service_verbose(int level, int output_id, const char *format, ...)
+void service_output_verbose(int level, int output_id, const char *format, ...)
 {
     if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
@@ -398,7 +359,7 @@ void service_verbose(int level, int output_id, const char *format, ...)
 /*
  * Send a message to a stream if the verbose level is high enough
  */
-void service_vverbose(int level, int output_id, const char *format, 
+void service_output_vverbose(int level, int output_id, const char *format, 
                           va_list arglist)
 {
     if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
@@ -411,7 +372,7 @@ void service_vverbose(int level, int output_id, const char *format,
 /*
  * Send a message to a string if the verbose level is high enough
  */
-char *service_string(int level, int output_id, const char *format, ...)
+char *service_output_string(int level, int output_id, const char *format, ...)
 {
     int rc;
     char *ret = NULL;
@@ -434,7 +395,7 @@ char *service_string(int level, int output_id, const char *format, ...)
 /*
  * Send a message to a string if the verbose level is high enough
  */
-char *service_vstring(int level, int output_id, const char *format,  
+char *service_output_vstring(int level, int output_id, const char *format,  
                           va_list arglist)
 {
     int rc;
@@ -455,7 +416,7 @@ char *service_vstring(int level, int output_id, const char *format,
 /*
  * Set the verbosity level of a stream
  */
-void service_set_verbosity(int output_id, int level)
+void service_output_set_verbosity(int output_id, int level)
 {
     if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS) {
         info[output_id].ldi_verbose_level = level;
@@ -466,7 +427,7 @@ void service_set_verbosity(int output_id, int level)
 /*
  * Control where output flies will go
  */
-void service_set_output_file_info(const char *dir,
+void service_output_set_output_file_info(const char *dir,
                                       const char *prefix,
                                       char **olddir,
                                       char **oldprefix)
@@ -492,11 +453,11 @@ void service_set_output_file_info(const char *dir,
 /*
  * Shut down the output stream system
  */
-void service_finalize(void)
+void service_output_finalize(void)
 {
     if (initialized) {
         if (verbose_stream != -1) {
-            service_close(verbose_stream);
+            service_output_close(verbose_stream);
         }
         free(verbose.lds_prefix);
         verbose_stream = -1;
@@ -518,7 +479,7 @@ void service_finalize(void)
  */
 static void construct(service_object_t *obj)
 {
-    service_stream_t *stream = (service_stream_t*) obj;
+    service_output_stream_t *stream = (service_output_stream_t*) obj;
 
     stream->lds_verbose_level = 0;
     stream->lds_syslog_priority = 0;
@@ -539,7 +500,7 @@ static void construct(service_object_t *obj)
  * back-end function so that we can do the thread locking properly
  * (especially upon reopen).
  */
-static int do_open(int output_id, service_stream_t * lds)
+static int do_open(int output_id, service_output_stream_t * lds)
 {
     int i;
 
@@ -553,14 +514,14 @@ static int do_open(int output_id, service_stream_t * lds)
      * CCS_ERROR */
 
     if (-1 == output_id) {
-        CCS_THREAD_LOCK(&mutex);
+        SERVICE_THREAD_LOCK(&mutex);
         for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
             if (!info[i].ldi_used) {
                 break;
             }
         }
         if (i >= CCS_OUTPUT_MAX_STREAMS) {
-            CCS_THREAD_UNLOCK(&mutex);
+            SERVICE_THREAD_UNLOCK(&mutex);
             return CCS_ERR_OUT_OF_RESOURCE;
         }
     }
@@ -584,53 +545,35 @@ static int do_open(int output_id, service_stream_t * lds)
 
     info[i].ldi_used = true;
     if (-1 == output_id) {
-        CCS_THREAD_UNLOCK(&mutex);
+        SERVICE_THREAD_UNLOCK(&mutex);
     }
     info[i].ldi_enabled = lds->lds_is_debugging ?
         (bool) CCS_ENABLE_DEBUG : true;
     info[i].ldi_verbose_level = lds->lds_verbose_level;
 
 #if USE_SYSLOG
+    info[i].ldi_syslog = lds->lds_want_syslog;
+    if (lds->lds_want_syslog) {
+
 #if defined(HAVE_SYSLOG)
-    if (service_redirected_to_syslog) {
-        info[i].ldi_syslog = true;
-        info[i].ldi_syslog_priority = service_redirected_syslog_pri;
-        if (NULL != redirect_syslog_ident) {
-            info[i].ldi_syslog_ident = strdup(redirect_syslog_ident);
-            openlog(redirect_syslog_ident, LOG_PID, LOG_USER);
+        if (NULL != lds->lds_syslog_ident) {
+            info[i].ldi_syslog_ident = strdup(lds->lds_syslog_ident);
+            openlog(lds->lds_syslog_ident, LOG_PID, LOG_USER);
         } else {
             info[i].ldi_syslog_ident = NULL;
             openlog("opal", LOG_PID, LOG_USER);
         }
-        syslog_opened = true;
-    } else {
-#endif
-        info[i].ldi_syslog = lds->lds_want_syslog;
-        if (lds->lds_want_syslog) {
-
-#if defined(HAVE_SYSLOG)
-            if (NULL != lds->lds_syslog_ident) {
-                info[i].ldi_syslog_ident = strdup(lds->lds_syslog_ident);
-                openlog(lds->lds_syslog_ident, LOG_PID, LOG_USER);
-            } else {
-                info[i].ldi_syslog_ident = NULL;
-                openlog("opal", LOG_PID, LOG_USER);
-            }
 #elif defined(__WINDOWS__)
-            if (NULL == (info[i].ldi_syslog_ident =
-                         RegisterEventSource(NULL, TEXT("opal: ")))) {
-                /* handle the error */
-                return CCS_ERROR;
-            }
-#endif
-            syslog_opened = true;
-            info[i].ldi_syslog_priority = lds->lds_syslog_priority;
+        if (NULL == (info[i].ldi_syslog_ident =
+                     RegisterEventSource(NULL, TEXT("opal: ")))) {
+            /* handle the error */
+            return CCS_ERROR;
         }
-
-#if defined(HAVE_SYSLOG)
-    }
 #endif
 
+        syslog_opened = true;
+        info[i].ldi_syslog_priority = lds->lds_syslog_priority;
+    }
 #else
     info[i].ldi_syslog = false;
 #endif
@@ -651,28 +594,15 @@ static int do_open(int output_id, service_stream_t * lds)
         info[i].ldi_suffix_len = 0;
     }
     
-    if (service_redirected_to_syslog) {
-        /* since all is redirected to syslog, ensure
-         * we don't duplicate the output to the std places
-         */
-        info[i].ldi_stdout = false;
-        info[i].ldi_stderr = false;
-        info[i].ldi_file = false;
-        info[i].ldi_fd = -1;
-    } else {
-        /* since we aren't redirecting, use what was
-         * given to us
-         */
-        info[i].ldi_stdout = lds->lds_want_stdout;
-        info[i].ldi_stderr = lds->lds_want_stderr;
+    info[i].ldi_stdout = lds->lds_want_stdout;
+    info[i].ldi_stderr = lds->lds_want_stderr;
 
-        info[i].ldi_fd = -1;
-        info[i].ldi_file = lds->lds_want_file;
-        info[i].ldi_file_suffix = (NULL == lds->lds_file_suffix) ? NULL :
-            strdup(lds->lds_file_suffix);
-        info[i].ldi_file_want_append = lds->lds_want_file_append;
-        info[i].ldi_file_num_lines_lost = 0;
-    }
+    info[i].ldi_fd = -1;
+    info[i].ldi_file = lds->lds_want_file;
+    info[i].ldi_file_suffix = (NULL == lds->lds_file_suffix) ? NULL :
+        strdup(lds->lds_file_suffix);
+    info[i].ldi_file_want_append = lds->lds_want_file_append;
+    info[i].ldi_file_num_lines_lost = 0;
 
     /* Don't open a file in the session directory now -- do that lazily
      * so that if there's no output, we don't have an empty file */
@@ -876,12 +806,12 @@ static int output(int output_id, const char *format, va_list arglist)
 
     if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_used && info[output_id].ldi_enabled) {
-        CCS_THREAD_LOCK(&mutex);
+        SERVICE_THREAD_LOCK(&mutex);
         ldi = &info[output_id];
 
         /* Make the strings */
         if (CCS_SUCCESS != (rc = make_string(&str, ldi, format, arglist))) {
-            CCS_THREAD_UNLOCK(&mutex);
+            SERVICE_THREAD_UNLOCK(&mutex);
             return rc;
         }
 
@@ -914,7 +844,7 @@ static int output(int output_id, const char *format, va_list arglist)
         /* File output -- first check to see if the file opening was
          * delayed.  If so, try to open it.  If we failed to open it,
          * then just discard (there are big warnings in the
-         * service.h docs about this!). */
+         * service_output.h docs about this!). */
 
         if (ldi->ldi_file) {
             if (ldi->ldi_fd == -1) {
@@ -925,7 +855,7 @@ static int output(int output_id, const char *format, va_list arglist)
                     char *out = buffer;
                     memset(buffer, 0, BUFSIZ);
                     snprintf(buffer, BUFSIZ - 1,
-                             "[WARNING: %d lines lost because the Open MPI process session directory did\n not exist when service() was invoked]\n",
+                             "[WARNING: %d lines lost because the Open MPI process session directory did\n not exist when service_output() was invoked]\n",
                              ldi->ldi_file_num_lines_lost);
                    write(ldi->ldi_fd, buffer, (int)strlen(buffer));
                     ldi->ldi_file_num_lines_lost = 0;
@@ -938,14 +868,14 @@ static int output(int output_id, const char *format, va_list arglist)
                 write(ldi->ldi_fd, out, (int)strlen(out));
             }
         }
-        CCS_THREAD_UNLOCK(&mutex);
+        SERVICE_THREAD_UNLOCK(&mutex);
         free(str);
     }
 
     return rc;
 }
 
-int service_get_verbosity(int output_id)
+int service_output_get_verbosity(int output_id)
 {
     if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS && info[output_id].ldi_used) {
         return info[output_id].ldi_verbose_level;

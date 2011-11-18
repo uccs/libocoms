@@ -26,7 +26,7 @@
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_datatype_internal.h"
 #include "limits.h"
-#include "opal/prefetch.h"
+#include "service/include/service/prefetch.h"
 
 static void service_datatype_construct( service_datatype_t* pData )
 {
@@ -79,7 +79,7 @@ static void service_datatype_destruct( service_datatype_t* datatype )
     datatype->name[0] = '\0';
 }
 
-OBJ_CLASS_INSTANCE(service_datatype_t, ccs_object_t, service_datatype_construct, service_datatype_destruct);
+OBJ_CLASS_INSTANCE(service_datatype_t, service_object_t, service_datatype_construct, service_datatype_destruct);
 
 service_datatype_t* service_datatype_create( int32_t expectedSize )
 {

@@ -20,7 +20,7 @@
 
 #include "service/util/arch.h"
 
-#include "opal/types.h"
+#include "service/include/service/types.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_convertor.h"
 #include "service/datatype/service_datatype_internal.h"
@@ -65,8 +65,8 @@ copy_##TYPENAME##_heterogeneous(service_convertor_t *pConvertor, uint32_t count,
                    from, from_len, from_extent,                         \
                    to, to_length, to_extent);                           \
                                                                         \
-    if ((pConvertor->remoteArch & CCS_ARCH_ISBIGENDIAN) !=             \
-        (service_local_arch & CCS_ARCH_ISBIGENDIAN)) {                    \
+    if ((pConvertor->remoteArch & SERVICE_ARCH_ISBIGENDIAN) !=             \
+        (service_local_arch & SERVICE_ARCH_ISBIGENDIAN)) {                    \
         for( i = 0; i < count; i++ ) {                                  \
             service_dt_swap_bytes(to, from, sizeof(TYPE));                 \
             to += to_extent;                                            \
@@ -102,8 +102,8 @@ copy_##TYPENAME##_heterogeneous(service_convertor_t *pConvertor, uint32_t count,
                    from, from_len, from_extent,                         \
                    to, to_length, to_extent);                           \
                                                                         \
-    if ((pConvertor->remoteArch & CCS_ARCH_ISBIGENDIAN) !=             \
-        (service_local_arch & CCS_ARCH_ISBIGENDIAN)) {                    \
+    if ((pConvertor->remoteArch & SERVICE_ARCH_ISBIGENDIAN) !=             \
+        (service_local_arch & SERVICE_ARCH_ISBIGENDIAN)) {                    \
         /* source and destination are different endianness */           \
         for( i = 0; i < count; i++ ) {                                  \
             TYPE1* to_1, *from_1;                                       \
@@ -168,16 +168,16 @@ copy_cxx_bool_heterogeneous(service_convertor_t *pConvertor, uint32_t count,
     uint32_t i;
 
     /* fix up the from extent */
-    if ((pConvertor->remoteArch & CCS_ARCH_BOOLISxx) !=
-        (service_local_arch & CCS_ARCH_BOOLISxx)) {
-        switch (pConvertor->remoteArch & CCS_ARCH_BOOLISxx) {
-        case CCS_ARCH_BOOLIS8:
+    if ((pConvertor->remoteArch & SERVICE_ARCH_BOOLISxx) !=
+        (service_local_arch & SERVICE_ARCH_BOOLISxx)) {
+        switch (pConvertor->remoteArch & SERVICE_ARCH_BOOLISxx) {
+        case SERVICE_ARCH_BOOLIS8:
             from_extent = 1;
             break;
-        case CCS_ARCH_BOOLIS16:
+        case SERVICE_ARCH_BOOLIS16:
             from_extent = 2;
             break;
-        case CCS_ARCH_BOOLIS32:
+        case SERVICE_ARCH_BOOLIS32:
             from_extent = 4;
             break;
         }
@@ -188,16 +188,16 @@ copy_cxx_bool_heterogeneous(service_convertor_t *pConvertor, uint32_t count,
                    to, to_length, to_extent);
 
     if ((to_extent != sizeof(bool) || from_extent != sizeof(bool)) ||
-        ((pConvertor->remoteArch & CCS_ARCH_BOOLISxx) !=
-         (service_local_arch & CCS_ARCH_BOOLISxx))) {
-        switch (pConvertor->remoteArch & CCS_ARCH_BOOLISxx) {
-        case CCS_ARCH_BOOLIS8:
+        ((pConvertor->remoteArch & SERVICE_ARCH_BOOLISxx) !=
+         (service_local_arch & SERVICE_ARCH_BOOLISxx))) {
+        switch (pConvertor->remoteArch & SERVICE_ARCH_BOOLISxx) {
+        case SERVICE_ARCH_BOOLIS8:
             CXX_BOOL_COPY_LOOP(int8_t);
             break;
-        case CCS_ARCH_BOOLIS16:
+        case SERVICE_ARCH_BOOLIS16:
             CXX_BOOL_COPY_LOOP(int16_t);
             break;
-        case CCS_ARCH_BOOLIS32:
+        case SERVICE_ARCH_BOOLIS32:
             CXX_BOOL_COPY_LOOP(int32_t);
             break;
         }

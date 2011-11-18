@@ -89,7 +89,7 @@ int ccs_info_init(void)
 
 #if 0 /* RLG - check here */
     OBJ_CONSTRUCT(&ccs_info_f_to_c_table, service_pointer_array_t);
-    if( CCS_SUCCESS != opal_pointer_array_init(&ccs_info_f_to_c_table, 0,
+    if( CCS_SUCCESS != service_pointer_array_init(&ccs_info_f_to_c_table, 0,
                                                 OMPI_FORTRAN_HANDLE_MAX, 64) ) {
         return OMPI_ERROR;
     }
@@ -115,18 +115,18 @@ int ccs_info_dup (ccs_info_t *info, ccs_info_t **newinfo)
     service_list_item_t *item;
     ccs_info_entry_t *iterator;
 
-    OPAL_THREAD_LOCK(info->i_lock);
+    SERVICE_THREAD_LOCK(info->i_lock);
     for (item = service_list_get_first(&(info->super));
          item != service_list_get_end(&(info->super));
          item = service_list_get_next(iterator)) {
          iterator = (ccs_info_entry_t *) item;
          err = ccs_info_set(*newinfo, iterator->ie_key, iterator->ie_value);
          if (CCS_SUCCESS != err) {
-            OPAL_THREAD_UNLOCK(info->i_lock);
+            SERVICE_THREAD_UNLOCK(info->i_lock);
             return err;
          }
      }
-    OPAL_THREAD_UNLOCK(info->i_lock);
+    SERVICE_THREAD_UNLOCK(info->i_lock);
      return CCS_SUCCESS;
 }
 
@@ -145,7 +145,7 @@ int ccs_info_set (ccs_info_t *info, char *key, char *value)
       return MPI_ERR_NO_MEM;
     }
 
-    OPAL_THREAD_LOCK(info->i_lock);
+    SERVICE_THREAD_LOCK(info->i_lock);
     old_info = info_find_key (info, key);
     if (NULL != old_info) {
         /*
@@ -156,14 +156,14 @@ int ccs_info_set (ccs_info_t *info, char *key, char *value)
     } else {
         new_info = OBJ_NEW(ccs_info_entry_t);
         if (NULL == new_info) {
-            OPAL_THREAD_UNLOCK(info->i_lock);
+            SERVICE_THREAD_UNLOCK(info->i_lock);
             return MPI_ERR_NO_MEM;
         }
         strncpy (new_info->ie_key, key, MPI_MAX_INFO_KEY);
         new_info->ie_value = new_value;
         service_list_append (&(info->super), (service_list_item_t *) new_info);
     }
-    OPAL_THREAD_UNLOCK(info->i_lock);
+    SERVICE_THREAD_UNLOCK(info->i_lock);
     return CCS_SUCCESS;
 }
 
@@ -189,7 +189,7 @@ int ccs_info_get (ccs_info_t *info, char *key, int valuelen,
     ccs_info_entry_t *search;
     int value_length;
 
-    OPAL_THREAD_LOCK(info->i_lock);
+    SERVICE_THREAD_LOCK(info->i_lock);
     search = info_find_key (info, key);
     if (NULL == search){
         *flag = 0;
@@ -208,11 +208,11 @@ int ccs_info_get (ccs_info_t *info, char *key, int valuelen,
           if (value_length < valuelen ) {
                strcpy(value, search->ie_value);
           } else {
-               opal_strncpy(value, search->ie_value, valuelen);
+               service_strncpy(value, search->ie_value, valuelen);
                value[valuelen] = 0;
           }
     }
-    OPAL_THREAD_UNLOCK(info->i_lock);
+    SERVICE_THREAD_UNLOCK(info->i_lock);
     return CCS_SUCCESS;
 }
 
@@ -264,10 +264,10 @@ int ccs_info_delete (ccs_info_t *info, char *key)
 {
     ccs_info_entry_t *search;
 
-    OPAL_THREAD_LOCK(info->i_lock);
+    SERVICE_THREAD_LOCK(info->i_lock);
     search = info_find_key (info, key);
     if (NULL == search){
-         OPAL_THREAD_UNLOCK(info->i_lock);
+         SERVICE_THREAD_UNLOCK(info->i_lock);
          return MPI_ERR_INFO_NOKEY;
     } else {
          /*
@@ -279,7 +279,7 @@ int ccs_info_delete (ccs_info_t *info, char *key)
                                  (service_list_item_t *)search);
           OBJ_RELEASE(search);
     }
-    OPAL_THREAD_UNLOCK(info->i_lock);
+    SERVICE_THREAD_UNLOCK(info->i_lock);
     return CCS_SUCCESS;
 }
 
@@ -292,7 +292,7 @@ int ccs_info_get_valuelen (ccs_info_t *info, char *key, int *valuelen,
 {
     ccs_info_entry_t *search;
 
-    OPAL_THREAD_LOCK(info->i_lock);
+    SERVICE_THREAD_LOCK(info->i_lock);
     search = info_find_key (info, key);
     if (NULL == search){
         *flag = 0;
@@ -304,7 +304,7 @@ int ccs_info_get_valuelen (ccs_info_t *info, char *key, int *valuelen,
          *flag = 1;
          *valuelen = strlen(search->ie_value);
     }
-    OPAL_THREAD_UNLOCK(info->i_lock);
+    SERVICE_THREAD_UNLOCK(info->i_lock);
     return CCS_SUCCESS;
 }
 
@@ -319,14 +319,14 @@ int ccs_info_get_nthkey (ccs_info_t *info, int n, char *key)
     /*
      * Iterate over and over till we get to the nth key
      */
-    OPAL_THREAD_LOCK(info->i_lock);
+    SERVICE_THREAD_LOCK(info->i_lock);
     for (iterator = (ccs_info_entry_t *)service_list_get_first(&(info->super));
          n > 0;
          --n) {
          iterator = (ccs_info_entry_t *)service_list_get_next(iterator);
          if (service_list_get_end(&(info->super)) == 
              (service_list_item_t *) iterator) {
-             OPAL_THREAD_UNLOCK(info->i_lock);
+             SERVICE_THREAD_UNLOCK(info->i_lock);
              return MPI_ERR_ARG;
          }
     }
@@ -336,7 +336,7 @@ int ccs_info_get_nthkey (ccs_info_t *info, int n, char *key)
      * access the value
      */
     strncpy(key, iterator->ie_key, MPI_MAX_INFO_KEY);
-    OPAL_THREAD_UNLOCK(info->i_lock);
+    SERVICE_THREAD_UNLOCK(info->i_lock);
     return CCS_SUCCESS;
 }
 
@@ -357,14 +357,14 @@ int ccs_info_finalize(void)
        don't want to call OBJ_RELEASE on it. */
     
     OBJ_DESTRUCT(&ccs_mpi_info_null.info);
-    opal_pointer_array_set_item(&ccs_info_f_to_c_table, 0, NULL);
+    service_pointer_array_set_item(&ccs_info_f_to_c_table, 0, NULL);
     
     /* Go through the f2c table and see if anything is left.  Free them
        all. */
     
-    max = opal_pointer_array_get_size(&ccs_info_f_to_c_table);
+    max = service_pointer_array_get_size(&ccs_info_f_to_c_table);
     for (i = 0; i < max; ++i) {
-        info = (ccs_info_t *)opal_pointer_array_get_item(&ccs_info_f_to_c_table, i);
+        info = (ccs_info_t *)service_pointer_array_get_item(&ccs_info_f_to_c_table, i);
         
         /* If the info was freed but still exists because the user
            told us to never free handles, then do an OBJ_RELEASE it
@@ -373,7 +373,7 @@ int ccs_info_finalize(void)
         
         if (NULL != info && ccs_debug_no_free_handles && info->i_freed) {
             OBJ_RELEASE(info);
-            info = (ccs_info_t *)opal_pointer_array_get_item(&ccs_info_f_to_c_table, i);
+            info = (ccs_info_t *)service_pointer_array_get_item(&ccs_info_f_to_c_table, i);
         } 
         
         /* If it still exists here and was never freed, then it's an
@@ -386,12 +386,12 @@ int ccs_info_finalize(void)
             
             if (!info->i_freed && ccs_debug_show_handle_leaks) {
                 if (ccs_debug_show_handle_leaks) {
-                    opal_output(0, "WARNING: MPI_Info still allocated at MPI_FINALIZE");
+                    service_output(0, "WARNING: MPI_Info still allocated at MPI_FINALIZE");
                     for (item = service_list_get_first(&(info->super));
                          service_list_get_end(&(info->super)) != item;
                          item = service_list_get_next(item)) {
                         entry = (ccs_info_entry_t *) item;
-                        opal_output(0, "WARNING:   key=\"%s\", value=\"%s\"", 
+                        service_output(0, "WARNING:   key=\"%s\", value=\"%s\"", 
                                     entry->ie_key,
                                     NULL != entry->ie_value ? entry->ie_value : "(null)");
                         found = true;
@@ -405,7 +405,7 @@ int ccs_info_finalize(void)
                since we're destroying everything, it isn't worth it */
 
             if (!found && ccs_debug_show_handle_leaks) {
-                opal_output(0, "WARNING:   (no keys)");
+                service_output(0, "WARNING:   (no keys)");
             }
         }
     }
@@ -423,7 +423,7 @@ int ccs_info_finalize(void)
  */
 static void info_constructor(ccs_info_t *info) 
 {
-    info->i_f_to_c_index = opal_pointer_array_add(&ccs_info_f_to_c_table, 
+    info->i_f_to_c_index = service_pointer_array_add(&ccs_info_f_to_c_table, 
                                                   info);
     info->i_lock = OBJ_NEW(service_mutex_t);
     info->i_freed = false;
@@ -460,9 +460,9 @@ static void info_destructor(ccs_info_t *info)
        entry is in the table */
     
     if (MPI_UNDEFINED != info->i_f_to_c_index &&
-        NULL != opal_pointer_array_get_item(&ccs_info_f_to_c_table, 
+        NULL != service_pointer_array_get_item(&ccs_info_f_to_c_table, 
                                             info->i_f_to_c_index)){
-        opal_pointer_array_set_item(&ccs_info_f_to_c_table, 
+        service_pointer_array_set_item(&ccs_info_f_to_c_table, 
                                     info->i_f_to_c_index, NULL);
     }
 

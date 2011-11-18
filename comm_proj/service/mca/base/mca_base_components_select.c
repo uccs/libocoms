@@ -17,13 +17,14 @@
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
-
-#include "opal/runtime/opal.h"
-#include "opal/class/ccs_list.h"
+#if 0
+#include "service/runtime/opal.h"
+#endif
+#include "service/util/service_list.h"
 #include "service/util/output.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
-#include "opal/mca/base/mca_base_component_repository.h"
+#include "service/mca/base/mca_base_component_repository.h"
 #include "service/include/service/constants.h"
 
 
@@ -118,9 +119,11 @@ int mca_base_select(const char *type_name, int output_id,
     service_output_verbose(5, output_id,
                         "mca:base:select:(%5s) Selected component [%s]",
                         type_name, (*best_component)->mca_component_name);
+#if 0 /* Pasha: Not sure if we need this one */
     if (ccs_profile) {
         service_output(0, "%s:%s", type_name, (*best_component)->mca_component_name);
     }
+#endif
     
     /*
      * Close the non-selected components

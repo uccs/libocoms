@@ -23,7 +23,9 @@
 
 #include "service/util/cmd_line.h"
 #include "service/util/argv.h"
+#if 0
 #include "service/util/ccs_environ.h"
+#endif
 #include "service/mca/base/base.h"
 #include "service/include/service/constants.h"
 

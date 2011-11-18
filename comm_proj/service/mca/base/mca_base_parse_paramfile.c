@@ -21,11 +21,13 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "opal/class/ccs_list.h"
+#include "service/util/service_list.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
-#include "opal/mca/base/mca_base_param_internal.h"
+#include "service/mca/base/mca_base_param_internal.h"
+#if 0
 #include "service/util/keyval_parse.h"
+#endif
 
 static void save_value(const char *name, const char *value);
 

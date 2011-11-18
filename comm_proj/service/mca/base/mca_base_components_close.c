@@ -18,11 +18,11 @@
 
 #include "ccs_config.h"
 
-#include "opal/class/ccs_list.h"
+#include "service/util/service_list.h"
 #include "service/util/output.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
-#include "opal/mca/base/mca_base_component_repository.h"
+#include "service/mca/base/mca_base_component_repository.h"
 #include "service/include/service/constants.h"
 
 int mca_base_components_close(int output_id, 

@@ -20,11 +20,11 @@
 #include "ccs_config.h"
 #include "service/mca/mca.h"
 
+#include "service/mca/base/base.h"
+#include "service/include/service/constants.h"
+#include "service/mca/base/mca_base_component_repository.h"
 #if 0
 #include "service/util/output.h"
-#include "service/mca/base/base.h"
-#include "opal/mca/base/mca_base_component_repository.h"
-#include "service/include/service/constants.h"
 #endif
 
 /*

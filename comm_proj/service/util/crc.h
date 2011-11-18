@@ -19,8 +19,8 @@
  * $HEADER$
  */
 
-#ifndef _OPAL_CRC_H_
-#define _OPAL_CRC_H_
+#ifndef _SERVICE_CRC_H_
+#define _SERVICE_CRC_H_
 
 #include "ccs_config.h"
 
@@ -32,12 +32,12 @@ BEGIN_C_DECLS
 #define CRC_INITIAL_REGISTER ((unsigned int)0xffffffff)
 
 
-#define OPAL_CSUM( SRC, LEN )  service_uicsum( SRC, LEN )
-#define OPAL_CSUM_PARTIAL( SRC, LEN, UI1, UI2 ) \
+#define SERVICE_CSUM( SRC, LEN )  service_uicsum( SRC, LEN )
+#define SERVICE_CSUM_PARTIAL( SRC, LEN, UI1, UI2 ) \
     service_uicsum_partial( SRC, LEN, UI1, UI2 )
-#define OPAL_CSUM_BCOPY_PARTIAL( SRC, DST, LEN1, LEN2, UI1, UI2 ) \
+#define SERVICE_CSUM_BCOPY_PARTIAL( SRC, DST, LEN1, LEN2, UI1, UI2 ) \
     service_bcopy_uicsum_partial( SRC, DST, LEN1, LEN2, UI1, UI2 )
-#define OPAL_CSUM_ZERO  0
+#define SERVICE_CSUM_ZERO  0
 
 
 CCS_DECLSPEC unsigned long

@@ -36,9 +36,9 @@ int32_t service_datatype_clone( const service_datatype_t * src_type, service_dat
     dt_elem_desc_t* temp = dest_type->desc.desc;    /* temporary copy of the desc pointer */
 
     /* copy _excluding_ the super object, we want to keep the cls_destruct_array */
-    memcpy( (char*)dest_type + sizeof(ccs_object_t),
-            (char*)src_type + sizeof(ccs_object_t),
-            sizeof(service_datatype_t)-sizeof(ccs_object_t) );
+    memcpy( (char*)dest_type + sizeof(service_object_t),
+            (char*)src_type + sizeof(service_object_t),
+            sizeof(service_datatype_t)-sizeof(service_object_t) );
 
     dest_type->flags &= (~CCS_DATATYPE_FLAG_PREDEFINED);
     dest_type->desc.desc = temp;

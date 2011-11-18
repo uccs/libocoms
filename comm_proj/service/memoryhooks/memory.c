@@ -26,9 +26,9 @@
 #endif  /* HAVE_SYS_MMAN_H */
 
 #include "service/include/service/constants.h"
-#include "opal/memoryhooks/memory.h"
-#include "opal/memoryhooks/memory_internal.h"
-#include "opal/class/service_list.h"
+#include "service/memoryhooks/memory.h"
+#include "service/memoryhooks/memory_internal.h"
+#include "service/util/service_list.h"
 #include "service/util/service_object.h"
 #include "service/sys/atomic.h"
 

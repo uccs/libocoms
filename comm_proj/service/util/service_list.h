@@ -379,7 +379,7 @@ static inline service_list_item_t *service_list_remove_item
 #if CCS_ENABLE_DEBUG
     /* Spot check: ensure that this item is still only on one list */
 
-    CCS_THREAD_ADD32( &(item->service_list_item_refcount), -1 );
+    SERVICE_THREAD_ADD32( &(item->service_list_item_refcount), -1 );
     assert(0 == item->service_list_item_refcount);
     item->service_list_item_belong_to = NULL;
 #endif
@@ -445,7 +445,7 @@ static inline void _service_list_append(service_list_t *list, service_list_item_
   /* Spot check: ensure this item is only on the list that we just
      appended it to */
 
-  CCS_THREAD_ADD32( &(item->service_list_item_refcount), 1 );
+  SERVICE_THREAD_ADD32( &(item->service_list_item_refcount), 1 );
   assert(1 == item->service_list_item_refcount);
   item->service_list_item_belong_to = list;
 #endif
@@ -495,7 +495,7 @@ static inline void service_list_prepend(service_list_t *list,
   /* Spot check: ensure this item is only on the list that we just
      prepended it to */
 
-  CCS_THREAD_ADD32( &(item->service_list_item_refcount), 1 );
+  SERVICE_THREAD_ADD32( &(item->service_list_item_refcount), 1 );
   assert(1 == item->service_list_item_refcount);
   item->service_list_item_belong_to = list;
 #endif
@@ -556,7 +556,7 @@ static inline service_list_item_t *service_list_remove_first(service_list_t *lis
   /* Spot check: ensure that the item we're returning is now on no
      lists */
 
-  CCS_THREAD_ADD32( &(item->service_list_item_refcount), -1 );
+  SERVICE_THREAD_ADD32( &(item->service_list_item_refcount), -1 );
   assert(0 == item->service_list_item_refcount);
 #endif
 
@@ -616,7 +616,7 @@ static inline service_list_item_t *service_list_remove_last(service_list_t *list
   /* Spot check: ensure that the item we're returning is now on no
      lists */
 
-  CCS_THREAD_ADD32( &(item->service_list_item_refcount), -1 );
+  SERVICE_THREAD_ADD32( &(item->service_list_item_refcount), -1 );
   assert(0 == item->service_list_item_refcount);
   item->service_list_item_belong_to = NULL;
 #endif
@@ -659,7 +659,7 @@ static inline void service_list_insert_pos(service_list_t *list, service_list_it
     /* Spot check: double check that this item is only on the list
        that we just added it to */
 
-    CCS_THREAD_ADD32( &(item->service_list_item_refcount), 1 );
+    SERVICE_THREAD_ADD32( &(item->service_list_item_refcount), 1 );
     assert(1 == item->service_list_item_refcount);
     item->service_list_item_belong_to = list;
 #endif

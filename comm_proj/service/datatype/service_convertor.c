@@ -28,7 +28,7 @@
 #include <stdint.h>
 #endif
 
-#include "opal/prefetch.h"
+#include "service/include/service/prefetch.h"
 #include "service/util/arch.h"
 #include "service/util/output.h"
 
@@ -65,7 +65,7 @@ static void service_convertor_destruct( service_convertor_t* convertor )
     service_convertor_cleanup( convertor );
 }
 
-OBJ_CLASS_INSTANCE(service_convertor_t, ccs_object_t, service_convertor_construct, service_convertor_destruct );
+OBJ_CLASS_INSTANCE(service_convertor_t, service_object_t, service_convertor_construct, service_convertor_destruct );
 
 static service_convertor_master_t* service_convertor_master_list = NULL;
 
@@ -134,11 +134,11 @@ service_convertor_master_t* service_convertor_find_or_create_master( uint32_t re
     }
 
     /* Find out the remote bool size */
-    if( service_arch_checkmask( &master->remote_arch, CCS_ARCH_BOOLIS8 ) ) {
+    if( service_arch_checkmask( &master->remote_arch, SERVICE_ARCH_BOOLIS8 ) ) {
         remote_sizes[CCS_DATATYPE_BOOL] = 1;
-    } else if( service_arch_checkmask( &master->remote_arch, CCS_ARCH_BOOLIS16 ) ) {
+    } else if( service_arch_checkmask( &master->remote_arch, SERVICE_ARCH_BOOLIS16 ) ) {
         remote_sizes[CCS_DATATYPE_BOOL] = 2;
-    } else if( service_arch_checkmask( &master->remote_arch, CCS_ARCH_BOOLIS32 ) ) {
+    } else if( service_arch_checkmask( &master->remote_arch, SERVICE_ARCH_BOOLIS32 ) ) {
         remote_sizes[CCS_DATATYPE_BOOL] = 4;
     } else {
         service_output( 0, "Unknown sizeof(bool) for the remote architecture\n" );
@@ -154,8 +154,8 @@ service_convertor_master_t* service_convertor_find_or_create_master( uint32_t re
         if( remote_sizes[i] != service_datatype_local_sizes[i] )
             master->hetero_mask |= (((uint32_t)1) << i);
     }
-    if( service_arch_checkmask( &master->remote_arch, CCS_ARCH_ISBIGENDIAN ) !=
-        service_arch_checkmask( &service_local_arch, CCS_ARCH_ISBIGENDIAN ) ) {
+    if( service_arch_checkmask( &master->remote_arch, SERVICE_ARCH_ISBIGENDIAN ) !=
+        service_arch_checkmask( &service_local_arch, SERVICE_ARCH_ISBIGENDIAN ) ) {
         uint32_t hetero_mask = 0;
 
         for( i = CCS_DATATYPE_FIRST_TYPE; i < CCS_DATATYPE_MAX_PREDEFINED; i++ ) {
@@ -206,7 +206,7 @@ service_convertor_t* service_convertor_create( int32_t remote_arch, int32_t mode
             *(MAX_DATA) = 0;                                            \
             return 1;  /* nothing to do */                              \
         }                                                               \
-        (CONVERTOR)->checksum = CCS_CSUM_ZERO;                         \
+        (CONVERTOR)->checksum = SERVICE_CSUM_ZERO;                         \
         (CONVERTOR)->csum_ui1 = 0;                                      \
         (CONVERTOR)->csum_ui2 = 0;                                      \
         assert( (CONVERTOR)->bConverted < (CONVERTOR)->local_size );    \
