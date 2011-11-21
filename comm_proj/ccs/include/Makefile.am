@@ -23,15 +23,15 @@
 
 # note - headers and nodist_headers will go in ${includedir}/openmpi,
 # not ${includedir}/
-headers =
+headers = llc.h
 nodist_headers = ccs_config.h
 
 # Install these in $(includedir)
 #include_HEADERS = mpi_portable_platform.h
-include_HEADERS = 
+include_HEADERS =  llc.h
 
 # Always install these in $(pkgincludedir)
-pkginclude_HEADERS =
+pkginclude_HEADERS = llc.h
 
 noinst_LTLIBRARIES =
 
@@ -46,4 +46,3 @@ EXTRA_DIST = $(headers)
 # Remove the auto-generated mpi-ext.h file
 # Since there is no mpi-ext.h.in, autogen does not know to cleanup this file.
 distclean-local:
-
