@@ -1109,6 +1109,7 @@ ccs_show_title "Final top-level CCS configuration"
         service/util/Makefile
         ccs/include/Makefile
         ccs/llc/Makefile
+        tests/Makefile
     ])
 #        service/mca/Makefile
 
