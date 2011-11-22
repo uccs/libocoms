@@ -22,23 +22,22 @@
 #include "ccs_config.h"
 
 #include "service/util/service_free_list.h"
-#include "service/align.h"
-#include "service/util/output.h"
-#include "ompi/mca/mpool/mpool.h"
+#include "service/include/service/align.h"
+#include "ccs/mca/mpool/mpool.h"
 
-static void ompi_free_list_construct(service_free_list_t* fl);
-static void ompi_free_list_destruct(service_free_list_t* fl);
+static void service_free_list_construct(service_free_list_t* fl);
+static void service_free_list_destruct(service_free_list_t* fl);
 
 OBJ_CLASS_INSTANCE(service_free_list_t, service_atomic_lifo_t,
-        ompi_free_list_construct, ompi_free_list_destruct);
-
-typedef struct service_free_list_item_t ompi_free_list_memory_t;
+        service_free_list_construct, service_free_list_destruct);
 
 OBJ_CLASS_INSTANCE(service_free_list_item_t, 
                    service_list_item_t,
                    NULL, NULL); 
 
-static void ompi_free_list_construct(service_free_list_t* fl)
+typedef struct service_free_list_item_t service_free_list_memory_t;
+
+static void service_free_list_construct(service_free_list_t* fl)
 {
     OBJ_CONSTRUCT(&fl->fl_lock, service_mutex_t);
     OBJ_CONSTRUCT(&fl->fl_condition, service_condition_t);
@@ -56,14 +55,14 @@ static void ompi_free_list_construct(service_free_list_t* fl)
     OBJ_CONSTRUCT(&(fl->fl_allocations), service_list_t);
 }
 
-static void ompi_free_list_destruct(service_free_list_t* fl)
+static void service_free_list_destruct(service_free_list_t* fl)
 {
     service_list_item_t *item;
-    ompi_free_list_memory_t *fl_mem;
+    service_free_list_memory_t *fl_mem;
 
 #if 0 && CCS_ENABLE_DEBUG
     if(service_list_get_size(&fl->super) != fl->fl_num_allocated) {
-        service_output(0, "ompi_free_list: %d allocated %d returned: %s:%d\n",
+        service_output(0, "service_free_list: %d allocated %d returned: %s:%d\n",
             fl->fl_num_allocated, service_list_get_size(&fl->super),
             fl->super.super.cls_init_file_name, fl->super.super.cls_init_lineno);
     }
@@ -71,7 +70,7 @@ static void ompi_free_list_destruct(service_free_list_t* fl)
 
     if( NULL != fl->fl_mpool ) {
         while(NULL != (item = service_list_remove_first(&(fl->fl_allocations)))) {
-            fl_mem = (ompi_free_list_memory_t*)item;
+            fl_mem = (service_free_list_memory_t*)item;
 
             fl->fl_mpool->mpool_free(fl->fl_mpool, fl_mem->ptr,
                                      fl_mem->registration);
@@ -93,7 +92,7 @@ static void ompi_free_list_destruct(service_free_list_t* fl)
     OBJ_DESTRUCT(&fl->fl_lock);
 }
 
-int ompi_free_list_init_ex(
+int service_free_list_init_ex(
     service_free_list_t *flist,
     size_t elem_size,
     size_t alignment,
@@ -102,7 +101,7 @@ int ompi_free_list_init_ex(
     int max_elements_to_alloc,
     int num_elements_per_alloc,
     mca_mpool_base_module_t* mpool,
-    ompi_free_list_item_init_fn_t item_init,
+    service_free_list_item_init_fn_t item_init,
     void* ctx)
 {
     /* alignment must be more than zero and power of two */
@@ -124,12 +123,12 @@ int ompi_free_list_init_ex(
     flist->item_init = item_init;
     flist->ctx = ctx;
     if(num_elements_to_alloc)
-        return ompi_free_list_grow(flist, num_elements_to_alloc);
+        return service_free_list_grow(flist, num_elements_to_alloc);
     return CCS_SUCCESS;
 }
 
-/* this will replace ompi_free_list_init_ex */
-int ompi_free_list_init_ex_new(
+/* this will replace service_free_list_init_ex */
+int service_free_list_init_ex_new(
     service_free_list_t *flist,
     size_t frag_size,
     size_t frag_alignment,
@@ -140,7 +139,7 @@ int ompi_free_list_init_ex_new(
     int max_elements_to_alloc,
     int num_elements_per_alloc,
     mca_mpool_base_module_t* mpool,
-    ompi_free_list_item_init_fn_t item_init,
+    service_free_list_item_init_fn_t item_init,
     void* ctx)
 {
     /* alignment must be more than zero and power of two */
@@ -165,13 +164,13 @@ int ompi_free_list_init_ex_new(
     flist->item_init = item_init;
     flist->ctx = ctx;
     if (num_elements_to_alloc)
-        return ompi_free_list_grow(flist, num_elements_to_alloc);
+        return service_free_list_grow(flist, num_elements_to_alloc);
     return CCS_SUCCESS;
 }
-int ompi_free_list_grow(service_free_list_t* flist, size_t num_elements)
+int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
 {
     unsigned char *ptr, *mpool_alloc_ptr = NULL;
-    ompi_free_list_memory_t *alloc_ptr;
+    service_free_list_memory_t *alloc_ptr;
     size_t i, alloc_size, head_size, elem_size = 0;
     mca_mpool_base_registration_t *reg = NULL;
 
@@ -187,10 +186,10 @@ int ompi_free_list_grow(service_free_list_t* flist, size_t num_elements)
     head_size = CCS_ALIGN(head_size, flist->fl_frag_alignment, size_t);
 
     /* calculate head allocation size */
-    alloc_size = num_elements * head_size + sizeof(ompi_free_list_memory_t) +
+    alloc_size = num_elements * head_size + sizeof(service_free_list_memory_t) +
         flist->fl_frag_alignment;
 
-    alloc_ptr = (ompi_free_list_memory_t*)malloc(alloc_size);
+    alloc_ptr = (service_free_list_memory_t*)malloc(alloc_size);
 
     if(NULL == alloc_ptr)
         return CCS_ERR_TEMP_OUT_OF_RESOURCE;
@@ -218,7 +217,7 @@ int ompi_free_list_grow(service_free_list_t* flist, size_t num_elements)
     alloc_ptr->registration = reg;
     alloc_ptr->ptr = mpool_alloc_ptr;
 
-    ptr = (unsigned char*)alloc_ptr + sizeof(ompi_free_list_memory_t);
+    ptr = (unsigned char*)alloc_ptr + sizeof(service_free_list_memory_t);
     ptr = CCS_ALIGN_PTR(ptr, flist->fl_frag_alignment, unsigned char*);
 
     for(i=0; i<num_elements; i++) {
@@ -250,7 +249,7 @@ int ompi_free_list_grow(service_free_list_t* flist, size_t num_elements)
  * initialization.
  */
 int
-ompi_free_list_resize(service_free_list_t* flist, size_t size)
+service_free_list_resize(service_free_list_t* flist, size_t size)
 {
     ssize_t inc_num;
     int ret = CCS_SUCCESS;
@@ -261,7 +260,7 @@ ompi_free_list_resize(service_free_list_t* flist, size_t size)
     SERVICE_THREAD_LOCK(&((flist)->fl_lock));
     inc_num = (ssize_t)size - (ssize_t)flist->fl_num_allocated;
     while( inc_num > 0 ) {
-        ret = ompi_free_list_grow(flist, flist->fl_num_per_alloc);
+        ret = service_free_list_grow(flist, flist->fl_num_per_alloc);
         if( CCS_SUCCESS != ret ) break;
         inc_num = (ssize_t)size - (ssize_t)flist->fl_num_allocated;
     }

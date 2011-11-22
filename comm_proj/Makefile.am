@@ -17,7 +17,7 @@
 # $HEADER$
 #
 
-SUBDIRS = config $(MCA_PROJECT_SUBDIRS) service tests
+SUBDIRS = config service $(MCA_PROJECT_SUBDIRS) tests
 EXTRA_DIST = README INSTALL VERSION Doxyfile LICENSE autogen.pl CMakeLists.txt README.WINDOWS.txt
 
 # include examples/Makefile.include

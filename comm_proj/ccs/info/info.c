@@ -371,7 +371,7 @@ int ccs_info_finalize(void)
            and all is well.  Then get the value again and see if it's
            actually been freed. */
         
-        if (NULL != info && ccs_debug_no_free_handles && info->i_freed) {
+        if (NULL != info && /* Pasha: ccs_debug_no_free_handles && */info->i_freed) {
             OBJ_RELEASE(info);
             info = (ccs_info_t *)service_pointer_array_get_item(&ccs_info_f_to_c_table, i);
         } 
@@ -383,7 +383,7 @@ int ccs_info_finalize(void)
             
             /* If the user wanted warnings about MPI object leaks, print out
                a message */
-            
+            /* Pasha: disable leak check  
             if (!info->i_freed && ccs_debug_show_handle_leaks) {
                 if (ccs_debug_show_handle_leaks) {
                     service_output(0, "WARNING: MPI_Info still allocated at MPI_FINALIZE");
@@ -399,14 +399,16 @@ int ccs_info_finalize(void)
                 }
                 OBJ_RELEASE(info);
             }
+            */
             
             /* Don't bother setting each element back down to NULL; it
                would just take a lot of thread locks / unlocks and
                since we're destroying everything, it isn't worth it */
-
+            /* Pasha: disable leak check
             if (!found && ccs_debug_show_handle_leaks) {
                 service_output(0, "WARNING:   (no keys)");
             }
+            */
         }
     }
   
@@ -430,10 +432,11 @@ static void info_constructor(ccs_info_t *info)
 
     /* If the user doesn't want us to ever free it, then add an extra
        RETAIN here */
-
+    /* Pasha: disable debug
     if (ccs_debug_no_free_handles) {
         OBJ_RETAIN(&(info->super));
     }
+    */
 }
 
 

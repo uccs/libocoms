@@ -51,34 +51,22 @@ libserviceutil_la_SOURCES = \
         $(util_headers) \
         argv.c \
         cmd_line.c \
-        fd.h \
         fd.c \
         output.c \
-        service_atomic_lifo.h \
-        service_bitmap.h \
-        service_free_list.h \
-        service_list.h \
-        service_object.h \
+        service_atomic_lifo.c \
+        service_free_list.c \
+        service_list.c \
+        service_object.c \
         service_pointer_array.c \
-        service_pointer_array.h \
-        service_rb_tree.h \
         service_rb_tree.c \
         service_graph.c \
-        service_graph.h \
-        service_environ.h \
         service_environ.c \
-        service_value_array.h \
         service_value_array.c \
         printf.c \
-        printf.h \
         service_hash_table.c \
-        service_hash_table.h \
         if.c \
-        if.h \
         arch.c \
-        arch.h \
-        crc.c \
-        crc.h
+        crc.c
 
 
 
