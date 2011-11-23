@@ -46,9 +46,9 @@ libservice_la_LIBADD = \
         $(LIBLTDL) \
         asm/libasm.la \
         datatype/libdatatype.la \
-        mca/base/libservicemca_base.la \
-        util/libserviceutil.la \
-	$(MCA_service_FRAMEWORK_LIBS)
+        mca/base/libmca_base.la \
+        util/libserviceutil.la
+
 libservice_la_DEPENDENCIES = $(libservice_la_LIBADD)
 libservice_la_LDFLAGS =
 #libservice_la_LDFLAGS = -version-info $(libservice_so_version)
