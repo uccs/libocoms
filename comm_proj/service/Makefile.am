@@ -19,12 +19,13 @@
 
 EXTRA_DIST = CMakeLists.txt
 
+AM_CPPFLAGS =
+
 SUBDIRS = \
 	include \
     $(LIBLTDL_SUBDIR) \
 	asm \
     datatype \
-    mca/base \
     util 
 
 # libltdl is included by variable because if --disable-dlopen was
@@ -35,7 +36,6 @@ DIST_SUBDIRS = \
 	$(LIBLTDL_SUBDIR) \
 	asm \
     datatype \
-    mca/base \
 	util 
 
 # Build the main OPAL library
@@ -46,7 +46,6 @@ libservice_la_LIBADD = \
         $(LIBLTDL) \
         asm/libasm.la \
         datatype/libdatatype.la \
-        mca/base/libmca_base.la \
         util/libserviceutil.la
 
 libservice_la_DEPENDENCIES = $(libservice_la_LIBADD)
@@ -73,6 +72,6 @@ libservice_la_SOURCES += $(headers)
 
 include memoryhooks/Makefile.am
 include threads/Makefile.am
-#include mca/Makefile.am
+include mca/base/Makefile.am
 #include util/Makefile.am
 
