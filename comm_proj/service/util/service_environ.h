@@ -74,7 +74,7 @@ CCS_DECLSPEC char **service_environ_merge(char **minor, char **major) __service_
  * @retval CCS_EXISTS If the name already exists in \em env and
  * \em overwrite is false (and therefore the \em value was not
  * saved in \em env)
- * @retval SERVICE_SUCESS If the value replaced another value or is
+ * @retval CCS_SUCCESS If the value replaced another value or is
  * appended to \em env.
  *
  * \em env is expected to be a NULL-terminated array of pointers
@@ -145,4 +145,4 @@ CCS_DECLSPEC extern char **environ;
 
 END_C_DECLS
 
-#endif /* SERVICE_ENVIRON */
+#endif /* OPAL_ENVIRON */

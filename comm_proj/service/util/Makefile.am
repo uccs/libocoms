@@ -46,7 +46,8 @@ util_headers = \
         if.h \
         arch.h \
         crc.h \
-        os_path.h
+        os_path.h \
+        path.h
 
 libserviceutil_la_SOURCES = \
         $(util_headers) \
@@ -68,9 +69,8 @@ libserviceutil_la_SOURCES = \
         if.c \
         arch.c \
         crc.c \
-        os_path.c
-
-
+        os_path.c \
+        path.c
 
 libserviceutil_la_LIBADD = 
 
