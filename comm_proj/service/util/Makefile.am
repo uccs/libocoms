@@ -45,7 +45,8 @@ util_headers = \
         service_hash_table.h \
         if.h \
         arch.h \
-        crc.h
+        crc.h \
+        os_path.h
 
 libserviceutil_la_SOURCES = \
         $(util_headers) \
@@ -66,7 +67,8 @@ libserviceutil_la_SOURCES = \
         service_hash_table.c \
         if.c \
         arch.c \
-        crc.c
+        crc.c \
+        os_path.c
 
 
 
