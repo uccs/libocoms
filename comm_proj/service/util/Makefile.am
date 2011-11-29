@@ -17,6 +17,8 @@
 # $HEADER$
 #
 
+SUBDIRS = keyval
+
 dist_pkgdata_DATA = 
 
 #AM_LFLAGS = -Popal_show_help_yy
@@ -47,7 +49,8 @@ util_headers = \
         arch.h \
         crc.h \
         os_path.h \
-        path.h
+        path.h \
+        keyval_parse.h
 
 libserviceutil_la_SOURCES = \
         $(util_headers) \
@@ -70,11 +73,14 @@ libserviceutil_la_SOURCES = \
         arch.c \
         crc.c \
         os_path.c \
-        path.c
+        path.c \
+        keyval_parse.c
 
-libserviceutil_la_LIBADD = 
+libserviceutil_la_LIBADD =  \
+    keyval/libserviceutilkeyval.la
 
-libserviceutil_la_DEPENDENCIES =
+libserviceutil_la_DEPENDENCIES = \
+    keyval/libserviceutilkeyval.la
 
 CFLAGS += @RTE_CFLAGS@
 LDFLAGS += @RTE_LDFLAGS@
