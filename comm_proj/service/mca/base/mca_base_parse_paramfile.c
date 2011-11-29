@@ -37,7 +37,7 @@ int mca_base_parse_paramfile(const char *paramfile)
 {
     file_being_read = (char*)paramfile;
     
-    return ccs_util_keyval_parse(paramfile, save_value);
+    return service_util_keyval_parse(paramfile, save_value);
 }
 
 static void save_value(const char *name, const char *value)
