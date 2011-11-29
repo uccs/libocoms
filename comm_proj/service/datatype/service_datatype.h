@@ -177,7 +177,7 @@ CCS_DECLSPEC extern const service_datatype_t service_datatype_wchar;
 /*
  * Functions exported externally
  */
-int service_datatype_register_params(void);
+CCS_DECLSPEC int service_datatype_register_params(void);
 CCS_DECLSPEC int32_t service_datatype_init( void );
 CCS_DECLSPEC int32_t service_datatype_finalize( void );
 CCS_DECLSPEC service_datatype_t* service_datatype_create( int32_t expectedSize );
