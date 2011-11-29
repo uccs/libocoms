@@ -30,7 +30,6 @@
 #endif
 #if 0
 #include "opal/mca/installdirs/installdirs.h"
-#include "service/util/os_path.h"
 #include "service/util/show_help.h"
 #include "service/util/path.h"
 #include "service/util/ccs_environ.h"
@@ -43,7 +42,11 @@
 #include "service/mca/base/mca_base_param.h"
 #include "service/mca/base/mca_base_param_internal.h"
 #include "service/include/service/constants.h"
+#include "service/util/os_path.h"
 #include "service/util/output.h"
+#include "service/util/path.h"
+#include "service/util/service_environ.h"
+#include "ccs/mca/installdirs/installdirs.h"
 
 /*
  * Local types
@@ -184,8 +187,7 @@ int mca_base_param_recache_files(bool rel_path_search)
     char * new_agg_path = NULL, *agg_default_path = NULL;
 
     /* We may need this later */
-#if 0 /* Pasha : we will handle later the install path */
-    home = (char*)ccs_home_directory();
+    home = (char *)service_home_directory();
     
     if(NULL == cwd) {
         cwd = (char *) malloc(sizeof(char) * MAXPATHLEN);
@@ -196,13 +198,12 @@ int mca_base_param_recache_files(bool rel_path_search)
     }
 #if CCS_WANT_HOME_CONFIG_FILES
     asprintf(&files,
-             "%s"CCS_PATH_SEP".openmpi"CCS_PATH_SEP"mca-params.conf%c%s"CCS_PATH_SEP"openmpi-mca-params.conf",
-             home, CCS_ENV_SEP, ccs_install_dirs.sysconfdir);
+             "%s"CCS_PATH_SEP".llc"CCS_PATH_SEP"mca-params.conf%c%s"CCS_PATH_SEP"llc-mca-params.conf",
+             home, CCS_ENV_SEP, service_install_dirs.sysconfdir);
 #else
     asprintf(&files,
-             "%s"CCS_PATH_SEP"openmpi-mca-params.conf",
+             "%s"CCS_PATH_SEP"llc-mca-params.conf",
              ccs_install_dirs.sysconfdir);
-#endif
 #endif
 
     /* Initialize a parameter that says where MCA param files can
@@ -220,11 +221,9 @@ int mca_base_param_recache_files(bool rel_path_search)
                                         "Aggregate MCA parameter file sets",
                                         false, false, NULL, &new_agg_files);
     
-#if 0 /* Pasha: param file again */
     asprintf(&agg_default_path,
-             "%s"CCS_PATH_SEP"amca-param-sets%c%s",
-             ccs_install_dirs.pkgdatadir, CCS_ENV_SEP, cwd);
-#endif
+             "%s"CCS_PATH_SEP"llc-param-sets%c%s",
+             service_install_dirs.pkgdatadir, CCS_ENV_SEP, cwd);
     id = mca_base_param_reg_string_name("mca", "base_param_file_path",
                                         "Aggregate MCA parameter Search path",
                                         false, false, agg_default_path, &new_agg_path);
@@ -1762,7 +1761,7 @@ static bool param_lookup(size_t index, mca_base_param_storage_t *storage,
                 if( NULL == home ) {
                     asprintf(&p, "%s", storage->stringval + 2);
                 } else {
-                    p = ccs_os_path( false, home, storage->stringval + 2, NULL );
+                    p = service_os_path( false, home, storage->stringval + 2, NULL );
                 }
                 free(storage->stringval);
                 storage->stringval = p;

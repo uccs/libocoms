@@ -5,7 +5,7 @@
 #define PACKAGE_STRING "Common Communication Substrate 0.1"
 #define PACKAGE_BUGREPORT ""
 #define PACKAGE_URL ""
-#define CCS_ARCH "x86_64-apple-darwin10.7.0"
+/* Pasha #define CCS_ARCH "x86_64-apple-darwin10.7.0" */
 #define STDC_HEADERS 1
 #define HAVE_SYS_TYPES_H 1
 #define HAVE_SYS_STAT_H 1
