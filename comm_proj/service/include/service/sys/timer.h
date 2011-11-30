@@ -103,7 +103,7 @@ BEGIN_C_DECLS
 #ifndef CCS_HAVE_SYS_TIMER_GET_CYCLES
 #define CCS_HAVE_SYS_TIMER_GET_CYCLES 0
 
-typedef int service_timer_t;
+typedef int ccs_timer_t;
 #endif
 #endif
 

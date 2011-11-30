@@ -20,15 +20,15 @@
 #define OMPI_SYS_ARCH_TIMER_H 1
 
 
-typedef uint64_t service_timer_t;
+typedef uint64_t ccs_timer_t;
 
 
 #if OMPI_GCC_INLINE_ASSEMBLY
 
-static inline service_timer_t
+static inline ccs_timer_t
 service_sys_timer_get_cycles(void)
 {
-    service_timer_t ret;
+    ccs_timer_t ret;
 
     __asm__ __volatile__("rdtsc" : "=A"(ret));
 
@@ -39,7 +39,7 @@ service_sys_timer_get_cycles(void)
 
 #else
 
-service_timer_t service_sys_timer_get_cycles(void);
+ccs_timer_t service_sys_timer_get_cycles(void);
 
 #define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
 

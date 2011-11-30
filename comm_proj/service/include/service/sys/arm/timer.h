@@ -14,12 +14,12 @@
 
 #include <sys/times.h>
 
-typedef uint64_t service_timer_t;
+typedef uint64_t ccs_timer_t;
 
-static inline service_timer_t
+static inline ccs_timer_t
 service_sys_timer_get_cycles(void)
 {
-    service_timer_t ret;
+    ccs_timer_t ret;
     struct tms accurate_clock;
 
     times(&accurate_clock);
