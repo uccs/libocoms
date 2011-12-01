@@ -128,18 +128,18 @@ static inline uint64_t ntoh64(uint64_t val)
 /**
  * Convert between a local representation of pointer and a 64 bits value.
  */
-static inline uint64_t ompi_ptr_ptol( void* ptr ) __service_attribute_const__;
-static inline uint64_t ompi_ptr_ptol( void* ptr )
+static inline uint64_t service_ptr_ptol( void* ptr ) __service_attribute_const__;
+static inline uint64_t service_ptr_ptol( void* ptr )
 {
     return (uint64_t)(uintptr_t) ptr;
 }
 
-static inline void* ompi_ptr_ltop( uint64_t value ) __service_attribute_const__;
-static inline void* ompi_ptr_ltop( uint64_t value )
+static inline void* service_ptr_ltop( uint64_t value ) __service_attribute_const__;
+static inline void* service_ptr_ltop( uint64_t value )
 {
 #if SIZEOF_VOID_P == 4 && CCS_ENABLE_DEBUG
     if (value > ((1ULL << 32) - 1ULL)) {
-        service_output(0, "Warning: truncating value in ompi_ptr_ltop");
+        service_output(0, "Warning: truncating value in service_ptr_ltop");
     }
 #endif
     return (void*)(uintptr_t) value;

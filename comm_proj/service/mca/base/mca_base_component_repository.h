@@ -29,16 +29,16 @@ BEGIN_C_DECLS
  * module.  Most of the components that depend on it, will use the
  * retain_component() function to increase the reference count on a
  * particular component (as opposed to the retain() function, which is
- * internal to the opal/mca/base).  But it's convenient to have all
+ * internal to the service/mca/base).  But it's convenient to have all
  * the functions exported from one header file rather than to separate
  * retain_component() and retain() into two separate header files
  * (i.e., have a separate header file just for retain()).
  *
- * Note that internal to opal/mca/base, <ltdl.h> will *always* be
+ * Note that internal to service/mca/base, <ltdl.h> will *always* be
  * included before this file, and <ltdl.h> is not included anywhere
  * else in the OMPI tree.  So checking for the LTDL_H preprocessor
  * macro is a good indicator as to whether this file is being included
- * from an opal/mca/base source file or not.  If we are, then we need
+ * from an service/mca/base source file or not.  If we are, then we need
  * already have a real definition of lt_dlhandle.  If we are being
  * included from elsewhere, then <ltdl.h> will not previously have
  * been included, LTDL_H will not be defined, and we need a fake
@@ -46,7 +46,7 @@ BEGIN_C_DECLS
  * typedef it to (void*).
  *
  * One more case that this handles is the --disable-dlopen case.  In
- * that case, even in opal/mca/base, we *won't* be including <ltdl.h>.
+ * that case, even in service/mca/base, we *won't* be including <ltdl.h>.
  * Hence, LTDL_H won't be defined, so we'll end up typedefing
  * lt_dlhandle to (void *).  "But why does that matter?" you ask, "If
  * we configure with --disable-dlopen, then lt_dlhandle shouldn't be

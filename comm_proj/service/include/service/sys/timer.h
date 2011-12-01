@@ -73,7 +73,7 @@
 BEGIN_C_DECLS
 
 /* If you update this list, you probably also want to update
-   opal/mca/timer/linux/configure.m4.  Or not. */
+   ccs/mca/timer/linux/configure.m4.  Or not. */
 
 #if defined(DOXYGEN)
 /* don't include system-level gorp when generating doxygen files */ 

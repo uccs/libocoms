@@ -29,7 +29,7 @@
 #if 0
 #include "service/prefetch.h"
 #include "service/threads/condition.h"
-#include "ompi/constants.h"
+#include "service/include/service/constants.h"
 #include "service/runtime/opal.h"
 #endif
 
