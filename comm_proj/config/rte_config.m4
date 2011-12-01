@@ -8,7 +8,7 @@ AC_DEFUN([RTE_CONFIG],[
                                 files]
                     )],
                 [RTE_CFLAGS="-I$withval/include"
-                 RTE_LDFLAGS="-L$withval/lib -lstci"
+                 RTE_LDFLAGS="-L$withval/lib -lrte"
                  AC_SUBST(RTE_CFLAGS, "$RTE_CFLAGS")
                  AC_SUBST(RTE_LDFLAGS, "$RTE_LDFLAGS")
                  ],
