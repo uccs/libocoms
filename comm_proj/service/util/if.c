@@ -92,7 +92,7 @@ int service_ifnametoaddr(const char* if_name, struct sockaddr* addr, int length)
 {
     ccs_if_t* intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return CCS_ERROR;
     }
 
@@ -117,7 +117,7 @@ int service_ifnametoindex(const char* if_name)
 {
     ccs_if_t* intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return -1;
     }
 
@@ -141,7 +141,7 @@ int16_t service_ifnametokindex(const char* if_name)
 {
     ccs_if_t* intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return -1;
     }
 
@@ -165,7 +165,7 @@ int service_ifindextokindex(int if_index)
 {
     ccs_if_t* intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return -1;
     }
 
@@ -208,7 +208,7 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
         return CCS_ERR_NOT_FOUND;
     }
     
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return CCS_ERROR;
     }
 
@@ -282,7 +282,7 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
 
 int service_ifcount(void)
 {
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return 0;
     }
 
@@ -299,7 +299,7 @@ int service_ifbegin(void)
 {
     ccs_if_t *intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return -1;
     }
 
@@ -320,7 +320,7 @@ int service_ifnext(int if_index)
 {
     ccs_if_t *intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return -1;
     }
 
@@ -352,7 +352,7 @@ int service_ifindextoaddr(int if_index, struct sockaddr* if_addr, unsigned int l
 {
     ccs_if_t* intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return CCS_ERROR;
     }
 
@@ -377,7 +377,7 @@ int service_ifindextomask(int if_index, uint32_t* if_mask, int length)
 {
     ccs_if_t* intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return CCS_ERROR;
     }
 
@@ -403,7 +403,7 @@ int service_ifindextoflags(int if_index, uint32_t* if_flags)
 {
     ccs_if_t* intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return CCS_ERROR;
     }
 
@@ -429,7 +429,7 @@ int service_ifindextoname(int if_index, char* if_name, int length)
 {
     ccs_if_t *intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return CCS_ERROR;
     }
 
@@ -454,7 +454,7 @@ int service_ifkindextoname(int if_kindex, char* if_name, int length)
 {
     ccs_if_t *intf;
 
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return CCS_ERROR;
     }
 
@@ -598,7 +598,7 @@ bool service_ifisloopback(int if_index)
 {
     ccs_if_t* intf;
     
-    if (CCS_SUCCESS != service_if_base_open()) {
+    if (CCS_SUCCESS != ccs_if_base_open()) {
         return CCS_ERROR;
     }
 
