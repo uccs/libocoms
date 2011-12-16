@@ -20,7 +20,7 @@
 #include "ccs_config.h"
 
 #include "service/util/service_list.h"
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 
 /*
  *  List classes

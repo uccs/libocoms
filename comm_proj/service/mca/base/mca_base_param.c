@@ -41,7 +41,7 @@
 #include "service/mca/mca.h"
 #include "service/mca/base/mca_base_param.h"
 #include "service/mca/base/mca_base_param_internal.h"
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 #include "service/util/os_path.h"
 #include "service/util/output.h"
 #include "service/util/path.h"

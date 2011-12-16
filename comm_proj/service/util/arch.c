@@ -18,7 +18,7 @@
  */
 #include "ccs_config.h"
 
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 #include "service/util/arch.h"
 
 int32_t service_arch_compute_local_id( uint32_t *me )

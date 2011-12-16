@@ -21,7 +21,7 @@
 #include "service/mca/mca.h"
 
 #include "service/mca/base/base.h"
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 #include "service/mca/base/mca_base_component_repository.h"
 #if 0
 #include "service/util/output.h"

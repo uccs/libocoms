@@ -73,7 +73,7 @@
 #include "service/util/if.h"
 #include "service/util/output.h"
 #include "service/util/argv.h"
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 
 #include "ccs/mca/if/base/base.h"
 

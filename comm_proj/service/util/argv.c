@@ -27,7 +27,7 @@
 #endif  /* HAVE_STRING_H */
 
 #include "service/util/argv.h"
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 
 #define ARGSIZE 128
 

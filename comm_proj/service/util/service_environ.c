@@ -28,7 +28,7 @@
 #include "service/util/printf.h"
 #include "service/util/argv.h"
 #include "service/util/service_environ.h"
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 
 #ifdef __WINDOWS__ 
 #define SERVICE_DEFAULT_TMPDIR "C:\\TEMP" 

@@ -20,7 +20,7 @@
 #include "ccs_config.h"
 
 #include "service/threads/threads.h"
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 
 bool service_debug_threads = false;
 

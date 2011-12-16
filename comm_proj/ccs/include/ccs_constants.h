@@ -58,4 +58,7 @@ enum {
     CCS_RTE_TAG_COMMON_SM_BACK_FILE_CREATED,
 };
 
+/* Pasha: dummy orte_show_help declaration */
+#define orte_show_help(A...)
+
 #endif /* CCS_CONSTANTS_H */

@@ -37,7 +37,7 @@
 #include "service/util/service_environ.h"
 #include "service/util/output.h"
 #include "service/threads/mutex.h"
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 
 /*
  * Private data

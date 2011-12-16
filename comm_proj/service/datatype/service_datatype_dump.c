@@ -24,7 +24,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 #include "service/util/output.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_datatype_internal.h"

@@ -33,7 +33,7 @@
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
 #include "service/mca/base/mca_base_component_repository.h"
-#include "service/include/service/constants.h"
+#include "ccs/include/ccs_constants.h"
 
 struct component_name_t {
   service_list_item_t super;
