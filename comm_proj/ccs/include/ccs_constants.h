@@ -52,5 +52,10 @@ enum {
 
 #define CCS_ERR_MAX                (CCS_ERR_BASE - 100)
 
+/* Predefined RTE TAGS */
+enum {
+    CCS_RTE_TAG_COMMON_SM_COMP_INDEX = 100,
+    CCS_RTE_TAG_COMMON_SM_BACK_FILE_CREATED,
+};
 
 #endif /* CCS_CONSTANTS_H */
