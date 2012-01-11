@@ -21,7 +21,7 @@
 
 #include <limits.h>
 
-#include "service/include/constants.h"
+#include "ccs/include/ccs_constants.h"
 #include "service/util/service_bitmap.h"
 
 

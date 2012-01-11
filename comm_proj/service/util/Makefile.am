@@ -67,6 +67,7 @@ libserviceutil_la_SOURCES = \
         service_graph.c \
         service_environ.c \
         service_value_array.c \
+        service_bitmap.c \
         printf.c \
         service_hash_table.c \
         if.c \
