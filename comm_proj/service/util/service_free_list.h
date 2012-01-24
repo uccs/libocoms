@@ -26,6 +26,7 @@
 #include "service/threads/mutex.h"
 #include "service/threads/condition.h"
 #include "ccs/include/ccs_constants.h"
+#include "service/include/service/prefetch.h"
 #if 0
 #include "service/prefetch.h"
 #include "service/threads/condition.h"
@@ -189,7 +190,7 @@ CCS_DECLSPEC int service_free_list_resize(service_free_list_t *flist, size_t siz
     rc = CCS_SUCCESS; \
     item = (service_free_list_item_t*) service_atomic_lifo_pop(&((fl)->super)); \
     if( CCS_UNLIKELY(NULL == item) ) { \
-        if(service_using_threads()) { \
+        if(ccs_using_threads()) { \
             service_mutex_lock(&((fl)->fl_lock)); \
             service_free_list_grow((fl), (fl)->fl_num_per_alloc); \
             service_mutex_unlock(&((fl)->fl_lock)); \

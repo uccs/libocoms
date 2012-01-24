@@ -26,7 +26,7 @@
  * If we have progress threads, always default to using threads.
  * Otherwise, wait and see if some upper layer wants to use threads.
  */
-bool service_uses_threads = false;
+bool ccs_uses_threads = false;
 bool service_mutex_check_locks = false;
 
 

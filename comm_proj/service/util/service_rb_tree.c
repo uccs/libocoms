@@ -75,13 +75,13 @@ int service_rb_tree_init(service_rb_tree_t * tree,
 
     service_free_list_item_t * node;
     /* we need to get memory for the root pointer from the free list */
-    OMPI_FREE_LIST_GET(&(tree->free_list), node, rc);
+    SERVICE_FREE_LIST_GET(&(tree->free_list), node, rc);
     tree->root_ptr = (service_rb_tree_node_t *) node;
     if (CCS_SUCCESS != rc) {
         return rc;
     }
 
-    OMPI_FREE_LIST_GET(&(tree->free_list), node, rc);
+    SERVICE_FREE_LIST_GET(&(tree->free_list), node, rc);
     if (CCS_SUCCESS != rc) {
         return rc;
     }
@@ -116,7 +116,7 @@ int service_rb_tree_insert(service_rb_tree_t *tree, void * key, void * value)
     int rc;
 
     /* get the memory for a node */
-    OMPI_FREE_LIST_GET(&(tree->free_list), item, rc);
+    SERVICE_FREE_LIST_GET(&(tree->free_list), item, rc);
     if (CCS_SUCCESS != rc) {
         return rc;
     }
