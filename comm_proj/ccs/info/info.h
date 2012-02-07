@@ -25,7 +25,7 @@
 #include "ccs_config.h"
 #include <string.h>
 
-#include "mpi.h"
+#include "ccs/include/ccs_constants.h"
 #include "service/util/service_list.h"
 #include "service/util/service_pointer_array.h"
 #include "service/threads/mutex.h"
@@ -77,7 +77,7 @@ struct ccs_info_entry_t {
     service_list_item_t super; /**< required for service_list_t type */
     char *ie_value; /**< value part of the (key, value) pair.
                   * Maximum length is MPI_MAX_INFO_VAL */
-    char ie_key[MPI_MAX_INFO_KEY + 1]; /**< "key" part of the (key, value)
+    char ie_key[CCS_MAX_INFO_KEY + 1]; /**< "key" part of the (key, value)
                                      * pair */ 
 };
 /**
@@ -315,7 +315,7 @@ static inline int
 ccs_info_get_nkeys(ccs_info_t *info, int *nkeys) 
 {
     *nkeys = (int) service_list_get_size(&(info->super));
-    return MPI_SUCCESS;
+    return CCS_SUCCESS;
 }
 
 #endif /* CCS_INFO_H */
