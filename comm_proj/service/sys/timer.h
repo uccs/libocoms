@@ -27,7 +27,7 @@
 
 #include "ccs_config.h"
 
-#include "sys/architecture.h"
+#include "service/sys/architecture.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -78,25 +78,25 @@ BEGIN_C_DECLS
 #if defined(DOXYGEN)
 /* don't include system-level gorp when generating doxygen files */ 
 #elif CCS_ASSEMBLY_ARCH == CCS_AMD64
-#include "sys/amd64/timer.h"
+#include "service/sys/amd64/timer.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_ARM
-#include "sys/arm/timer.h"
+#include "service/sys/arm/timer.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_IA32
-#include "sys/ia32/timer.h"
+#include "service/sys/ia32/timer.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_IA64
-#include "sys/ia64/timer.h"
+#include "service/sys/ia64/timer.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_POWERPC32
-#include "sys/powerpc/timer.h"
+#include "service/sys/powerpc/timer.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_POWERPC64
-#include "sys/powerpc/timer.h"
+#include "service/sys/powerpc/timer.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_32
-#include "sys/sparcv9/timer.h"
+#include "service/sys/sparcv9/timer.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64
-#include "sys/sparcv9/timer.h"
+#include "service/sys/sparcv9/timer.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_WINDOWS
-#include "sys/win32/timer.h"
+#include "service/sys/win32/timer.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_MIPS
-#include "sys/mips/timer.h"
+#include "service/sys/mips/timer.h"
 #endif
 
 #ifndef DOXYGEN
