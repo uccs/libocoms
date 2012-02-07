@@ -134,7 +134,7 @@ int ccs_info_dup (ccs_info_t *info, ccs_info_t **newinfo)
 /*
  * Set a value on the info
  */
-int ccs_info_set (ccs_info_t *info, char *key, char *value) 
+int ccs_info_set(ccs_info_t *info, char *key, char *value) 
 {
     char *new_value;
     ccs_info_entry_t *new_info;
@@ -142,7 +142,8 @@ int ccs_info_set (ccs_info_t *info, char *key, char *value)
 
     new_value = strdup(value);
     if (NULL == new_value) {
-      return MPI_ERR_NO_MEM;
+      /* Pasha: return MPI_ERR_NO_MEM; */
+      return CCS_ERR_OUT_OF_RESOURCE;
     }
 
     SERVICE_THREAD_LOCK(info->i_lock);
@@ -157,9 +158,10 @@ int ccs_info_set (ccs_info_t *info, char *key, char *value)
         new_info = OBJ_NEW(ccs_info_entry_t);
         if (NULL == new_info) {
             SERVICE_THREAD_UNLOCK(info->i_lock);
-            return MPI_ERR_NO_MEM;
+            /* Pasha return MPI_ERR_NO_MEM; */
+            return CCS_ERR_OUT_OF_RESOURCE;
         }
-        strncpy (new_info->ie_key, key, MPI_MAX_INFO_KEY);
+        strncpy (new_info->ie_key, key, CCS_MAX_INFO_KEY);
         new_info->ie_value = new_value;
         service_list_append (&(info->super), (service_list_item_t *) new_info);
     }
@@ -268,7 +270,8 @@ int ccs_info_delete (ccs_info_t *info, char *key)
     search = info_find_key (info, key);
     if (NULL == search){
          SERVICE_THREAD_UNLOCK(info->i_lock);
-         return MPI_ERR_INFO_NOKEY;
+         /* return MPI_ERR_INFO_NOKEY; */
+         return CCS_ERR_NOT_FOUND;
     } else {
          /*
           * An entry with this key value was found. Remove the item
@@ -327,7 +330,8 @@ int ccs_info_get_nthkey (ccs_info_t *info, int n, char *key)
          if (service_list_get_end(&(info->super)) == 
              (service_list_item_t *) iterator) {
              SERVICE_THREAD_UNLOCK(info->i_lock);
-             return MPI_ERR_ARG;
+             /* Pasha: return CCS_ERR_ARG; */
+             return CCS_ERR_BAD_PARAM;
          }
     }
     /*
@@ -335,7 +339,7 @@ int ccs_info_get_nthkey (ccs_info_t *info, int n, char *key)
      * cast it to ccs_info_entry_t before we can use it to
      * access the value
      */
-    strncpy(key, iterator->ie_key, MPI_MAX_INFO_KEY);
+    strncpy(key, iterator->ie_key, CCS_MAX_INFO_KEY);
     SERVICE_THREAD_UNLOCK(info->i_lock);
     return CCS_SUCCESS;
 }
@@ -462,7 +466,8 @@ static void info_destructor(ccs_info_t *info)
     /* reset the &ccs_info_f_to_c_table entry - make sure that the
        entry is in the table */
     
-    if (MPI_UNDEFINED != info->i_f_to_c_index &&
+    /* if (CCS_UNDEFINED != info->i_f_to_c_index && */
+    if (CCS_UNSUPPORTED != info->i_f_to_c_index &&
         NULL != service_pointer_array_get_item(&ccs_info_f_to_c_table, 
                                             info->i_f_to_c_index)){
         service_pointer_array_set_item(&ccs_info_f_to_c_table, 
@@ -481,7 +486,7 @@ static void info_destructor(ccs_info_t *info)
 static void info_entry_constructor(ccs_info_entry_t *entry) 
 {
     memset(entry->ie_key, 0, sizeof(entry->ie_key));
-    entry->ie_key[MPI_MAX_INFO_KEY] = 0;
+    entry->ie_key[CCS_MAX_INFO_KEY] = 0;
 }
 
 
