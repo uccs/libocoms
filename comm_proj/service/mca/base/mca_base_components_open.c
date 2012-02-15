@@ -322,7 +322,7 @@ static int parse_requested(int mca_param, bool *include_mode,
   i = 0;
   while ('\0' != requested[i]) {
       if (negate == requested[i]) {
-          ccs_show_help("help-mca-base.txt", 
+          orte_show_help("help-mca-base.txt", 
                          "framework-param:too-many-negates",
                          true, requested_orig);
           free(requested_orig);

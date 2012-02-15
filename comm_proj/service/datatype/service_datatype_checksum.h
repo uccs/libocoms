@@ -28,20 +28,20 @@
 #if defined (CCS_CSUM_DST)
 #define MEMCPY_CSUM( DST, SRC, BLENGTH, CONVERTOR ) \
 do { \
-    (CONVERTOR)->checksum += CCS_CSUM_BCOPY_PARTIAL( (SRC), (DST), (BLENGTH), (BLENGTH), &(CONVERTOR)->csum_ui1, &(CONVERTOR)->csum_ui2 ); \
+    (CONVERTOR)->checksum += SERVICE_CSUM_BCOPY_PARTIAL( (SRC), (DST), (BLENGTH), (BLENGTH), &(CONVERTOR)->csum_ui1, &(CONVERTOR)->csum_ui2 ); \
 } while (0)
 
 #else  /* if CCS_CSUM_DST */
 
 #define MEMCPY_CSUM( DST, SRC, BLENGTH, CONVERTOR ) \
 do { \
-    (CONVERTOR)->checksum += CCS_CSUM_BCOPY_PARTIAL( (SRC), (DST), (BLENGTH), (BLENGTH), &(CONVERTOR)->csum_ui1, &(CONVERTOR)->csum_ui2 ); \
+    (CONVERTOR)->checksum += SERVICE_CSUM_BCOPY_PARTIAL( (SRC), (DST), (BLENGTH), (BLENGTH), &(CONVERTOR)->csum_ui1, &(CONVERTOR)->csum_ui2 ); \
 } while (0)
 #endif  /* if CCS_CSUM_DST */
 
 #define COMPUTE_CSUM( SRC, BLENGTH, CONVERTOR ) \
 do { \
-    (CONVERTOR)->checksum += CCS_CSUM_PARTIAL( (SRC), (BLENGTH), &(CONVERTOR)->csum_ui1, &(CONVERTOR)->csum_ui2 ); \
+    (CONVERTOR)->checksum += SERVICE_CSUM_PARTIAL( (SRC), (BLENGTH), &(CONVERTOR)->csum_ui1, &(CONVERTOR)->csum_ui2 ); \
 } while (0)
 
 #else  /* if CHECKSUM */
