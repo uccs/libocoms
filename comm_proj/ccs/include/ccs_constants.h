@@ -63,4 +63,8 @@ typedef enum {
 /* Pasha: dummy CCS_SOS_GET_ERROR_CODE */
 #define CCS_SOS_GET_ERROR_CODE(rc) rc
 
+enum {
+    AM_TAG_OPENIB = 1,
+};
+
 #endif /* CCS_CONSTANTS_H */
