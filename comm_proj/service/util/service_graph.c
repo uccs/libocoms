@@ -395,14 +395,14 @@ uint32_t service_graph_adjacent(service_graph_t *graph, service_graph_vertex_t *
      * Verify that the first vertex belongs to the graph.
      */
     if (graph != vertex1->in_graph) {
-        SERVICE_OUTPUT((0,"service_graph_adjacent 1 Vertex1 %p not in the graph %p\n",(void *)vertex1,(void *)graph));
+        CCS_OUTPUT((0,"service_graph_adjacent 1 Vertex1 %p not in the graph %p\n",(void *)vertex1,(void *)graph));
         return DISTANCE_INFINITY;
     }
     /**
      * Verify that the second vertex belongs to the graph.
      */
     if (graph != vertex2->in_graph) {
-        SERVICE_OUTPUT((0,"service_graph_adjacent 2 Vertex2 %p not in the graph %p\n",(void *)vertex2,(void *)graph));
+        CCS_OUTPUT((0,"service_graph_adjacent 2 Vertex2 %p not in the graph %p\n",(void *)vertex2,(void *)graph));
         return DISTANCE_INFINITY;
     }
     /**
@@ -552,7 +552,7 @@ int service_graph_get_adjacent_vertices(service_graph_t *graph, service_graph_ve
      * Verify that the vertex belongs to the graph.
      */
     if (graph != vertex->in_graph) {
-        SERVICE_OUTPUT((0,"Vertex %p not in the graph %p\n", (void *)vertex, (void *)graph));
+        CCS_OUTPUT((0,"Vertex %p not in the graph %p\n", (void *)vertex, (void *)graph));
         return 0;
     }
     /**
@@ -596,14 +596,14 @@ uint32_t service_graph_spf(service_graph_t *graph, service_graph_vertex_t *verte
      * Verify that the first vertex belongs to the graph.
      */
     if (graph != vertex1->in_graph) {
-        SERVICE_OUTPUT((0,"service_graph_spf 1 Vertex1 %p not in the graph %p\n",(void *)vertex1,(void *)graph));
+        CCS_OUTPUT((0,"service_graph_spf 1 Vertex1 %p not in the graph %p\n",(void *)vertex1,(void *)graph));
         return DISTANCE_INFINITY;
     }
     /**
      * Verify that the second vertex belongs to the graph.
      */
     if (graph != vertex2->in_graph) {
-        SERVICE_OUTPUT((0,"service_graph_spf 2 Vertex2 %p not in the graph %p\n",(void *)vertex2,(void *)graph));
+        CCS_OUTPUT((0,"service_graph_spf 2 Vertex2 %p not in the graph %p\n",(void *)vertex2,(void *)graph));
         return DISTANCE_INFINITY;
     }
     /**
@@ -690,7 +690,7 @@ uint32_t service_graph_dijkstra(service_graph_t *graph, service_graph_vertex_t *
      * Verify that the reference vertex belongs to the graph.
      */
     if (graph != vertex->in_graph) {
-        SERVICE_OUTPUT((0,"opal:graph:dijkstra: vertex %p not in the graph %p\n",(void *)vertex,(void *)graph));
+        CCS_OUTPUT((0,"opal:graph:dijkstra: vertex %p not in the graph %p\n",(void *)vertex,(void *)graph));
         return 0;
     }
     /* get the order of the graph and allocate a working queue accordingly */

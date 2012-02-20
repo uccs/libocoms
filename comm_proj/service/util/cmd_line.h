@@ -407,7 +407,7 @@ BEGIN_C_DECLS
      * display (to allow for undocumented options).
      *
      * This function is typically only invoked internally by the
-     * service_show_help() function.
+     * orte_show_help() function.
      *
      * This function should probably be fixed up to produce prettier
      * output.

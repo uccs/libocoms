@@ -60,5 +60,7 @@ typedef enum {
 
 /* Pasha: dummy orte_show_help declaration */
 #define orte_show_help(A...)
+/* Pasha: dummy CCS_SOS_GET_ERROR_CODE */
+#define CCS_SOS_GET_ERROR_CODE(rc) rc
 
 #endif /* CCS_CONSTANTS_H */

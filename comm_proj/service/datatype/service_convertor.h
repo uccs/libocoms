@@ -41,9 +41,7 @@
 #include "ccs/include/ccs_constants.h"
 #include "service/datatype/service_datatype.h"
 #include "service/util/service_object.h"
-#if 0
 #include "service/include/service/prefetch.h"
-#endif
 
 BEGIN_C_DECLS
 /*

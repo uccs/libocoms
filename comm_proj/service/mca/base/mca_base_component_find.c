@@ -213,7 +213,7 @@ int mca_base_component_find(const char *directory, const char *type,
         if (service_list_get_end(found_components) == item) {
             char h[MAXHOSTNAMELEN];
             gethostname(h, sizeof(h));
-            ccs_show_help("help-mca-base.txt", 
+            orte_show_help("help-mca-base.txt", 
                            "find-available:not-valid", true,
                            h, type, requested_component_names[i]);
             return CCS_ERR_NOT_FOUND;

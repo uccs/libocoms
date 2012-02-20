@@ -174,7 +174,7 @@ static void add_to_env(char **params, char **values, char ***env)
 
     for (i = 0; NULL != params && NULL != params[i]; ++i) {
         name = mca_base_param_environ_variable(params[i], NULL, NULL);
-        ccs_setenv(name, values[i], true, env);
+        service_setenv(name, values[i], true, env);
         free(name);
     }
 }

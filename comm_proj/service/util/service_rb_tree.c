@@ -259,7 +259,7 @@ int service_rb_tree_delete(service_rb_tree_t *tree, void *key)
         btree_delete_fixup(tree, y);
     }
     item = (service_free_list_item_t *) todelete;
-    OMPI_FREE_LIST_RETURN(&(tree->free_list), item);
+    SERVICE_FREE_LIST_RETURN(&(tree->free_list), item);
     --tree->tree_size;
     return(CCS_SUCCESS);
 }
@@ -275,11 +275,11 @@ int service_rb_tree_destroy(service_rb_tree_t *tree)
     /* Now free the root -- root does not get free'd in the above
      * inorder destroy    */
     item = (service_free_list_item_t *) tree->root_ptr;
-    OMPI_FREE_LIST_RETURN(&(tree->free_list), item);
+    SERVICE_FREE_LIST_RETURN(&(tree->free_list), item);
 
     /* free the tree->nill node */
     item = (service_free_list_item_t *) tree->nill;
-    OMPI_FREE_LIST_RETURN(&(tree->free_list), item);
+    SERVICE_FREE_LIST_RETURN(&(tree->free_list), item);
     return(CCS_SUCCESS);
 }
 
@@ -424,14 +424,14 @@ inorder_destroy(service_rb_tree_t *tree, service_rb_tree_node_t * node)
     if (node->left != tree->nill) {
         item = (service_free_list_item_t *) node->left;
         --tree->tree_size;
-        OMPI_FREE_LIST_RETURN(&(tree->free_list), item);
+        SERVICE_FREE_LIST_RETURN(&(tree->free_list), item);
     }
 
     inorder_destroy(tree, node->right);
     if (node->right != tree->nill) {
         item = (service_free_list_item_t *) node->right;
         --tree->tree_size;
-        OMPI_FREE_LIST_RETURN(&(tree->free_list), item);
+        SERVICE_FREE_LIST_RETURN(&(tree->free_list), item);
     }
 }
 

@@ -982,7 +982,7 @@ static int fixup_files(char **file_list, char * path, bool rel_path_search) {
         /* Absolute paths preserved */
         if ( service_path_is_absolute(files[i]) ) {
             if( NULL == service_path_access(files[i], NULL, mode) ) {
-                ccs_show_help("help-mca-param.txt", "missing-param-file",
+                orte_show_help("help-mca-param.txt", "missing-param-file",
                                true, getpid(), files[i], path);
                 exit_status = CCS_ERROR;
                 goto cleanup;
@@ -1006,7 +1006,7 @@ static int fixup_files(char **file_list, char * path, bool rel_path_search) {
             }
 
             if( NULL == tmp_file ) {
-                ccs_show_help("help-mca-param.txt", "missing-param-file",
+                orte_show_help("help-mca-param.txt", "missing-param-file",
                                true, getpid(), files[i], cwd);
                 exit_status = CCS_ERROR;
                 goto cleanup;
@@ -1027,7 +1027,7 @@ static int fixup_files(char **file_list, char * path, bool rel_path_search) {
                 tmp_file = NULL;
             }
             else {
-                ccs_show_help("help-mca-param.txt", "missing-param-file",
+                orte_show_help("help-mca-param.txt", "missing-param-file",
                                true, getpid(), files[i], path);
                 exit_status = CCS_ERROR;
                 goto cleanup;
@@ -1728,7 +1728,7 @@ static bool param_lookup(size_t index, mca_base_param_storage_t *storage,
         if (lookup_override(&array[index], storage) ||
              lookup_env(&array[index], storage) ||
              lookup_file(&array[index], storage, source_file)) {
-            ccs_show_help("help-mca-param.txt", "read-only-param-set",
+            orte_show_help("help-mca-param.txt", "read-only-param-set",
                            true, array[index].mbp_full_name);
         }
 
@@ -1866,7 +1866,7 @@ static bool lookup_env(mca_base_param_t *param,
         }
 
         if (print_deprecated_warning) {
-            ccs_show_help("help-mca-param.txt", "deprecated mca param env",
+            orte_show_help("help-mca-param.txt", "deprecated mca param env",
                            true, deprecated_name);
         }
         return true;
@@ -1977,7 +1977,7 @@ static bool lookup_file(mca_base_param_t *param,
 
             /* Print the deprecated warning, if applicable */
             if (print_deprecated_warning) {
-                ccs_show_help("help-mca-param.txt",
+                orte_show_help("help-mca-param.txt",
                                "deprecated mca param file",
                                true, deprecated_name);
             }

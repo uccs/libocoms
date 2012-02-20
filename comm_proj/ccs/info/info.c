@@ -210,7 +210,7 @@ int ccs_info_get (ccs_info_t *info, char *key, int valuelen,
           if (value_length < valuelen ) {
                strcpy(value, search->ie_value);
           } else {
-               service_strncpy(value, search->ie_value, valuelen);
+               strncpy(value, search->ie_value, valuelen);
                value[valuelen] = 0;
           }
     }
