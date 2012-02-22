@@ -67,4 +67,6 @@ enum {
     AM_TAG_OPENIB = 1,
 };
 
+#define CCS_MODEX_TAG 100 
+
 #endif /* CCS_CONSTANTS_H */
