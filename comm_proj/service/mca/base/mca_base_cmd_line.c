@@ -45,7 +45,7 @@ static void add_to_env(char **params, char **values, char ***env);
 /*
  * Add -mca to the possible command line options list
  */
-int mca_base_cmd_line_setup(service_cmd_line_t *cmd)
+int ccs_mca_base_cmd_line_setup(service_cmd_line_t *cmd)
 {
     int ret = CCS_SUCCESS;
 
@@ -81,7 +81,7 @@ int mca_base_cmd_line_setup(service_cmd_line_t *cmd)
 /*
  * Look for and handle any -mca options on the command line
  */
-int mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
+int ccs_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
                                    char ***context_env, char ***global_env)
 {
   int i, num_insts;
@@ -173,7 +173,7 @@ static void add_to_env(char **params, char **values, char ***env)
        vars of the form OMPI_MCA_*=value. */
 
     for (i = 0; NULL != params && NULL != params[i]; ++i) {
-        name = mca_base_param_environ_variable(params[i], NULL, NULL);
+        name = ccs_mca_base_param_environ_variable(params[i], NULL, NULL);
         service_setenv(name, values[i], true, env);
         free(name);
     }

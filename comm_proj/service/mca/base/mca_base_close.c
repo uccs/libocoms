@@ -30,29 +30,29 @@
 /*
  * Main MCA shutdown.
  */
-int mca_base_close(void)
+int ccs_mca_base_close(void)
 {
-  extern bool mca_base_opened;
-  if (mca_base_opened) {
+  extern bool ccs_mca_base_opened;
+  if (ccs_mca_base_opened) {
 
       /* release the default paths */
-      if (NULL != mca_base_system_default_path) {
-          free(mca_base_system_default_path);
+      if (NULL != ccs_mca_base_system_default_path) {
+          free(ccs_mca_base_system_default_path);
       }
-      if (NULL != mca_base_user_default_path) {
-          free(mca_base_user_default_path);
+      if (NULL != ccs_mca_base_user_default_path) {
+          free(ccs_mca_base_user_default_path);
       }
       
     /* Close down the component repository */
-    mca_base_component_repository_finalize();
+    ccs_mca_base_component_repository_finalize();
 
     /* Shut down the dynamic component finder */
-    mca_base_component_find_finalize();
+    ccs_mca_base_component_find_finalize();
 
     /* Close opal output stream 0 */
     service_output_close(0);
   }
-  mca_base_opened = false;
+  ccs_mca_base_opened = false;
 
   /* All done */
 

@@ -63,7 +63,7 @@
  *   possibility of loading an MCA v1.0 binary component in Open MPI
  *   v1.3 or beyond (source compatibility is much easier -- the binary
  *   "refuse to load MCA components <v2.0.0" policy is enforced in
- *   mca_base_component_find.c).
+ *   ccs_mca_base_component_find.c).
  *
  *   ***IF YOU NEED BACKWARDS BINARY COMPATIBILITY, please let us
  *   know!***
@@ -98,14 +98,14 @@
  * particular version of a specific framework, and to publish its own
  * name and version.
  */
-struct mca_base_module_2_0_0_t {
+struct ccs_mca_base_module_2_0_0_t {
     int dummy_value;
 };
 /** Unversioned convenience typedef; use this name in
     frameworks/components to stay forward source-compatible */
-typedef struct mca_base_module_2_0_0_t mca_base_module_t;
+typedef struct ccs_mca_base_module_2_0_0_t ccs_mca_base_module_t;
 /** Versioned convenience typedef */
-typedef struct mca_base_module_2_0_0_t mca_base_module_2_0_0_t;
+typedef struct ccs_mca_base_module_2_0_0_t ccs_mca_base_module_2_0_0_t;
 
 
 /**
@@ -125,7 +125,7 @@ typedef struct mca_base_module_2_0_0_t mca_base_module_2_0_0_t;
  * All MCA components can have an "open" function that is invoked once
  * per process, when the component is located and loaded.  This function
  * should register any MCA parameters (using
- * mca_base_param_register_int() and mca_base_param_register_string())
+ * ccs_mca_base_param_register_int() and ccs_mca_base_param_register_string())
  * that will be used by the component.  Parameter registrations should
  * occur in this function because the ompi_info command can be used by
  * users to display all available MCA parameters (and their default
@@ -148,7 +148,7 @@ typedef struct mca_base_module_2_0_0_t mca_base_module_2_0_0_t;
  * function.  In this cause, the MCA will act as if it called the open
  * function and it returned MCA_SUCCESS.
  */
-typedef int (*mca_base_open_component_1_0_0_fn_t)(void);
+typedef int (*ccs_mca_base_open_component_1_0_0_fn_t)(void);
 
 /** 
  * MCA component close function.
@@ -171,7 +171,7 @@ typedef int (*mca_base_open_component_1_0_0_fn_t)(void);
  * this function.  In this case, the MCA will act as if it called the
  * close function and it returned MCA_SUCCESS.
  */
-typedef int (*mca_base_close_component_1_0_0_fn_t)(void);
+typedef int (*ccs_mca_base_close_component_1_0_0_fn_t)(void);
 
 /** 
  * MCA component query function.
@@ -185,12 +185,12 @@ typedef int (*mca_base_close_component_1_0_0_fn_t)(void);
  *
  * @param priority The priority of this component.
  *
- * This function is used by the mca_base_select function to find the
+ * This function is used by the ccs_mca_base_select function to find the
  * highest priority component to select. Frameworks are free to
  * implement their own query function, but must also implment their
  * own select function as a result.
  */
-typedef int (*mca_base_query_component_2_0_0_fn_t)(mca_base_module_2_0_0_t **module, int *priority);
+typedef int (*ccs_mca_base_query_component_2_0_0_fn_t)(ccs_mca_base_module_2_0_0_t **module, int *priority);
 
 /**
  * MCA component parameter registration function.
@@ -228,7 +228,7 @@ typedef int (*mca_base_query_component_2_0_0_fn_t)(mca_base_module_2_0_0_t **mod
  * function.  In this cause, the MCA will act as if it called the
  * registration function and it returned MCA_SUCCESS.
  */
-typedef int (*mca_base_register_component_params_2_0_0_fn_t)(void);
+typedef int (*ccs_mca_base_register_component_params_2_0_0_fn_t)(void);
 
 
 /**
@@ -248,7 +248,7 @@ typedef int (*mca_base_register_component_params_2_0_0_fn_t)(void);
  * particular version of a specific framework, and to publish its own
  * name and version.
  */
-struct mca_base_component_2_0_0_t {
+struct ccs_mca_base_component_2_0_0_t {
 
   int mca_major_version; 
   /**< Major number of the MCA. */
@@ -278,13 +278,13 @@ struct mca_base_component_2_0_0_t {
   int mca_component_release_version;
   /**< This component's release version number. */
   
-  mca_base_open_component_1_0_0_fn_t mca_open_component;
+  ccs_mca_base_open_component_1_0_0_fn_t mca_open_component;
   /**< Method for opening this component. */
-  mca_base_close_component_1_0_0_fn_t mca_close_component;
+  ccs_mca_base_close_component_1_0_0_fn_t mca_close_component;
   /**< Method for closing this component. */
-  mca_base_query_component_2_0_0_fn_t mca_query_component;
+  ccs_mca_base_query_component_2_0_0_fn_t mca_query_component;
   /**< Method for querying this component. */
-  mca_base_register_component_params_2_0_0_fn_t mca_register_component_params;
+  ccs_mca_base_register_component_params_2_0_0_fn_t mca_register_component_params;
   /**< Method for registering the component's MCA parameters */
 
   /** Extra space to allow for expansion in the future without
@@ -293,9 +293,9 @@ struct mca_base_component_2_0_0_t {
 };
 /** Unversioned convenience typedef; use this name in
     frameworks/components to stay forward source-compatible */
-typedef struct mca_base_component_2_0_0_t mca_base_component_t;
+typedef struct ccs_mca_base_component_2_0_0_t ccs_mca_base_component_t;
 /** Versioned convenience typedef */
-typedef struct mca_base_component_2_0_0_t mca_base_component_2_0_0_t;
+typedef struct ccs_mca_base_component_2_0_0_t ccs_mca_base_component_2_0_0_t;
 
 /*
  * Metadata Bit field parameters
@@ -307,7 +307,7 @@ typedef struct mca_base_component_2_0_0_t mca_base_component_2_0_0_t;
 /**
  * Meta data for MCA v2.0.0 components.
  */
-struct mca_base_component_data_2_0_0_t {
+struct ccs_mca_base_component_data_2_0_0_t {
     uint32_t param_field;
     /**< Metadata parameter bit field filled in by the parameters
          defined above */
@@ -318,9 +318,9 @@ struct mca_base_component_data_2_0_0_t {
 };
 /** Unversioned convenience typedef; use this name in
     frameworks/components to stay forward source-compatible */
-typedef struct mca_base_component_data_2_0_0_t mca_base_component_data_t;
+typedef struct ccs_mca_base_component_data_2_0_0_t ccs_mca_base_component_data_t;
 /** Versioned convenience typedef */
-typedef struct mca_base_component_data_2_0_0_t mca_base_component_data_2_0_0_t;
+typedef struct ccs_mca_base_component_data_2_0_0_t ccs_mca_base_component_data_2_0_0_t;
 
 /**
  * Macro for framework author convenience.  

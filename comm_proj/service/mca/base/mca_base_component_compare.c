@@ -25,7 +25,7 @@
 
 
 /*
- * Function for comparing two mca_base_component_priority_t structs so
+ * Function for comparing two ccs_mca_base_component_priority_t structs so
  * that we can build prioritized listss of them.  This assumed that
  * the types of the modules are the same.  Sort first by priority,
  * second by module name, third by module version.
@@ -37,8 +37,8 @@
  * :-)
  */
 int 
-mca_base_component_compare_priority(mca_base_component_priority_list_item_t *a,
-                                    mca_base_component_priority_list_item_t *b)
+ccs_mca_base_component_compare_priority(ccs_mca_base_component_priority_list_item_t *a,
+                                    ccs_mca_base_component_priority_list_item_t *b)
 {
   /* First, compare the priorties */
 
@@ -47,14 +47,14 @@ mca_base_component_compare_priority(mca_base_component_priority_list_item_t *a,
   } else if (a->cpli_priority < b->cpli_priority) {
     return 1;
   } else {
-    return mca_base_component_compare(a->super.cli_component,
+    return ccs_mca_base_component_compare(a->super.cli_component,
                                       b->super.cli_component);
   }
 }
 
 
-int mca_base_component_compare(const mca_base_component_t* aa, 
-                               const mca_base_component_t* bb)
+int ccs_mca_base_component_compare(const ccs_mca_base_component_t* aa, 
+                               const ccs_mca_base_component_t* bb)
 {
     int val;
 
@@ -100,9 +100,9 @@ int mca_base_component_compare(const mca_base_component_t* aa,
  * compare but exclude the release version - declare compatible 
  * if the major/minor version are the same.
  */
-int mca_base_component_compatible(
-    const mca_base_component_t* aa, 
-    const mca_base_component_t* bb)
+int ccs_mca_base_component_compatible(
+    const ccs_mca_base_component_t* aa, 
+    const ccs_mca_base_component_t* bb)
 {
     int val;
 
@@ -140,7 +140,7 @@ int mca_base_component_compatible(
  * Returns a string which represents the component name and version.
  * Has the form: comp_type.comp_name.major_version.minor_version
  */
-char * mca_base_component_to_string(const mca_base_component_t *a) {
+char * ccs_mca_base_component_to_string(const ccs_mca_base_component_t *a) {
     char * str = NULL;
     if(0 > asprintf(&str, "%s.%s.%d.%d", a->mca_type_name, 
                     a->mca_component_name, a->mca_component_major_version,

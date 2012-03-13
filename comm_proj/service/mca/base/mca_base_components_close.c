@@ -25,13 +25,13 @@
 #include "service/mca/base/mca_base_component_repository.h"
 #include "ccs/include/ccs_constants.h"
 
-int mca_base_components_close(int output_id, 
+int ccs_mca_base_components_close(int output_id, 
                               service_list_t *components_available, 
-                              const mca_base_component_t *skip)
+                              const ccs_mca_base_component_t *skip)
 {
   service_list_item_t *item;
-  mca_base_component_priority_list_item_t *pcli, *skipped_pcli = NULL;
-  const mca_base_component_t *component;
+  ccs_mca_base_component_priority_list_item_t *pcli, *skipped_pcli = NULL;
+  const ccs_mca_base_component_t *component;
 
   /* Close and unload all components in the available list, except the
      "skip" item.  This is handy to close out all non-selected
@@ -41,7 +41,7 @@ int mca_base_components_close(int output_id,
   for (item = service_list_remove_first(components_available);
        NULL != item; 
        item = service_list_remove_first(components_available)) {
-    pcli = (mca_base_component_priority_list_item_t *) item;
+    pcli = (ccs_mca_base_component_priority_list_item_t *) item;
     component = pcli->super.cli_component;
 
     if (component != skip) {
@@ -61,7 +61,7 @@ int mca_base_components_close(int output_id,
       service_output_verbose(10, output_id, 
                           "mca: base: close: unloading component %s",
                          component->mca_component_name);
-      mca_base_component_repository_release((mca_base_component_t *) component);
+      ccs_mca_base_component_repository_release((ccs_mca_base_component_t *) component);
       free(pcli);
     } else {
       skipped_pcli = pcli;

@@ -78,15 +78,15 @@ typedef struct {
 /*
  * Public variables
  *
- * This variable is public, but not advertised in mca_base_param.h.
+ * This variable is public, but not advertised in ccs_mca_base_param.h.
  * It's only public so that the file parser can see it.
  */
-service_list_t mca_base_param_file_values;
+service_list_t ccs_mca_base_param_file_values;
 
 /*
  * local variables
  */
-static service_value_array_t mca_base_params;
+static service_value_array_t ccs_mca_base_params;
 static const char *mca_prefix = "OMPI_MCA_";
 static char *home = NULL;
 static char *cwd  = NULL;
@@ -105,51 +105,51 @@ static int param_register(const char *type_name,
                           const char *component_name,
                           const char *param_name,
                           const char *help_msg,
-                          mca_base_param_type_t type,
+                          ccs_mca_base_param_type_t type,
                           bool internal,
                           bool read_only,
-                          mca_base_param_storage_t *default_value,
-                          mca_base_param_storage_t *file_value,
-                          mca_base_param_storage_t *override_value,
-                          mca_base_param_storage_t *current_value);
+                          ccs_mca_base_param_storage_t *default_value,
+                          ccs_mca_base_param_storage_t *file_value,
+                          ccs_mca_base_param_storage_t *override_value,
+                          ccs_mca_base_param_storage_t *current_value);
 static int syn_register(int index_orig, const char *syn_type_name,
                         const char *syn_component_name,
                         const char *syn_param_name, bool deprecated);
-static bool param_lookup(size_t index, mca_base_param_storage_t *storage,
+static bool param_lookup(size_t index, ccs_mca_base_param_storage_t *storage,
                          service_hash_table_t *attrs,
-                         mca_base_param_source_t *source,
+                         ccs_mca_base_param_source_t *source,
                          char **source_file);
 static bool param_set_override(size_t index, 
-                               mca_base_param_storage_t *storage,
-                               mca_base_param_type_t type);
-static bool lookup_override(mca_base_param_t *param,
-                            mca_base_param_storage_t *storage);
-static bool lookup_env(mca_base_param_t *param,
-                       mca_base_param_storage_t *storage);
-static bool lookup_file(mca_base_param_t *param,
-                        mca_base_param_storage_t *storage,
+                               ccs_mca_base_param_storage_t *storage,
+                               ccs_mca_base_param_type_t type);
+static bool lookup_override(ccs_mca_base_param_t *param,
+                            ccs_mca_base_param_storage_t *storage);
+static bool lookup_env(ccs_mca_base_param_t *param,
+                       ccs_mca_base_param_storage_t *storage);
+static bool lookup_file(ccs_mca_base_param_t *param,
+                        ccs_mca_base_param_storage_t *storage,
                         char **source_file);
-static bool lookup_default(mca_base_param_t *param,
-                           mca_base_param_storage_t *storage);
-static bool set(mca_base_param_type_t type,
-                mca_base_param_storage_t *dest, mca_base_param_storage_t *src);
-static void param_constructor(mca_base_param_t *p);
-static void param_destructor(mca_base_param_t *p);
-static void fv_constructor(mca_base_param_file_value_t *p);
-static void fv_destructor(mca_base_param_file_value_t *p);
-static void info_constructor(mca_base_param_info_t *p);
-static void info_destructor(mca_base_param_info_t *p);
+static bool lookup_default(ccs_mca_base_param_t *param,
+                           ccs_mca_base_param_storage_t *storage);
+static bool set(ccs_mca_base_param_type_t type,
+                ccs_mca_base_param_storage_t *dest, ccs_mca_base_param_storage_t *src);
+static void param_constructor(ccs_mca_base_param_t *p);
+static void param_destructor(ccs_mca_base_param_t *p);
+static void fv_constructor(ccs_mca_base_param_file_value_t *p);
+static void fv_destructor(ccs_mca_base_param_file_value_t *p);
+static void info_constructor(ccs_mca_base_param_info_t *p);
+static void info_destructor(ccs_mca_base_param_info_t *p);
 static void syn_info_constructor(syn_info_t *si);
 static void syn_info_destructor(syn_info_t *si);
 
 /*
- * Make the class instance for mca_base_param_t
+ * Make the class instance for ccs_mca_base_param_t
  */
-OBJ_CLASS_INSTANCE(mca_base_param_t, service_object_t, 
+OBJ_CLASS_INSTANCE(ccs_mca_base_param_t, service_object_t, 
                    param_constructor, param_destructor);
-OBJ_CLASS_INSTANCE(mca_base_param_file_value_t, service_list_item_t,
+OBJ_CLASS_INSTANCE(ccs_mca_base_param_file_value_t, service_list_item_t,
                    fv_constructor, fv_destructor);
-OBJ_CLASS_INSTANCE(mca_base_param_info_t, service_list_item_t,
+OBJ_CLASS_INSTANCE(ccs_mca_base_param_info_t, service_list_item_t,
                    info_constructor, info_destructor);
 OBJ_CLASS_INSTANCE(syn_info_t, service_list_item_t,
                    syn_info_constructor, syn_info_destructor);
@@ -157,30 +157,30 @@ OBJ_CLASS_INSTANCE(syn_info_t, service_list_item_t,
 /*
  * Set it up
  */
-int mca_base_param_init(void)
+int ccs_mca_base_param_init(void)
 {
     if (!initialized) {
 
         /* Init the value array for the param storage */
 
-        OBJ_CONSTRUCT(&mca_base_params, service_value_array_t);
-        service_value_array_init(&mca_base_params, sizeof(mca_base_param_t));
+        OBJ_CONSTRUCT(&ccs_mca_base_params, service_value_array_t);
+        service_value_array_init(&ccs_mca_base_params, sizeof(ccs_mca_base_param_t));
 
         /* Init the file param value list */
 
-        OBJ_CONSTRUCT(&mca_base_param_file_values, service_list_t);
+        OBJ_CONSTRUCT(&ccs_mca_base_param_file_values, service_list_t);
 
         /* Set this before we register the parameter, below */
 
         initialized = true; 
 
-        mca_base_param_recache_files(false);
+        ccs_mca_base_param_recache_files(false);
     }
 
     return CCS_SUCCESS;
 }
 
-int mca_base_param_recache_files(bool rel_path_search)
+int ccs_mca_base_param_recache_files(bool rel_path_search)
 {
     int id;
     char *files, *new_files = NULL, *new_agg_files = NULL;
@@ -209,7 +209,7 @@ int mca_base_param_recache_files(bool rel_path_search)
     /* Initialize a parameter that says where MCA param files can
        be found */
 
-    id = mca_base_param_reg_string_name("mca", "param_files",
+    id = ccs_mca_base_param_reg_string_name("mca", "param_files",
                                         "Path for MCA configuration files containing default parameter values",
                                         false, false, files, &new_files);
 
@@ -217,18 +217,18 @@ int mca_base_param_recache_files(bool rel_path_search)
      * A prefix search path to look up aggregate MCA parameter file
      * requests that do not specify an absolute path
      */
-    id = mca_base_param_reg_string_name("mca", "base_param_file_prefix",
+    id = ccs_mca_base_param_reg_string_name("mca", "base_param_file_prefix",
                                         "Aggregate MCA parameter file sets",
                                         false, false, NULL, &new_agg_files);
     
     asprintf(&agg_default_path,
              "%s"CCS_PATH_SEP"llc-param-sets%c%s",
              service_install_dirs.pkgdatadir, CCS_ENV_SEP, cwd);
-    id = mca_base_param_reg_string_name("mca", "base_param_file_path",
+    id = ccs_mca_base_param_reg_string_name("mca", "base_param_file_path",
                                         "Aggregate MCA parameter Search path",
                                         false, false, agg_default_path, &new_agg_path);
 
-    id = mca_base_param_reg_string_name("mca", "base_param_file_path_force",
+    id = ccs_mca_base_param_reg_string_name("mca", "base_param_file_path_force",
                                         "Forced Aggregate MCA parameter Search path",
                                         false, false, NULL, &force_agg_path);
 
@@ -297,7 +297,7 @@ int mca_base_param_recache_files(bool rel_path_search)
 /*
  * Register an integer MCA parameter 
  */
-int mca_base_param_reg_int(const mca_base_component_t *component,
+int ccs_mca_base_param_reg_int(const ccs_mca_base_component_t *component,
                            const char *param_name, 
                            const char *help_msg,
                            bool internal,
@@ -306,8 +306,8 @@ int mca_base_param_reg_int(const mca_base_component_t *component,
                            int *current_value)
 {
     int ret;
-    mca_base_param_storage_t storage;
-    mca_base_param_storage_t lookup;
+    ccs_mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t lookup;
 
     storage.intval = default_value;
     ret = param_register(component->mca_type_name, 
@@ -326,7 +326,7 @@ int mca_base_param_reg_int(const mca_base_component_t *component,
  * Register an integer MCA parameter that is not associated with a
  * component
  */
-int mca_base_param_reg_int_name(const char *type,
+int ccs_mca_base_param_reg_int_name(const char *type,
                                 const char *param_name, 
                                 const char *help_msg,
                                 bool internal,
@@ -335,8 +335,8 @@ int mca_base_param_reg_int_name(const char *type,
                                 int *current_value)
 {
     int ret;
-    mca_base_param_storage_t storage;
-    mca_base_param_storage_t lookup;
+    ccs_mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t lookup;
 
     storage.intval = default_value;
     ret = param_register(type, NULL, param_name, help_msg, 
@@ -352,7 +352,7 @@ int mca_base_param_reg_int_name(const char *type,
 /*
  * Register a string MCA parameter.
  */
-int mca_base_param_reg_string(const mca_base_component_t *component,
+int ccs_mca_base_param_reg_string(const ccs_mca_base_component_t *component,
                               const char *param_name, 
                               const char *help_msg,
                               bool internal,
@@ -361,8 +361,8 @@ int mca_base_param_reg_string(const mca_base_component_t *component,
                               char **current_value)
 {
     int ret;
-    mca_base_param_storage_t storage;
-    mca_base_param_storage_t lookup;
+    ccs_mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t lookup;
     
     if (NULL != default_value) {
         storage.stringval = (char *) default_value;
@@ -386,7 +386,7 @@ int mca_base_param_reg_string(const mca_base_component_t *component,
  * Register a string MCA parameter that is not associated with a
  * component
  */
-int mca_base_param_reg_string_name(const char *type,
+int ccs_mca_base_param_reg_string_name(const char *type,
                                    const char *param_name, 
                                    const char *help_msg,
                                    bool internal,
@@ -395,8 +395,8 @@ int mca_base_param_reg_string_name(const char *type,
                                    char **current_value)
 {
     int ret;
-    mca_base_param_storage_t storage;
-    mca_base_param_storage_t lookup;
+    ccs_mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t lookup;
     
     if (NULL != default_value) {
         storage.stringval = (char *) default_value;
@@ -418,14 +418,14 @@ int mca_base_param_reg_string_name(const char *type,
  * Register an integer MCA parameter 
  * (deprecated)
  */
-int mca_base_param_register_int(const char *type_name, 
+int ccs_mca_base_param_register_int(const char *type_name, 
                                 const char *component_name,
                                 const char *param_name, 
                                 const char *mca_param_name, 
                                 int default_value)
 {
     int ret;
-    mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t storage;
 
     storage.intval = default_value;
     ret = param_register(type_name, component_name, param_name, mca_param_name,
@@ -439,14 +439,14 @@ int mca_base_param_register_int(const char *type_name,
  * Register a string MCA parameter.
  * (deprecated)
  */
-int mca_base_param_register_string(const char *type_name, 
+int ccs_mca_base_param_register_string(const char *type_name, 
                                    const char *component_name,
                                    const char *param_name, 
                                    const char *mca_param_name,
                                    const char *default_value)
 {
     int ret;
-    mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t storage;
 
     if (NULL != default_value) {
         storage.stringval = (char *) default_value;
@@ -463,8 +463,8 @@ int mca_base_param_register_string(const char *type_name,
 /*
  * Register a synonym name for an existing MCA parameter
  */
-int mca_base_param_reg_syn(int index_orig,
-                           const mca_base_component_t *syn_component,
+int ccs_mca_base_param_reg_syn(int index_orig,
+                           const ccs_mca_base_component_t *syn_component,
                            const char *syn_param_name, bool deprecated)
 {
     return syn_register(index_orig,
@@ -476,7 +476,7 @@ int mca_base_param_reg_syn(int index_orig,
 /*
  * Register a synonym name for an existing MCA parameter
  */
-int mca_base_param_reg_syn_name(int index_orig,
+int ccs_mca_base_param_reg_syn_name(int index_orig,
                                 const char *syn_type_name,
                                 const char *syn_param_name, bool deprecated)
 {
@@ -487,9 +487,9 @@ int mca_base_param_reg_syn_name(int index_orig,
 /*
  * Look up an integer MCA parameter.
  */
-int mca_base_param_lookup_int(int index, int *value)
+int ccs_mca_base_param_lookup_int(int index, int *value)
 {
-  mca_base_param_storage_t storage;
+  ccs_mca_base_param_storage_t storage;
   
   if (param_lookup(index, &storage, NULL, NULL, NULL)) {
     *value = storage.intval;
@@ -502,11 +502,11 @@ int mca_base_param_lookup_int(int index, int *value)
 /*
  * Set an integer parameter
  */
-int mca_base_param_set_int(int index, int value)
+int ccs_mca_base_param_set_int(int index, int value)
 {
-    mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t storage;
 
-    mca_base_param_unset(index);
+    ccs_mca_base_param_unset(index);
     storage.intval = value;
     param_set_override(index, &storage, MCA_BASE_PARAM_TYPE_INT);
     return CCS_SUCCESS;
@@ -515,25 +515,25 @@ int mca_base_param_set_int(int index, int value)
 /*
  * Deregister a parameter
  */
-int mca_base_param_deregister(int index)
+int ccs_mca_base_param_deregister(int index)
 {
     size_t size;
 
     /* Lookup the index and see if it's valid */
-    size = service_value_array_get_size(&mca_base_params);
+    size = service_value_array_get_size(&ccs_mca_base_params);
     if (index < 0 || ((size_t) index) > size) {
         return CCS_ERROR;
     }
 
-    return service_value_array_remove_item(&mca_base_params, index);
+    return service_value_array_remove_item(&ccs_mca_base_params, index);
 }
 
 /*
  * Look up a string MCA parameter.
  */
-int mca_base_param_lookup_string(int index, char **value)
+int ccs_mca_base_param_lookup_string(int index, char **value)
 {
-  mca_base_param_storage_t storage;
+  ccs_mca_base_param_storage_t storage;
   
   if (param_lookup(index, &storage, NULL, NULL, NULL)) {
     *value = storage.stringval;
@@ -546,11 +546,11 @@ int mca_base_param_lookup_string(int index, char **value)
 /*
  * Set an string parameter
  */
-int mca_base_param_set_string(int index, char *value)
+int ccs_mca_base_param_set_string(int index, char *value)
 {
-    mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t storage;
 
-    mca_base_param_unset(index);
+    ccs_mca_base_param_unset(index);
     storage.stringval = value;
     param_set_override(index, &storage, MCA_BASE_PARAM_TYPE_STRING);
     return CCS_SUCCESS;
@@ -560,9 +560,9 @@ int mca_base_param_set_string(int index, char *value)
 /*
  * Lookup the source of an MCA param's value
  */
-int mca_base_param_lookup_source(int index, mca_base_param_source_t *source, char **source_file)
+int ccs_mca_base_param_lookup_source(int index, ccs_mca_base_param_source_t *source, char **source_file)
 {
-    mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t storage;
   
     if (param_lookup(index, &storage, NULL, source, source_file)) {
         return CCS_SUCCESS;
@@ -573,16 +573,16 @@ int mca_base_param_lookup_source(int index, mca_base_param_source_t *source, cha
 /*
  * Unset a parameter
  */
-int mca_base_param_unset(int index)
+int ccs_mca_base_param_unset(int index)
 {
     size_t len;
-    mca_base_param_t *array;
+    ccs_mca_base_param_t *array;
 
     if (!initialized) {
         return CCS_ERROR;
     }
 
-    len = service_value_array_get_size(&mca_base_params);
+    len = service_value_array_get_size(&ccs_mca_base_params);
     if (index < 0 || ((size_t) index) > len) {
         return CCS_ERROR;
     }
@@ -591,7 +591,7 @@ int mca_base_param_unset(int index)
        parameters, so if the index is >0 and <len, it must be good),
        so save the internal flag */
 
-    array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+    array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
     if (array[index].mbp_override_value_set) {
         if (MCA_BASE_PARAM_TYPE_STRING == array[index].mbp_type &&
             NULL != array[index].mbp_override_value.stringval) {
@@ -607,7 +607,7 @@ int mca_base_param_unset(int index)
 }
 
 
-char *mca_base_param_env_var(const char *param_name)
+char *ccs_mca_base_param_env_var(const char *param_name)
 {
     char *name;
 
@@ -619,22 +619,22 @@ char *mca_base_param_env_var(const char *param_name)
 /*
  * Make a string suitable for the environment, setting an MCA param
  */
-char *mca_base_param_environ_variable(const char *type,
+char *ccs_mca_base_param_environ_variable(const char *type,
                                       const char *component,
                                       const char *param)
 {
     size_t len;
     int id;
     char *ret = NULL, *name;
-    mca_base_param_t *array;
+    ccs_mca_base_param_t *array;
 
     if (NULL == type) {
         return NULL;
     }
 
-    id = mca_base_param_find(type, component, param);
+    id = ccs_mca_base_param_find(type, component, param);
     if (0 <= id) {
-        array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+        array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
         ret = strdup(array[id].mbp_env_var_name);
     } else {
         len = strlen(mca_prefix) + strlen(type) + 16;
@@ -670,11 +670,11 @@ char *mca_base_param_environ_variable(const char *type,
 /*
  * Find the index for an MCA parameter based on its names.
  */
-int mca_base_param_find(const char *type_name, const char *component_name, 
+int ccs_mca_base_param_find(const char *type_name, const char *component_name, 
                         const char *param_name) 
 {
   size_t i, size;
-  mca_base_param_t *array;
+  ccs_mca_base_param_t *array;
 
   /* Check for bozo cases */
 
@@ -685,8 +685,8 @@ int mca_base_param_find(const char *type_name, const char *component_name,
   /* Loop through looking for a parameter of a given
      type/component/param */
 
-  size = service_value_array_get_size(&mca_base_params);
-  array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+  size = service_value_array_get_size(&ccs_mca_base_params);
+  array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
   for (i = 0; i < size; ++i) {
     if (((NULL == type_name && NULL == array[i].mbp_type_name) ||
          (NULL != type_name && NULL != array[i].mbp_type_name &&
@@ -707,10 +707,10 @@ int mca_base_param_find(const char *type_name, const char *component_name,
 }
 
 
-int mca_base_param_set_internal(int index, bool internal)
+int ccs_mca_base_param_set_internal(int index, bool internal)
 {
     size_t len;
-    mca_base_param_t *array;
+    ccs_mca_base_param_t *array;
 
     /* Check for bozo cases */
     
@@ -718,7 +718,7 @@ int mca_base_param_set_internal(int index, bool internal)
         return CCS_ERROR;
     }
 
-    len = service_value_array_get_size(&mca_base_params);
+    len = service_value_array_get_size(&ccs_mca_base_params);
     if (((size_t) index) > len) {
         return CCS_ERROR;
     }
@@ -727,7 +727,7 @@ int mca_base_param_set_internal(int index, bool internal)
        parameters, so if the index is >0 and <len, it must be good),
        so save the internal flag */
 
-    array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+    array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
     array[index].mbp_internal = internal;
   
     /* All done */
@@ -739,11 +739,11 @@ int mca_base_param_set_internal(int index, bool internal)
 /*
  * Return a list of info of all currently registered parameters
  */
-int mca_base_param_dump(service_list_t **info, bool internal)
+int ccs_mca_base_param_dump(service_list_t **info, bool internal)
 {
     size_t i, j, len;
-    mca_base_param_info_t *p, *q;
-    mca_base_param_t *array;
+    ccs_mca_base_param_info_t *p, *q;
+    ccs_mca_base_param_t *array;
     service_list_item_t *item;
     syn_info_t *si;
 
@@ -760,11 +760,11 @@ int mca_base_param_dump(service_list_t **info, bool internal)
 
     /* Iterate through all the registered parameters */
 
-    len = service_value_array_get_size(&mca_base_params);
-    array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+    len = service_value_array_get_size(&ccs_mca_base_params);
+    array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
     for (i = 0; i < len; ++i) {
         if (array[i].mbp_internal == internal || internal) {
-            p = OBJ_NEW(mca_base_param_info_t);
+            p = OBJ_NEW(ccs_mca_base_param_info_t);
             if (NULL == p) {
                 return CCS_ERR_OUT_OF_RESOURCE;
             }
@@ -787,7 +787,7 @@ int mca_base_param_dump(service_list_t **info, bool internal)
                 !service_list_is_empty(array[i].mbp_synonyms)) {
                 p->mbpp_synonyms_len = 
                     (int) service_list_get_size(array[i].mbp_synonyms);
-                p->mbpp_synonyms = malloc(sizeof(mca_base_param_info_t*) *
+                p->mbpp_synonyms = malloc(sizeof(ccs_mca_base_param_info_t*) *
                                           p->mbpp_synonyms_len);
                 if (NULL == p->mbpp_synonyms) {
                     p->mbpp_synonyms_len = 0;
@@ -798,7 +798,7 @@ int mca_base_param_dump(service_list_t **info, bool internal)
                      service_list_get_end(array[i].mbp_synonyms) != item;
                      ++j, item = service_list_get_next(item)) {
                     si = (syn_info_t*) item;
-                    q = OBJ_NEW(mca_base_param_info_t);
+                    q = OBJ_NEW(ccs_mca_base_param_info_t);
                     if (NULL == q) {
                         return CCS_ERR_OUT_OF_RESOURCE;
                     }
@@ -836,12 +836,12 @@ int mca_base_param_dump(service_list_t **info, bool internal)
 /*
  * Make an argv-style list of strings suitable for an environment
  */
-int mca_base_param_build_env(char ***env, int *num_env, bool internal)
+int ccs_mca_base_param_build_env(char ***env, int *num_env, bool internal)
 {
     size_t i, len;
-    mca_base_param_t *array;
+    ccs_mca_base_param_t *array;
     char *str;
-    mca_base_param_storage_t storage;
+    ccs_mca_base_param_storage_t storage;
 
     /* Check for bozo cases */
     
@@ -851,8 +851,8 @@ int mca_base_param_build_env(char ***env, int *num_env, bool internal)
 
     /* Iterate through all the registered parameters */
 
-    len = service_value_array_get_size(&mca_base_params);
-    array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+    len = service_value_array_get_size(&ccs_mca_base_params);
+    array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
     for (i = 0; i < len; ++i) {
         /* Don't output read-only values */
         if (array[i].mbp_read_only) {
@@ -901,9 +901,9 @@ int mca_base_param_build_env(char ***env, int *num_env, bool internal)
 
 /*
  * Free a list -- and all associated memory -- that was previously
- * returned from mca_base_param_dump()
+ * returned from ccs_mca_base_param_dump()
  */
-int mca_base_param_dump_release(service_list_t *info)
+int ccs_mca_base_param_dump_release(service_list_t *info)
 {
     service_list_item_t *item;
 
@@ -921,28 +921,28 @@ int mca_base_param_dump_release(service_list_t *info)
  * Shut down the MCA parameter system (normally only invoked by the
  * MCA framework itself).
  */
-int mca_base_param_finalize(void)
+int ccs_mca_base_param_finalize(void)
 {
     service_list_item_t *item;
-    mca_base_param_t *array;
+    ccs_mca_base_param_t *array;
 
     if (initialized) {
 
         /* This is slow, but effective :-) */
 
-        array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
-        while (service_value_array_get_size(&mca_base_params) > 0) {
+        array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
+        while (service_value_array_get_size(&ccs_mca_base_params) > 0) {
             OBJ_DESTRUCT(&array[0]);
-            service_value_array_remove_item(&mca_base_params, 0);
+            service_value_array_remove_item(&ccs_mca_base_params, 0);
         }
-        OBJ_DESTRUCT(&mca_base_params);
+        OBJ_DESTRUCT(&ccs_mca_base_params);
 
-        for (item = service_list_remove_first(&mca_base_param_file_values);
+        for (item = service_list_remove_first(&ccs_mca_base_param_file_values);
              NULL != item;
-             item = service_list_remove_first(&mca_base_param_file_values)) {
+             item = service_list_remove_first(&ccs_mca_base_param_file_values)) {
             OBJ_RELEASE(item);
         }
-        OBJ_DESTRUCT(&mca_base_param_file_values);
+        OBJ_DESTRUCT(&ccs_mca_base_param_file_values);
 
         if( NULL != cwd ) {
             free(cwd);
@@ -1072,7 +1072,7 @@ static int read_files(char *file_list)
     count = service_argv_count(files);
 
     for (i = count - 1; i >= 0; --i) {
-        mca_base_parse_paramfile(files[i]);
+        ccs_mca_base_parse_paramfile(files[i]);
     }
     service_argv_free(files);
 
@@ -1109,7 +1109,7 @@ static int read_keys_from_registry(HKEY hKey, char *sub_key, char *current_name)
     DWORD cchValue = MAX_VALUE_NAME;
     HKEY hTestKey; 
     char *sub_sub_key;
-    mca_base_param_storage_t storage, override, lookup;
+    ccs_mca_base_param_storage_t storage, override, lookup;
       
     if( !RegOpenKeyEx( hKey, sub_key, 0, KEY_READ, &hTestKey) == ERROR_SUCCESS )
         return CCS_ERROR;
@@ -1211,17 +1211,17 @@ static int param_register(const char *type_name,
                           const char *component_name,
                           const char *param_name,
                           const char *help_msg,
-                          mca_base_param_type_t type,
+                          ccs_mca_base_param_type_t type,
                           bool internal,
                           bool read_only,
-                          mca_base_param_storage_t *default_value,
-                          mca_base_param_storage_t *file_value,
-                          mca_base_param_storage_t *override_value,
-                          mca_base_param_storage_t *current_value)
+                          ccs_mca_base_param_storage_t *default_value,
+                          ccs_mca_base_param_storage_t *file_value,
+                          ccs_mca_base_param_storage_t *override_value,
+                          ccs_mca_base_param_storage_t *current_value)
 {
   int ret;
   size_t i, len;
-  mca_base_param_t param, *array;
+  ccs_mca_base_param_t param, *array;
 
   /* There are data holes in the param struct */
   CCS_DEBUG_ZERO(param);
@@ -1229,12 +1229,12 @@ static int param_register(const char *type_name,
   /* Initialize the array if it has never been initialized */
 
   if (!initialized) {
-      mca_base_param_init();
+      ccs_mca_base_param_init();
   }
 
   /* Create a parameter entry */
 
-  OBJ_CONSTRUCT(&param, mca_base_param_t);
+  OBJ_CONSTRUCT(&param, ccs_mca_base_param_t);
   param.mbp_type = type;
   param.mbp_internal = internal;
   param.mbp_read_only = read_only;
@@ -1361,8 +1361,8 @@ static int param_register(const char *type_name,
 
   /* See if this entry is already in the array */
 
-  len = service_value_array_get_size(&mca_base_params);
-  array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+  len = service_value_array_get_size(&ccs_mca_base_params);
+  array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
   for (i = 0; i < len; ++i) {
     if (0 == strcmp(param.mbp_full_name, array[i].mbp_full_name)) {
 
@@ -1510,10 +1510,10 @@ static int param_register(const char *type_name,
      will always be empty at this point, so there's no need for an
      extra RETAIN or RELEASE. */
   if (CCS_SUCCESS != 
-      (ret = service_value_array_append_item(&mca_base_params, &param))) {
+      (ret = service_value_array_append_item(&ccs_mca_base_params, &param))) {
     return ret;
   }
-  ret = (int)service_value_array_get_size(&mca_base_params) - 1;
+  ret = (int)service_value_array_get_size(&ccs_mca_base_params) - 1;
 
   /* Finally, if we have a lookup value, look it up */
 
@@ -1538,14 +1538,14 @@ static int syn_register(int index_orig, const char *syn_type_name,
 {
     size_t len;
     syn_info_t *si;
-    mca_base_param_t *array;
+    ccs_mca_base_param_t *array;
 
     if (!initialized) {
         return CCS_ERROR;
     }
 
     /* Sanity check index param */
-    len = service_value_array_get_size(&mca_base_params);
+    len = service_value_array_get_size(&ccs_mca_base_params);
     if (index_orig < 0 || ((size_t) index_orig) > len) {
         return CCS_ERR_BAD_PARAM;
     }
@@ -1635,7 +1635,7 @@ static int syn_register(int index_orig, const char *syn_type_name,
     
     /* Find the param entry; add this syn_info to its list of
        synonyms */
-    array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+    array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
     if (NULL == array[index_orig].mbp_synonyms) {
         array[index_orig].mbp_synonyms = OBJ_NEW(service_list_t);
     }
@@ -1651,23 +1651,23 @@ static int syn_register(int index_orig, const char *syn_type_name,
  * Set an override
  */
 static bool param_set_override(size_t index, 
-                               mca_base_param_storage_t *storage,
-                               mca_base_param_type_t type)
+                               ccs_mca_base_param_storage_t *storage,
+                               ccs_mca_base_param_type_t type)
 {
     size_t size;
-    mca_base_param_t *array;
+    ccs_mca_base_param_t *array;
 
     /* Lookup the index and see if it's valid */
 
     if (!initialized) {
         return false;
     }
-    size = service_value_array_get_size(&mca_base_params);
+    size = service_value_array_get_size(&ccs_mca_base_params);
     if (index > size) {
         return false;
     }
 
-    array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+    array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
     if (MCA_BASE_PARAM_TYPE_INT == type) {
         array[index].mbp_override_value.intval = storage->intval;
     } else if (MCA_BASE_PARAM_TYPE_STRING == type) {
@@ -1687,15 +1687,15 @@ static bool param_set_override(size_t index,
 /*
  * Lookup a parameter in multiple places
  */
-static bool param_lookup(size_t index, mca_base_param_storage_t *storage,
+static bool param_lookup(size_t index, ccs_mca_base_param_storage_t *storage,
                          service_hash_table_t *attrs,
-                         mca_base_param_source_t *source_param,
+                         ccs_mca_base_param_source_t *source_param,
                          char **source_file)
 {
     size_t size;
-    mca_base_param_t *array;
+    ccs_mca_base_param_t *array;
     char *p, *q;
-    mca_base_param_source_t source = MCA_BASE_PARAM_SOURCE_MAX;
+    ccs_mca_base_param_source_t source = MCA_BASE_PARAM_SOURCE_MAX;
 
     /* default the value */
     if (NULL != source_file) {
@@ -1707,11 +1707,11 @@ static bool param_lookup(size_t index, mca_base_param_storage_t *storage,
     if (!initialized) {
         return false;
     }
-    size = service_value_array_get_size(&mca_base_params);
+    size = service_value_array_get_size(&ccs_mca_base_params);
     if (index > size) {
         return false;
     }
-    array = SERVICE_VALUE_ARRAY_GET_BASE(&mca_base_params, mca_base_param_t);
+    array = SERVICE_VALUE_ARRAY_GET_BASE(&ccs_mca_base_params, ccs_mca_base_param_t);
 
     /* Ensure that MCA param has a good type */
 
@@ -1793,8 +1793,8 @@ static bool param_lookup(size_t index, mca_base_param_storage_t *storage,
 /*
  * Lookup a param in the overrides section
  */
-static bool lookup_override(mca_base_param_t *param,
-                            mca_base_param_storage_t *storage)
+static bool lookup_override(ccs_mca_base_param_t *param,
+                            ccs_mca_base_param_storage_t *storage)
 {
     if (param->mbp_override_value_set) {
         if (MCA_BASE_PARAM_TYPE_INT == param->mbp_type) {
@@ -1815,8 +1815,8 @@ static bool lookup_override(mca_base_param_t *param,
 /*
  * Lookup a param in the environment
  */
-static bool lookup_env(mca_base_param_t *param,
-                       mca_base_param_storage_t *storage)
+static bool lookup_env(ccs_mca_base_param_t *param,
+                       ccs_mca_base_param_storage_t *storage)
 {
     char *env = NULL;
     service_list_item_t *item;
@@ -1880,15 +1880,15 @@ static bool lookup_env(mca_base_param_t *param,
 /*
  * Lookup a param in the files
  */
-static bool lookup_file(mca_base_param_t *param,
-                        mca_base_param_storage_t *storage,
+static bool lookup_file(ccs_mca_base_param_t *param,
+                        ccs_mca_base_param_storage_t *storage,
                         char **source_file)
 {
     bool found = false;
     syn_info_t *si;
     char *deprecated_name = NULL;
     service_list_item_t *item, *in_item;
-    mca_base_param_file_value_t *fv;
+    ccs_mca_base_param_file_value_t *fv;
     bool print_deprecated_warning = false;
 
     /* See if we previously found a match from a file.  If so, just
@@ -1905,10 +1905,10 @@ static bool lookup_file(mca_base_param_t *param,
        find a match.  If we do, cache it on the param (for future
        lookups) and save it in the storage. */
 
-    for (item = service_list_get_first(&mca_base_param_file_values);
-         service_list_get_end(&mca_base_param_file_values) != item;
+    for (item = service_list_get_first(&ccs_mca_base_param_file_values);
+         service_list_get_end(&ccs_mca_base_param_file_values) != item;
          item = service_list_get_next(item)) {
-        fv = (mca_base_param_file_value_t *) item;
+        fv = (ccs_mca_base_param_file_value_t *) item;
         /* If it doesn't match the parameter's real name, check its
            synonyms */
         if (0 == strcmp(fv->mbpfv_param, param->mbp_full_name)) {
@@ -1971,7 +1971,7 @@ static bool lookup_file(mca_base_param_t *param,
                remove it from the list and make future file lookups
                faster */
 
-            service_list_remove_item(&mca_base_param_file_values, 
+            service_list_remove_item(&ccs_mca_base_param_file_values, 
                                   (service_list_item_t *) fv);
             OBJ_RELEASE(fv);
 
@@ -1993,15 +1993,15 @@ static bool lookup_file(mca_base_param_t *param,
 /*
  * Return the default value for a param
  */
-static bool lookup_default(mca_base_param_t *param,
-                           mca_base_param_storage_t *storage)
+static bool lookup_default(ccs_mca_base_param_t *param,
+                           ccs_mca_base_param_storage_t *storage)
 {
     return set(param->mbp_type, storage, &param->mbp_default_value);
 }
 
 
-static bool set(mca_base_param_type_t type,
-                mca_base_param_storage_t *dest, mca_base_param_storage_t *src)
+static bool set(ccs_mca_base_param_type_t type,
+                ccs_mca_base_param_storage_t *dest, ccs_mca_base_param_storage_t *src)
 {
     switch (type) {
     case MCA_BASE_PARAM_TYPE_INT:
@@ -2028,7 +2028,7 @@ static bool set(mca_base_param_type_t type,
 /*
  * Create an empty param container
  */
-static void param_constructor(mca_base_param_t *p)
+static void param_constructor(ccs_mca_base_param_t *p)
 {
     p->mbp_type = MCA_BASE_PARAM_TYPE_MAX;
     p->mbp_internal = false;
@@ -2058,7 +2058,7 @@ static void param_constructor(mca_base_param_t *p)
 /*
  * Free all the contents of a param container
  */
-static void param_destructor(mca_base_param_t *p)
+static void param_destructor(ccs_mca_base_param_t *p)
 {
     service_list_item_t *item;
 
@@ -2114,7 +2114,7 @@ static void param_destructor(mca_base_param_t *p)
 }
 
 
-static void fv_constructor(mca_base_param_file_value_t *f)
+static void fv_constructor(ccs_mca_base_param_file_value_t *f)
 {
     f->mbpfv_param = NULL;
     f->mbpfv_value = NULL;
@@ -2122,7 +2122,7 @@ static void fv_constructor(mca_base_param_file_value_t *f)
 }
 
 
-static void fv_destructor(mca_base_param_file_value_t *f)
+static void fv_destructor(ccs_mca_base_param_file_value_t *f)
 {
     if (NULL != f->mbpfv_param) {
         free(f->mbpfv_param);
@@ -2136,7 +2136,7 @@ static void fv_destructor(mca_base_param_file_value_t *f)
     fv_constructor(f);
 }
 
-static void info_constructor(mca_base_param_info_t *p)
+static void info_constructor(ccs_mca_base_param_info_t *p)
 {
     p->mbpp_index = -1;
     p->mbpp_type = MCA_BASE_PARAM_TYPE_MAX;
@@ -2156,7 +2156,7 @@ static void info_constructor(mca_base_param_info_t *p)
     p->mbpp_help_msg = NULL;
 }
 
-static void info_destructor(mca_base_param_info_t *p)
+static void info_destructor(ccs_mca_base_param_info_t *p)
 {
     if (NULL != p->mbpp_synonyms) {
         free(p->mbpp_synonyms);
@@ -2195,7 +2195,7 @@ static void syn_info_destructor(syn_info_t *si)
     syn_info_constructor(si);
 }
 
-int mca_base_param_find_int(const mca_base_component_t *component,
+int ccs_mca_base_param_find_int(const ccs_mca_base_component_t *component,
                             const char *param_name,
                             char **env,
                             int *current_value)
@@ -2224,7 +2224,7 @@ int mca_base_param_find_int(const mca_base_component_t *component,
     return rc;
 }
 
-int mca_base_param_find_int_name(const char *type,
+int ccs_mca_base_param_find_int_name(const char *type,
                                  const char *param_name,
                                  char **env,
                                  int *current_value)
@@ -2252,7 +2252,7 @@ int mca_base_param_find_int_name(const char *type,
     return rc;
 }
 
-int mca_base_param_find_string(const mca_base_component_t *component,
+int ccs_mca_base_param_find_string(const ccs_mca_base_component_t *component,
                                const char *param_name,
                                char **env,
                                char **current_value)
@@ -2281,7 +2281,7 @@ int mca_base_param_find_string(const mca_base_component_t *component,
     return rc;
 }
 
-int mca_base_param_find_string_name(const char *type,
+int ccs_mca_base_param_find_string_name(const char *type,
                                     const char *param_name,
                                     char **env,
                                     char **current_value)

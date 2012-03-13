@@ -28,14 +28,14 @@
 #include "ccs/include/ccs_constants.h"
 
 
-int mca_base_select(const char *type_name, int output_id,
+int ccs_mca_base_select(const char *type_name, int output_id,
                     service_list_t *components_available,
-                    mca_base_module_t **best_module,
-                    mca_base_component_t **best_component)
+                    ccs_mca_base_module_t **best_module,
+                    ccs_mca_base_component_t **best_component)
 {
-    mca_base_component_list_item_t *cli = NULL;
-    mca_base_component_t *component = NULL;
-    mca_base_module_t *module = NULL;
+    ccs_mca_base_component_list_item_t *cli = NULL;
+    ccs_mca_base_component_t *component = NULL;
+    ccs_mca_base_module_t *module = NULL;
     service_list_item_t *item = NULL;
     int priority = 0, best_priority = INT32_MIN;
 
@@ -53,8 +53,8 @@ int mca_base_select(const char *type_name, int output_id,
     for (item  = service_list_get_first(components_available);
          item != service_list_get_end(components_available);
          item  = service_list_get_next(item) ) {
-        cli = (mca_base_component_list_item_t *) item;
-        component = (mca_base_component_t *) cli->cli_component;
+        cli = (ccs_mca_base_component_list_item_t *) item;
+        component = (ccs_mca_base_component_t *) cli->cli_component;
 
         /*
          * If there is a query function then use it.
@@ -110,7 +110,7 @@ int mca_base_select(const char *type_name, int output_id,
         /*
          * Still close the non-selected components
          */
-        mca_base_components_close(0, /* Pass 0 to keep this from closing the output handle */
+        ccs_mca_base_components_close(0, /* Pass 0 to keep this from closing the output handle */
                                   components_available,
                                   NULL);
         return CCS_ERR_NOT_FOUND;
@@ -128,9 +128,9 @@ int mca_base_select(const char *type_name, int output_id,
     /*
      * Close the non-selected components
      */
-    mca_base_components_close(output_id,
+    ccs_mca_base_components_close(output_id,
                               components_available,
-                              (mca_base_component_t *) (*best_component));
+                              (ccs_mca_base_component_t *) (*best_component));
 
 
     return CCS_SUCCESS;

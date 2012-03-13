@@ -174,8 +174,8 @@ typedef int (*mca_mpool_base_module_ft_event_fn_t)(int state);
  * and open/close/init functions.
  */
 struct mca_mpool_base_component_2_0_0_t {
-  mca_base_component_t mpool_version;        /**< version */
-  mca_base_component_data_t mpool_data;/**< metadata */
+  ccs_mca_base_component_t mpool_version;        /**< version */
+  ccs_mca_base_component_data_t mpool_data;/**< metadata */
 
   mca_mpool_base_component_init_fn_t mpool_init;    /**< init function */
 };

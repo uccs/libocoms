@@ -51,7 +51,7 @@ typedef union {
     int intval;
     /** String value */
     char *stringval;
-} mca_base_param_storage_t;
+} ccs_mca_base_param_storage_t;
 
 
 /**
@@ -60,12 +60,12 @@ typedef union {
  * Entry for holding the information about an MCA parameter and its
  * default value.
  */
-struct mca_base_param_t {
+struct ccs_mca_base_param_t {
     /** Allow this to be an OPAL OBJ */
     service_object_t mbp_super;
 
     /** Enum indicating the type of the parameter (integer or string) */
-    mca_base_param_type_t mbp_type;
+    ccs_mca_base_param_type_t mbp_type;
     /** String of the type name, or NULL */
     char *mbp_type_name;
     /** String of the component name */
@@ -105,33 +105,33 @@ struct mca_base_param_t {
     char *mbp_env_var_name;
 
     /** Default value of the parameter */
-    mca_base_param_storage_t mbp_default_value;
+    ccs_mca_base_param_storage_t mbp_default_value;
 
     /** Whether or not we have a file value */
     bool mbp_file_value_set;
     /** Value of the parameter found in a file */
-    mca_base_param_storage_t mbp_file_value;
+    ccs_mca_base_param_storage_t mbp_file_value;
     /** File the value came from */
     char *mbp_source_file;
 
     /** Whether or not we have an override value */
     bool mbp_override_value_set;
     /** Value of the parameter override set via API */
-    mca_base_param_storage_t mbp_override_value;
+    ccs_mca_base_param_storage_t mbp_override_value;
 };
 /**
  * \internal
  *
  * Convenience typedef.
  */
-typedef struct mca_base_param_t mca_base_param_t;
+typedef struct ccs_mca_base_param_t ccs_mca_base_param_t;
 
 /**
  * \internal
  *
- * Object delcataion for mca_base_param_t
+ * Object delcataion for ccs_mca_base_param_t
  */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(mca_base_param_t);
+CCS_DECLSPEC OBJ_CLASS_DECLARATION(ccs_mca_base_param_t);
 
 
 /**
@@ -139,7 +139,7 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(mca_base_param_t);
  *
  * Structure for holding param names and values read in from files.
  */
-struct mca_base_param_file_value_t {
+struct ccs_mca_base_param_file_value_t {
     /** Allow this to be an OPAL OBJ */
     service_list_item_t super;
     
@@ -155,12 +155,12 @@ struct mca_base_param_file_value_t {
  *
  * Convenience typedef
  */
-typedef struct mca_base_param_file_value_t mca_base_param_file_value_t;
+typedef struct ccs_mca_base_param_file_value_t ccs_mca_base_param_file_value_t;
 
 /**
- * Object declaration for mca_base_param_file_value_t
+ * Object declaration for ccs_mca_base_param_file_value_t
  */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(mca_base_param_file_value_t);
+CCS_DECLSPEC OBJ_CLASS_DECLARATION(ccs_mca_base_param_file_value_t);
 
 
 /**
@@ -168,14 +168,14 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(mca_base_param_file_value_t);
  *
  * Global list of params and values read in from MCA parameter files
  */
-CCS_DECLSPEC extern service_list_t mca_base_param_file_values;
+CCS_DECLSPEC extern service_list_t ccs_mca_base_param_file_values;
 
 /**
  * \internal
  *
  * Parse a parameter file.
  */
-CCS_DECLSPEC int mca_base_parse_paramfile(const char *paramfile);
+CCS_DECLSPEC int ccs_mca_base_parse_paramfile(const char *paramfile);
 
 END_C_DECLS
     
