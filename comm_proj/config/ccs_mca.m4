@@ -463,7 +463,7 @@ extern "C" {
 
 `cat $outfile.extern`
 
-const mca_base_component_t *mca_$2_base_static_components[[]] = {
+const ccs_mca_base_component_t *mca_$2_base_static_components[[]] = {
 `cat $outfile.struct`
   NULL
 };
@@ -735,7 +735,7 @@ AC_DEFUN([MCA_PROCESS_COMPONENT],[
         $6="$$6 $component"
     else
         $7="mca/$framework/$component/libmca_${framework}_${component}.la $$7"
-        echo "extern const mca_base_component_t mca_${framework}_${component}_component;" >> $outfile.extern
+        echo "extern const ccs_mca_base_component_t mca_${framework}_${component}_component;" >> $outfile.extern
         echo "  &mca_${framework}_${component}_component, " >> $outfile.struct
         $5="$$5 $component"
     fi
