@@ -183,7 +183,7 @@ int ccs_mca_base_component_find(const char *directory, const char *type,
         int param, param_disable_dlopen;
         param = ccs_mca_base_param_find("mca", NULL, "component_disable_dlopen");
         ccs_mca_base_param_lookup_int(param, &param_disable_dlopen);
-
+        
         if (0 == param_disable_dlopen) {
             find_dyn_components(directory, type,
                                 (const char**)requested_component_names,

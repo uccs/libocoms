@@ -63,7 +63,7 @@
  * Memory Barriers
  *
  *********************************************************************/
-#if OMPI_GCC_INLINE_ASSEMBLY
+#if CCS_GCC_INLINE_ASSEMBLY
 
 static inline
 void service_atomic_mb(void)
@@ -92,7 +92,7 @@ void service_atomic_wmb(void)
  * Atomic math operations
  *
  *********************************************************************/
-#if OMPI_GCC_INLINE_ASSEMBLY
+#if CCS_GCC_INLINE_ASSEMBLY
 
 static inline int service_atomic_cmpset_32(volatile int32_t *addr,
                                         int32_t oldval, int32_t newval)
@@ -199,6 +199,6 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
 }
 #endif /* CCS_HAVE_ATOMIC_CMPSET_64 */
 
-#endif /* OMPI_GCC_INLINE_ASSEMBLY */
+#endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 #endif /* ! OMPI_SYS_ARCH_ATOMIC_H */

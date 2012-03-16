@@ -67,7 +67,7 @@
  * Memory Barriers
  *
  *********************************************************************/
-#if OMPI_GCC_INLINE_ASSEMBLY
+#if CCS_GCC_INLINE_ASSEMBLY
 
 static inline
 void service_atomic_mb(void)
@@ -89,7 +89,7 @@ void service_atomic_wmb(void)
     WMB();
 }
 
-#elif OMPI_XLC_INLINE_ASSEMBLY /* end OMPI_GCC_INLINE_ASSEMBLY */
+#elif OMPI_XLC_INLINE_ASSEMBLY /* end CCS_GCC_INLINE_ASSEMBLY */
 
 /* Yeah, I don't know who thought this was a reasonable syntax for
  * inline assembly.  Do these because they are used so often and they
@@ -116,7 +116,7 @@ void service_atomic_wmb(void)
  * Atomic math operations
  *
  *********************************************************************/
-#if OMPI_GCC_INLINE_ASSEMBLY
+#if CCS_GCC_INLINE_ASSEMBLY
 
 static inline int service_atomic_cmpset_32(volatile int32_t *addr,
                                         int32_t oldval, int32_t newval)
@@ -161,12 +161,12 @@ static inline int service_atomic_cmpset_rel_32(volatile int32_t *addr,
     return service_atomic_cmpset_32(addr, oldval, newval);
 }
 
-#endif /* OMPI_GCC_INLINE_ASSEMBLY */
+#endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 
 #if (CCS_ASSEMBLY_ARCH == OMPI_POWERPC64)
 
-#if  OMPI_GCC_INLINE_ASSEMBLY
+#if  CCS_GCC_INLINE_ASSEMBLY
 static inline int service_atomic_cmpset_64(volatile int64_t *addr,
                                         int64_t oldval, int64_t newval)
 {
@@ -210,7 +210,7 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
     return service_atomic_cmpset_64(addr, oldval, newval);
 }
 
-#endif /* OMPI_GCC_INLINE_ASSEMBLY */
+#endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 #elif (CCS_ASSEMBLY_ARCH == OMPI_POWERPC32) && CCS_ASM_SUPPORT_64BIT
 
@@ -219,7 +219,7 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
 #define ll_high(x)      *(((unsigned int*)&(x))+1)
 #endif
 
-#if  OMPI_GCC_INLINE_ASSEMBLY
+#if  CCS_GCC_INLINE_ASSEMBLY
 
 static inline int service_atomic_cmpset_64(volatile int64_t *addr,
                                         int64_t oldval, int64_t newval)
@@ -281,12 +281,12 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
     return service_atomic_cmpset_64(addr, oldval, newval);
 }
 
-#endif /* OMPI_GCC_INLINE_ASSEMBLY */
+#endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 #endif /* CCS_ASM_SUPPORT_64BIT */
 
 
-#if OMPI_GCC_INLINE_ASSEMBLY
+#if CCS_GCC_INLINE_ASSEMBLY
 
 static inline int32_t service_atomic_add_32(volatile int32_t* v, int inc)
 {
@@ -322,6 +322,6 @@ static inline int32_t service_atomic_sub_32(volatile int32_t* v, int dec)
 }
 
 
-#endif /* OMPI_GCC_INLINE_ASSEMBLY */
+#endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 #endif /* ! OMPI_SYS_ARCH_ATOMIC_H */
