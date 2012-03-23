@@ -30,17 +30,17 @@ static void cpl_constructor(service_object_t *obj);
 
 
 /*
- * Class instance of the mca_base_component_list_item_t class
+ * Class instance of the ccs_mca_base_component_list_item_t class
  */
-OBJ_CLASS_INSTANCE(mca_base_component_list_item_t, 
+OBJ_CLASS_INSTANCE(ccs_mca_base_component_list_item_t, 
                    service_list_item_t, cl_constructor, NULL);
 
 
 /*
- * Class instance of the mca_base_component_priority_list_item_t class
+ * Class instance of the ccs_mca_base_component_priority_list_item_t class
  */
-OBJ_CLASS_INSTANCE(mca_base_component_priority_list_item_t, 
-                   mca_base_component_list_item_t, cpl_constructor, NULL);
+OBJ_CLASS_INSTANCE(ccs_mca_base_component_priority_list_item_t, 
+                   ccs_mca_base_component_list_item_t, cpl_constructor, NULL);
 
 
 /*
@@ -48,7 +48,7 @@ OBJ_CLASS_INSTANCE(mca_base_component_priority_list_item_t,
  */
 static void cl_constructor(service_object_t *obj)
 {
-  mca_base_component_list_item_t *cli = (mca_base_component_list_item_t *) obj;
+  ccs_mca_base_component_list_item_t *cli = (ccs_mca_base_component_list_item_t *) obj;
   cli->cli_component = NULL;
 }
 
@@ -58,7 +58,7 @@ static void cl_constructor(service_object_t *obj)
  */
 static void cpl_constructor(service_object_t *obj)
 {
-  mca_base_component_priority_list_item_t *cpli = 
-    (mca_base_component_priority_list_item_t *) obj;
+  ccs_mca_base_component_priority_list_item_t *cpli = 
+    (ccs_mca_base_component_priority_list_item_t *) obj;
   cpli->cpli_priority = -1;
 }

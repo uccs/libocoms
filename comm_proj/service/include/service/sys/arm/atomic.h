@@ -57,7 +57,7 @@
  * Memory Barriers
  *
  *********************************************************************/
-#if OMPI_GCC_INLINE_ASSEMBLY
+#if CCS_GCC_INLINE_ASSEMBLY
 
 static inline
 void service_atomic_mb(void)
@@ -222,6 +222,6 @@ static inline int32_t service_atomic_sub_32(volatile int32_t* v, int dec)
 }
 
 
-#endif /* OMPI_GCC_INLINE_ASSEMBLY */
+#endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 #endif /* ! OMPI_SYS_ARCH_ATOMIC_H */

@@ -54,7 +54,7 @@ struct repository_item_t {
 
   char ri_type[MCA_BASE_MAX_TYPE_NAME_LEN + 1];
   lt_dlhandle ri_dlhandle;
-  const mca_base_component_t *ri_component_struct;
+  const ccs_mca_base_component_t *ri_component_struct;
   service_list_t ri_dependencies;
 };
 typedef struct repository_item_t repository_item_t;
@@ -104,7 +104,7 @@ lt_dladvise ccs_mca_dladvise;
 /*
  * Initialize the repository
  */
-int mca_base_component_repository_init(void)
+int ccs_mca_base_component_repository_init(void)
 {
   /* Setup internal structures */
 
@@ -146,9 +146,9 @@ int mca_base_component_repository_init(void)
  * components.  The component's type, handle, and public struct are
  * saved.
  */
-int mca_base_component_repository_retain(char *type, 
+int ccs_mca_base_component_repository_retain(char *type, 
                                          lt_dlhandle component_handle, 
-                                         const mca_base_component_t *component_struct)
+                                         const ccs_mca_base_component_t *component_struct)
 {
 #if CCS_WANT_LIBLTDL
   repository_item_t *ri;
@@ -183,7 +183,7 @@ int mca_base_component_repository_retain(char *type,
 /*
  * Bump up the refcount on a component
  */
-int mca_base_component_repository_retain_component(const char *type, 
+int ccs_mca_base_component_repository_retain_component(const char *type, 
                                                    const char *name)
 {
 #if CCS_WANT_LIBLTDL
@@ -202,7 +202,7 @@ int mca_base_component_repository_retain_component(const char *type,
 /*
  * Create a dependency from one component entry to another
  */
-int mca_base_component_repository_link(const char *src_type, 
+int ccs_mca_base_component_repository_link(const char *src_type, 
                                        const char *src_name,
                                        const char *depend_type,
                                        const char *depend_name)
@@ -234,7 +234,7 @@ int mca_base_component_repository_link(const char *src_type,
  * If it's in the repository, close a specified component and remove
  * it from the repository.
  */
-void mca_base_component_repository_release(const mca_base_component_t *component)
+void ccs_mca_base_component_repository_release(const ccs_mca_base_component_t *component)
 {
 #if CCS_WANT_LIBLTDL
   if (initialized) {
@@ -251,7 +251,7 @@ void mca_base_component_repository_release(const mca_base_component_t *component
 /*
  * Finalize the repository -- close everything that's still open.
  */
-void mca_base_component_repository_finalize(void)
+void ccs_mca_base_component_repository_finalize(void)
 {
 #if CCS_WANT_LIBLTDL
   service_list_item_t *item;
@@ -384,7 +384,7 @@ static void ri_destructor(service_object_t *obj)
   lt_dlclose(ri->ri_dlhandle);
 
   /* It should be obvious, but I'll state it anyway because it bit me
-     during debugging: after the dlclose(), the mca_base_component_t
+     during debugging: after the dlclose(), the ccs_mca_base_component_t
      pointer is no longer valid because it has [potentially] been
      unloaded from memory.  So don't try to use it.  :-) */
 

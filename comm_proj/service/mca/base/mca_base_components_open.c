@@ -45,13 +45,13 @@ typedef struct component_name_t component_name_t;
 /*
  * Dummy structure for casting for open_only logic
  */
-struct mca_base_open_only_dummy_component_t {
+struct ccs_mca_base_open_only_dummy_component_t {
     /** MCA base component */
-    mca_base_component_t version;
+    ccs_mca_base_component_t version;
     /** MCA base data */
-    mca_base_component_data_t data;
+    ccs_mca_base_component_data_t data;
 };
-typedef struct mca_base_open_only_dummy_component_t mca_base_open_only_dummy_component_t;
+typedef struct ccs_mca_base_open_only_dummy_component_t ccs_mca_base_open_only_dummy_component_t;
 
 /*
  * Local variables
@@ -72,8 +72,8 @@ static int open_components(const char *type_name, int output_id,
  * Function for finding and opening either all MCA components, or the
  * one that was specifically requested via a MCA parameter.
  */
-int mca_base_components_open(const char *type_name, int output_id,
-                             const mca_base_component_t **static_components,
+int ccs_mca_base_components_open(const char *type_name, int output_id,
+                             const ccs_mca_base_component_t **static_components,
                              service_list_t *components_available,
                              bool open_dso_components)
 {
@@ -89,31 +89,31 @@ int mca_base_components_open(const char *type_name, int output_id,
 #if (CCS_ENABLE_FT == 1) && (CCS_ENABLE_FT_CR == 1)
     service_list_item_t *next;
     uint32_t open_only_flags = MCA_BASE_METADATA_PARAM_NONE;
-    const mca_base_component_t *component;
+    const ccs_mca_base_component_t *component;
 #endif
  
     /* Register MCA parameters */
     /* Check to see if it exists first */
-    if( 0 > (param_type = mca_base_param_find(type_name, NULL, NULL) ) ) {
+    if( 0 > (param_type = ccs_mca_base_param_find(type_name, NULL, NULL) ) ) {
         asprintf(&str, "Default selection set of components for the %s framework (<none>"
                  " means use all components that can be found)", type_name);
         param_type = 
-            mca_base_param_reg_string_name(type_name, NULL, str, 
+            ccs_mca_base_param_reg_string_name(type_name, NULL, str, 
                                            false, false, NULL, NULL);
         free(str);
     }
 
-    param = mca_base_param_find("mca", NULL, "component_show_load_errors");
-    mca_base_param_lookup_int(param, &ret);
+    param = ccs_mca_base_param_find("mca", NULL, "component_show_load_errors");
+    ccs_mca_base_param_lookup_int(param, &ret);
     show_errors = CCS_INT_TO_BOOL(ret);
 
     /* Setup verbosity for this MCA type */
     asprintf(&str, "Verbosity level for the %s framework (0 = no verbosity)", type_name);
     param_verbose = 
-        mca_base_param_reg_int_name(type_name, "base_verbose",
+        ccs_mca_base_param_reg_int_name(type_name, "base_verbose",
                                     str, false, false, 0, NULL);
     free(str);
-    mca_base_param_lookup_int(param_verbose, &verbose_level);
+    ccs_mca_base_param_lookup_int(param_verbose, &verbose_level);
     if (output_id != 0) {
         service_output_set_verbosity(output_id, verbose_level);
     }
@@ -128,7 +128,7 @@ int mca_base_components_open(const char *type_name, int output_id,
 
     /* Find and load requested components */
     if (CCS_SUCCESS != (ret = 
-        mca_base_component_find(NULL, type_name, static_components,
+        ccs_mca_base_component_find(NULL, type_name, static_components,
                                 requested_component_names, include_mode, 
                                 &components_found, open_dso_components)) ) {
         return ret;
@@ -141,9 +141,9 @@ int mca_base_components_open(const char *type_name, int output_id,
         /*
          * Extract supported mca parameters for selection contraints
          * Supported Options:
-         *   - mca_base_component_distill_checkpoint_ready = Checkpoint Ready
+         *   - ccs_mca_base_component_distill_checkpoint_ready = Checkpoint Ready
          */
-        param_id = mca_base_param_reg_int_name("mca", "base_component_distill_checkpoint_ready",
+        param_id = ccs_mca_base_param_reg_int_name("mca", "base_component_distill_checkpoint_ready",
                                                "Distill only those components that are Checkpoint Ready", 
                                                false, false,
                                                0, &param_val);
@@ -178,9 +178,9 @@ int mca_base_components_open(const char *type_name, int output_id,
         for(item  = service_list_get_first(&components_found);
             item != service_list_get_end(&components_found);
             item  = next ) {
-            mca_base_open_only_dummy_component_t *dummy;
-            mca_base_component_list_item_t *cli = (mca_base_component_list_item_t *) item;
-            dummy = (mca_base_open_only_dummy_component_t*) cli->cli_component;
+            ccs_mca_base_open_only_dummy_component_t *dummy;
+            ccs_mca_base_component_list_item_t *cli = (ccs_mca_base_component_list_item_t *) item;
+            dummy = (ccs_mca_base_open_only_dummy_component_t*) cli->cli_component;
             component = cli->cli_component;
       
             next = service_list_get_next(item);
@@ -206,7 +206,7 @@ int mca_base_components_open(const char *type_name, int output_id,
                     service_list_remove_item(&components_found, item);
                     /* Make sure to release the component since we are not
                      * opening it */
-                    mca_base_component_repository_release(component);
+                    ccs_mca_base_component_repository_release(component);
                 }
             }
         }
@@ -232,14 +232,14 @@ int mca_base_components_open(const char *type_name, int output_id,
     return ret;
 }
 
-int mca_base_is_component_required(service_list_t *components_available,
-                                   mca_base_component_t *component,
+int ccs_mca_base_is_component_required(service_list_t *components_available,
+                                   ccs_mca_base_component_t *component,
                                    bool exclusive,
                                    bool *is_required)
 {
     service_list_item_t *item = NULL;
-    mca_base_component_list_item_t *cli = NULL;
-    mca_base_component_t *comp = NULL;
+    ccs_mca_base_component_list_item_t *cli = NULL;
+    ccs_mca_base_component_t *comp = NULL;
 
     /* Sanity check */
     if( NULL == components_available ||
@@ -256,8 +256,8 @@ int mca_base_is_component_required(service_list_t *components_available,
         /* Must be the -only- component in the list */
         if( 1 == service_list_get_size(components_available) ) {
             item  = service_list_get_first(components_available);
-            cli   = (mca_base_component_list_item_t *) item;
-            comp  = (mca_base_component_t *) cli->cli_component;
+            cli   = (ccs_mca_base_component_list_item_t *) item;
+            comp  = (ccs_mca_base_component_t *) cli->cli_component;
 
             if( 0 == strncmp(comp->mca_component_name,
                              component->mca_component_name,
@@ -272,8 +272,8 @@ int mca_base_is_component_required(service_list_t *components_available,
         for (item  = service_list_get_first(components_available);
              item != service_list_get_end(components_available);
              item  = service_list_get_next(item) ) {
-            cli  = (mca_base_component_list_item_t *) item;
-            comp = (mca_base_component_t *) cli->cli_component;
+            cli  = (ccs_mca_base_component_list_item_t *) item;
+            comp = (ccs_mca_base_component_t *) cli->cli_component;
 
             if( 0 == strncmp(comp->mca_component_name,
                              component->mca_component_name,
@@ -299,7 +299,7 @@ static int parse_requested(int mca_param, bool *include_mode,
 
   /* See if the user requested anything */
 
-  if (0 > mca_base_param_lookup_string(mca_param, &requested)) {
+  if (0 > ccs_mca_base_param_lookup_string(mca_param, &requested)) {
       return CCS_ERROR;
   }
   if (NULL == requested || 0 == strlen(requested)) {
@@ -344,7 +344,7 @@ static int parse_requested(int mca_param, bool *include_mode,
 
 /*
  * Traverse the entire list of found components (a list of
- * mca_base_component_t instances).  If the requested_component_names
+ * ccs_mca_base_component_t instances).  If the requested_component_names
  * array is empty, or the name of each component in the list of found
  * components is in the requested_components_array, try to open it.
  * If it opens, add it to the components_available list.
@@ -354,8 +354,8 @@ static int open_components(const char *type_name, int output_id,
 {
     int ret;
     service_list_item_t *item;
-    const mca_base_component_t *component;
-    mca_base_component_list_item_t *cli;
+    const ccs_mca_base_component_t *component;
+    ccs_mca_base_component_list_item_t *cli;
     bool called_open;
     bool opened, registered;
     
@@ -371,7 +371,7 @@ static int open_components(const char *type_name, int output_id,
     for (item = service_list_get_first(src);
          service_list_get_end(src) != item;
          item = service_list_get_next(item)) {
-        cli = (mca_base_component_list_item_t *) item;
+        cli = (ccs_mca_base_component_list_item_t *) item;
         component = cli->cli_component;
         
         registered = opened = called_open = false;
@@ -473,7 +473,7 @@ static int open_components(const char *type_name, int output_id,
                 called_open = false;
             }
             name = strdup(component->mca_component_name);
-            mca_base_component_repository_release(component);
+            ccs_mca_base_component_repository_release(component);
             service_output_verbose(10, output_id, 
                                 "mca: base: components_open: component %s unloaded", 
                                 name);
@@ -485,15 +485,15 @@ static int open_components(const char *type_name, int output_id,
            opened_components list */
         
         else {
-            if (0 > mca_base_param_find(type_name, 
+            if (0 > ccs_mca_base_param_find(type_name, 
                                         component->mca_component_name,
                                         "priority")) {
-                mca_base_param_register_int(type_name,
+                ccs_mca_base_param_register_int(type_name,
                                             component->mca_component_name,
                                             "priority", NULL, 0);
             }
             
-            cli = OBJ_NEW(mca_base_component_list_item_t);
+            cli = OBJ_NEW(ccs_mca_base_component_list_item_t);
             if (NULL == cli) {
                 return CCS_ERR_OUT_OF_RESOURCE;
             }

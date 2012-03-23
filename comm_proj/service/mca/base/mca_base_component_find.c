@@ -147,11 +147,11 @@ static bool use_component(const bool include_mode,
  * directory and looking for shared-library MCA components of the
  * appropriate type (load them if available).
  *
- * Return one consolidated array of (mca_base_component_t*) pointing to all
+ * Return one consolidated array of (ccs_mca_base_component_t*) pointing to all
  * available components.
  */
-int mca_base_component_find(const char *directory, const char *type, 
-                            const mca_base_component_t *static_components[], 
+int ccs_mca_base_component_find(const char *directory, const char *type, 
+                            const ccs_mca_base_component_t *static_components[], 
                             char **requested_component_names,
                             bool include_mode,
                             service_list_t *found_components,
@@ -159,7 +159,7 @@ int mca_base_component_find(const char *directory, const char *type,
 {
     int i;
     service_list_item_t *item;
-    mca_base_component_list_item_t *cli;
+    ccs_mca_base_component_list_item_t *cli;
 
     /* Find all the components that were statically linked in */
     OBJ_CONSTRUCT(found_components, service_list_t);
@@ -168,7 +168,7 @@ int mca_base_component_find(const char *directory, const char *type,
         if ( use_component(include_mode,
                            (const char**)requested_component_names,
                            static_components[i]->mca_component_name) ) {
-            cli = OBJ_NEW(mca_base_component_list_item_t);
+            cli = OBJ_NEW(ccs_mca_base_component_list_item_t);
             if (NULL == cli) {
                 return CCS_ERR_OUT_OF_RESOURCE;
             }
@@ -181,9 +181,9 @@ int mca_base_component_find(const char *directory, const char *type,
     /* Find any available dynamic components in the specified directory */
     if (open_dso_components) {
         int param, param_disable_dlopen;
-        param = mca_base_param_find("mca", NULL, "component_disable_dlopen");
-        mca_base_param_lookup_int(param, &param_disable_dlopen);
-
+        param = ccs_mca_base_param_find("mca", NULL, "component_disable_dlopen");
+        ccs_mca_base_param_lookup_int(param, &param_disable_dlopen);
+        
         if (0 == param_disable_dlopen) {
             find_dyn_components(directory, type,
                                 (const char**)requested_component_names,
@@ -203,7 +203,7 @@ int mca_base_component_find(const char *directory, const char *type,
         for (item = service_list_get_first(found_components);
              service_list_get_end(found_components) != item; 
              item = service_list_get_next(item)) {
-            cli = (mca_base_component_list_item_t*) item;
+            cli = (ccs_mca_base_component_list_item_t*) item;
             if (0 == strcmp(requested_component_names[i], 
                             cli->cli_component->mca_component_name)) {
                 break;
@@ -225,7 +225,7 @@ int mca_base_component_find(const char *directory, const char *type,
     return CCS_SUCCESS;
 }
 
-int mca_base_component_find_finalize(void)
+int ccs_mca_base_component_find_finalize(void)
 {
 #if CCS_WANT_LIBLTDL
     if (NULL != found_filenames) {
@@ -264,11 +264,11 @@ static void find_dyn_components(const char *path, const char *type_name,
     char prefix[32 + MCA_BASE_MAX_TYPE_NAME_LEN], *basename;
     
     /* If path is NULL, iterate over the set of directories specified by
-       the MCA param mca_base_component_path.  If path is not NULL, then
+       the MCA param ccs_mca_base_component_path.  If path is not NULL, then
        use that as the path. */
   
     if (NULL == path) {
-        mca_base_param_lookup_string(mca_base_param_component_path, 
+        ccs_mca_base_param_lookup_string(ccs_mca_base_param_component_path, 
                                      &path_to_use);
         if (NULL == path_to_use) {
             /* If there's no path, then there's nothing to search -- we're
@@ -306,14 +306,14 @@ static void find_dyn_components(const char *path, const char *type_name,
                 }
                 if ((0 == strcmp(dir, "USER_DEFAULT") ||
                      0 == strcmp(dir, "USR_DEFAULT"))
-                    && NULL != mca_base_user_default_path) {
-                    if (0 != lt_dlforeachfile(mca_base_user_default_path,
+                    && NULL != ccs_mca_base_user_default_path) {
+                    if (0 != lt_dlforeachfile(ccs_mca_base_user_default_path,
                                               save_filename, NULL)) {
                         break;
                     }
                 } else if (0 == strcmp(dir, "SYS_DEFAULT") ||
                            0 == strcmp(dir, "SYSTEM_DEFAULT")) {
-                    if (0 != lt_dlforeachfile(mca_base_system_default_path,
+                    if (0 != lt_dlforeachfile(ccs_mca_base_system_default_path,
                                               save_filename, NULL)) {
                         break;
                     }                    
@@ -445,11 +445,11 @@ static int open_component(component_file_item_t *target_file,
 {
   int show_errors, param;
   lt_dlhandle component_handle;
-  mca_base_component_t *component_struct;
+  ccs_mca_base_component_t *component_struct;
   char *struct_name, *err;
   service_list_t dependencies;
   service_list_item_t *cur;
-  mca_base_component_list_item_t *mitem;
+  ccs_mca_base_component_list_item_t *mitem;
   dependency_item_t *ditem;
   size_t len;
   int vl;
@@ -457,8 +457,8 @@ static int open_component(component_file_item_t *target_file,
   service_output_verbose(40, 0, "mca: base: component_find: examining dyanmic %s MCA component \"%s\"",
                      target_file->type, target_file->name);
   service_output_verbose(40, 0, "mca: base: component_find: %s", target_file->filename);
-  param = mca_base_param_find("mca", NULL, "component_show_load_errors");
-  mca_base_param_lookup_int(param, &show_errors);
+  param = ccs_mca_base_param_find("mca", NULL, "component_show_load_errors");
+  ccs_mca_base_param_lookup_int(param, &show_errors);
   vl = show_errors ? 0 : 40;
 
   /* Was this component already loaded (e.g., via dependency)? */
@@ -477,7 +477,7 @@ static int open_component(component_file_item_t *target_file,
   for (cur = service_list_get_first(found_components); 
        service_list_get_end(found_components) != cur;
        cur = service_list_get_next(cur)) {
-    mitem = (mca_base_component_list_item_t *) cur;
+    mitem = (ccs_mca_base_component_list_item_t *) cur;
     if (0 == strcmp(mitem->cli_component->mca_type_name, target_file->type) &&
         0 == strcmp(mitem->cli_component->mca_component_name, target_file->name)) {
       service_output_verbose(40, 0, "mca: base: component_find: already loaded (ignored)");
@@ -548,7 +548,7 @@ static int open_component(component_file_item_t *target_file,
   snprintf(struct_name, len, "mca_%s_%s_component", target_file->type,
            target_file->name);
 
-  mitem = OBJ_NEW(mca_base_component_list_item_t);
+  mitem = OBJ_NEW(ccs_mca_base_component_list_item_t);
   if (NULL == mitem) {
     free(struct_name);
     lt_dlclose(component_handle);
@@ -557,7 +557,7 @@ static int open_component(component_file_item_t *target_file,
     return CCS_ERR_OUT_OF_RESOURCE;
   }
 
-  component_struct = (mca_base_component_t*)lt_dlsym(component_handle, struct_name);
+  component_struct = (ccs_mca_base_component_t*)lt_dlsym(component_handle, struct_name);
   if (NULL == component_struct) {
       /* Apparently lt_dlerror() sometimes returns NULL! */
       const char *str = lt_dlerror();
@@ -616,7 +616,7 @@ static int open_component(component_file_item_t *target_file,
 
   mitem->cli_component = component_struct;
   service_list_append(found_components, (service_list_item_t *) mitem);
-  mca_base_component_repository_retain(target_file->type, component_handle, 
+  ccs_mca_base_component_repository_retain(target_file->type, component_handle, 
                                     component_struct);
 
   /* Now that that's all done, link all the dependencies in to this
@@ -626,7 +626,7 @@ static int open_component(component_file_item_t *target_file,
        NULL != cur;
        cur = service_list_remove_first(&dependencies)) {
     ditem = (dependency_item_t *) cur;
-    mca_base_component_repository_link(target_file->type,
+    ccs_mca_base_component_repository_link(target_file->type,
                                        target_file->name,
                                        ditem->di_component_file_item->type,
                                        ditem->di_component_file_item->name);

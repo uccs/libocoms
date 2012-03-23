@@ -58,7 +58,7 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  * Memory Barriers
  *
  *********************************************************************/
-#if OMPI_GCC_INLINE_ASSEMBLY
+#if CCS_GCC_INLINE_ASSEMBLY
 
 static inline void service_atomic_mb(void)
 {
@@ -77,7 +77,7 @@ static inline void service_atomic_wmb(void)
     MB();
 }
 
-#endif /* OMPI_GCC_INLINE_ASSEMBLY */
+#endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 
 /**********************************************************************
@@ -85,7 +85,7 @@ static inline void service_atomic_wmb(void)
  * Atomic spinlocks
  *
  *********************************************************************/
-#if OMPI_GCC_INLINE_ASSEMBLY
+#if CCS_GCC_INLINE_ASSEMBLY
 
 /* for these, the lock is held whenever lock.sparc_lock != 0.  We
    attempt to leave it as CCS_LOCKED whenever possible */
@@ -148,7 +148,7 @@ static inline void service_atomic_unlock(service_atomic_lock_t *lock)
                           : "memory");
 }
 
-#endif /* OMPI_GCC_INLINE_ASSEMBLY */
+#endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 
 #endif /* ! OMPI_SYS_ARCH_ATOMIC_H */

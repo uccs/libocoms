@@ -23,7 +23,7 @@
 typedef uint64_t ccs_timer_t;
 
 
-#if OMPI_GCC_INLINE_ASSEMBLY
+#if CCS_GCC_INLINE_ASSEMBLY
 
 static inline ccs_timer_t
 service_sys_timer_get_cycles(void)
@@ -47,6 +47,6 @@ ccs_timer_t service_sys_timer_get_cycles(void);
 
 #define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
 
-#endif /* OMPI_GCC_INLINE_ASSEMBLY */
+#endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 #endif /* ! OMPI_SYS_ARCH_TIMER_H */

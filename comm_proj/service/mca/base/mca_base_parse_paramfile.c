@@ -33,7 +33,7 @@ static void save_value(const char *name, const char *value);
 
 static char * file_being_read;
 
-int mca_base_parse_paramfile(const char *paramfile)
+int ccs_mca_base_parse_paramfile(const char *paramfile)
 {
     file_being_read = (char*)paramfile;
     
@@ -43,16 +43,16 @@ int mca_base_parse_paramfile(const char *paramfile)
 static void save_value(const char *name, const char *value)
 {
     service_list_item_t *item;
-    mca_base_param_file_value_t *fv;
+    ccs_mca_base_param_file_value_t *fv;
 
     /* First traverse through the list and ensure that we don't
        already have a param of this name.  If we do, just replace the
        value. */
 
-    for (item = service_list_get_first(&mca_base_param_file_values);
-         service_list_get_end(&mca_base_param_file_values) != item;
+    for (item = service_list_get_first(&ccs_mca_base_param_file_values);
+         service_list_get_end(&ccs_mca_base_param_file_values) != item;
          item = service_list_get_next(item)) {
-        fv = (mca_base_param_file_value_t *) item;
+        fv = (ccs_mca_base_param_file_value_t *) item;
         if (0 == strcmp(name, fv->mbpfv_param)) {
             if (NULL != fv->mbpfv_value ) {
                 free(fv->mbpfv_value);
@@ -69,7 +69,7 @@ static void save_value(const char *name, const char *value)
 
     /* We didn't already have the param, so append it to the list */
 
-    fv = OBJ_NEW(mca_base_param_file_value_t);
+    fv = OBJ_NEW(ccs_mca_base_param_file_value_t);
     if (NULL != fv) {
         fv->mbpfv_param = strdup(name);
         if (NULL != value) {
@@ -78,6 +78,6 @@ static void save_value(const char *name, const char *value)
             fv->mbpfv_value = NULL;
         }
         fv->mbpfv_file = strdup(file_being_read);
-        service_list_append(&mca_base_param_file_values, (service_list_item_t*) fv);
+        service_list_append(&ccs_mca_base_param_file_values, (service_list_item_t*) fv);
     }
 }
