@@ -71,15 +71,15 @@ CCS_DECLSPEC void ccs_progress(void);
 /**
  * Control how the event library is called
  *
- * Adjust the flags argument used to call service_event_loop() from
+ * Adjust the flags argument used to call ccs_event_loop() from
  * ccs_progress().  The default argument is CCS_EVLOOP_ONELOOP,
- * meaning that the call to service_event_loop() will block pending
+ * meaning that the call to ccs_event_loop() will block pending
  * events, but may block for a period of time.
  *
  * @param flags     One of the valid vlags argument to 
- *                  service_event_loop().
+ *                  ccs_event_loop().
  * @return          Previous value of flags used to call
- *                  service_event_loop().
+ *                  ccs_event_loop().
  */
 CCS_DECLSPEC int ccs_progress_set_event_flag(int flags);
 
@@ -88,7 +88,7 @@ CCS_DECLSPEC int ccs_progress_set_event_flag(int flags);
  * Increase the number of users of the event library
  *
  * Increase the number of users of the event library.  This count is
- * used by ccs_progress to determine if service_event_loop() should be
+ * used by ccs_progress to determine if ccs_event_loop() should be
  * called every call to ccs_progress() or only after a time has
  * elapsed since the last call (by default, 10ms).  The count defaults
  * to 0, meaning that ccs_progress_event_users_increment() must be
@@ -103,7 +103,7 @@ CCS_DECLSPEC void ccs_progress_event_users_increment(void);
  * Decrease the number of users of the event library
  *
  * Decrease the number of users of the event library.  This count is
- * used by ccs_progress to determine if service_event_loop() should be
+ * used by ccs_progress to determine if ccs_event_loop() should be
  * called every call to ccs_progress() or only after a time has
  * elapsed since the last call (by default, 10ms).
  */
