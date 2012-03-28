@@ -580,8 +580,6 @@ AC_CHECK_TYPES([socklen_t, struct sockaddr_in, struct sockaddr_in6,
 #include <netinet/in.h>
 #endif])
 
-AC_MSG_NOTICE([ZZZ before error])
-
 AC_CHECK_DECLS([AF_UNSPEC, PF_UNSPEC, AF_INET6, PF_INET6],
                [], [], [AC_INCLUDES_DEFAULT
 #if HAVE_SYS_SOCKET_H
@@ -618,8 +616,6 @@ AC_CHECK_MEMBERS([siginfo_t.si_band],,,[#include <signal.h>])
 
 # checkpoint results
 AC_CACHE_SAVE
-AC_MSG_NOTICE([ZZZ after error])
-
 
 ##################################
 # Libraries

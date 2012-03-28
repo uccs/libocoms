@@ -147,10 +147,7 @@ m4_define([CCS_GET_VERSION],[
 # CCS_GET_VERSION().  Information is AC_SUBSTed and put in
 # header_file.
 AC_DEFUN([CCS_SAVE_VERSION], [
-        AC_MSG_NOTICE([got here 1])
     CCS_GET_VERSION([$3], [$1])
-        AC_MSG_NOTICE([got here 2])
-
     AC_SUBST($1[_MAJOR_VERSION])
     AC_SUBST($1[_MINOR_VERSION])
     AC_SUBST($1[_RELEASE_VERSION])
