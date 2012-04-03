@@ -23,15 +23,15 @@
 
 # note - headers and nodist_headers will go in ${includedir}/openmpi,
 # not ${includedir}/
-headers = llc.h
+headers = uccs.h
 nodist_headers = ccs_config.h
 
 # Install these in $(includedir)
 #include_HEADERS = mpi_portable_platform.h
-include_HEADERS =  llc.h
+include_HEADERS =  uccs.h
 
 # Always install these in $(pkgincludedir)
-pkginclude_HEADERS = llc.h
+pkginclude_HEADERS = uccs.h
 
 noinst_LTLIBRARIES =
 
