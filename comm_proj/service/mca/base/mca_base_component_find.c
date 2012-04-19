@@ -53,7 +53,7 @@
 #endif
 
 #if 0
-#include "opal/mca/installdirs/installdirs.h"
+#include "opal/mca/installdirs/installpath.h"
 #include "service/util/ccs_environ.h"
 #include "service/util/show_help.h"
 #endif
