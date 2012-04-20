@@ -73,7 +73,7 @@
 BEGIN_C_DECLS
 
 /* If you update this list, you probably also want to update
-   ccs/mca/timer/linux/configure.m4.  Or not. */
+   ccs/mca/systimer/linux/configure.m4.  Or not. */
 
 #if defined(DOXYGEN)
 /* don't include system-level gorp when generating doxygen files */ 
@@ -103,7 +103,7 @@ BEGIN_C_DECLS
 #ifndef CCS_HAVE_SYS_TIMER_GET_CYCLES
 #define CCS_HAVE_SYS_TIMER_GET_CYCLES 0
 
-typedef int ccs_timer_t;
+typedef int ccs_systimer_t;
 #endif
 #endif
 
