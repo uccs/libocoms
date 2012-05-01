@@ -49,7 +49,7 @@
 /*
  * Description of a command line option
  */
-struct cmd_line_option_t {
+struct service_cmd_line_option_t {
     service_list_item_t super;
 
     char clo_short_name;
@@ -64,18 +64,18 @@ struct cmd_line_option_t {
     void *clo_variable_dest;
     bool clo_variable_set;
 };
-typedef struct cmd_line_option_t cmd_line_option_t;
-static void option_constructor(cmd_line_option_t *cmd);
-static void option_destructor(cmd_line_option_t *cmd);
+typedef struct service_cmd_line_option_t service_cmd_line_option_t;
+static void option_constructor(service_cmd_line_option_t *cmd);
+static void option_destructor(service_cmd_line_option_t *cmd);
 
-OBJ_CLASS_INSTANCE(cmd_line_option_t,
+OBJ_CLASS_INSTANCE(service_cmd_line_option_t,
                    service_list_item_t,
                    option_constructor, option_destructor);
 
 /*
  * An option that was used in the argv that was parsed
  */
-struct cmd_line_param_t {
+struct service_cmd_line_param_t {
     service_list_item_t super;
 
     /* Note that clp_arg points to storage "owned" by someone else; it
@@ -87,7 +87,7 @@ struct cmd_line_param_t {
     /* Pointer to the existing option.  This is also by reference; it
        should not be free()ed. */
 
-    cmd_line_option_t *clp_option;
+    service_cmd_line_option_t *clp_option;
 
     /* This argv array is a list of all the parameters of this option.
        It is owned by this parameter, and should be freed when this
@@ -96,10 +96,10 @@ struct cmd_line_param_t {
     int clp_argc;
     char **clp_argv;
 };
-typedef struct cmd_line_param_t cmd_line_param_t;
-static void param_constructor(cmd_line_param_t *cmd);
-static void param_destructor(cmd_line_param_t *cmd);
-OBJ_CLASS_INSTANCE(cmd_line_param_t,
+typedef struct service_cmd_line_param_t service_cmd_line_param_t;
+static void param_constructor(service_cmd_line_param_t *cmd);
+static void param_destructor(service_cmd_line_param_t *cmd);
+OBJ_CLASS_INSTANCE(service_cmd_line_param_t,
                    service_list_item_t,
                    param_constructor, param_destructor);
 
@@ -129,10 +129,10 @@ static int split_shorts(service_cmd_line_t *cmd,
                         char *token, char **args, 
                         int *output_argc, char ***output_argv, 
                         int *num_args_used, bool ignore_unknown);
-static cmd_line_option_t *find_option(service_cmd_line_t *cmd, 
+static service_cmd_line_option_t *find_option(service_cmd_line_t *cmd, 
                                       const char *option_name) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
-static void set_dest(cmd_line_option_t *option, char *sval);
-static void fill(const cmd_line_option_t *a, char result[3][BUFSIZ]);
+static void set_dest(service_cmd_line_option_t *option, char *sval);
+static void fill(const service_cmd_line_option_t *a, char result[3][BUFSIZ]);
 static int qsort_callback(const void *a, const void *b);
 
 
@@ -261,8 +261,8 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                         int argc, char **argv)
 {
     int i, j, orig, ret;
-    cmd_line_option_t *option;
-    cmd_line_param_t *param;
+    service_cmd_line_option_t *option;
+    service_cmd_line_param_t *param;
     bool is_unknown;
     bool is_option;
     bool has_unknowns;
@@ -387,7 +387,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                    (insertted by split_shorts()), then print an error
                    and return. */
 
-                param = OBJ_NEW(cmd_line_param_t);
+                param = OBJ_NEW(service_cmd_line_param_t);
                 if (NULL == param) {
                     service_mutex_unlock(&cmd->lcl_mutex);
                     return CCS_ERR_OUT_OF_RESOURCE;
@@ -507,7 +507,7 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
     char *ret, temp[MAX_WIDTH * 2], line[MAX_WIDTH * 2];
     char *start, *desc, *ptr;
     service_list_item_t *item;
-    cmd_line_option_t *option, **sorted;
+    service_cmd_line_option_t *option, **sorted;
     bool filled;
 
     /* Thread serialization */
@@ -522,7 +522,7 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
 
     /* First, take the original list and sort it */
 
-    sorted = (cmd_line_option_t**)malloc(sizeof(cmd_line_option_t *) * 
+    sorted = (service_cmd_line_option_t**)malloc(sizeof(service_cmd_line_option_t *) * 
                                          service_list_get_size(&cmd->lcl_options));
     if (NULL == sorted) {
         return NULL;
@@ -530,9 +530,9 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
     for (i = 0, item = service_list_get_first(&cmd->lcl_options); 
          service_list_get_end(&cmd->lcl_options) != item;
          ++i, item = service_list_get_next(item)) {
-        sorted[i] = (cmd_line_option_t *) item;
+        sorted[i] = (service_cmd_line_option_t *) item;
     }
-    qsort(sorted, i, sizeof(cmd_line_option_t*), qsort_callback);
+    qsort(sorted, i, sizeof(service_cmd_line_option_t*), qsort_callback);
 
     /* Now go through the sorted array and make the strings */
 
@@ -720,8 +720,8 @@ int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, const char *opt)
 {
     int ret;
     service_list_item_t *item;
-    cmd_line_param_t *param;
-    cmd_line_option_t *option;
+    service_cmd_line_param_t *param;
+    service_cmd_line_option_t *option;
 
     /* Thread serialization */
 
@@ -736,7 +736,7 @@ int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, const char *opt)
         for (item = service_list_get_first(&cmd->lcl_params); 
              service_list_get_end(&cmd->lcl_params) != item;
              item = service_list_get_next(item)) {
-            param = (cmd_line_param_t *) item;
+            param = (service_cmd_line_param_t *) item;
             if (param->clp_option == option) {
                 ++ret;
             }
@@ -762,8 +762,8 @@ char *service_cmd_line_get_param(service_cmd_line_t *cmd, const char *opt, int i
 {
     int num_found;
     service_list_item_t *item;
-    cmd_line_param_t *param;
-    cmd_line_option_t *option;
+    service_cmd_line_param_t *param;
+    service_cmd_line_option_t *option;
 
     /* Thread serialization */
 
@@ -783,7 +783,7 @@ char *service_cmd_line_get_param(service_cmd_line_t *cmd, const char *opt, int i
             for (item = service_list_get_first(&cmd->lcl_params); 
                  service_list_get_end(&cmd->lcl_params) != item;
                  item = service_list_get_next(item)) {
-                param = (cmd_line_param_t *) item;
+                param = (service_cmd_line_param_t *) item;
                 if (param->clp_option == option) {
                     if (num_found == inst) {
                         service_mutex_unlock(&cmd->lcl_mutex);
@@ -846,7 +846,7 @@ int service_cmd_line_get_tail(service_cmd_line_t *cmd, int *tailc, char ***tailv
  * Static functions
  **************************************************************************/
 
-static void option_constructor(cmd_line_option_t *o)
+static void option_constructor(service_cmd_line_option_t *o)
 {
     o->clo_short_name = '\0';
     o->clo_single_dash_name = NULL;
@@ -861,7 +861,7 @@ static void option_constructor(cmd_line_option_t *o)
 }
 
 
-static void option_destructor(cmd_line_option_t *o)
+static void option_destructor(service_cmd_line_option_t *o)
 {
     if (NULL != o->clo_single_dash_name) {
         free(o->clo_single_dash_name);
@@ -878,7 +878,7 @@ static void option_destructor(cmd_line_option_t *o)
 }
 
 
-static void param_constructor(cmd_line_param_t *p)
+static void param_constructor(service_cmd_line_param_t *p)
 {
     p->clp_arg = NULL;
     p->clp_option = NULL;
@@ -887,7 +887,7 @@ static void param_constructor(cmd_line_param_t *p)
 }
 
 
-static void param_destructor(cmd_line_param_t *p)
+static void param_destructor(service_cmd_line_param_t *p)
 {
     if (NULL != p->clp_argv) {
         service_argv_free(p->clp_argv);
@@ -947,7 +947,7 @@ static void cmd_line_destructor(service_cmd_line_t *cmd)
 
 static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
 {
-    cmd_line_option_t *option;
+    service_cmd_line_option_t *option;
 
     /* Bozo checks */
 
@@ -963,7 +963,7 @@ static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
 
     /* Allocate and fill an option item */
 
-    option = OBJ_NEW(cmd_line_option_t);
+    option = OBJ_NEW(service_cmd_line_option_t);
     if (NULL == option) {
         return CCS_ERR_OUT_OF_RESOURCE;
     }
@@ -1041,7 +1041,7 @@ static int split_shorts(service_cmd_line_t *cmd, char *token, char **args,
                         int *num_args_used, bool ignore_unknown)
 {
     int i, j, len;
-    cmd_line_option_t *option;
+    service_cmd_line_option_t *option;
     char fake_token[3];
     int num_args;
 
@@ -1102,11 +1102,11 @@ static int split_shorts(service_cmd_line_t *cmd, char *token, char **args,
 }
 
 
-static cmd_line_option_t *find_option(service_cmd_line_t *cmd, 
+static service_cmd_line_option_t *find_option(service_cmd_line_t *cmd, 
                                       const char *option_name)
 {
     service_list_item_t *item;
-    cmd_line_option_t *option;
+    service_cmd_line_option_t *option;
 
     /* Iterate through the list of options hanging off the
        service_cmd_line_t and see if we find a match in either the short
@@ -1115,7 +1115,7 @@ static cmd_line_option_t *find_option(service_cmd_line_t *cmd,
     for (item = service_list_get_first(&cmd->lcl_options);
          service_list_get_end(&cmd->lcl_options) != item;
          item = service_list_get_next(item)) {
-        option = (cmd_line_option_t *) item;
+        option = (service_cmd_line_option_t *) item;
         if ((NULL != option->clo_long_name &&
              0 == strcmp(option_name, option->clo_long_name)) ||
             (NULL != option->clo_single_dash_name &&
@@ -1132,7 +1132,7 @@ static cmd_line_option_t *find_option(service_cmd_line_t *cmd,
 }
 
 
-static void set_dest(cmd_line_option_t *option, char *sval)
+static void set_dest(service_cmd_line_option_t *option, char *sval)
 {
     int ival = atoi(sval);
     long lval = strtol(sval, NULL, 10);
@@ -1192,7 +1192,7 @@ static void set_dest(cmd_line_option_t *option, char *sval)
 /*
  * Helper function to qsort_callback
  */
-static void fill(const cmd_line_option_t *a, char result[3][BUFSIZ])
+static void fill(const service_cmd_line_option_t *a, char result[3][BUFSIZ])
 {
     int i = 0;
 
@@ -1219,8 +1219,8 @@ static int qsort_callback(const void *aa, const void *bb)
 {
     int ret, i;
     char str1[3][BUFSIZ], str2[3][BUFSIZ];
-    const cmd_line_option_t *a = *((const cmd_line_option_t**) aa);
-    const cmd_line_option_t *b = *((const cmd_line_option_t**) bb);
+    const service_cmd_line_option_t *a = *((const service_cmd_line_option_t**) aa);
+    const service_cmd_line_option_t *b = *((const service_cmd_line_option_t**) bb);
 
     /* Icky comparison of command line options.  There are multiple
        forms of each command line option, so we first have to check

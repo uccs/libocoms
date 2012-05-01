@@ -129,7 +129,7 @@ BEGIN_C_DECLS
         /** Thread safety */
         service_mutex_t lcl_mutex;
         
-        /** List of cmd_line_option_t's (defined internally) */
+        /** List of service_cmd_line_option_t's (defined internally) */
         service_list_t lcl_options;
         
         /** Duplicate of argc from service_cmd_line_parse() */
@@ -137,7 +137,7 @@ BEGIN_C_DECLS
         /** Duplicate of argv from service_cmd_line_parse() */
         char **lcl_argv;
         
-        /** Parsed output; list of cmd_line_param_t's (defined internally) */
+        /** Parsed output; list of service_cmd_line_param_t's (defined internally) */
         service_list_t lcl_params;
         
         /** List of tail (unprocessed) arguments */
