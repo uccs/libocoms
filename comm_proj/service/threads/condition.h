@@ -35,10 +35,7 @@
 #endif
 
 #include "service/threads/mutex.h"
-#if 0
-#include "opal/runtime/ccs_progress.h"
-#endif
-
+#include "ccs/ctl/ccs_progress.h"
 #if 0
 #include "opal/runtime/ccs_cr.h"
 #endif
