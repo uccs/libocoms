@@ -29,7 +29,7 @@
 #include <sys/param.h>
 #endif
 #if 0
-#include "opal/mca/installdirs/installdirs.h"
+#include "opal/mca/installdirs/installpath.h"
 #include "service/util/show_help.h"
 #include "service/util/path.h"
 #include "service/util/ccs_environ.h"
@@ -46,7 +46,7 @@
 #include "service/util/output.h"
 #include "service/util/path.h"
 #include "service/util/service_environ.h"
-#include "ccs/mca/installdirs/installdirs.h"
+#include "ccs/mca/installpath/installpath.h"
 
 /*
  * Local types
@@ -72,7 +72,7 @@ typedef struct {
     /* Whether we've shown a warning that this synonym has been
        displayed or not */
     bool si_deprecated_warning_shown;
-} syn_info_t;
+} service_syn_info_t;
 
 
 /*
@@ -139,8 +139,8 @@ static void fv_constructor(ccs_mca_base_param_file_value_t *p);
 static void fv_destructor(ccs_mca_base_param_file_value_t *p);
 static void info_constructor(ccs_mca_base_param_info_t *p);
 static void info_destructor(ccs_mca_base_param_info_t *p);
-static void syn_info_constructor(syn_info_t *si);
-static void syn_info_destructor(syn_info_t *si);
+static void syn_info_constructor(service_syn_info_t *si);
+static void syn_info_destructor(service_syn_info_t *si);
 
 /*
  * Make the class instance for ccs_mca_base_param_t
@@ -151,7 +151,7 @@ OBJ_CLASS_INSTANCE(ccs_mca_base_param_file_value_t, service_list_item_t,
                    fv_constructor, fv_destructor);
 OBJ_CLASS_INSTANCE(ccs_mca_base_param_info_t, service_list_item_t,
                    info_constructor, info_destructor);
-OBJ_CLASS_INSTANCE(syn_info_t, service_list_item_t,
+OBJ_CLASS_INSTANCE(service_syn_info_t, service_list_item_t,
                    syn_info_constructor, syn_info_destructor);
 
 /*
@@ -745,7 +745,7 @@ int ccs_mca_base_param_dump(service_list_t **info, bool internal)
     ccs_mca_base_param_info_t *p, *q;
     ccs_mca_base_param_t *array;
     service_list_item_t *item;
-    syn_info_t *si;
+    service_syn_info_t *si;
 
     /* Check for bozo cases */
     
@@ -797,7 +797,7 @@ int ccs_mca_base_param_dump(service_list_t **info, bool internal)
                 for (j = 0, item = service_list_get_first(array[i].mbp_synonyms);
                      service_list_get_end(array[i].mbp_synonyms) != item;
                      ++j, item = service_list_get_next(item)) {
-                    si = (syn_info_t*) item;
+                    si = (service_syn_info_t*) item;
                     q = OBJ_NEW(ccs_mca_base_param_info_t);
                     if (NULL == q) {
                         return CCS_ERR_OUT_OF_RESOURCE;
@@ -1537,7 +1537,7 @@ static int syn_register(int index_orig, const char *syn_type_name,
                         const char *syn_param_name, bool deprecated)
 {
     size_t len;
-    syn_info_t *si;
+    service_syn_info_t *si;
     ccs_mca_base_param_t *array;
 
     if (!initialized) {
@@ -1551,7 +1551,7 @@ static int syn_register(int index_orig, const char *syn_type_name,
     }
 
     /* Make the synonym info object */
-    si = OBJ_NEW(syn_info_t);
+    si = OBJ_NEW(service_syn_info_t);
     if (NULL == si) {
         return CCS_ERR_OUT_OF_RESOURCE;
     }
@@ -1820,7 +1820,7 @@ static bool lookup_env(ccs_mca_base_param_t *param,
 {
     char *env = NULL;
     service_list_item_t *item;
-    syn_info_t *si;
+    service_syn_info_t *si;
     char *deprecated_name = NULL;
     bool print_deprecated_warning = false;
 
@@ -1842,7 +1842,7 @@ static bool lookup_env(ccs_mca_base_param_t *param,
         for (item = service_list_get_first(param->mbp_synonyms);
              NULL == env && service_list_get_end(param->mbp_synonyms) != item;
              item = service_list_get_next(item)) {
-            si = (syn_info_t*) item;
+            si = (service_syn_info_t*) item;
             env = getenv(si->si_env_var_name);
             if (NULL != env && 
                 ((si->si_deprecated && 
@@ -1885,7 +1885,7 @@ static bool lookup_file(ccs_mca_base_param_t *param,
                         char **source_file)
 {
     bool found = false;
-    syn_info_t *si;
+    service_syn_info_t *si;
     char *deprecated_name = NULL;
     service_list_item_t *item, *in_item;
     ccs_mca_base_param_file_value_t *fv;
@@ -1927,7 +1927,7 @@ static bool lookup_file(ccs_mca_base_param_t *param,
             for (in_item = service_list_get_first(param->mbp_synonyms);
                  service_list_get_end(param->mbp_synonyms) != in_item;
                  in_item = service_list_get_next(in_item)) {
-                si = (syn_info_t*) in_item;
+                si = (service_syn_info_t*) in_item;
                 if (0 == strcmp(fv->mbpfv_param, si->si_full_name)) {
                     found = true;
                     if ((si->si_deprecated && 
@@ -2167,14 +2167,14 @@ static void info_destructor(ccs_mca_base_param_info_t *p)
     info_constructor(p);
 }
 
-static void syn_info_constructor(syn_info_t *si)
+static void syn_info_constructor(service_syn_info_t *si)
 {
     si->si_type_name = si->si_component_name = si->si_param_name =
         si->si_full_name = si->si_env_var_name = NULL;
     si->si_deprecated = si->si_deprecated_warning_shown = false;
 }
 
-static void syn_info_destructor(syn_info_t *si)
+static void syn_info_destructor(service_syn_info_t *si)
 {
     if (NULL != si->si_type_name) {
         free(si->si_type_name);

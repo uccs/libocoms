@@ -75,7 +75,7 @@
 #include "service/util/argv.h"
 #include "ccs/include/ccs_constants.h"
 
-#include "ccs/mca/if/base/base.h"
+#include "ccs/mca/sysif/base/base.h"
 
 #ifdef HAVE_STRUCT_SOCKADDR_IN
 
@@ -90,15 +90,15 @@
 
 int service_ifnametoaddr(const char* if_name, struct sockaddr* addr, int length)
 {
-    ccs_if_t* intf;
+    ccs_sysif_t* intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return CCS_ERROR;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (strcmp(intf->if_name, if_name) == 0) {
             memcpy(addr, &intf->if_addr, length);
             return CCS_SUCCESS;
@@ -115,15 +115,15 @@ int service_ifnametoaddr(const char* if_name, struct sockaddr* addr, int length)
 
 int service_ifnametoindex(const char* if_name)
 {
-    ccs_if_t* intf;
+    ccs_sysif_t* intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return -1;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (strcmp(intf->if_name, if_name) == 0) {
             return intf->if_index;
         }
@@ -139,15 +139,15 @@ int service_ifnametoindex(const char* if_name)
 
 int16_t service_ifnametokindex(const char* if_name)
 {
-    ccs_if_t* intf;
+    ccs_sysif_t* intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return -1;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (strcmp(intf->if_name, if_name) == 0) {
             return intf->if_kernel_index;
         }
@@ -163,15 +163,15 @@ int16_t service_ifnametokindex(const char* if_name)
 
 int service_ifindextokindex(int if_index)
 {
-    ccs_if_t* intf;
+    ccs_sysif_t* intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return -1;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (if_index == intf->if_index) {
             return intf->if_kernel_index;
         }
@@ -187,7 +187,7 @@ int service_ifindextokindex(int if_index)
 
 int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
 {
-    ccs_if_t* intf;
+    ccs_sysif_t* intf;
 #if CCS_WANT_IPV6
     int error;
     struct addrinfo hints, *res = NULL, *r;
@@ -201,14 +201,14 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
 #endif
 
     /* if the user asked us not to resolve interfaces, then just return */
-    if (ccs_if_do_not_resolve) {
+    if (ccs_sysif_do_not_resolve) {
         /* return not found so ifislocal will declare
          * the node to be non-local
          */
         return CCS_ERR_NOT_FOUND;
     }
     
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return CCS_ERROR;
     }
 
@@ -226,9 +226,9 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
     }
 
     for (r = res; r != NULL; r = r->ai_next) {
-        for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-            intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-            intf =  (ccs_if_t*)service_list_get_next(intf)) {
+        for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+            intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+            intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
             
             if (AF_INET == r->ai_family) {
                 struct sockaddr_in ipv4;
@@ -264,9 +264,9 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
         memcpy(&inaddr, h->h_addr, sizeof(inaddr));
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (((struct sockaddr_in*) &intf->if_addr)->sin_addr.s_addr == inaddr) {
             strncpy(if_name, intf->if_name, length);
             return CCS_SUCCESS;
@@ -282,11 +282,11 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
 
 int service_ifcount(void)
 {
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return 0;
     }
 
-    return service_list_get_size(&ccs_if_list);
+    return service_list_get_size(&ccs_sysif_list);
 }
 
 
@@ -297,13 +297,13 @@ int service_ifcount(void)
 
 int service_ifbegin(void)
 {
-    ccs_if_t *intf;
+    ccs_sysif_t *intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return -1;
     }
 
-    intf = (ccs_if_t*)service_list_get_first(&ccs_if_list);
+    intf = (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
     if (NULL != intf)
         return intf->if_index;
     return (-1);
@@ -318,19 +318,19 @@ int service_ifbegin(void)
 
 int service_ifnext(int if_index)
 {
-    ccs_if_t *intf;
+    ccs_sysif_t *intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return -1;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             do {
-                ccs_if_t* if_next = (ccs_if_t*)service_list_get_next(intf);
-                ccs_if_t* if_end =  (ccs_if_t*)service_list_get_end(&ccs_if_list);
+                ccs_sysif_t* if_next = (ccs_sysif_t*)service_list_get_next(intf);
+                ccs_sysif_t* if_end =  (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
                 if (if_next == if_end) {
                     return -1;
                 }
@@ -350,15 +350,15 @@ int service_ifnext(int if_index)
 
 int service_ifindextoaddr(int if_index, struct sockaddr* if_addr, unsigned int length)
 {
-    ccs_if_t* intf;
+    ccs_sysif_t* intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return CCS_ERROR;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             memcpy(if_addr, &intf->if_addr, MIN(length, sizeof (intf->if_addr)));
             return CCS_SUCCESS;
@@ -375,15 +375,15 @@ int service_ifindextoaddr(int if_index, struct sockaddr* if_addr, unsigned int l
 
 int service_ifindextomask(int if_index, uint32_t* if_mask, int length)
 {
-    ccs_if_t* intf;
+    ccs_sysif_t* intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return CCS_ERROR;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             memcpy(if_mask, &intf->if_mask, length);
             return CCS_SUCCESS;
@@ -401,15 +401,15 @@ int service_ifindextomask(int if_index, uint32_t* if_mask, int length)
 
 int service_ifindextoflags(int if_index, uint32_t* if_flags)
 {
-    ccs_if_t* intf;
+    ccs_sysif_t* intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return CCS_ERROR;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             memcpy(if_flags, &intf->if_flags, sizeof(uint32_t));
             return CCS_SUCCESS;
@@ -427,15 +427,15 @@ int service_ifindextoflags(int if_index, uint32_t* if_flags)
 
 int service_ifindextoname(int if_index, char* if_name, int length)
 {
-    ccs_if_t *intf;
+    ccs_sysif_t *intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return CCS_ERROR;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             strncpy(if_name, intf->if_name, length);
             return CCS_SUCCESS;
@@ -452,15 +452,15 @@ int service_ifindextoname(int if_index, char* if_name, int length)
 
 int service_ifkindextoname(int if_kindex, char* if_name, int length)
 {
-    ccs_if_t *intf;
+    ccs_sysif_t *intf;
 
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return CCS_ERROR;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (intf->if_kernel_index == if_kindex) {
             strncpy(if_name, intf->if_name, length);
             return CCS_SUCCESS;
@@ -596,15 +596,15 @@ service_iftupletoaddr(char *inaddr, uint32_t *net, uint32_t *mask)
 
 bool service_ifisloopback(int if_index)
 {
-    ccs_if_t* intf;
+    ccs_sysif_t* intf;
     
-    if (CCS_SUCCESS != ccs_if_base_open()) {
+    if (CCS_SUCCESS != ccs_sysif_base_open()) {
         return CCS_ERROR;
     }
 
-    for (intf =  (ccs_if_t*)service_list_get_first(&ccs_if_list);
-        intf != (ccs_if_t*)service_list_get_end(&ccs_if_list);
-        intf =  (ccs_if_t*)service_list_get_next(intf)) {
+    for (intf =  (ccs_sysif_t*)service_list_get_first(&ccs_sysif_list);
+        intf != (ccs_sysif_t*)service_list_get_end(&ccs_sysif_list);
+        intf =  (ccs_sysif_t*)service_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             if ((intf->if_flags & IFF_LOOPBACK) != 0) {
                 return true;

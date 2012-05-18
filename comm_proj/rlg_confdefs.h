@@ -1,8 +1,4 @@
 /* confdefs.h */
-#define PACKAGE_NAME "Common Communication Substrate"
-#define PACKAGE_TARNAME "ccs"
-#define PACKAGE_VERSION "0.1"
-#define PACKAGE_STRING "Common Communication Substrate 0.1"
 #define PACKAGE_BUGREPORT ""
 #define PACKAGE_URL ""
 /* Pasha #define CCS_ARCH "x86_64-apple-darwin10.7.0" */
@@ -34,8 +30,6 @@
 #define CCS_ENABLE_FT_CR 0
 #define CCS_WANT_HOME_CONFIG_FILES 1
 #define CCS_ENABLE_IPV6 0
-#define CCS_PACKAGE_STRING "Open MPI rg6@grahammbpro.local Distribution"
-#define CCS_IDENT_STRING ""
 #define CCS_MAX_PROCESSOR_NAME 256
 #define CCS_MAX_ERROR_STRING 256
 #define CCS_MAX_OBJECT_NAME 64
@@ -51,9 +45,7 @@
 #define CCS_C_HAVE_BUILTIN_EXPECT 1
 #define CCS_C_HAVE_BUILTIN_PREFETCH 1
 #define CCS_CC_USE_PRAGMA_IDENT 0
-#define CCS_CC_USE_IDENT 0
 #define CCS_CC_USE_PRAGMA_COMMENT 
-#define CCS_CC_USE_CONST_CHAR_IDENT 1
 #define HAVE_INT8_T 1
 #define HAVE_UINT8_T 1
 #define HAVE_INT16_T 1
@@ -134,7 +126,6 @@
 #define CCS_HAVE_ATTRIBUTE_UNUSED 1
 #define CCS_HAVE_ATTRIBUTE_VISIBILITY 1
 #define CCS_HAVE_ATTRIBUTE_WARN_UNUSED_RESULT 1
-#define CCS_HAVE_ATTRIBUTE_WEAK_ALIAS 0
 #define CCS_BUILD_PLATFORM_COMPILER_FAMILYID 0
 #define CCS_BUILD_PLATFORM_COMPILER_FAMILYNAME UNKNOWN
 #define CCS_BUILD_PLATFORM_COMPILER_VERSION 0
@@ -143,16 +134,11 @@
 #define CCS_ASM_TEXT ".text"
 #define CCS_ASM_GLOBAL ".globl"
 #define CCS_ASM_LABEL_SUFFIX ":"
-#define CCS_ASM_GSYM "_"
-#define CCS_ASM_LSYM "L"
-#define CCS_ASM_TYPE ""
-#define CCS_ASM_SIZE "0"
 #define CCS_ASM_ALIGN_LOG 
 #define CCS_ASM_SUPPORT_64BIT 1
 #define CCS_C_GCC_INLINE_ASSEMBLY 1
 #define CCS_C_DEC_INLINE_ASSEMBLY 0
 #define CCS_C_XLC_INLINE_ASSEMBLY 0
-#define CCS_ASSEMBLY_FORMAT "default-.text-.globl-:-_-L--0-1-1-1-0"
 #define CCS_ASSEMBLY_ARCH CCS_AMD64
 #define CCS_HAVE_ASM_FILE 0
 #define ompi_fortran_logical_t int
@@ -301,7 +287,6 @@
 #define CCS_C_HAVE_VISIBILITY 1
 #define HAVE_DLFCN_H 1
 #define LT_OBJDIR ".libs/"
-#define CCS_HAVE_LTDL_ADVISE 0
 #define CCS_WANT_LIBLTDL 1
 #define CCS_LIBLTDL_INTERNAL 1
 #define WRAPPER_EXTRA_CFLAGS " "
@@ -313,3 +298,5 @@
 #define CCS_STDC_HEADERS 1
 #define CCS_HAVE_SYS_TIME_H 1
 #define CCS_HAVE_LONG_LONG 1
+
+#define CCS_CR_TEST_CHECKPOINT_READY_STALL()

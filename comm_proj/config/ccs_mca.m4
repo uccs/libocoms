@@ -485,9 +485,6 @@ EOF
             rm -f $outfile
         fi
     fi
-    echo " outfile.struct " $outfile.struct
-    more $outfile.struct
-    echo "done"
     rm -f $outfile.struct $outfile.extern 
 
     unset all_components static_components dso_components outfile outfile_real

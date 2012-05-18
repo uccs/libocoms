@@ -32,7 +32,7 @@ nodist_headers += \
 
 include service/sys/Makefile.am
 
-service/install_dirs.h: $(top_builddir)/config.status $(srcdir)/service/install_dirs.h.in
+service/install_path.h: $(top_builddir)/config.status $(srcdir)/service/install_path.h.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 service/version.h: $(top_builddir)/config.status $(srcdir)/service/version.h.in

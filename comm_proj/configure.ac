@@ -1106,6 +1106,8 @@ ccs_show_title "Final top-level CCS configuration"
         ccs/include/Makefile
         ccs/uccs/Makefile
         tests/Makefile
+        tests/init/Makefile
+        tests/ping_pong_put/Makefile
     ])
 #        service/mca/Makefile
 

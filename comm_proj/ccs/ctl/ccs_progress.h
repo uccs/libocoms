@@ -222,7 +222,11 @@ static inline uint32_t ccs_progress_recursion_depth(void)
 {
     return ccs_progress_recursion_depth_counter;
 }
-
+/**
+ * Return the current progress event mode.
+ * The flag controls blocking/non-blcoking modes of event handling
+ */
+int ccs_progress_get_flag(void);
 
 END_C_DECLS
 
