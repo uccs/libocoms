@@ -38,6 +38,8 @@
 **
 *****************************************************/
 
+CCS_DECLSPEC extern int service_cache_line_size;
+
 
 /*****************************************************************
 ** Part 1: Integer representation.

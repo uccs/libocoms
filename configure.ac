@@ -913,7 +913,7 @@ AC_MSG_CHECKING([for subdir args])
 CCS_CONFIG_SUBDIR_ARGS([ccs_subdir_args])
 AC_MSG_RESULT([$ccs_subdir_args])
 
-CCS_MCA
+####CCS_MCA
 
 # checkpoint results
 AC_CACHE_SAVE
@@ -1095,21 +1095,31 @@ ccs_show_title "Final top-level CCS configuration"
     RTE_CONFIG
 
     ccs_show_subtitle "Final output"
+    files="Makefile 
+           config/Makefile 
+           service/Makefile 
+           service/util/Makefile 
+           service/util/keyval/Makefile 
+           ccs/include/Makefile 
+           ccs/uccs/Makefile 
+           tests/Makefile 
+           tests/init/Makefile 
+           tests/onesided/Makefile"
+
+#service/Makefile 
+    files1="Makefile
+           config/Makefile
+           service/util/Makefile
+           service/util/keyval/Makefile"
 
     AC_CONFIG_FILES([
-        Makefile
-
-        config/Makefile
-        service/Makefile
-        service/util/Makefile
-        service/util/keyval/Makefile
-        ccs/include/Makefile
-        ccs/uccs/Makefile
-        tests/Makefile
-        tests/init/Makefile
-        tests/onesided/Makefile
+            Makefile
+            config/Makefile 
+            service/Makefile 
+            service/util/Makefile 
+            service/util/keyval/Makefile 
+            ccs/include/Makefile 
     ])
-#        service/mca/Makefile
 
     CCS_CONFIG_FILES
 

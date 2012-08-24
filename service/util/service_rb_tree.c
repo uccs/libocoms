@@ -20,8 +20,7 @@
  */
 
 #include "ccs_config.h"
-
-#include "ccs/ctl/ccs_ctl.h"
+#include "arch.h"
 #include "service/util/service_rb_tree.h"
 
 /* declare the instance of the classes  */

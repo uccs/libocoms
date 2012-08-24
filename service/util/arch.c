@@ -21,6 +21,8 @@
 #include "ccs/include/ccs_constants.h"
 #include "service/util/arch.h"
 
+int service_cache_line_size = 128;
+
 int32_t service_arch_compute_local_id( uint32_t *me )
 {
     *me = (SERVICE_ARCH_HEADERMASK | SERVICE_ARCH_UNUSEDMASK);

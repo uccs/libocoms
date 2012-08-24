@@ -13,5 +13,5 @@ AC_DEFUN([RTE_CONFIG],[
                  AC_SUBST(RTE_LDFLAGS, "$RTE_LDFLAGS")
                  AC_SUBST(RTE_LIB_DIR, "$RTE_LIB_DIR")
                  ],
-                [Do nothing])
+                [])
 ])
