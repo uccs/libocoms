@@ -65,8 +65,7 @@ CCS_DECLSPEC int ccs_progress_finalize(void);
  * into the event library is greater than the progress tick rate (by
  * default, 10ms).
  */
-
-#define ccs_progress uccs_progress
+CCS_DECLSPEC void ccs_progress(void);
 
 
 /**
