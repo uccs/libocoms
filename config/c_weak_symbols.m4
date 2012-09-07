@@ -67,4 +67,7 @@ AC_DEFUN([CCS_C_WEAK_SYMBOLS],[
 
     AS_IF([test "$ccs_cv_c_weak_symbols" = "yes"],
           [CCS_C_HAVE_WEAK_SYMBOLS=1], [CCS_C_HAVE_WEAK_SYMBOLS=0])
+
+    AC_DEFINE_UNQUOTED(CCS_HAVE_WEAK_SYMBOLS, $CCS_C_HAVE_WEAK_SYMBOLS,
+          [Whether we have weak symbols or not])
 ]) dnl
