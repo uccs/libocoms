@@ -8,8 +8,8 @@
  *
  */
 
-#ifndef OPAL_IF_BASE_H
-#define OPAL_IF_BASE_H
+#ifndef CCS_IF_BASE_H
+#define CCS_IF_BASE_H
 
 #include "ccs_config.h"
 
@@ -30,4 +30,4 @@ CCS_DECLSPEC extern service_list_t ccs_sysif_components;
 
 END_C_DECLS
 
-#endif /* OPAL_BASE_IF_H */
+#endif /* CCS_BASE_IF_H */
