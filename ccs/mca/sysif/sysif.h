@@ -7,8 +7,8 @@
  * $HEADER$
  */
 
-#ifndef OPAL_MCA_IF_IF_H
-#define OPAL_MCA_IF_IF_H
+#ifndef CCS_MCA_IF_H
+#define CCS_MCA_IF_H
 
 #include "ccs_config.h"
 
@@ -128,10 +128,10 @@ typedef struct ccs_sysif_base_component_2_0_0_t ccs_sysif_base_component_t;
 /*
  * Macro for use in components that are of type if
  */
-#define OPAL_IF_BASE_VERSION_2_0_0 \
+#define CCS_IF_BASE_VERSION_2_0_0 \
     MCA_BASE_VERSION_2_0_0, \
     "if", 2, 0, 0
 
 END_C_DECLS
 
-#endif /* OPAL_MCA_IF_IF_H */
+#endif /* CCS_MCA_IF_H */

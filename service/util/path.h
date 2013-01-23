@@ -136,6 +136,8 @@ CCS_DECLSPEC char *service_path_access(char *fname, char *path, int mode) __serv
  */
 CCS_DECLSPEC bool service_path_nfs(char *fname) __service_attribute_warn_unused_result__;
 
+CCS_DECLSPEC int service_path_df(const char *path, uint64_t *out_avail);
+
 END_C_DECLS
 #endif /* SERVICE_PATH_H */
 

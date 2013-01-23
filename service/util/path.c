@@ -51,6 +51,7 @@
 #include "service/util/path.h"
 #include "service/util/os_path.h"
 #include "service/util/argv.h"
+#include "ccs/include/ccs_constants.h"
 
 static void path_env_load(char *path, int *pargc, char ***pargv);
 static char *list_env_get(char *var, char **list);
@@ -535,3 +536,74 @@ found:
 #endif /* __WINDOWS__ */
 }
 
+    
+int
+service_path_df(const char *path,
+             uint64_t *out_avail)
+{
+#if !defined(__WINDOWS__)
+    int rc = -1;
+    int trials = 5;
+    int err = 0;
+#if defined(__SVR4) && defined(__sun)
+    struct statvfs buf;
+#elif defined(__linux__) || defined (__BSD) ||                                 \
+      (defined(__APPLE__) && defined(__MACH__))
+    struct statfs buf;
+#endif
+
+    if (NULL == path || NULL == out_avail) {
+        return CCS_ERROR;
+    }
+    *out_avail = 0;
+
+    do {
+#if defined(__SVR4) && defined(__sun)
+        rc = statvfs(path, &buf);
+#elif defined(__linux__) || defined (__BSD) ||                                 \
+      (defined(__APPLE__) && defined(__MACH__))
+        rc = statfs(path, &buf);
+#endif
+        err = errno;
+    } while (-1 == rc && ESTALE == err && (--trials > 0));
+
+    if (-1 == rc) {
+        CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs on "
+                             "path: %s failed with errno: %d (%s)\n",
+                             path, err, strerror(err)));
+        return CCS_ERROR;
+    }
+
+    /* now set the amount of free space available on path */
+                               /* sometimes buf.f_bavail is negative */
+    *out_avail = buf.f_bsize * ((int)buf.f_bavail < 0 ? 0 : buf.f_bavail);
+
+    CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
+                         "path: %s has %"PRIu64 " B of free space.",
+                         path, *out_avail));
+
+    return CCS_SUCCESS;
+
+#else /* defined __WINDOWS__ */
+    *out_avail = 0;
+    if (!GetDiskFreeSpaceEx(NULL, (PULARGE_INTEGER)out_avail, NULL, NULL)) {
+        DWORD dwSectorsPerCluster = 0, dwBytesPerSector = 0;
+        DWORD dwFreeClusters = 0, dwTotalClusters = 0;
+
+        if (!GetDiskFreeSpaceA(NULL, &dwSectorsPerCluster,
+            &dwBytesPerSector, &dwFreeClusters, &dwTotalClusters)) {
+            CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: GetDiskFreeSpaceA on "
+                        "path: %s failed with errno: %d (%s)\n",
+                        path, err, strerror(err)));
+            return CCS_ERROR;
+        }
+        *out_avail = dwFreeClusters * dwSectorsPerCluster * dwBytesPerSector;
+    }
+
+    CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
+                        "path: %s has %"PRIu64 " B of free space.",
+                        path, *out_avail));
+
+    return CCS_SUCCESS;
+#endif /* !defined(__WINDOWS__) */
+}
