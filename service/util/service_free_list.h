@@ -42,6 +42,18 @@ struct service_free_list_item_t;
 typedef void (*service_free_list_item_init_fn_t) (
         struct service_free_list_item_t*, void* ctx);
 
+typedef void* (*service_free_list_alloc_fn_t)(
+    void* mpool,
+    size_t size,
+    size_t align,
+    uint32_t flags,
+    void** registration);
+
+typedef void (*service_free_list_free_fn_t)(
+    void* mpool,
+    void* addr,
+    void* registration);
+
 struct service_free_list_t
 {
     service_atomic_lifo_t super;
@@ -54,21 +66,24 @@ struct service_free_list_t
     size_t fl_payload_buffer_size;      /* size of payload buffer */
     size_t fl_payload_buffer_alignment; /* payload buffer alignment */
     service_class_t* fl_frag_class;
-    struct mca_mpool_base_module_t* fl_mpool;
     service_mutex_t fl_lock;
     service_condition_t fl_condition; 
     service_list_t fl_allocations;
     service_free_list_item_init_fn_t item_init;
     void* ctx;
+    void* fl_mpool;
+    uint32_t mpool_flags;
+    service_free_list_alloc_fn_t alloc;
+    service_free_list_free_fn_t free;
 };
 typedef struct service_free_list_t service_free_list_t;
 CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_free_list_t);
 
-struct mca_mpool_base_registration_t;
+
 struct service_free_list_item_t
 { 
     service_list_item_t super; 
-    struct mca_mpool_base_registration_t *registration;
+    void *registration;
     void *ptr;
 }; 
 typedef struct service_free_list_item_t service_free_list_item_t; 
@@ -94,9 +109,12 @@ CCS_DECLSPEC int service_free_list_init_ex(
     int num_elements_to_alloc,
     int max_elements_to_alloc,
     int num_elements_per_alloc,
-    struct mca_mpool_base_module_t*,
     service_free_list_item_init_fn_t item_init,
-    void *ctx
+    void *ctx,
+    void* mpool,
+    service_free_list_alloc_fn_t alloc,
+    service_free_list_free_fn_t free,
+    uint32_t mpool_flags
     );
 
 /**
@@ -126,9 +144,12 @@ CCS_DECLSPEC int service_free_list_init_ex_new(
     int num_elements_to_alloc,
     int max_elements_to_alloc,
     int num_elements_per_alloc,
-    struct mca_mpool_base_module_t*,
     service_free_list_item_init_fn_t item_init,
-    void *ctx
+    void *ctx,
+    void* mpool,
+    service_free_list_alloc_fn_t alloc,
+    service_free_list_free_fn_t free,
+    uint32_t mpool_flags
     );
 
 /**
@@ -155,13 +176,16 @@ static inline int service_free_list_init_new(
     int num_elements_to_alloc,
     int max_elements_to_alloc,
     int num_elements_per_alloc,
-    struct mca_mpool_base_module_t* mpool)
+    void* mpool,
+    service_free_list_alloc_fn_t alloc,
+    service_free_list_free_fn_t free,
+    uint32_t mpool_flags)
 {
     return service_free_list_init_ex_new(free_list,
             frag_size, frag_alignment, frag_class,
             payload_buffer_size, payload_buffer_alignment,
             num_elements_to_alloc, max_elements_to_alloc,
-            num_elements_per_alloc, mpool, NULL, NULL);
+            num_elements_per_alloc, NULL, NULL, mpool, alloc, free, mpool_flags);
 }
 
 CCS_DECLSPEC int service_free_list_grow(service_free_list_t* flist, size_t num_elements);
@@ -284,6 +308,13 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
         }                                                               \
     } while(0)
     
+
+#define CONSTRUCT_SERVICE_FREE_LIST(object, progress) do {\
+    OBJ_CONSTRUCT(object,  service_free_list_t);\
+    ((service_free_list_t *)object)->fl_condition.ccs_progress_fn = progress;\
+    }\
+    while(0);
+
 END_C_DECLS
 #endif 
 

@@ -29,6 +29,7 @@ static void service_condition_construct(service_condition_t *c)
     pthread_cond_init(&c->c_cond, NULL);
 #endif
     c->name = NULL;
+    c->ccs_progress_fn = NULL;
 }
 
 
