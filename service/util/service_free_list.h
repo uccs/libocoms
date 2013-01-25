@@ -315,6 +315,14 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
     }\
     while(0);
 
+static int service_free_list_new(service_free_list_t **list, ccs_progress_fn_t progress)
+{
+    service_free_list_t *fl = OBJ_NEW(service_free_list_t);
+    fl->fl_condition.ccs_progress_fn = progress;
+    *list = fl;
+    return CCS_SUCCESS;
+}
+
 END_C_DECLS
 #endif 
 

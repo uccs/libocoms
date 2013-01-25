@@ -133,11 +133,13 @@ BEGIN_C_DECLS
 #define CCS_OBJ_MAGIC_ID ((0xdeafbeedULL << 32) + 0xdeafbeedULL)
 #endif
 
+#include <stdarg.h>
 /* typedefs ***********************************************************/
 
 typedef struct service_object_t service_object_t;
 typedef struct service_class_t service_class_t;
 typedef void (*service_construct_t) (service_object_t *);
+typedef void (*service_construct_extra_t) (service_object_t *, ...);
 typedef void (*service_destruct_t) (service_object_t *);
 
 
@@ -153,6 +155,7 @@ struct service_class_t {
     const char *cls_name;           /**< symbolic name for class */
     service_class_t *cls_parent;       /**< parent class descriptor */
     service_construct_t cls_construct; /**< class constructor */
+    service_construct_extra_t cls_construct_extra; /**< class constructor with 2 params */
     service_destruct_t cls_destruct;   /**< class destructor */
     int cls_initialized;            /**< is class initialized */
     int cls_depth;                  /**< depth of class hierarchy tree */
@@ -216,11 +219,12 @@ struct service_object_t {
  * Put this in NAME.c
  */
 #define OBJ_CLASS_INSTANCE(NAME, PARENT, CONSTRUCTOR, DESTRUCTOR)       \
-    service_class_t NAME ## _class = {                                     \
+    service_class_t NAME ## _class = {                                  \
         # NAME,                                                         \
         OBJ_CLASS(PARENT),                                              \
-        (service_construct_t) CONSTRUCTOR,                                 \
-        (service_destruct_t) DESTRUCTOR,                                   \
+        (service_construct_t) CONSTRUCTOR,                              \
+        NULL,                                                           \
+        (service_destruct_t) DESTRUCTOR,                                \
         0, 0, NULL, NULL,                                               \
         sizeof(NAME)                                                    \
     }
@@ -339,21 +343,29 @@ static inline service_object_t *service_obj_new_debug(service_class_t* type, con
  * @param type          The object type
  */
 
-#define OBJ_CONSTRUCT(object, type)                             \
-do {                                                            \
-    OBJ_CONSTRUCT_INTERNAL((object), OBJ_CLASS(type));          \
+
+
+
+
+#define OBJ_CONSTRUCT(object, type, ...)                                    \
+do {                                                                   \
+    OBJ_CONSTRUCT_INTERNAL((object), OBJ_CLASS(type), ## __VA_ARGS__);                 \
 } while (0)
 
-#define OBJ_CONSTRUCT_INTERNAL(object, type)                        \
-do {                                                                \
-    OBJ_SET_MAGIC_ID((object), CCS_OBJ_MAGIC_ID);              \
-    if (0 == (type)->cls_initialized) {                             \
+#define OBJ_CONSTRUCT_INTERNAL(object, type, ...)                           \
+do {                                                                   \
+    OBJ_SET_MAGIC_ID((object), CCS_OBJ_MAGIC_ID);                      \
+    if (0 == (type)->cls_initialized) {                                \
         service_class_initialize((type));                              \
-    }                                                               \
+    }                                                                  \
     ((service_object_t *) (object))->obj_class = (type);               \
     ((service_object_t *) (object))->obj_reference_count = 1;          \
-    service_obj_run_constructors((service_object_t *) (object));          \
-    OBJ_REMEMBER_FILE_AND_LINENO( object, __FILE__, __LINE__ ); \
+    service_obj_run_constructors((service_object_t *) (object));       \
+    if (((service_object_t *) (object))->obj_class->cls_construct_extra) { \
+    ((service_object_t *) (object))->obj_class->cls_construct_extra( \
+                (service_object_t *) (object), ## __VA_ARGS__); \
+    }\
+    OBJ_REMEMBER_FILE_AND_LINENO( object, __FILE__, __LINE__ );        \
 } while (0)
 
 

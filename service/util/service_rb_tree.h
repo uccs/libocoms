@@ -215,9 +215,17 @@ CCS_DECLSPEC int service_rb_tree_size(service_rb_tree_t *tree);
 
 #define CONSTRUCT_RB_TREE(object, progress) do {\
     OBJ_CONSTRUCT(object, service_rb_tree_t);\
-    ((service_rb_tree_t *)object)->free_list->fl_condition.ccs_progress_fn = progress;\
+    ((service_rb_tree_t *)object)->free_list.fl_condition.ccs_progress_fn = progress;\
     }\
     while(0);
+
+static int service_rb_tree_new(service_rb_tree_t **rb_tree, ccs_progress_fn_t progress)
+{
+    service_rb_tree_t *rbt = OBJ_NEW(service_rb_tree_t);
+    rbt->free_list.fl_condition.ccs_progress_fn = progress;
+    *rb_tree = rbt;
+    return CCS_SUCCESS;
+}
 END_C_DECLS
 #endif /* OMPI_RB_TREE_H */
 
