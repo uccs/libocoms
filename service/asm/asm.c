@@ -16,10 +16,11 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
 
-#include "service/sys/atomic.h"
+#include "ccs_config.h"
 #include "service/sys/architecture.h"
+#include "service/sys/atomic.h"
+
 
 #if CCS_ASSEMBLY_ARCH == OMPI_SPARC
 

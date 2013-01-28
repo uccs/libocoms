@@ -84,6 +84,7 @@
 #endif
 
 
+
 BEGIN_C_DECLS
 /**********************************************************************
  *
@@ -255,7 +256,6 @@ void service_atomic_wmb(void);
 #endif
 
 #if defined(DOXYGEN) || CCS_HAVE_ATOMIC_SPINLOCKS || (CCS_HAVE_ATOMIC_CMPSET_32 || CCS_HAVE_ATOMIC_CMPSET_64)
-
 /**
  * Enumeration of lock states
  */

@@ -25,7 +25,6 @@
 #include "ccs_config.h"
 
 #include <stdio.h>
-
 #include "service/sys/atomic.h"
 #include "service/util/service_object.h"
 #include "service/include/service_constants.h"

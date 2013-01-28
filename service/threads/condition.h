@@ -38,7 +38,7 @@
 #if 0
 #include "opal/runtime/ccs_cr.h"
 #endif
-#include "rlg_confdefs.h"
+//#include "rlg_confdefs.h"
 
 BEGIN_C_DECLS
 
