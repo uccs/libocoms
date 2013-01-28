@@ -1,6 +1,8 @@
 #include "service/util/service_free_list.h"
 #include "service/util/service_rb_tree.h"
 #include "service/util/service_object.h"
+#include "service/mca/mca.h"
+#include "service/mca/base/base.h"
 #include <stdio.h>
 
 static int dummy_progress(void)
@@ -26,6 +28,8 @@ int main(int argc, char **argv)
     list_d->fl_condition.ccs_progress_fn();
     tree_d->free_list.fl_condition.ccs_progress_fn();
 
+    ccs_mca_service_install_dirs_t id = {"dir1","dir2","dir3"};
+    ccs_mca_base_open(id);
     printf("all done\n");
     return 0;
 }

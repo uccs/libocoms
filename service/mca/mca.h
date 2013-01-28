@@ -334,6 +334,13 @@ typedef struct ccs_mca_base_component_data_2_0_0_t ccs_mca_base_component_data_2
 #define MCA_BASE_VERSION_RELEASE 0
 #define MCA_BASE_VERSION_2_0_0 MCA_BASE_VERSION_MAJOR, MCA_BASE_VERSION_MINOR, MCA_BASE_VERSION_RELEASE
 
+typedef struct ccs_mca_service_install_dirs_t {
+    char* sysconfdir;
+    char* pkgdatadir;
+    char* pkglibdir;
+} ccs_mca_service_install_dirs_t;
+
+CCS_DECLSPEC extern ccs_mca_service_install_dirs_t service_install_dirs;
 
 /**
  * MCA return codes.

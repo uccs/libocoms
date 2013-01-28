@@ -29,7 +29,6 @@
 #include <sys/param.h>
 #endif
 #if 0
-#include "opal/mca/installdirs/installpath.h"
 #include "service/util/show_help.h"
 #include "service/util/path.h"
 #include "service/util/ccs_environ.h"
@@ -46,7 +45,7 @@
 #include "service/util/output.h"
 #include "service/util/path.h"
 #include "service/util/service_environ.h"
-#include "ccs/mca/installpath/installpath.h"
+
 
 /*
  * Local types
