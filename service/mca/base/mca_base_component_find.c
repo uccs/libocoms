@@ -62,7 +62,7 @@
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
 #include "service/mca/base/mca_base_component_repository.h"
-#include "ccs/include/ccs_constants.h"
+#include "service/include/service_constants.h"
 
 
 #if CCS_WANT_LIBLTDL

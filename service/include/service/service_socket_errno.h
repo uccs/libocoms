@@ -28,7 +28,7 @@
    OF errno FOR COMPATIBILITY  */
 
 #include <errno.h>
-#include "ccs/include/ccs_constants.h"
+#include "service/include/service_constants.h"
 #ifdef __WINDOWS__
 #define service_socket_errno service_get_socket_errno()
 
