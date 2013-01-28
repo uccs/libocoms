@@ -24,24 +24,24 @@
 #define CCS_SYS_ARCHITECTURE_H
 
 /* Architectures */
-#define OMPI_UNSUPPORTED    0000
-#define OMPI_WINDOWS        0001
-#define OMPI_IA32           0010
-#define OMPI_IA64           0020
-#define OMPI_AMD64          0030
-#define OMPI_ALPHA          0040
-#define OMPI_POWERPC32      0050
-#define OMPI_POWERPC64      0051
-#define OMPI_SPARC          0060
-#define OMPI_SPARCV9_32     0061
-#define OMPI_SPARCV9_64     0062
-#define OMPI_MIPS           0070
-#define OMPI_ARM            0100
+#define CCS_UNSUPPORTED    0000
+#define CCS_WINDOWS        0001
+#define CCS_IA32           0010
+#define CCS_IA64           0020
+#define CCS_AMD64          0030
+#define CCS_ALPHA          0040
+#define CCS_POWERPC32      0050
+#define CCS_POWERPC64      0051
+#define CCS_SPARC          0060
+#define CCS_SPARCV9_32     0061
+#define CCS_SPARCV9_64     0062
+#define CCS_MIPS           0070
+#define CCS_ARM            0100
 
 /* Formats */
-#define OMPI_DEFAULT        1000  /* standard for given architecture */
-#define OMPI_DARWIN         1001  /* Darwin / OS X on PowerPC */
-#define OMPI_PPC_LINUX      1002  /* Linux on PowerPC */
-#define OMPI_AIX            1003  /* AIX on Power / PowerPC */
+#define CCS_DEFAULT        1000  /* standard for given architecture */
+#define CCS_DARWIN         1001  /* Darwin / OS X on PowerPC */
+#define CCS_PPC_LINUX      1002  /* Linux on PowerPC */
+#define CCS_AIX            1003  /* AIX on Power / PowerPC */
 
 #endif /* #ifndef CCS_SYS_ARCHITECTURE_H */

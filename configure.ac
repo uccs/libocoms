@@ -387,6 +387,8 @@ AC_DEFINE_UNQUOTED(CCS_NEED_C_BOOL, $CCS_NEED_C_BOOL,
 AC_MSG_RESULT([$MSG])
 AC_CHECK_SIZEOF(_Bool)
 
+
+AC_DEFINE([CCS_FORTRAN_HANDLE_MAX], [128], [Bogus type for CCS])
 #
 # Check for other compiler characteristics
 #
