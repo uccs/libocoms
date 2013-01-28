@@ -1,2 +1,2 @@
 all:  
-	gcc service/threads/condition.c service/threads/thread.c service/threads/mutex.c test.c -g -o test -I ccs/include -I. -L./service/util/.libs -lserviceutil -lpthread -L./install/lib -lservice
+	gcc test.c -g -o test -I ccs/include -I. -L./install/lib -lservice && LD_LIBRARY_PATH=./install/lib:$LD_LIBRARY_PATH ./test

@@ -984,7 +984,7 @@ static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
     option->clo_variable_dest = e->ocl_variable_dest;
     if (NULL != e->ocl_mca_type_name) {
         option->clo_mca_param_env_var = 
-            mca_base_param_environ_variable(e->ocl_mca_type_name,
+            ccs_mca_base_param_environ_variable(e->ocl_mca_type_name,
                                             e->ocl_mca_component_name,
                                             e->ocl_mca_param_name);
     }

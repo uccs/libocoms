@@ -68,7 +68,6 @@ int ccs_mca_base_open(ccs_mca_service_install_dirs_t install_dirs)
   }
 
   service_install_dirs = install_dirs;
-  printf("DIRS: %s: %s: %s\n",service_install_dirs.pkgdatadir,service_install_dirs.pkglibdir,service_install_dirs.sysconfdir);
     /* define the system and user default paths */
 #if CCS_WANT_HOME_CONFIG_FILES
     ccs_mca_base_system_default_path = strdup(service_install_dirs.pkglibdir);
