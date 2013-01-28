@@ -23,7 +23,7 @@ headers = \
 	service_stdint.h \
         service_portable_platform.h
 
-nodist_headers = service_config.h
+nodist_headers = service_config.h ccs_config.h
 
 include service/Makefile.am
 
