@@ -578,9 +578,9 @@ service_path_df(const char *path,
                                /* sometimes buf.f_bavail is negative */
     *out_avail = buf.f_bsize * ((int)buf.f_bavail < 0 ? 0 : buf.f_bavail);
 
-    //CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
-     //                    "path: %s has %"PRIu64 " B of free space.",
-     //                    path, *out_avail));
+    /*CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
+                         "path: %s has %"PRIu64 " B of free space.",
+                         path, *out_avail));*/
 
     return CCS_SUCCESS;
 

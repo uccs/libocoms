@@ -26,7 +26,6 @@
 #include "service/include/service_constants.h"
 #include "service/util/service_pointer_array.h"
 #include "service/util/output.h"
-//#include "rlg_confdefs.h"
 
 enum { TABLE_INIT = 1, TABLE_GROW = 2 };
 
