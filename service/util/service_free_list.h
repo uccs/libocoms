@@ -114,7 +114,8 @@ CCS_DECLSPEC int service_free_list_init_ex(
     void* mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags
+    uint32_t mpool_flags,
+    ccs_progress_fn_t ccs_progress
     );
 
 /**
@@ -149,7 +150,8 @@ CCS_DECLSPEC int service_free_list_init_ex_new(
     void* mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags
+    uint32_t mpool_flags,
+    ccs_progress_fn_t ccs_progress
     );
 
 /**
@@ -179,13 +181,15 @@ static inline int service_free_list_init_new(
     void* mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags)
+    uint32_t mpool_flags,
+    ccs_progress_fn_t ccs_progress
+    )
 {
     return service_free_list_init_ex_new(free_list,
             frag_size, frag_alignment, frag_class,
             payload_buffer_size, payload_buffer_alignment,
             num_elements_to_alloc, max_elements_to_alloc,
-            num_elements_per_alloc, NULL, NULL, mpool, alloc, free, mpool_flags);
+            num_elements_per_alloc, NULL, NULL, mpool, alloc, free, mpool_flags, ccs_progress);
 }
 
 CCS_DECLSPEC int service_free_list_grow(service_free_list_t* flist, size_t num_elements);
@@ -308,21 +312,6 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
         }                                                               \
     } while(0)
     
-
-#define CONSTRUCT_SERVICE_FREE_LIST(object, progress) do {\
-    OBJ_CONSTRUCT(object,  service_free_list_t);\
-    ((service_free_list_t *)object)->fl_condition.ccs_progress_fn = progress;\
-    }\
-    while(0);
-
-static int service_free_list_new(service_free_list_t **list, ccs_progress_fn_t progress)
-{
-    service_free_list_t *fl = OBJ_NEW(service_free_list_t);
-    fl->fl_condition.ccs_progress_fn = progress;
-    *list = fl;
-    return CCS_SUCCESS;
-}
-
 END_C_DECLS
 #endif 
 

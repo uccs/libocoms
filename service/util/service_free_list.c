@@ -106,7 +106,9 @@ int service_free_list_init_ex(service_free_list_t *flist,
     void* mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags)
+    uint32_t mpool_flags,
+    ccs_progress_fn_t ccs_progress
+    )
 {
     /* alignment must be more than zero and power of two */
     if(alignment <= 1 || (alignment & (alignment - 1)))
@@ -130,7 +132,7 @@ int service_free_list_init_ex(service_free_list_t *flist,
     flist->alloc    = alloc;
     flist->free     = free;
     flist->mpool_flags = mpool_flags;
-
+    flist->fl_condition.ccs_progress_fn = ccs_progress;
     /* Sanity check: runtime functions alloc/free must be
      * either both given or not.
      */
@@ -157,7 +159,9 @@ int service_free_list_init_ex_new(service_free_list_t *flist,
     void *mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags)
+    uint32_t mpool_flags,
+    ccs_progress_fn_t ccs_progress
+    )
 {
     /* alignment must be more than zero and power of two */
     if (frag_alignment <= 1 || (frag_alignment & (frag_alignment - 1)))
@@ -184,7 +188,7 @@ int service_free_list_init_ex_new(service_free_list_t *flist,
     flist->alloc    = alloc;
     flist->free     = free;
     flist->mpool_flags = mpool_flags;
-
+    flist->fl_condition.ccs_progress_fn = ccs_progress;
     /* Sanity check: runtime functions alloc/free must be
      * either both given or not.
      */

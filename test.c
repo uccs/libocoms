@@ -3,6 +3,7 @@
 #include "service/util/service_object.h"
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
+#include "service/threads/mutex.h"
 #include <stdio.h>
 
 static int dummy_progress(void)
@@ -18,10 +19,17 @@ int main(int argc, char **argv)
     service_rb_tree_t tree;
     service_free_list_t *list_d;
     service_rb_tree_t *tree_d;
-    CONSTRUCT_SERVICE_FREE_LIST(&list, dummy_progress);
+    OBJ_CONSTRUCT(&list, service_free_list_t);
+    service_free_list_init_ex_new(&list, 10, 32, OBJ_CLASS(service_mutex_t),
+        sizeof(service_mutex_t), 32, 10, 20, 5, NULL,NULL,
+        NULL, NULL, NULL, 0, dummy_progress);
     CONSTRUCT_RB_TREE(&tree, dummy_progress);
-    service_free_list_new(&list_d, dummy_progress);
+    list_d = OBJ_NEW(service_free_list_t);
+    service_free_list_init_ex_new(list_d, 10, 32, OBJ_CLASS(service_mutex_t),
+                    sizeof(service_mutex_t), 32, 10, 20, 5, NULL,NULL,
+                            NULL, NULL, NULL, 0, dummy_progress);
     service_rb_tree_new(&tree_d, dummy_progress);
+    printf("%s:%d\n", __FILE__, __LINE__);
 
     list.fl_condition.ccs_progress_fn();
     tree.free_list.fl_condition.ccs_progress_fn();
