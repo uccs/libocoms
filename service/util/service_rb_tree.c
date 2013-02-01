@@ -48,12 +48,13 @@ static void inorder_traversal(service_rb_tree_t *tree,
 void service_rb_tree_construct(service_object_t * object)
 {
     service_rb_tree_t * tree = (service_rb_tree_t *) object;
+    allocator_handle_t handle = {NULL, 0};
     tree->root_ptr = NULL;
     OBJ_CONSTRUCT(&(tree->free_list), service_free_list_t);
     service_free_list_init_new(&(tree->free_list), sizeof(service_rb_tree_node_t),
             service_cache_line_size, OBJ_CLASS(service_rb_tree_node_t),
             0,service_cache_line_size,
-            0, -1 , 128, NULL, NULL, NULL, 0, NULL);
+            0, -1 , 128, NULL, NULL, handle, NULL);
 }
 
 /* the destructor function */

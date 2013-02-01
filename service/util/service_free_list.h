@@ -42,15 +42,20 @@ struct service_free_list_item_t;
 typedef void (*service_free_list_item_init_fn_t) (
         struct service_free_list_item_t*, void* ctx);
 
+typedef struct allocator_handle_t{
+    void *allocator_context;
+    uint32_t flags;
+} allocator_handle_t;
+
 typedef void* (*service_free_list_alloc_fn_t)(
-    void* mpool,
+    void* context,
     size_t size,
     size_t align,
     uint32_t flags,
     void** registration);
 
 typedef void (*service_free_list_free_fn_t)(
-    void* mpool,
+    void* context,
     void* addr,
     void* registration);
 
@@ -71,8 +76,7 @@ struct service_free_list_t
     service_list_t fl_allocations;
     service_free_list_item_init_fn_t item_init;
     void* ctx;
-    void* fl_mpool;
-    uint32_t mpool_flags;
+    allocator_handle_t alloc_handle;
     service_free_list_alloc_fn_t alloc;
     service_free_list_free_fn_t free;
 };
@@ -111,10 +115,9 @@ CCS_DECLSPEC int service_free_list_init_ex(
     int num_elements_per_alloc,
     service_free_list_item_init_fn_t item_init,
     void *ctx,
-    void* mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags,
+    allocator_handle_t handle,
     ccs_progress_fn_t ccs_progress
     );
 
@@ -147,10 +150,9 @@ CCS_DECLSPEC int service_free_list_init_ex_new(
     int num_elements_per_alloc,
     service_free_list_item_init_fn_t item_init,
     void *ctx,
-    void* mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags,
+    allocator_handle_t handle,
     ccs_progress_fn_t ccs_progress
     );
 
@@ -178,10 +180,9 @@ static inline int service_free_list_init_new(
     int num_elements_to_alloc,
     int max_elements_to_alloc,
     int num_elements_per_alloc,
-    void* mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags,
+    allocator_handle_t handle,
     ccs_progress_fn_t ccs_progress
     )
 {
@@ -189,7 +190,7 @@ static inline int service_free_list_init_new(
             frag_size, frag_alignment, frag_class,
             payload_buffer_size, payload_buffer_alignment,
             num_elements_to_alloc, max_elements_to_alloc,
-            num_elements_per_alloc, NULL, NULL, mpool, alloc, free, mpool_flags, ccs_progress);
+            num_elements_per_alloc, NULL, NULL, alloc, free, handle, ccs_progress);
 }
 
 CCS_DECLSPEC int service_free_list_grow(service_free_list_t* flist, size_t num_elements);

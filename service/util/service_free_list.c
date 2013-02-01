@@ -50,10 +50,10 @@ static void service_free_list_construct(service_free_list_t* fl)
     fl->fl_payload_buffer_size=0;
     fl->fl_payload_buffer_alignment=0;
     fl->fl_frag_class = OBJ_CLASS(service_free_list_item_t);
-    fl->fl_mpool = NULL;
+    fl->alloc_handle.allocator_context = NULL;
+    fl->alloc_handle.flags = 0;
     fl->alloc = NULL;
     fl->free = NULL;
-    fl->mpool_flags = 0;
     fl->ctx = NULL;
     OBJ_CONSTRUCT(&(fl->fl_allocations), service_list_t);
 }
@@ -75,7 +75,7 @@ static void service_free_list_destruct(service_free_list_t* fl)
         while(NULL != (item = service_list_remove_first(&(fl->fl_allocations)))) {
             fl_mem = (service_free_list_memory_t*)item;
 
-            fl->free(fl->fl_mpool, fl_mem->ptr, fl_mem->registration);
+            fl->free(fl->alloc_handle.allocator_context, fl_mem->ptr, fl_mem->registration);
 
             /* destruct the item (we constructed it), then free the memory chunk */
             OBJ_DESTRUCT(item);
@@ -103,10 +103,9 @@ int service_free_list_init_ex(service_free_list_t *flist,
     int num_elements_per_alloc,
     service_free_list_item_init_fn_t item_init,
     void* ctx,
-    void* mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags,
+    allocator_handle_t handle,
     ccs_progress_fn_t ccs_progress
     )
 {
@@ -128,10 +127,9 @@ int service_free_list_init_ex(service_free_list_t *flist,
     flist->item_init = item_init;
     flist->ctx = ctx;
 
-    flist->fl_mpool = mpool;
+    flist->alloc_handle = handle;
     flist->alloc    = alloc;
     flist->free     = free;
-    flist->mpool_flags = mpool_flags;
     flist->fl_condition.ccs_progress_fn = ccs_progress;
     /* Sanity check: runtime functions alloc/free must be
      * either both given or not.
@@ -156,10 +154,9 @@ int service_free_list_init_ex_new(service_free_list_t *flist,
     int num_elements_per_alloc,
     service_free_list_item_init_fn_t item_init,
     void* ctx,
-    void *mpool,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
-    uint32_t mpool_flags,
+    allocator_handle_t handle,
     ccs_progress_fn_t ccs_progress
     )
 {
@@ -184,10 +181,9 @@ int service_free_list_init_ex_new(service_free_list_t *flist,
     flist->item_init = item_init;
     flist->ctx = ctx;
 
-    flist->fl_mpool = mpool;
+    flist->alloc_handle = handle;
     flist->alloc    = alloc;
     flist->free     = free;
-    flist->mpool_flags = mpool_flags;
     flist->fl_condition.ccs_progress_fn = ccs_progress;
     /* Sanity check: runtime functions alloc/free must be
      * either both given or not.
@@ -201,7 +197,7 @@ int service_free_list_init_ex_new(service_free_list_t *flist,
 }
 int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
 {
-    unsigned char *ptr, *mpool_alloc_ptr = NULL;
+    unsigned char *ptr, *runtime_alloc_ptr = NULL;
     service_free_list_memory_t *alloc_ptr;
     size_t i, alloc_size, head_size, elem_size = 0;
     void *reg = NULL;
@@ -226,15 +222,15 @@ int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
     if(NULL == alloc_ptr)
         return CCS_ERR_TEMP_OUT_OF_RESOURCE;
 
-    /* allocate the rest from the mpool */
+    /* allocate the rest from the runtime */
     if(flist->alloc != NULL) {
         elem_size = CCS_ALIGN(flist->fl_payload_buffer_size, 
                 flist->fl_payload_buffer_alignment, size_t);
         if(elem_size != 0) {
-            mpool_alloc_ptr = (unsigned char *) flist->alloc(flist->fl_mpool,
+            runtime_alloc_ptr = (unsigned char *) flist->alloc(flist->alloc_handle.allocator_context,
                    num_elements * elem_size, flist->fl_payload_buffer_alignment,
-                   flist->mpool_flags, &reg);
-            if(NULL == mpool_alloc_ptr) {
+                   flist->alloc_handle.flags, &reg);
+            if(NULL == runtime_alloc_ptr) {
                 free(alloc_ptr);
                 return CCS_ERR_TEMP_OUT_OF_RESOURCE;
             }
@@ -247,7 +243,7 @@ int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
     service_list_append(&(flist->fl_allocations), (service_list_item_t*)alloc_ptr);
 
     alloc_ptr->registration = reg;
-    alloc_ptr->ptr = mpool_alloc_ptr;
+    alloc_ptr->ptr = runtime_alloc_ptr;
 
     ptr = (unsigned char*)alloc_ptr + sizeof(service_free_list_memory_t);
     ptr = CCS_ALIGN_PTR(ptr, flist->fl_frag_alignment, unsigned char*);
@@ -255,7 +251,7 @@ int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
     for(i=0; i<num_elements; i++) {
         service_free_list_item_t* item = (service_free_list_item_t*)ptr;
         item->registration = reg;
-        item->ptr = mpool_alloc_ptr;
+        item->ptr = runtime_alloc_ptr;
 
         OBJ_CONSTRUCT_INTERNAL(item, flist->fl_frag_class);
         
@@ -266,7 +262,7 @@ int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
 
         service_atomic_lifo_push(&(flist->super), &(item->super));
         ptr += head_size;
-        mpool_alloc_ptr += elem_size;
+        runtime_alloc_ptr += elem_size;
         
     }
     flist->fl_num_allocated += num_elements;
