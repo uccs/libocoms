@@ -35,11 +35,9 @@
 #endif
 
 #include "service/threads/mutex.h"
-#include "ccs/ctl/ccs_progress.h"
 #if 0
 #include "opal/runtime/ccs_cr.h"
 #endif
-#include "rlg_confdefs.h"
 
 BEGIN_C_DECLS
 
@@ -47,6 +45,8 @@ BEGIN_C_DECLS
  * Combine pthread support w/ polled progress to allow run-time selection
  * of threading vs. non-threading progress.
  */
+
+typedef int (*ccs_progress_fn_t)(void);
 
 struct service_condition_t {
     service_object_t super;
@@ -57,6 +57,7 @@ struct service_condition_t {
 #elif CCS_HAVE_SOLARIS_THREADS
     cond_t c_cond;
 #endif
+    ccs_progress_fn_t ccs_progress_fn;
     char *name;
 };
 typedef struct service_condition_t service_condition_t;
@@ -85,21 +86,21 @@ static inline int service_condition_wait(service_condition_t *c, service_mutex_t
         if (c->c_signaled) {
             c->c_waiting--;
             service_mutex_unlock(m);
-            ccs_progress();
+            c->ccs_progress_fn();
             CCS_CR_TEST_CHECKPOINT_READY_STALL();
             service_mutex_lock(m);
             return 0;
         }
         while (c->c_signaled == 0) {
             service_mutex_unlock(m);
-            ccs_progress();
+            c->ccs_progress_fn();
             CCS_CR_TEST_CHECKPOINT_READY_STALL();
             service_mutex_lock(m);
         }
 #endif
     } else {
         while (c->c_signaled == 0) {
-            ccs_progress();
+            c->ccs_progress_fn();
             CCS_CR_TEST_CHECKPOINT_READY_STALL();
         }
     }
@@ -145,7 +146,7 @@ static inline int service_condition_timedwait(service_condition_t *c,
         if (c->c_signaled == 0) {
             do {
                 service_mutex_unlock(m);
-                ccs_progress();
+                c->ccs_progress_fn();
                 gettimeofday(&tv,NULL);
                 service_mutex_lock(m);
                 } while (c->c_signaled == 0 &&  
@@ -159,7 +160,7 @@ static inline int service_condition_timedwait(service_condition_t *c,
         gettimeofday(&tv,NULL);
         if (c->c_signaled == 0) {
             do {
-                ccs_progress();
+                c->ccs_progress_fn();
                 gettimeofday(&tv,NULL);
                 } while (c->c_signaled == 0 &&  
                          (tv.tv_sec <= absolute.tv_sec ||

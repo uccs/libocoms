@@ -56,6 +56,7 @@ typedef struct ccs_mca_base_component_priority_list_item_t
 
 CCS_DECLSPEC OBJ_CLASS_DECLARATION(ccs_mca_base_component_priority_list_item_t);
 
+
 /*
  * Public variables
  */
@@ -81,7 +82,7 @@ CCS_DECLSPEC extern char *ccs_mca_base_user_default_path;
  * invoked during ompi_mpi_init() and specifically invoked in the
  * special case of the laminfo command.
  */
-CCS_DECLSPEC int ccs_mca_base_open(void);
+CCS_DECLSPEC int ccs_mca_base_open(ccs_mca_service_install_dirs_t install_dirs);
 
 /**
  * Last function called in the MCA

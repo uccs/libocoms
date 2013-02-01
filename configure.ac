@@ -96,8 +96,7 @@ AM_SILENT_RULES([no])
 ccs_show_subtitle "Checking versions"
 
 . $srcdir/VERSION
-CCS_SAVE_VERSION([CCS], [Common Communication Substrate], [$srcdir/VERSION],
-                          [ccs/include/version.h])
+
 AC_SUBST(libccs_so_version)
 AC_SUBST(libmca_ccs_common_hwloc_so_version)
 AC_SUBST(libmca_common_sm_so_version)
@@ -118,7 +117,7 @@ AC_DEFINE_UNQUOTED([CCS_ENABLE_PROGRESS_THREADS], [$CCS_ENABLE_PROGRESS_THREADS]
 
 # List header files to generate
 
-AM_CONFIG_HEADER([ccs/include/ccs_config.h])
+AM_CONFIG_HEADER([service/include/ccs_config.h])
 #m4_ifdef([project_orte],
 #         [AM_CONFIG_HEADER([orte/include/orte_config.h])])
 
@@ -181,7 +180,6 @@ AH_TOP([/* -*- c -*-
 ])
 
 AH_BOTTOM([
-#include "ccs_config_bottom.h"
 #include "service/include/service_config_bottom.h"
 #endif /* CCS_CONFIG_H */
 ])
@@ -389,6 +387,8 @@ AC_DEFINE_UNQUOTED(CCS_NEED_C_BOOL, $CCS_NEED_C_BOOL,
 AC_MSG_RESULT([$MSG])
 AC_CHECK_SIZEOF(_Bool)
 
+
+AC_DEFINE([CCS_FORTRAN_HANDLE_MAX], [128], [Bogus type for CCS])
 #
 # Check for other compiler characteristics
 #
@@ -1100,8 +1100,6 @@ ccs_show_title "Final top-level CCS configuration"
            service/Makefile 
            service/util/Makefile 
            service/util/keyval/Makefile 
-           ccs/include/Makefile 
-           ccs/uccs/Makefile 
            tests/Makefile 
            tests/init/Makefile 
            tests/onesided/Makefile"
@@ -1118,7 +1116,6 @@ ccs_show_title "Final top-level CCS configuration"
             service/Makefile 
             service/util/Makefile 
             service/util/keyval/Makefile 
-            ccs/include/Makefile 
     ])
 
     CCS_CONFIG_FILES

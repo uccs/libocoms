@@ -34,8 +34,8 @@
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
 #include "service/mca/base/mca_base_component_repository.h"
-#include "ccs/include/ccs_constants.h"
-#include "ccs/mca/installpath/installpath.h"
+#include "service/include/service_constants.h"
+
 
 /*
  * Public variables
@@ -50,12 +50,12 @@ char *ccs_mca_base_user_default_path=NULL;
  */
 static void set_defaults(service_output_stream_t *lds);
 static void parse_verbose(char *e, service_output_stream_t *lds);
-
+ccs_mca_service_install_dirs_t service_install_dirs = {"","",""};
 
 /*
  * Main MCA initialization.  
  */
-int ccs_mca_base_open(void)
+int ccs_mca_base_open(ccs_mca_service_install_dirs_t install_dirs)
 {
   char *value;
   service_output_stream_t lds;
@@ -67,6 +67,7 @@ int ccs_mca_base_open(void)
     return CCS_SUCCESS;
   }
 
+  service_install_dirs = install_dirs;
     /* define the system and user default paths */
 #if CCS_WANT_HOME_CONFIG_FILES
     ccs_mca_base_system_default_path = strdup(service_install_dirs.pkglibdir);
