@@ -17,7 +17,7 @@
 #include <errno.h>
 
 #include "service/util/fd.h"
-#include "ccs/include/ccs_constants.h"
+#include "service/include/service_constants.h"
 
 
 /*

@@ -69,13 +69,16 @@
 #include <ifaddrs.h>
 #endif
 
+#define DISABLE_SERVICE_IF_UTIL 1
+
+#if defined(DISABLE_SERVICE_IF_UTIL) && !DISABLE_SERVICE_IF_UTIL
+
 #include "service/util/service_list.h"
 #include "service/util/if.h"
 #include "service/util/output.h"
 #include "service/util/argv.h"
-#include "ccs/include/ccs_constants.h"
+#include "service/include/service_constants.h"
 
-#include "ccs/mca/sysif/base/base.h"
 
 #ifdef HAVE_STRUCT_SOCKADDR_IN
 
@@ -707,4 +710,5 @@ service_iftupletoaddr(char *inaddr, uint32_t *net, uint32_t *mask)
 }
 
 #endif /* HAVE_STRUCT_SOCKADDR_IN */
+#endif /* DISABLE_SERVICE_IF_UTIL  */
 

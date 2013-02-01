@@ -139,30 +139,30 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  *********************************************************************/
 #if defined(DOXYGEN)
 /* don't include system-level gorp when generating doxygen files */ 
-#elif CCS_ASSEMBLY_ARCH == OMPI_WINDOWS
+#elif CCS_ASSEMBLY_ARCH == CCS_WINDOWS
 /* windows first, as they have API-level primitives for this stuff */
 #include "service/sys/win32/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_ALPHA
+#elif CCS_ASSEMBLY_ARCH == CCS_ALPHA
 #include "service/sys/alpha/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_AMD64
+#elif CCS_ASSEMBLY_ARCH == CCS_AMD64
 #include "service/sys/amd64/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_ARM
+#elif CCS_ASSEMBLY_ARCH == CCS_ARM
 #include "service/sys/arm/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_IA32
+#elif CCS_ASSEMBLY_ARCH == CCS_IA32
 #include "service/sys/ia32/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_IA64
+#elif CCS_ASSEMBLY_ARCH == CCS_IA64
 #include "service/sys/ia64/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_MIPS
+#elif CCS_ASSEMBLY_ARCH == CCS_MIPS
 #include "service/sys/mips/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_POWERPC32
+#elif CCS_ASSEMBLY_ARCH == CCS_POWERPC32
 #include "service/sys/powerpc/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_POWERPC64
+#elif CCS_ASSEMBLY_ARCH == CCS_POWERPC64
 #include "service/sys/powerpc/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_SPARC
+#elif CCS_ASSEMBLY_ARCH == CCS_SPARC
 #include "service/sys/sparc/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_32
+#elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_32
 #include "service/sys/sparcv9/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64
+#elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64
 #include "service/sys/sparcv9/atomic.h"
 #endif
 

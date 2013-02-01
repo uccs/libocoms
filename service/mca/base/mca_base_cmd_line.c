@@ -27,7 +27,7 @@
 #include "service/util/ccs_environ.h"
 #endif
 #include "service/mca/base/base.h"
-#include "ccs/include/ccs_constants.h"
+#include "service/include/service_constants.h"
 
 
 /* 

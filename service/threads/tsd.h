@@ -21,7 +21,7 @@
 #include <thread.h>
 #endif
 
-#include "ccs/include/ccs_constants.h"
+#include "service/include/service_constants.h"
 
 BEGIN_C_DECLS
 

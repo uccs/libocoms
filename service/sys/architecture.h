@@ -23,6 +23,7 @@
 #ifndef CCS_SYS_ARCHITECTURE_H
 #define CCS_SYS_ARCHITECTURE_H
 
+
 /* Architectures */
 #define CCS_UNSUPPORTED    0000
 #define CCS_WINDOWS        0001

@@ -53,7 +53,6 @@
 #endif
 
 #if 0
-#include "opal/mca/installdirs/installpath.h"
 #include "service/util/ccs_environ.h"
 #include "service/util/show_help.h"
 #endif
@@ -63,7 +62,7 @@
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
 #include "service/mca/base/mca_base_component_repository.h"
-#include "ccs/include/ccs_constants.h"
+#include "service/include/service_constants.h"
 
 
 #if CCS_WANT_LIBLTDL

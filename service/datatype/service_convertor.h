@@ -38,7 +38,7 @@
 #include <string.h>
 #endif
 
-#include "ccs/include/ccs_constants.h"
+#include "service/include/service_constants.h"
 #include "service/datatype/service_datatype.h"
 #include "service/util/service_object.h"
 #include "service/include/service/prefetch.h"

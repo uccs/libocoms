@@ -18,7 +18,7 @@
  */
 #include "ccs_config.h"
 
-#include "ccs/include/ccs_constants.h"
+#include "service/include/service_constants.h"
 #include "service/util/arch.h"
 
 int service_cache_line_size = 128;

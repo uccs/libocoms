@@ -133,7 +133,7 @@ static void service_cuda_support_init(void)
     }
 
     /* Set different levels of verbosity in the cuda related code. */
-    id = mca_base_param_reg_int_name("opal", "cuda_verbose", 
+    id = ccs_mca_base_param_reg_int_name("opal", "cuda_verbose",
                                      "Set level of opal cuda verbosity",
                                      false, false, 0, &service_cuda_verbose);
     service_cuda_output = service_output_open(NULL);
