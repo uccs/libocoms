@@ -17,9 +17,9 @@
 
 #include <stddef.h>
 
-#include "service/include/service_constants.h"
-#include "service/datatype/service_datatype.h"
-#include "service/datatype/service_convertor.h"
+#include "service_constants.h"
+#include "service_datatype.h"
+#include "service_convertor.h"
 
 BEGIN_C_DECLS
 

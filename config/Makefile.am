@@ -19,11 +19,5 @@
 # $HEADER$
 #
 
-EXTRA_DIST = \
-        distscript.csh \
-	libltdl-preopen-error.diff \
-	ltmain_pgi_tp.diff \
-        ompi_mca_priority_sort.pl
-
 maintainer-clean-local:
 

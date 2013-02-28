@@ -99,7 +99,7 @@ static inline int service_atomic_cmpset_32( volatile int32_t *addr,
 
 #if CCS_GCC_INLINE_ASSEMBLY
 
-static inline int serivce_atomic_cmpset_64( volatile int64_t *addr,
+static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
 {
    unsigned char ret;
@@ -116,8 +116,8 @@ static inline int serivce_atomic_cmpset_64( volatile int64_t *addr,
 
 #endif /* CCS_GCC_INLINE_ASSEMBLY */
 
-#define service_atomic_cmpset_acq_64 serivce_atomic_cmpset_64
-#define service_atomic_cmpset_rel_64 serivce_atomic_cmpset_64
+#define service_atomic_cmpset_acq_64 service_atomic_cmpset_64
+#define service_atomic_cmpset_rel_64 service_atomic_cmpset_64
 
 #if CCS_GCC_INLINE_ASSEMBLY
 

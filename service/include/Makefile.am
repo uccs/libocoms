@@ -21,9 +21,10 @@ headers = \
 	service_config_top.h \
 	service_config_bottom.h \
 	service_stdint.h \
-        service_portable_platform.h
+	service_portable_platform.h \
+	service_constants.h
 
-nodist_headers = service_config.h ccs_config.h
+nodist_headers = ccs_config.h
 
 include service/Makefile.am
 

@@ -358,7 +358,7 @@ int service_atomic_cmpset_rel_32(volatile int32_t *addr, int32_t oldval,
 #if CCS_HAVE_INLINE_ATOMIC_CMPSET_64
 static inline 
 #endif
-int serivce_atomic_cmpset_64(volatile int64_t *addr, int64_t oldval,
+int service_atomic_cmpset_64(volatile int64_t *addr, int64_t oldval,
                           int64_t newval);
 
 #if CCS_HAVE_INLINE_ATOMIC_CMPSET_64

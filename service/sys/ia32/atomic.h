@@ -46,7 +46,7 @@
 #define CCS_HAVE_ATOMIC_ADD_32 1
 #define CCS_HAVE_ATOMIC_SUB_32 1
 
-#define CCS_HAVE_ATOMIC_CMPSET_64 1
+#define CCS_HAVE_ATOMIC_CMPSET_64 0
 
 #undef CCS_HAVE_INLINE_ATOMIC_CMPSET_64
 #define CCS_HAVE_INLINE_ATOMIC_CMPSET_64 0
@@ -124,34 +124,34 @@ static inline int service_atomic_cmpset_32(volatile int32_t *addr,
  * This conflict force us to save the EBX before the cmpxchg8b 
  * and to restore it afterward.
  */
-static inline int serivce_atomic_cmpset_64(volatile int64_t *addr,
+static inline int service_atomic_cmpset_64(volatile int64_t *addr,
                                         int64_t oldval,
                                         int64_t newval)
 {
-   /* 
+   /*
     * Compare EDX:EAX with m64. If equal, set ZF and load ECX:EBX into
     * m64. Else, clear ZF and load m64 into EDX:EAX.
     */
     unsigned char ret;
 
     __asm__ __volatile__(
-		    "push %%ebx            \n\t"
+            "push %%ebx            \n\t"
                     "movl %4, %%ebx        \n\t"
-		    SMPLOCK "cmpxchg8b (%1)  \n\t"
-		    "sete %0               \n\t"
-		    "pop %%ebx             \n\t"
-		    : "=qm"(ret)
-		    : "D"(addr), "a"(ll_low(oldval)), "d"(ll_high(oldval)),
-		      "r"(ll_low(newval)), "c"(ll_high(newval))
-		    : "cc", "memory", "ebx");
+            SMPLOCK "cmpxchg8b (%1)  \n\t"
+            "sete %0               \n\t"
+            "pop %%ebx             \n\t"
+            : "=qm"(ret)
+            : "D"(addr), "a"(ll_low(oldval)), "d"(ll_high(oldval)),
+              "r"(ll_low(newval)), "c"(ll_high(newval))
+            : "cc", "memory", "ebx");
     return (int) ret;
 }
 #endif /* if 0 */
 
 #endif /* CCS_GCC_INLINE_ASSEMBLY */
 
-#define service_atomic_cmpset_acq_64 serivce_atomic_cmpset_64
-#define service_atomic_cmpset_rel_64 serivce_atomic_cmpset_64
+#define service_atomic_cmpset_acq_64 service_atomic_cmpset_64
+#define service_atomic_cmpset_rel_64 service_atomic_cmpset_64
 
 #if CCS_GCC_INLINE_ASSEMBLY
 

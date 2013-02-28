@@ -121,7 +121,7 @@ static inline int service_atomic_cmpset_rel_32( volatile int32_t *addr,
 
 #if CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64
 
-static inline int serivce_atomic_cmpset_64( volatile int64_t *addr,
+static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
 {
     /* casa [reg(rs1)] %asi, reg(rs2), reg(rd)
@@ -141,7 +141,7 @@ static inline int serivce_atomic_cmpset_64( volatile int64_t *addr,
 
 #else /* CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64 */
 
-static inline int serivce_atomic_cmpset_64( volatile int64_t *addr,
+static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
 {
     /* casa [reg(rs1)] %asi, reg(rs2), reg(rd)
@@ -174,7 +174,7 @@ static inline int service_atomic_cmpset_acq_64( volatile int64_t *addr,
 {
    int rc;
    
-   rc = serivce_atomic_cmpset_64(addr, oldval, newval);
+   rc = service_atomic_cmpset_64(addr, oldval, newval);
    service_atomic_rmb();
    
    return rc;
@@ -185,7 +185,7 @@ static inline int service_atomic_cmpset_rel_64( volatile int64_t *addr,
                                              int64_t oldval, int64_t newval)
 {
    service_atomic_wmb();
-   return serivce_atomic_cmpset_64(addr, oldval, newval);
+   return service_atomic_cmpset_64(addr, oldval, newval);
 }
 
 #endif /* CCS_GCC_INLINE_ASSEMBLY */

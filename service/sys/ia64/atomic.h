@@ -137,6 +137,6 @@ static inline int service_atomic_cmpset_rel_64( volatile int64_t *addr,
 
 #endif /* CCS_GCC_INLINE_ASSEMBLY */
 
-#define serivce_atomic_cmpset_64 service_atomic_cmpset_acq_64
+#define service_atomic_cmpset_64 service_atomic_cmpset_acq_64
 
 #endif /* ! CCS_SYS_ARCH_ATOMIC_H */

@@ -1,0 +1,149 @@
+#!/bin/sh
+
+#
+# Version of auto tools that we want
+#
+
+M4_TARGET_VERSION=1.4.11
+AM_TARGET_VERSION=1.10.1
+AC_TARGET_VERSION=2.63
+LT_TARGET_VERSION=2.2.6
+
+#
+# First things first -- check that the auto versions that we have are
+# the ones that we want.
+#
+
+check_gnu_version() {
+    prog="$1"
+    target="$2"
+
+    ver="`$prog --version | head -n 1 | sed -e's/([^)]*)//g' -e's/[^0-9 .][^ ]* / /g' -e's/ //g'`"
+    if test "$ver" != "$target"; then 
+        cat <<EOF
+ERROR: Program "$prog" does not have the correct/expected version:
+       Found: $ver
+
+Expected versions:
+m4: $M4_TARGET_VERSION
+Automake: $AM_TARGET_VERSION
+Autoconf: $AC_TARGET_VERSION
+Libtool:  $LT_TARGET_VERSION
+
+Either change this script to match the found version, or install
+the correct version of the tools.
+EOF
+        exit 1
+    fi
+}
+
+#
+# Subroutine to actually make a tarball
+#
+
+make_tarball() {
+    #
+    # Autogen
+    #
+    echo "*** Running autogen.pl..."
+    rm -f success
+    (./autogen.pl 2>&1 && touch success) | tee auto.out
+    if test ! -f success; then
+        echo "Autogen failed.  Aborting"
+        exit 1
+    fi
+
+    #
+    # Configure
+    #
+    echo "*** Running configure..."
+    rm -f success
+    (./configure 2>&1 && touch success) | tee config.out
+    if test ! -f success; then
+        echo "Configure failed.  Aborting"
+        exit 1
+    fi
+
+    #
+    # make tarball
+    #
+    echo "*** Running make distcheck..."
+    save_LD=$LD_LIBRARY_PATH
+    LD_LIBRARY_PATH=
+    rm -f success
+    (make distcheck 2>&1 && touch success) | tee dist.out
+    if test ! -f success; then
+        echo "Make dist failed.  Aborting"
+        exit 1
+    fi
+    rm -f success
+    LD_LIBRARY_PATH=$save_LD
+
+	(make rpms 2>&1 && touch success) | tee dist.out
+
+    echo "*** All done"
+}
+
+#########################################################################
+# main
+#########################################################################
+
+echo "*** Checking GNU tools versions..."
+#check_gnu_version m4 $M4_TARGET_VERSION
+#check_gnu_version automake $AM_TARGET_VERSION
+#check_gnu_version autoconf $AC_TARGET_VERSION
+#check_gnu_version libtool $LT_TARGET_VERSION
+
+#
+# Verify that we're in a top Open MPI dir
+#
+echo "*** Checking to ensure in top-level directory..."
+if test -f libservice.spec.in -a -f configure.ac ; then
+    happy=1
+else
+    echo "Do not appear to be in a top directory.  Abort!"
+    exit 1
+fi
+
+#
+# Do svn up and all that
+#
+#echo "*** Removing old VERSION file..."
+#rm -f VERSION
+
+#if test -d .svn; then
+#    echo "*** Running svn up..."
+#    svn up
+#    if test ! "$?" = "0"; then
+#        echo "SVN update failed.  Aborting"
+#        exit 1
+#    fi
+#fi
+
+#
+# Ditch "svn" from all version numbers
+#
+#echo "*** Removing svn version numbers..."
+#svn_r="r`svnversion .`"
+#version_files=VERSION
+#release_date=`date '+%b %d, %Y'`
+#for file in $version_files; do
+#    echo " - $file"
+#    sed -e 's/^want_svn=.*/want_svn=0/' \
+#        -e 's/^svn_r=.*/'svn_r=$svn_r/ \
+#        -e "s/^date=.*/date=\"$release_date\"/" \
+#        $file > $file.new
+#    cp -f $file.new $file
+#    rm $file.new
+#done
+
+#
+# Make tarball:
+
+echo "*** Making non-greek tarball"
+make_tarball
+
+# Put the VERSION file back the way it was
+#svn revert VERSION
+
+exit 0

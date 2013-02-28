@@ -86,7 +86,7 @@ service_list_t ccs_mca_base_param_file_values;
  * local variables
  */
 static service_value_array_t ccs_mca_base_params;
-static const char *mca_prefix = "OMPI_MCA_";
+static const char *mca_prefix = "HCOLL_MCA_";
 static char *home = NULL;
 static char *cwd  = NULL;
 static bool initialized = false;

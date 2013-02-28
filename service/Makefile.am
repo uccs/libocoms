@@ -17,8 +17,6 @@
 # $HEADER$
 #
 
-EXTRA_DIST = CMakeLists.txt
-
 AM_CPPFLAGS =
 
 SUBDIRS = \

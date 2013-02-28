@@ -20,17 +20,16 @@
 # This makefile.am does not stand on its own - it is included from service/Makefile.am
 
 headers += \
-        service/align.h \
-	service/constants.h \
+	service/align.h \
 	service/service_socket_errno.h \
 	service/types.h \
 	service/prefetch.h \
-        service/hash_string.h
+	service/hash_string.h
 
 nodist_headers += \
 	service/version.h
 
-include service/sys/Makefile.am
+#include service/sys/Makefile.am
 
 service/install_path.h: $(top_builddir)/config.status $(srcdir)/service/install_path.h.in
 	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
