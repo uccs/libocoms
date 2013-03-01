@@ -16,8 +16,8 @@
  * $HEADER$
  */
 
-#ifndef OMPI_SYS_ARCH_ATOMIC_H
-#define OMPI_SYS_ARCH_ATOMIC_H 1
+#ifndef CCS_SYS_ARCH_ATOMIC_H
+#define CCS_SYS_ARCH_ATOMIC_H 1
 
 /*
  * On alpha, everything is load-locked, store-conditional...
@@ -177,4 +177,4 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
 #endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 
-#endif /* ! OMPI_SYS_ARCH_ATOMIC_H */
+#endif /* ! CCS_SYS_ARCH_ATOMIC_H */

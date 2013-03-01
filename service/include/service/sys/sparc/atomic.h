@@ -16,8 +16,8 @@
  * $HEADER$
  */
 
-#ifndef OMPI_SYS_ARCH_ATOMIC_H
-#define OMPI_SYS_ARCH_ATOMIC_H 1
+#ifndef CCS_SYS_ARCH_ATOMIC_H
+#define CCS_SYS_ARCH_ATOMIC_H 1
 
 
 #if CCS_WANT_SMP_LOCKS
@@ -26,7 +26,7 @@
 #define MB()
 #endif
 
-#ifdef OMPI_GENERATE_ASM_FILE
+#ifdef CCS_GENERATE_ASM_FILE
 struct service_atomic_lock_t {
     union {
         volatile int lock;         /**< The lock address (an integer) */
@@ -151,4 +151,4 @@ static inline void service_atomic_unlock(service_atomic_lock_t *lock)
 #endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 
-#endif /* ! OMPI_SYS_ARCH_ATOMIC_H */
+#endif /* ! CCS_SYS_ARCH_ATOMIC_H */

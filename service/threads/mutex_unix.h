@@ -46,7 +46,7 @@
 #endif
 
 #include "service/util/service_object.h"
-#include "service/sys/atomic.h"
+#include "service/include/service/sys/atomic.h"
 
 BEGIN_C_DECLS
 

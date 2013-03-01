@@ -17,8 +17,8 @@
  * $HEADER$
  */
 
-#ifndef OMPI_SYS_ARCH_ATOMIC_H
-#define OMPI_SYS_ARCH_ATOMIC_H 1
+#ifndef CCS_SYS_ARCH_ATOMIC_H
+#define CCS_SYS_ARCH_ATOMIC_H 1
 
 /*
  * On ia32, we use cmpxchg.
@@ -196,4 +196,4 @@ static inline int32_t service_atomic_sub_32(volatile int32_t* v, int i)
 
 #endif /* CCS_GCC_INLINE_ASSEMBLY */
 
-#endif /* ! OMPI_SYS_ARCH_ATOMIC_H */
+#endif /* ! CCS_SYS_ARCH_ATOMIC_H */

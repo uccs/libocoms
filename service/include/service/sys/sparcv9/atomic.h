@@ -17,8 +17,8 @@
  * $HEADER$
  */
 
-#ifndef OMPI_SYS_ARCH_ATOMIC_H
-#define OMPI_SYS_ARCH_ATOMIC_H 1
+#ifndef CCS_SYS_ARCH_ATOMIC_H
+#define CCS_SYS_ARCH_ATOMIC_H 1
 
 /*
  * On sparc v9, use casa and casxa (compare and swap) instructions.
@@ -119,7 +119,7 @@ static inline int service_atomic_cmpset_rel_32( volatile int32_t *addr,
 }
 
 
-#if CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64
+#if CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64
 
 static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
@@ -139,7 +139,7 @@ static inline int service_atomic_cmpset_64( volatile int64_t *addr,
    return (ret == oldval);
 }
 
-#else /* CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64 */
+#else /* CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64 */
 
 static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
@@ -167,7 +167,7 @@ static inline int service_atomic_cmpset_64( volatile int64_t *addr,
    return (ret == oldval);
 }
 
-#endif /* CCS_ASSEMBLY_ARCH == OMPI_SPARCV9_64 */
+#endif /* CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64 */
 
 static inline int service_atomic_cmpset_acq_64( volatile int64_t *addr,
                                              int64_t oldval, int64_t newval)
@@ -191,4 +191,4 @@ static inline int service_atomic_cmpset_rel_64( volatile int64_t *addr,
 #endif /* CCS_GCC_INLINE_ASSEMBLY */
 
 
-#endif /* ! OMPI_SYS_ARCH_ATOMIC_H */
+#endif /* ! CCS_SYS_ARCH_ATOMIC_H */

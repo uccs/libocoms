@@ -47,7 +47,7 @@
 
 #include "ccs_config.h"
 
-#include "service/sys/architecture.h"
+#include "service/include/service/sys/architecture.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -55,32 +55,32 @@
 
 /* do some quick #define cleanup in cases where we are doing
    testing... */
-#ifdef OMPI_DISABLE_INLINE_ASM
+#ifdef CCS_DISABLE_INLINE_ASM
 #undef CCS_C_GCC_INLINE_ASSEMBLY
 #define CCS_C_GCC_INLINE_ASSEMBLY 0
 #undef CCS_CXX_GCC_INLINE_ASSEMBLY
 #define CCS_CXX_GCC_INLINE_ASSEMBLY 0
 #undef CCS_C_DEC_INLINE_ASSEMBLY
 #define CCS_C_DEC_INLINE_ASSEMBLY 0
-#undef OMPI_CXX_DEC_INLINE_ASSEMBLY
-#define OMPI_CXX_DEC_INLINE_ASSEMBLY 0
+#undef CCS_CXX_DEC_INLINE_ASSEMBLY
+#define CCS_CXX_DEC_INLINE_ASSEMBLY 0
 #undef CCS_C_XLC_INLINE_ASSEMBLY
 #define CCS_C_XLC_INLINE_ASSEMBLY 0
-#undef OMPI_CXX_XLC_INLINE_ASSEMBLY
-#define OMPI_CXX_XLC_INLINE_ASSEMBLY 0
+#undef CCS_CXX_XLC_INLINE_ASSEMBLY
+#define CCS_CXX_XLC_INLINE_ASSEMBLY 0
 #endif
 
-/* define OMPI_{GCC,DEC,XLC}_INLINE_ASSEMBLY based on the
-   OMPI_{C,CXX}_{GCC,DEC,XLC}_INLINE_ASSEMBLY defines and whether we
+/* define CCS_{GCC,DEC,XLC}_INLINE_ASSEMBLY based on the
+   CCS_{C,CXX}_{GCC,DEC,XLC}_INLINE_ASSEMBLY defines and whether we
    are in C or C++ */
 #if defined(c_plusplus) || defined(__cplusplus)
 #define CCS_GCC_INLINE_ASSEMBLY CCS_CXX_GCC_INLINE_ASSEMBLY
-#define OMPI_DEC_INLINE_ASSEMBLY OMPI_CXX_DEC_INLINE_ASSEMBLY
-#define OMPI_XLC_INLINE_ASSEMBLY OMPI_CXX_XLC_INLINE_ASSEMBLY
+#define CCS_DEC_INLINE_ASSEMBLY CCS_CXX_DEC_INLINE_ASSEMBLY
+#define CCS_XLC_INLINE_ASSEMBLY CCS_CXX_XLC_INLINE_ASSEMBLY
 #else
 #define CCS_GCC_INLINE_ASSEMBLY CCS_C_GCC_INLINE_ASSEMBLY
-#define OMPI_DEC_INLINE_ASSEMBLY CCS_C_DEC_INLINE_ASSEMBLY
-#define OMPI_XLC_INLINE_ASSEMBLY CCS_C_XLC_INLINE_ASSEMBLY
+#define CCS_DEC_INLINE_ASSEMBLY CCS_C_DEC_INLINE_ASSEMBLY
+#define CCS_XLC_INLINE_ASSEMBLY CCS_C_XLC_INLINE_ASSEMBLY
 #endif
 
 
@@ -113,7 +113,7 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  * files if we need to specify them as inline or non-inline 
  * 
  *********************************************************************/
-#if !CCS_GCC_INLINE_ASSEMBLY
+#if !CCS_C_GCC_INLINE_ASSEMBLY
 #define CCS_HAVE_INLINE_ATOMIC_MEM_BARRIER 0
 #define CCS_HAVE_INLINE_ATOMIC_CMPSET_32 0
 #define CCS_HAVE_INLINE_ATOMIC_CMPSET_64 0
@@ -141,29 +141,29 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
 /* don't include system-level gorp when generating doxygen files */ 
 #elif CCS_ASSEMBLY_ARCH == CCS_WINDOWS
 /* windows first, as they have API-level primitives for this stuff */
-#include "service/sys/win32/atomic.h"
+#include "service/include/service/sys/win32/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_ALPHA
-#include "service/sys/alpha/atomic.h"
+#include "service/include/service/sys/alpha/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_AMD64
-#include "service/sys/amd64/atomic.h"
+#include "service/include/service/sys/amd64/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_ARM
-#include "service/sys/arm/atomic.h"
+#include "service/include/service/sys/arm/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_IA32
-#include "service/sys/ia32/atomic.h"
+#include "service/include/service/sys/ia32/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_IA64
-#include "service/sys/ia64/atomic.h"
+#include "service/include/service/sys/ia64/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_MIPS
-#include "service/sys/mips/atomic.h"
+#include "service/include/service/sys/mips/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_POWERPC32
-#include "service/sys/powerpc/atomic.h"
+#include "service/include/service/sys/powerpc/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_POWERPC64
-#include "service/sys/powerpc/atomic.h"
+#include "service/include/service/sys/powerpc/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_SPARC
-#include "service/sys/sparc/atomic.h"
+#include "service/include/service/sys/sparc/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_32
-#include "service/sys/sparcv9/atomic.h"
+#include "service/include/service/sys/sparcv9/atomic.h"
 #elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64
-#include "service/sys/sparcv9/atomic.h"
+#include "service/include/service/sys/sparcv9/atomic.h"
 #endif
 
 #ifndef DOXYGEN
@@ -614,7 +614,7 @@ static inline int64_t service_atomic_sub_ptr( volatile void* addr, void* delta )
  * the definitions are in system specific .s files in src/util.
  *
  *********************************************************************/
-#include "service/sys/atomic_impl.h"
+#include "service/include/service/sys/atomic_impl.h"
 
 END_C_DECLS
 

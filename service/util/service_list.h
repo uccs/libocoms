@@ -70,7 +70,7 @@
 
 #if CCS_ENABLE_DEBUG
 /* Need atomics for debugging (reference counting) */
-#include "service/sys/atomic.h"
+#include "service/include/service/sys/atomic.h"
 #include "service/threads/mutex.h"
 #endif
 
