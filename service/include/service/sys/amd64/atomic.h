@@ -119,6 +119,44 @@ static inline int service_atomic_cmpset_64( volatile int64_t *addr,
 #define service_atomic_cmpset_acq_64 service_atomic_cmpset_64
 #define service_atomic_cmpset_rel_64 service_atomic_cmpset_64
 
+
+#if CCS_C_GCC_INLINE_ASSEMBLY 
+
+#define CCS_HAVE_ATOMIC_SWAP_32 1
+
+static inline int32_t service_atomic_swap_32( volatile int32_t *addr,
+                               int32_t newval)
+{
+    int32_t oldval;
+
+    __asm__ __volatile__("xchg %1, %0" :
+             "=r" (oldval), "=m" (*addr) :
+             "0" (newval), "m" (*addr) :
+             "memory");
+            return oldval;
+}
+
+#endif /* CCS_C_GCC_INLINE_ASSEMBLY */
+
+
+#if CCS_C_GCC_INLINE_ASSEMBLY 
+
+#define CCS_HAVE_ATOMIC_SWAP_64 1
+
+static inline int64_t service_atomic_swap_64( volatile int64_t *addr,
+                                                   int64_t newval)
+{
+    int64_t oldval;
+
+    __asm__ __volatile__("xchgq %1, %0" :
+                         "=r" (oldval) :
+                         "m" (*addr), "0" (newval) :
+                         "memory");
+    return oldval;
+}
+
+#endif /* CCS_C_GCC_INLINE_ASSEMBLY */
+
 #if CCS_GCC_INLINE_ASSEMBLY
 
 #define CCS_HAVE_ATOMIC_MATH_32 1
