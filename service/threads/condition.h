@@ -41,7 +41,6 @@
 
 BEGIN_C_DECLS
 
-#define CCS_CR_TEST_CHECKPOINT_READY_STALL()
 /*
  * Combine pthread support w/ polled progress to allow run-time selection
  * of threading vs. non-threading progress.
