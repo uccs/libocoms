@@ -53,8 +53,8 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 %post
 if [ "$1" = "1" ]; then
 	# Perform tasks to prepare for the initial installation
-	sed -i 's@#include "ccs_config.h"@#include <service/include/ccs_config.h>@g' $(grep -lR '#include "ccs_config.h"' %{prefix}/include/service)
 
+	sed -i 's@#include "ccs_config.h"@#include <service/include/ccs_config.h>@g' $(grep -lR '#include "ccs_config.h"' %{prefix}/include/service)
 	/sbin/ldconfig || exit 1
 elif [ "$1" = "2" ]; then
 	# Perform whatever maintenance must occur before the upgrade begins
@@ -89,18 +89,6 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %defattr(-, root, root)
 %{prefix}
 %dir %{prefix}/include/service
-#%dir %{prefix}/include/service/include
-#%dir %{prefix}/include/service/include/service/
-#%dir %{prefix}/include/service/sys/alpha
-#%dir %{prefix}/include/service/sys/ia32
-#%dir %{prefix}/include/service/sys/sparc
-#%dir %{prefix}/include/service/sys/win32
-#%dir %{prefix}/include/service/sys/ia64
-#%dir %{prefix}/include/service/sys/sparcv9
-#%dir %{prefix}/include/service/sys/arm
-#%dir %{prefix}/include/service/sys/mips
-#%dir %{prefix}/include/service/sys/amd64
-#%dir %{prefix}/include/service/sys/powerpc
 %dir %{prefix}/lib
 
 # If you uninstall a library
