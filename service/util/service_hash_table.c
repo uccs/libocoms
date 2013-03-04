@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 #include "service/util/output.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/util/service_list.h"
 #include "service/util/service_hash_table.h"
 

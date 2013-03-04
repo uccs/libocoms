@@ -25,7 +25,7 @@
 #include <sys/mman.h>
 #endif  /* HAVE_SYS_MMAN_H */
 
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/memoryhooks/memory.h"
 #include "service/memoryhooks/memory_internal.h"
 #include "service/util/service_list.h"

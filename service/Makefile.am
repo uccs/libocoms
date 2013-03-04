@@ -20,7 +20,7 @@
 AM_CPPFLAGS =
 
 SUBDIRS = \
-	include \
+	platform \
     $(LIBLTDL_SUBDIR) \
 	asm \
     datatype \
@@ -30,7 +30,7 @@ SUBDIRS = \
 # used, there will be no generated Makefile in that directory (and
 # therefore make distclean will fail).
 DIST_SUBDIRS = \
-	include \
+	platform \
 	$(LIBLTDL_SUBDIR) \
 	asm \
     datatype \
@@ -71,5 +71,6 @@ libservice_la_SOURCES += $(headers)
 include memoryhooks/Makefile.am
 include threads/Makefile.am
 include mca/base/Makefile.am
+include primitives/Makefile.am
 #include util/Makefile.am
 

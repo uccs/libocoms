@@ -17,7 +17,7 @@
 
 #include <stddef.h>
 
-#include "service_constants.h"
+#include "../platform/service_constants.h"
 #include "service_datatype.h"
 #include "service_convertor.h"
 

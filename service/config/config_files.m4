@@ -13,7 +13,7 @@
 AC_DEFUN([OPAL_CONFIG_FILES],[
     AC_CONFIG_FILES([
         service/Makefile
-        service/include/Makefile
+        service/platform/Makefile
         service/asm/Makefile
         service/datatype/Makefile
         service/util/Makefile

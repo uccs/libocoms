@@ -77,7 +77,7 @@
 #include "service/util/if.h"
 #include "service/util/output.h"
 #include "service/util/argv.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 
 #ifdef HAVE_STRUCT_SOCKADDR_IN

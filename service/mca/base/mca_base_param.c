@@ -40,7 +40,7 @@
 #include "service/mca/mca.h"
 #include "service/mca/base/mca_base_param.h"
 #include "service/mca/base/mca_base_param_internal.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/util/os_path.h"
 #include "service/util/output.h"
 #include "service/util/path.h"
@@ -86,7 +86,7 @@ service_list_t ccs_mca_base_param_file_values;
  * local variables
  */
 static service_value_array_t ccs_mca_base_params;
-static const char *mca_prefix = "HCOLL_MCA_";
+static const char *mca_prefix = "CCS_MCA_";
 static char *home = NULL;
 static char *cwd  = NULL;
 static bool initialized = false;

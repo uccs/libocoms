@@ -20,7 +20,7 @@
 #include "ccs_config.h"
 
 #include "service/util/service_list.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/util/service_graph.h"
 #include "service/util/output.h"
 

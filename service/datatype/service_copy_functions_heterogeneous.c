@@ -20,7 +20,7 @@
 
 #include "service/util/arch.h"
 
-#include "service/include/service/types.h"
+#include "service/primitives/types.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_convertor.h"
 #include "service/datatype/service_datatype_internal.h"

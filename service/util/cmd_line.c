@@ -31,7 +31,7 @@
 #include "service/util/cmd_line.h"
 #include "service/util/output.h"
 #include "service/mca/base/mca_base_param.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 
 /*

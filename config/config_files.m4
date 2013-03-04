@@ -12,7 +12,7 @@
 
 AC_DEFUN([CCS_CONFIG_FILES],[
     AC_CONFIG_FILES([
-        service/include/Makefile
+        service/platform/Makefile
         service/asm/Makefile
         service/datatype/Makefile
     ])

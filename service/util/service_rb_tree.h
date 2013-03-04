@@ -27,7 +27,7 @@
 
 #include "ccs_config.h"
 #include <stdlib.h>
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/util/service_object.h"
 #include "service/util/service_free_list.h"
 

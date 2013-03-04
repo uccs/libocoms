@@ -51,7 +51,7 @@
 #include "service/util/path.h"
 #include "service/util/os_path.h"
 #include "service/util/argv.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 static void path_env_load(char *path, int *pargc, char ***pargv);
 static char *list_env_get(char *var, char **list);

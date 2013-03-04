@@ -22,7 +22,7 @@
 #include "ccs_config.h"
 
 #include "service/util/service_free_list.h"
-#include "service/include/service/align.h"
+#include "service/primitives/align.h"
 
 
 static void service_free_list_construct(service_free_list_t* fl);

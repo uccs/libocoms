@@ -54,7 +54,7 @@ make DESTDIR="$RPM_BUILD_ROOT" install
 if [ "$1" = "1" ]; then
 	# Perform tasks to prepare for the initial installation
 
-	sed -i 's@#include "ccs_config.h"@#include <service/include/ccs_config.h>@g' $(grep -lR '#include "ccs_config.h"' %{prefix}/include/service)
+	sed -i 's@#include "ccs_config.h"@#include <service/platform/ccs_config.h>@g' $(grep -lR '#include "ccs_config.h"' %{prefix}/include/service)
 	/sbin/ldconfig || exit 1
 elif [ "$1" = "2" ]; then
 	# Perform whatever maintenance must occur before the upgrade begins

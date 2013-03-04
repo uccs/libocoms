@@ -21,7 +21,7 @@
 #include <thread.h>
 #endif
 
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 BEGIN_C_DECLS
 

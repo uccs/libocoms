@@ -117,9 +117,9 @@ AC_DEFINE_UNQUOTED([CCS_ENABLE_PROGRESS_THREADS], [$CCS_ENABLE_PROGRESS_THREADS]
 
 # List header files to generate
 
-AM_CONFIG_HEADER([service/include/ccs_config.h])
+AM_CONFIG_HEADER([service/platform/ccs_config.h])
 #m4_ifdef([project_orte],
-#         [AM_CONFIG_HEADER([orte/include/orte_config.h])])
+#         [AM_CONFIG_HEADER([orte/platform/orte_config.h])])
 
 # override/fixup the version numbers set by AC_INIT, since on
 # developer builds, there's no good way to know what the version is
@@ -152,7 +152,7 @@ if test "$CCS_TOP_BUILDDIR" != "$CCS_TOP_SRCDIR"; then
     AC_MSG_NOTICE([Detected VPATH build])
 fi
 
-# Setup the top of the ccs/include/ccs_config.h file
+# Setup the top of the ccs/platform/ccs_config.h file
 
 AH_TOP([/* -*- c -*-
  *
@@ -181,7 +181,7 @@ AH_TOP([/* -*- c -*-
 ])
 
 AH_BOTTOM([
-#include "service/include/service_config_bottom.h"
+#include "service/platform/service_config_bottom.h"
 #endif /* CCS_CONFIG_H */
 ])
 

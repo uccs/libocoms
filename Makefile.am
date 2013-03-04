@@ -83,17 +83,17 @@ nobase_dist_libservice_la_HEADERS = \
 							service/threads/tsd.h \
 							service/memoryhooks/memory.h \
 							service/memoryhooks/memory_internal.h \
-							service/include/ccs_config.h \
-							service/include/service_config_top.h \
-							service/include/service_portable_platform.h \
-							service/include/service_config_bottom.h \
-							service/include/service_constants.h \
-							service/include/service_stdint.h \
-							service/include/service/align.h \
-							service/include/service/prefetch.h \
-							service/include/service/hash_string.h \
-							service/include/service/service_socket_errno.h \
-							service/include/service/types.h
+							service/platform/ccs_config.h \
+							service/platform/service_config_top.h \
+							service/platform/service_portable_platform.h \
+							service/platform/service_config_bottom.h \
+							service/platform/service_constants.h \
+							service/platform/service_stdint.h \
+							service/primitives/align.h \
+							service/primitives/prefetch.h \
+							service/primitives/hash_string.h \
+							service/primitives/service_socket_errno.h \
+							service/primitives/types.h
 
 #install-data-hook:
 ##	sed -i 's@#include "ccs_config.h"@#include "sevice/include/ccs_config.h"@g' `grep -lR '#include "ccs_config.h"' $(libservice_ladir)`

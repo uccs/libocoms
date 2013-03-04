@@ -27,7 +27,7 @@
 #include <stdio.h>
 #include "service/sys/atomic.h"
 #include "service/util/service_object.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 /*
  * Instantiation of class descriptor for the base class.  This is

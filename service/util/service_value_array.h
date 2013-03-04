@@ -27,7 +27,7 @@
 #if CCS_ENABLE_DEBUG
 #include "service/util/output.h"
 #endif
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 BEGIN_C_DECLS
 

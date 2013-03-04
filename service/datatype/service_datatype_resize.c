@@ -12,7 +12,7 @@
  */
 
 #include "ccs_config.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_datatype_internal.h"
 
