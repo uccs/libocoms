@@ -110,7 +110,7 @@
 #ifndef CCS_CMD_LINE_H
 #define CCS_CMD_LINE_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/util/service_object.h"
 #include "service/util/service_list.h"

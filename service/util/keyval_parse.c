@@ -1,5 +1,5 @@
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/platform/service_constants.h"
 #include "service/util/keyval_parse.h"

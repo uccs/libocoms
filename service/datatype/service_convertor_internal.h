@@ -13,7 +13,7 @@
 #ifndef CCS_CONVERTOR_INTERNAL_HAS_BEEN_INCLUDED
 #define CCS_CONVERTOR_INTERNAL_HAS_BEEN_INCLUDED
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stddef.h>
 

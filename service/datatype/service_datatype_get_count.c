@@ -11,7 +11,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_convertor.h"
 #include "service/datatype/service_datatype_internal.h"

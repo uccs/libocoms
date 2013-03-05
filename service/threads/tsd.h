@@ -13,7 +13,7 @@
 #ifndef CCS_THREADS_TSD_H
 #define CCS_THREADS_TSD_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #if CCS_HAVE_POSIX_THREADS
 #include <pthread.h>

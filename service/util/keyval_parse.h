@@ -21,7 +21,7 @@
 #ifndef SERVICE_UTIL_KEYVAL_PARSE_H
 #define SERVICE_UTIL_KEYVAL_PARSE_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 BEGIN_C_DECLS
 

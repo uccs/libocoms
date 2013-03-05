@@ -19,7 +19,7 @@
 #ifndef CCS_TYPES_H
 #define CCS_TYPES_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #ifdef HAVE_STDINT_H
 #include <stdint.h>

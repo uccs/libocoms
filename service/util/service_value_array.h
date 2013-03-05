@@ -19,7 +19,7 @@
 #ifndef CCS_VALUE_ARRAY_H
 #define CCS_VALUE_ARRAY_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <string.h>
 

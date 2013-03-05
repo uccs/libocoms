@@ -21,7 +21,7 @@
 #ifndef SERVICE_THREAD_H
 #define SERVICE_THREAD_H 1
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #if CCS_HAVE_POSIX_THREADS
 #include <pthread.h>

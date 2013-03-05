@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>

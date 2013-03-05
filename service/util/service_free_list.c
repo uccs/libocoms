@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/util/service_free_list.h"
 #include "service/primitives/align.h"

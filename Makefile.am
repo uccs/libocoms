@@ -95,11 +95,6 @@ nobase_dist_libservice_la_HEADERS = \
 							service/primitives/service_socket_errno.h \
 							service/primitives/types.h
 
-#install-data-hook:
-##	sed -i 's@#include "ccs_config.h"@#include "sevice/include/ccs_config.h"@g' `grep -lR '#include "ccs_config.h"' $(libservice_ladir)`
-#	rm -rf $(libservice_ladir)/sys
-#	mv $(libservice_ladir)/service/sys $(libservice_ladir)
-#	rm -rf $(libservice_ladir)/service
 
 ACLOCAL_AMFLAGS = -I config
 

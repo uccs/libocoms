@@ -20,7 +20,7 @@
 #ifndef CCS_CONDITION_SPINLOCK_H
 #define CCS_CONDITION_SPINLOCK_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif

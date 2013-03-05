@@ -7,7 +7,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <errno.h>
 #include <unistd.h>

@@ -45,7 +45,7 @@
 #ifndef CCS_SYS_ATOMIC_H
 #define CCS_SYS_ATOMIC_H 1
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/sys/architecture.h"
 

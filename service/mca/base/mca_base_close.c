@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include "service/mca/mca.h"
 
 #include "service/mca/base/base.h"

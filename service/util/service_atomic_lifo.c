@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include "service/util/service_atomic_lifo.h"
 
 static void service_atomic_lifo_construct( service_atomic_lifo_t* lifo )

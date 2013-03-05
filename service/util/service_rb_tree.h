@@ -25,7 +25,7 @@
 #ifndef OMPI_RB_TREE_H
 #define OMPI_RB_TREE_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include <stdlib.h>
 #include "service/platform/service_constants.h"
 #include "service/util/service_object.h"

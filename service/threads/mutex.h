@@ -25,7 +25,7 @@
 #ifndef  SERVICE_MUTEX_H
 #define  SERVICE_MUTEX_H 1
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #if CCS_ENABLE_MULTI_THREADS
 #include "service/sys/atomic.h"

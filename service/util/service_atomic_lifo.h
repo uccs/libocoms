@@ -21,7 +21,7 @@
 #ifndef SERVICE_ATOMIC_LIFO_H_HAS_BEEN_INCLUDED
 #define SERVICE_ATOMIC_LIFO_H_HAS_BEEN_INCLUDED
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include "service/util/service_list.h"
 
 #if CCS_ENABLE_MULTI_THREADS

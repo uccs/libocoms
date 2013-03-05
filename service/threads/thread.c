@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/threads/threads.h"
 #include "service/platform/service_constants.h"

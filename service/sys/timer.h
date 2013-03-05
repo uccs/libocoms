@@ -25,7 +25,7 @@
 #ifndef CCS_SYS_TIMER_H
 #define CCS_SYS_TIMER_H 1
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/sys/architecture.h"
 

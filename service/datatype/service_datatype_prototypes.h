@@ -14,7 +14,7 @@
 #ifndef CCS_DATATYPE_PROTOTYPES_H_HAS_BEEN_INCLUDED
 #define CCS_DATATYPE_PROTOTYPES_H_HAS_BEEN_INCLUDED
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 
 BEGIN_C_DECLS

@@ -86,7 +86,7 @@
 #ifndef CCS_MCA_H
 #define CCS_MCA_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include <stdint.h>
 
 

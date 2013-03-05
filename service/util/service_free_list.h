@@ -21,7 +21,7 @@
 #ifndef SERVICE_FREE_LIST_H
 #define SERVICE_FREE_LIST_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include "service/util/service_atomic_lifo.h"
 #include "service/threads/mutex.h"
 #include "service/threads/condition.h"
