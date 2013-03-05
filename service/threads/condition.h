@@ -87,21 +87,18 @@ static inline int service_condition_wait(service_condition_t *c, service_mutex_t
             c->c_waiting--;
             service_mutex_unlock(m);
             c->ccs_progress_fn();
-            CCS_CR_TEST_CHECKPOINT_READY_STALL();
             service_mutex_lock(m);
             return 0;
         }
         while (c->c_signaled == 0) {
             service_mutex_unlock(m);
             c->ccs_progress_fn();
-            CCS_CR_TEST_CHECKPOINT_READY_STALL();
             service_mutex_lock(m);
         }
 #endif
     } else {
         while (c->c_signaled == 0) {
             c->ccs_progress_fn();
-            CCS_CR_TEST_CHECKPOINT_READY_STALL();
         }
     }
 
