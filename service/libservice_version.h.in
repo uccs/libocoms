@@ -1,16 +1,22 @@
-/**
- * Copyright (C) Mellanox Technologies Ltd. 2010-2013.  ALL RIGHTS RESERVED.
- * This software product is a proprietary product of Mellanox Technologies Ltd.
- * (the "Company") and all right, title, and interest and to the software product,
- * including all associated intellectual property rights, are and shall
- * remain exclusively with the Company.
- *
- * This software product is governed by the End User License Agreement
- * provided with the software product.
+/*
+ * Copyright (c) 2004-2008 The Trustees of Indiana University and Indiana
+ *                         University Research and Technology
+ *                         Corporation.  All rights reserved.
+ * Copyright (c) 2004-2005 The University of Tennessee and The University
+ *                         of Tennessee Research Foundation.  All rights
+ *                         reserved.
+ * Copyright (c) 2004-2005 High Performance Computing Center Stuttgart,
+ *                         University of Stuttgart.  All rights reserved.
+ * Copyright (c) 2004-2005 The Regents of the University of California.
+ *                         All rights reserved.
+ * Copyright (c) 2008      Cisco Systems, Inc.  All rights reserved.
  * $COPYRIGHT$
+ *
+ * Additional copyrights may follow
+ *
  * $HEADER$
- */  
-
+ */
+ 
 #ifndef __LIBSERVICE_VERSION_H__
 #define __LIBSERVICE_VERSION_H__
 
