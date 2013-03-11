@@ -20,20 +20,14 @@
 # This makefile.am does not stand on its own - it is included from service/Makefile.am
 
 headers += \
-        service/align.h \
-	service/constants.h \
-	service/service_socket_errno.h \
-	service/types.h \
-	service/prefetch.h \
-        service/hash_string.h
+	primitives/align.h \
+	primitives/service_socket_errno.h \
+	primitives/types.h \
+	primitives/prefetch.h \
+	primitives/hash_string.h
 
-nodist_headers += \
-	service/version.h
+#service/install_path.h: $(top_builddir)/config.status $(srcdir)/service/install_path.h.in
+#	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
-include service/sys/Makefile.am
-
-service/install_path.h: $(top_builddir)/config.status $(srcdir)/service/install_path.h.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
-
-service/version.h: $(top_builddir)/config.status $(srcdir)/service/version.h.in
-	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
+#service/version.h: $(top_builddir)/config.status $(srcdir)/service/version.h.in
+#	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@

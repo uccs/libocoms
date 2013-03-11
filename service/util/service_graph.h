@@ -27,7 +27,7 @@
 #ifndef SERVICE_GRAPH_H
 #define SERVICE_GRAPH_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "service/util/service_object.h"

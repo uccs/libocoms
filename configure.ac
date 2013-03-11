@@ -117,9 +117,9 @@ AC_DEFINE_UNQUOTED([CCS_ENABLE_PROGRESS_THREADS], [$CCS_ENABLE_PROGRESS_THREADS]
 
 # List header files to generate
 
-AM_CONFIG_HEADER([service/include/ccs_config.h])
+AM_CONFIG_HEADER([service/platform/ccs_config.h])
 #m4_ifdef([project_orte],
-#         [AM_CONFIG_HEADER([orte/include/orte_config.h])])
+#         [AM_CONFIG_HEADER([orte/platform/orte_config.h])])
 
 # override/fixup the version numbers set by AC_INIT, since on
 # developer builds, there's no good way to know what the version is
@@ -132,9 +132,10 @@ AM_CONFIG_HEADER([service/include/ccs_config.h])
 # it).  PACKAGE_VERSION the AC_SUBST can be rewritten along the way,
 # and we'd like it to have the r number in it so that it shows up in
 # the tarball name, so it is set to the full version here.
-PACKAGE_VERSION="$CCS_VERSION"
-PACKAGE_STRING="${PACKAGE_NAME} ${PACKAGE_VERSION}"
-VERSION="${PACKAGE_VERSION}"
+
+#PACKAGE_VERSION="$CCS_VERSION"
+#PACKAGE_STRING="${PACKAGE_NAME} ${PACKAGE_VERSION}"
+#VERSION="${PACKAGE_VERSION}"
 
 ccs_show_subtitle "Initialization, setup"
 
@@ -151,7 +152,7 @@ if test "$CCS_TOP_BUILDDIR" != "$CCS_TOP_SRCDIR"; then
     AC_MSG_NOTICE([Detected VPATH build])
 fi
 
-# Setup the top of the ccs/include/ccs_config.h file
+# Setup the top of the ccs/platform/ccs_config.h file
 
 AH_TOP([/* -*- c -*-
  *
@@ -180,7 +181,7 @@ AH_TOP([/* -*- c -*-
 ])
 
 AH_BOTTOM([
-#include "service/include/service_config_bottom.h"
+#include "service/platform/service_config_bottom.h"
 #endif /* CCS_CONFIG_H */
 ])
 
@@ -192,6 +193,49 @@ top_ccs_srcdir="$CCS_TOP_SRCDIR"
 AC_SUBST(top_ccs_srcdir)
 top_ccs_builddir="$CCS_TOP_BUILDDIR"
 AC_SUBST(top_ccs_builddir)
+
+# Version number calculation
+syscmd(test -e .hg) dnl
+ifelse(sysval, 0, dnl
+       [define([svnversion], esyscmd([sh -c "hg identify -n| tr -d '\n'"]))]) dnl
+
+syscmd(test -e .git) dnl
+ifelse(sysval, 0, dnl
+       [define([svnversion], esyscmd([sh -c "git rev-parse --short=7 HEAD| tr -d '\n'"]))]) dnl
+
+MAJOR_VERSION="$major"
+MINOR_VERSION="$minor"
+MICRO_VERSION=svnversion
+
+VERSION=$MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION
+PACKAGE_VERSION="$VERSION"
+PACKAGE_STRING="${PACKAGE_NAME} ${PACKAGE_VERSION}"
+
+AC_SUBST(MAJOR_VERSION)
+AC_SUBST(MINOR_VERSION)
+AC_SUBST(MICRO_VERSION)
+
+AC_CONFIG_FILES([service/libservice_version.h libservice.spec])
+
+# RPM build info
+RPM_RELEASE=1
+AC_SUBST(RPM_RELEASE)
+RPM_DIR=${top_fca_dir}
+AC_SUBST(RPM_DIR)
+RPM_TARBALL=${PACKAGE}-${VERSION}.tar.gz
+AC_SUBST(RPM_TARBALL)
+
+BUILD_DATE="`date +'%Y%m%d'`"
+AC_SUBST([BUILD_DATE])
+
+BUILD_TIME="`date +'1%H%M%S'`"
+AC_SUBST([BUILD_TIME])
+
+BUILD_HOST="`hostname`"
+AC_SUBST([BUILD_HOST])
+
+BUILD_USER="`whoami`"
+AC_SUBST([BUILD_USER])
 
 ############################################################################
 # Configuration options
@@ -559,7 +603,6 @@ AC_MSG_RESULT([$MSG])
 
 # checkpoint results
 AC_CACHE_SAVE
-
 
 ##################################
 # Types

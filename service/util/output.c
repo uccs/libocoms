@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -37,7 +37,7 @@
 #include "service/util/service_environ.h"
 #include "service/util/output.h"
 #include "service/threads/mutex.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 /*
  * Private data

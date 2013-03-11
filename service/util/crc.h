@@ -22,7 +22,7 @@
 #ifndef _SERVICE_CRC_H_
 #define _SERVICE_CRC_H_
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stddef.h>
 

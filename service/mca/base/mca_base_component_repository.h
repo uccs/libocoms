@@ -19,7 +19,7 @@
 #ifndef MCA_BASE_COMPONENT_REPOSITORY_H
 #define MCA_BASE_COMPONENT_REPOSITORY_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 BEGIN_C_DECLS
 

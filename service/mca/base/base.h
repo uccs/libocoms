@@ -20,7 +20,7 @@
 #ifndef MCA_BASE_H
 #define MCA_BASE_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/util/service_object.h"
 #include "service/util/service_list.h"

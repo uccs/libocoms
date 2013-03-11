@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/threads/condition.h"
 

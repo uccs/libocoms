@@ -17,13 +17,13 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/util/service_pointer_array.h"
 #include "service/util/output.h"
 

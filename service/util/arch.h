@@ -20,7 +20,7 @@
 #ifndef SERVICE_ARCH_H_HAS_BEEN_INCLUDED
 #define SERVICE_ARCH_H_HAS_BEEN_INCLUDED
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <float.h>
 #include <assert.h>

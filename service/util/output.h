@@ -63,7 +63,7 @@
 #ifndef CCS_OUTPUT_H_
 #define CCS_OUTPUT_H_
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>

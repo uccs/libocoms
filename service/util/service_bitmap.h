@@ -41,7 +41,7 @@
 #ifndef CCS_BITMAP_H
 #define CCS_BITMAP_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <string.h>
 

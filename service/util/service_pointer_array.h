@@ -32,7 +32,7 @@
 #ifndef SERVICE_POINTER_ARRAY_H
 #define SERVICE_POINTER_ARRAY_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/threads/mutex.h"
 #include "service/util/service_object.h"

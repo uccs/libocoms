@@ -31,7 +31,7 @@
  * On Windows, base everything on InterlockedExchange().
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include "service/util/service_object.h"
 #include "service/sys/atomic.h"
 

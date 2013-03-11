@@ -143,7 +143,7 @@ static inline int service_atomic_cmpset_rel_64( volatile int64_t *addr,
 }
 
 
-static inline int serivce_atomic_cmpset_64( volatile int64_t *addr,
+static inline int service_atomic_cmpset_64( volatile int64_t *addr,
                                          int64_t oldval, int64_t newval)
 {
     int64_t ret = InterlockedCompareExchange64 ((int64_t volatile*) addr,

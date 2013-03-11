@@ -17,7 +17,7 @@
  */
 
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif /* HAVE_STDIO_H */

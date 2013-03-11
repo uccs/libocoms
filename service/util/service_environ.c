@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -28,7 +28,7 @@
 #include "service/util/printf.h"
 #include "service/util/argv.h"
 #include "service/util/service_environ.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 #ifdef __WINDOWS__ 
 #define SERVICE_DEFAULT_TMPDIR "C:\\TEMP" 

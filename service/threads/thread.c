@@ -17,10 +17,10 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/threads/threads.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 bool service_debug_threads = false;
 

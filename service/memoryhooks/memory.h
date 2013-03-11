@@ -38,7 +38,7 @@
 #ifndef CCS_MEMORY_MEMORY_H
 #define OPAl_MEMORY_MEMORY_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include "memory_internal.h"
 
 BEGIN_C_DECLS

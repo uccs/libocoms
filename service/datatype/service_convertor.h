@@ -21,7 +21,7 @@
 #ifndef CCS_CONVERTOR_H_HAS_BEEN_INCLUDED
 #define CCS_CONVERTOR_H_HAS_BEEN_INCLUDED
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stddef.h>
 
@@ -38,10 +38,10 @@
 #include <string.h>
 #endif
 
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/datatype/service_datatype.h"
 #include "service/util/service_object.h"
-#include "service/include/service/prefetch.h"
+#include "service/primitives/prefetch.h"
 
 BEGIN_C_DECLS
 /*

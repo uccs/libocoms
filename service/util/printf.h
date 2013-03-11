@@ -24,7 +24,7 @@
 #ifndef CCS_PRINTF_H
 #define CCS_PRINTF_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stdarg.h>
 #include <stdlib.h>

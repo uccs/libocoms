@@ -27,7 +27,7 @@
 #ifndef SERVICE_ENVIRON_H
 #define SERVICE_ENVIRON_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #ifdef HAVE_CRT_EXTERNS_H
 #include <crt_externs.h>

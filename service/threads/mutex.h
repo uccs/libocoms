@@ -25,7 +25,7 @@
 #ifndef  SERVICE_MUTEX_H
 #define  SERVICE_MUTEX_H 1
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #if CCS_ENABLE_MULTI_THREADS
 #include "service/sys/atomic.h"
@@ -390,7 +390,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
 # endif
 # if CCS_HAVE_ATOMIC_CMPSET_64
 #  define CCS_ATOMIC_CMPSET_64(x, y, z) \
-    (ccs_using_threads() ? serivce_atomic_cmpset_64(x, y, z) : CCS_CMPSET(x, y, z))
+    (ccs_using_threads() ? service_atomic_cmpset_64(x, y, z) : CCS_CMPSET(x, y, z))
 # endif
 # if CCS_HAVE_ATOMIC_CMPSET_32 || CCS_HAVE_ATOMIC_CMPSET_64
 #  define CCS_ATOMIC_CMPSET(x, y, z) \

@@ -19,7 +19,7 @@
  * @file
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include "arch.h"
 #include "service/util/service_rb_tree.h"
 

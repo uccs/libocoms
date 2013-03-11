@@ -32,7 +32,7 @@
 #ifndef CCS_DATATYPE_H_HAS_BEEN_INCLUDED
 #define CCS_DATATYPE_H_HAS_BEEN_INCLUDED
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stddef.h>
 #ifdef HAVE_STDINT_H
