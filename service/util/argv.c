@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif  /* HAVE_STDLIB_H */
@@ -27,7 +27,7 @@
 #endif  /* HAVE_STRING_H */
 
 #include "service/util/argv.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 #define ARGSIZE 128
 

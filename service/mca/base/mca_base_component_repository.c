@@ -18,7 +18,7 @@
  */
 
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
 #endif
@@ -42,7 +42,7 @@
 #include "service/mca/mca.h"
 #include "service/mca/base/base.h"
 #include "service/mca/base/mca_base_component_repository.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 #if CCS_WANT_LIBLTDL
 

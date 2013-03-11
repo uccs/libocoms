@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -25,7 +25,7 @@
 #include <sys/mman.h>
 #endif  /* HAVE_SYS_MMAN_H */
 
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/memoryhooks/memory.h"
 #include "service/memoryhooks/memory_internal.h"
 #include "service/util/service_list.h"

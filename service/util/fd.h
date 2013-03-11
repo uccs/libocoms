@@ -14,7 +14,7 @@
 #ifndef SERVICE_UTIL_FD_H_
 #define SERVICE_UTIL_FD_H_
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 BEGIN_C_DECLS
 

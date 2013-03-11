@@ -17,11 +17,11 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <limits.h>
 
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/util/service_bitmap.h"
 
 

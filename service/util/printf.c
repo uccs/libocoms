@@ -21,7 +21,7 @@
  * Buffer safe printf functions for portability to archaic platforms.
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/util/printf.h"
 #include "service/util/output.h"

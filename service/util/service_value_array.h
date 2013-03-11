@@ -19,7 +19,7 @@
 #ifndef CCS_VALUE_ARRAY_H
 #define CCS_VALUE_ARRAY_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <string.h>
 
@@ -27,7 +27,7 @@
 #if CCS_ENABLE_DEBUG
 #include "service/util/output.h"
 #endif
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 BEGIN_C_DECLS
 

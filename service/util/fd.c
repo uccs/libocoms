@@ -9,7 +9,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -17,7 +17,7 @@
 #include <errno.h>
 
 #include "service/util/fd.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 
 /*

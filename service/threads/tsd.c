@@ -9,7 +9,7 @@
  */
 
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stdio.h>
 # if HAVE_STDLIB_H

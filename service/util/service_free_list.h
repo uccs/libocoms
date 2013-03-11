@@ -21,16 +21,16 @@
 #ifndef SERVICE_FREE_LIST_H
 #define SERVICE_FREE_LIST_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include "service/util/service_atomic_lifo.h"
 #include "service/threads/mutex.h"
 #include "service/threads/condition.h"
-#include "service/include/service_constants.h"
-#include "service/include/service/prefetch.h"
+#include "service/platform/service_constants.h"
+#include "service/primitives/prefetch.h"
 #if 0
 #include "service/prefetch.h"
 #include "service/threads/condition.h"
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 #include "service/runtime/opal.h"
 #endif
 

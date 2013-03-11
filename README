@@ -1,0 +1,8 @@
+1. Build:
+./autogen.pl && ./configure --prefix=$PWD/install && make -j8 install && echo -e "\n\nDONE."
+
+
+2. Build RPM:
+./autogen.pl && ./configure --prefix=$PWD/install && make libservice_rpms && echo -e "\n\nDONE."
+
+NOTE: don't try to build RPM with "make -j8 libservice_rpms" - it will fault.

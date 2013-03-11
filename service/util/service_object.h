@@ -116,7 +116,7 @@
 #ifndef CCS_OBJECT_H
 #define CCS_OBJECT_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include <assert.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>

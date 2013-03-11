@@ -81,7 +81,7 @@ service_atomic_add_64(volatile int64_t *addr, int64_t delta)
    
    do {
       oldval = *addr;
-   } while (0 == serivce_atomic_cmpset_64(addr, oldval, oldval + delta));
+   } while (0 == service_atomic_cmpset_64(addr, oldval, oldval + delta));
    return (oldval + delta);
 }
 #endif  /* CCS_HAVE_ATOMIC_ADD_64 */
@@ -96,7 +96,7 @@ service_atomic_sub_64(volatile int64_t *addr, int64_t delta)
 
     do {
         oldval = *addr;
-    } while (0 == serivce_atomic_cmpset_64(addr, oldval, oldval - delta));
+    } while (0 == service_atomic_cmpset_64(addr, oldval, oldval - delta));
     return (oldval - delta);
 }
 #endif  /* CCS_HAVE_ATOMIC_SUB_64 */
@@ -129,7 +129,7 @@ service_atomic_cmpset_xx(volatile void* addr, int64_t oldval,
 
 #if CCS_HAVE_ATOMIC_CMPSET_64
    case 8:
-      return serivce_atomic_cmpset_64( (volatile int64_t*)addr,
+      return service_atomic_cmpset_64( (volatile int64_t*)addr,
                                     (int64_t)oldval, (int64_t)newval );
 #endif  /* CCS_HAVE_ATOMIC_CMPSET_64 */
    default:
@@ -200,7 +200,7 @@ service_atomic_cmpset_ptr(volatile void* addr,
     return service_atomic_cmpset_32((int32_t*) addr, (unsigned long) oldval, 
                                  (unsigned long) newval);
 #elif SIZEOF_VOID_P == 8 && CCS_HAVE_ATOMIC_CMPSET_64
-    return serivce_atomic_cmpset_64((int64_t*) addr, (unsigned long) oldval, 
+    return service_atomic_cmpset_64((int64_t*) addr, (unsigned long) oldval, 
                                  (unsigned long) newval);
 #else
     abort();

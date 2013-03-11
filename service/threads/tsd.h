@@ -13,7 +13,7 @@
 #ifndef CCS_THREADS_TSD_H
 #define CCS_THREADS_TSD_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #if CCS_HAVE_POSIX_THREADS
 #include <pthread.h>
@@ -21,7 +21,7 @@
 #include <thread.h>
 #endif
 
-#include "service/include/service_constants.h"
+#include "service/platform/service_constants.h"
 
 BEGIN_C_DECLS
 

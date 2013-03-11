@@ -56,7 +56,7 @@
 #ifndef CCS_MCA_BASE_PARAM_H
 #define CCS_MCA_BASE_PARAM_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include "service/util/service_list.h"
 #include "service/mca/mca.h"

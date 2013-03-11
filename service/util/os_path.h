@@ -41,7 +41,7 @@
 #ifndef SERVICE_OS_PATH_H
 #define SERVICE_OS_PATH_H
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stdio.h>
 #include <stdarg.h>

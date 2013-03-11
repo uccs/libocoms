@@ -977,7 +977,7 @@ print("\n CWD - $rlg_dir = \n");
 
 # Check for project existence
 my $project_name_long = "Common Communication Substrate";
-my $project_name_short = "ccs";
+my $project_name_short = "libservice";
 
 #if (! -e "ompi") {
 #    $no_ompi_arg = 1;

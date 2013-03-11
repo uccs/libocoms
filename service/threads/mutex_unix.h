@@ -32,7 +32,7 @@
  * available.
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #if CCS_HAVE_POSIX_THREADS
 #ifdef HAVE_PTHREAD_H

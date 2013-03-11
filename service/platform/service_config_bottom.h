@@ -278,7 +278,7 @@
    including stdint.h */
 #define __STDC_LIMIT_MACROS
 #endif
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 #include <stdint.h>
 #else
 #include "service_stdint.h"

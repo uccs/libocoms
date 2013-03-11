@@ -11,7 +11,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stddef.h>
 #ifdef HAVE_STDINT_H
@@ -20,7 +20,7 @@
 
 #include "service/util/arch.h"
 
-#include "service/include/service/types.h"
+#include "service/primitives/types.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_convertor.h"
 #include "service/datatype/service_datatype_internal.h"

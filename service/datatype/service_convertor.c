@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "ccs_config.h"
+#include "service/platform/ccs_config.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -28,7 +28,7 @@
 #include <stdint.h>
 #endif
 
-#include "service/include/service/prefetch.h"
+#include "service/primitives/prefetch.h"
 #include "service/util/arch.h"
 #include "service/util/output.h"
 
