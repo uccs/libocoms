@@ -9,7 +9,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -28,14 +28,14 @@
 #include "service/platform/service_constants.h"
 
 
-int ccs_mca_base_select(const char *type_name, int output_id,
+int ocoms_mca_base_select(const char *type_name, int output_id,
                     service_list_t *components_available,
-                    ccs_mca_base_module_t **best_module,
-                    ccs_mca_base_component_t **best_component)
+                    ocoms_mca_base_module_t **best_module,
+                    ocoms_mca_base_component_t **best_component)
 {
-    ccs_mca_base_component_list_item_t *cli = NULL;
-    ccs_mca_base_component_t *component = NULL;
-    ccs_mca_base_module_t *module = NULL;
+    ocoms_mca_base_component_list_item_t *cli = NULL;
+    ocoms_mca_base_component_t *component = NULL;
+    ocoms_mca_base_module_t *module = NULL;
     service_list_item_t *item = NULL;
     int priority = 0, best_priority = INT32_MIN;
 
@@ -53,8 +53,8 @@ int ccs_mca_base_select(const char *type_name, int output_id,
     for (item  = service_list_get_first(components_available);
          item != service_list_get_end(components_available);
          item  = service_list_get_next(item) ) {
-        cli = (ccs_mca_base_component_list_item_t *) item;
-        component = (ccs_mca_base_component_t *) cli->cli_component;
+        cli = (ocoms_mca_base_component_list_item_t *) item;
+        component = (ocoms_mca_base_component_t *) cli->cli_component;
 
         /*
          * If there is a query function then use it.
@@ -110,17 +110,17 @@ int ccs_mca_base_select(const char *type_name, int output_id,
         /*
          * Still close the non-selected components
          */
-        ccs_mca_base_components_close(0, /* Pass 0 to keep this from closing the output handle */
+        ocoms_mca_base_components_close(0, /* Pass 0 to keep this from closing the output handle */
                                   components_available,
                                   NULL);
-        return CCS_ERR_NOT_FOUND;
+        return OCOMS_ERR_NOT_FOUND;
     }
 
     service_output_verbose(5, output_id,
                         "mca:base:select:(%5s) Selected component [%s]",
                         type_name, (*best_component)->mca_component_name);
 #if 0 /* Pasha: Not sure if we need this one */
-    if (ccs_profile) {
+    if (ocoms_profile) {
         service_output(0, "%s:%s", type_name, (*best_component)->mca_component_name);
     }
 #endif
@@ -128,10 +128,10 @@ int ccs_mca_base_select(const char *type_name, int output_id,
     /*
      * Close the non-selected components
      */
-    ccs_mca_base_components_close(output_id,
+    ocoms_mca_base_components_close(output_id,
                               components_available,
-                              (ccs_mca_base_component_t *) (*best_component));
+                              (ocoms_mca_base_component_t *) (*best_component));
 
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }

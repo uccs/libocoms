@@ -24,14 +24,14 @@ headers = \
 	service_portable_platform.h \
 	service_constants.h
 
-nodist_headers = ccs_config.h
+nodist_headers = ocoms_config.h
 
 #include service/Makefile.am
 
 EXTRA_DIST = CMakeLists.txt $(headers)
 
 if WANT_INSTALL_HEADERS 
-servicedir = $(includedir)/ccs
+servicedir = $(includedir)/ocoms
 nobase_dist_service_HEADERS = $(headers)
 nobase_nodist_service_HEADERS = $(nodist_headers)
 endif

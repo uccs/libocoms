@@ -25,7 +25,7 @@
 #ifndef OMPI_RB_TREE_H
 #define OMPI_RB_TREE_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include <stdlib.h>
 #include "service/platform/service_constants.h"
 #include "service/util/service_object.h"
@@ -78,9 +78,9 @@ struct service_rb_tree_t {
 typedef struct service_rb_tree_t service_rb_tree_t;
 
 /** declare the tree node as a class */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_rb_tree_node_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_rb_tree_node_t);
 /** declare the tree as a class */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_rb_tree_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_rb_tree_t);
 
 /* Function pointers for map traversal function */
 /**
@@ -108,14 +108,14 @@ typedef void (*service_rb_tree_action_fn_t)(void *, void *);
   *
   * @retval NONE
   */
-CCS_DECLSPEC void service_rb_tree_construct(service_object_t * object);
+OCOMS_DECLSPEC void service_rb_tree_construct(service_object_t * object);
 
 /**
   * the destruct function. tries to free the tree and destroys the free list
   *
   * @param object the tree object
   */
-CCS_DECLSPEC void service_rb_tree_destruct(service_object_t * object);
+OCOMS_DECLSPEC void service_rb_tree_destruct(service_object_t * object);
 
 /**
   * the function creates a new tree
@@ -124,10 +124,10 @@ CCS_DECLSPEC void service_rb_tree_destruct(service_object_t * object);
   *  tree data structure.
   * @param comp a pointer to the function to use for comaparing 2 nodes
   *
-  * @retval CCS_SUCCESS if it is successful
-  * @retval CCS_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
+  * @retval OCOMS_SUCCESS if it is successful
+  * @retval OCOMS_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
   */
-CCS_DECLSPEC int service_rb_tree_init(service_rb_tree_t * tree, service_rb_tree_comp_fn_t comp);
+OCOMS_DECLSPEC int service_rb_tree_init(service_rb_tree_t * tree, service_rb_tree_comp_fn_t comp);
 
 
 /**
@@ -137,10 +137,10 @@ CCS_DECLSPEC int service_rb_tree_init(service_rb_tree_t * tree, service_rb_tree_
   * @param key the key for the node
   * @param value the value for the node
   *
-  * @retval CCS_SUCCESS
-  * @retval CCS_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
+  * @retval OCOMS_SUCCESS
+  * @retval OCOMS_ERR_TEMP_OUT_OF_RESOURCE if unsuccessful
   */
-CCS_DECLSPEC int service_rb_tree_insert(service_rb_tree_t *tree, void * key, void * value);
+OCOMS_DECLSPEC int service_rb_tree_insert(service_rb_tree_t *tree, void * key, void * value);
 
 /**
   * finds a value in the tree based on the passed key using passed
@@ -153,7 +153,7 @@ CCS_DECLSPEC int service_rb_tree_insert(service_rb_tree_t *tree, void * key, voi
   * @retval pointer to the value if found
   * @retval NULL if not found
   */
-CCS_DECLSPEC void * service_rb_tree_find_with(service_rb_tree_t *tree, void *key, service_rb_tree_comp_fn_t compfn);
+OCOMS_DECLSPEC void * service_rb_tree_find_with(service_rb_tree_t *tree, void *key, service_rb_tree_comp_fn_t compfn);
 
 /**
   * finds a value in the tree based on the passed key
@@ -175,19 +175,19 @@ static inline void * service_rb_tree_find(service_rb_tree_t *tree, void *key)
   * @param tree a pointer to the tree data structure
   * @param key a pointer to the key
   *
-  * @retval CCS_SUCCESS if the node is found and deleted
-  * @retval CCS_ERR_NOT_FOUND if the node is not found
+  * @retval OCOMS_SUCCESS if the node is found and deleted
+  * @retval OCOMS_ERR_NOT_FOUND if the node is not found
   */
-CCS_DECLSPEC int service_rb_tree_delete(service_rb_tree_t *tree, void *key);
+OCOMS_DECLSPEC int service_rb_tree_delete(service_rb_tree_t *tree, void *key);
 
 /**
   * frees all the nodes on the tree
   *
   * @param tree a pointer to the tree data structure
   *
-  * @retval CCS_SUCCESS
+  * @retval OCOMS_SUCCESS
   */
-CCS_DECLSPEC int service_rb_tree_destroy(service_rb_tree_t *tree);
+OCOMS_DECLSPEC int service_rb_tree_destroy(service_rb_tree_t *tree);
 
 /**
   * traverses the entire tree, performing the cond function on each of the
@@ -197,10 +197,10 @@ CCS_DECLSPEC int service_rb_tree_destroy(service_rb_tree_t *tree);
   * @param cond a pointer to the condition function
   * @param action a pointer to the action function
   *
-  * @retval CCS_SUCCESS
-  * @retval CCS_ERROR if there is an error
+  * @retval OCOMS_SUCCESS
+  * @retval OCOMS_ERROR if there is an error
   */
-CCS_DECLSPEC int service_rb_tree_traverse(service_rb_tree_t *tree,
+OCOMS_DECLSPEC int service_rb_tree_traverse(service_rb_tree_t *tree,
                           service_rb_tree_condition_fn_t cond,
                           service_rb_tree_action_fn_t action);
 
@@ -211,20 +211,20 @@ CCS_DECLSPEC int service_rb_tree_traverse(service_rb_tree_t *tree,
   *
   * @retval int the nuber of items on the tree
   */
-CCS_DECLSPEC int service_rb_tree_size(service_rb_tree_t *tree);
+OCOMS_DECLSPEC int service_rb_tree_size(service_rb_tree_t *tree);
 
 #define CONSTRUCT_RB_TREE(object, progress) do {\
     OBJ_CONSTRUCT(object, service_rb_tree_t);\
-    ((service_rb_tree_t *)object)->free_list.fl_condition.ccs_progress_fn = progress;\
+    ((service_rb_tree_t *)object)->free_list.fl_condition.ocoms_progress_fn = progress;\
     }\
     while(0);
 
-static int service_rb_tree_new(service_rb_tree_t **rb_tree, ccs_progress_fn_t progress)
+static int service_rb_tree_new(service_rb_tree_t **rb_tree, ocoms_progress_fn_t progress)
 {
     service_rb_tree_t *rbt = OBJ_NEW(service_rb_tree_t);
-    rbt->free_list.fl_condition.ccs_progress_fn = progress;
+    rbt->free_list.fl_condition.ocoms_progress_fn = progress;
     *rb_tree = rbt;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 END_C_DECLS
 #endif /* OMPI_RB_TREE_H */

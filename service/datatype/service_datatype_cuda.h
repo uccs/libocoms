@@ -7,8 +7,8 @@
  * $HEADER$
  */
 
-#ifndef _CCS_DATATYPE_CUDA_H
-#define _CCS_DATATYPE_CUDA_H
+#ifndef _OCOMS_DATATYPE_CUDA_H
+#define _OCOMS_DATATYPE_CUDA_H
 
 #include "cuda.h"
 

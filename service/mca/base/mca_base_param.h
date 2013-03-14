@@ -39,7 +39,7 @@
  * of resolution is as follows:
  *
  * - An "override" location that is only available to be set via the
- *   ccs_mca_base_param API.
+ *   ocoms_mca_base_param API.
  * - Look for an environment variable corresponding to the MCA
  *   parameter.
  * - See if a file contains the MCA parameter (MCA parameter files are
@@ -47,16 +47,16 @@
  *   invoked).
  * - If nothing else was found, use the parameter's default value.
  *
- * Note that there is a second header file (ccs_mca_base_param_internal.h)
+ * Note that there is a second header file (ocoms_mca_base_param_internal.h)
  * that contains several internal type delcarations for the parameter
  * system.  The internal file is only used within the parameter system
  * itself; it should not be required by any other Open MPI entities.
  */
 
-#ifndef CCS_MCA_BASE_PARAM_H
-#define CCS_MCA_BASE_PARAM_H
+#ifndef OCOMS_MCA_BASE_PARAM_H
+#define OCOMS_MCA_BASE_PARAM_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/util/service_list.h"
 #include "service/mca/mca.h"
@@ -73,7 +73,7 @@ typedef enum {
     
     /** Maximum parameter type. */
     MCA_BASE_PARAM_TYPE_MAX
-} ccs_mca_base_param_type_t;
+} ocoms_mca_base_param_type_t;
 
 
 /**
@@ -91,21 +91,21 @@ typedef enum {
 
     /** Maximum source type */
     MCA_BASE_PARAM_SOURCE_MAX
-} ccs_mca_base_param_source_t;
+} ocoms_mca_base_param_source_t;
 
 
 /**
- * Struct for holding name/type info.  Used in ccs_mca_base_param_dump(),
+ * Struct for holding name/type info.  Used in ocoms_mca_base_param_dump(),
  * below.
  */
-struct ccs_mca_base_param_info_t {
+struct ocoms_mca_base_param_info_t {
     /** So that we can be in a list */
     service_list_item_t super;
 
     /** Index of this parameter */
     int mbpp_index;
     /** Enum indicating the back-end type of the parameter */
-    ccs_mca_base_param_type_t mbpp_type;
+    ocoms_mca_base_param_type_t mbpp_type;
 
     /** String name of the type of this component */
     char *mbpp_type_name;
@@ -120,12 +120,12 @@ struct ccs_mca_base_param_info_t {
     bool mbpp_deprecated;
 
     /** Array of pointers of synonyms of this parameter */
-    struct ccs_mca_base_param_info_t **mbpp_synonyms;
+    struct ocoms_mca_base_param_info_t **mbpp_synonyms;
     /** Length of mbpp_synonyms array */
     int mbpp_synonyms_len;
-    /** Back pointer to another ccs_mca_base_param_info_t that *this*
+    /** Back pointer to another ocoms_mca_base_param_info_t that *this*
         param is a synonym of (or NULL) */
-    struct ccs_mca_base_param_info_t *mbpp_synonym_parent;
+    struct ocoms_mca_base_param_info_t *mbpp_synonym_parent;
 
     /** Is this parameter internal? */
     bool mbpp_internal;
@@ -137,7 +137,7 @@ struct ccs_mca_base_param_info_t {
 /**
  * Convenience typedef
  */
-typedef struct ccs_mca_base_param_info_t ccs_mca_base_param_info_t;
+typedef struct ocoms_mca_base_param_info_t ocoms_mca_base_param_info_t;
 
 /*
  * Global functions for MCA
@@ -148,28 +148,28 @@ BEGIN_C_DECLS
     /**
      * Make a real object for the info
      */
-    CCS_DECLSPEC OBJ_CLASS_DECLARATION(ccs_mca_base_param_info_t);
+    OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_mca_base_param_info_t);
 
     /**
      * Initialize the MCA parameter system.
      *
-     * @retval CCS_SUCCESS
+     * @retval OCOMS_SUCCESS
      *
      * This function initalizes the MCA parameter system.  It is
-     * invoked internally (by ccs_mca_base_open()) and is only documented
+     * invoked internally (by ocoms_mca_base_open()) and is only documented
      * here for completeness.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_init(void);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_init(void);
 
     /**
      * Recache the MCA param files
      *
      * @param rel_path_search If a relative path is found, search the path even
      * if the relative path in pointing to the current working directory.
-     * @retval CCS_SUCCESS
+     * @retval OCOMS_SUCCESS
      *
      */
-    CCS_DECLSPEC int ccs_mca_base_param_recache_files(bool rel_path_search);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_recache_files(bool rel_path_search);
 
     /**
      * Register an integer MCA parameter.
@@ -190,9 +190,9 @@ BEGIN_C_DECLS
      * up its current value and return it unless current_value is
      * NULL.
      *
-     * @retval CCS_ERROR Upon failure to register the parameter.
+     * @retval OCOMS_ERROR Upon failure to register the parameter.
      * @retval index Index value that can be used with
-     * ccs_mca_base_param_lookup_int() to retrieve the value of the parameter.
+     * ocoms_mca_base_param_lookup_int() to retrieve the value of the parameter.
      *
      * This function registers an integer MCA parameter and associates it
      * with a specific component.
@@ -223,7 +223,7 @@ BEGIN_C_DECLS
      * complete, the parameter system will look up the current value
      * of the parameter and return it in {current_value}.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_reg_int(const ccs_mca_base_component_t *component,
+    OCOMS_DECLSPEC int ocoms_mca_base_param_reg_int(const ocoms_mca_base_component_t *component,
                                              const char *param_name, 
                                              const char *help_msg,
                                              bool internal,
@@ -252,12 +252,12 @@ BEGIN_C_DECLS
      * up its current value and return it unless current_value is
      * NULL.
      *
-     * @retval CCS_ERROR Upon failure to register the parameter.
+     * @retval OCOMS_ERROR Upon failure to register the parameter.
      * @retval index Index value that can be used with
-     * ccs_mca_base_param_lookup_string() to retrieve the value of the
+     * ocoms_mca_base_param_lookup_string() to retrieve the value of the
      * parameter.
      *
-     * This function is identical to ccs_mca_base_param_reg_int() except
+     * This function is identical to ocoms_mca_base_param_reg_int() except
      * that it registers parameters that are not associated with
      * components.  For example, it can be used to register parameters
      * associated with a framework base or an overall layer (e.g., the
@@ -280,12 +280,12 @@ BEGIN_C_DECLS
      * parameters that have recongized types, although they can be
      * used by the user, will not be displayed by ompi_info.
      *
-     * Note that if you use ccs_mca_base_param_find() to lookup the index
+     * Note that if you use ocoms_mca_base_param_find() to lookup the index
      * of the registered parameter, the "component" argument should be
      * NULL (because it is not specified in this registration
      * function, and is therefore registered with a NULL value).
      */
-    CCS_DECLSPEC int ccs_mca_base_param_reg_int_name(const char *type,
+    OCOMS_DECLSPEC int ocoms_mca_base_param_reg_int_name(const char *type,
                                                   const char *param_name, 
                                                   const char *help_msg,
                                                   bool internal,
@@ -312,9 +312,9 @@ BEGIN_C_DECLS
      * up its current value and return it unless current_value is
      * NULL.
      *
-     * @retval CCS_ERROR Upon failure to register the parameter.
+     * @retval OCOMS_ERROR Upon failure to register the parameter.
      * @retval index Index value that can be used with
-     * ccs_mca_base_param_lookup_string() to retrieve the value of the
+     * ocoms_mca_base_param_lookup_string() to retrieve the value of the
      * parameter.
      *
      * Note that if a string value is read in from a file then it will
@@ -324,12 +324,12 @@ BEGIN_C_DECLS
      * NOTE: Strings returned in the \em current_value parameter should later
      * be free()'ed.
      *
-     * This function is identical to ccs_mca_base_param_reg_int() except
+     * This function is identical to ocoms_mca_base_param_reg_int() except
      * that you are registering a string parameter with an associated
      * string default value (which is \em not allowed to be NULL).
-     * See ccs_mca_base_param_reg_int() for all other details.
+     * See ocoms_mca_base_param_reg_int() for all other details.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_reg_string(const ccs_mca_base_component_t *component,
+    OCOMS_DECLSPEC int ocoms_mca_base_param_reg_string(const ocoms_mca_base_component_t *component,
                                                 const char *param_name,
                                                 const char *help_msg,
                                                 bool internal,
@@ -359,16 +359,16 @@ BEGIN_C_DECLS
      * up its current value and return it unless current_value is
      * NULL.
      *
-     * @retval CCS_ERROR Upon failure to register the parameter.
+     * @retval OCOMS_ERROR Upon failure to register the parameter.
      * @retval index Index value that can be used with
-     * ccs_mca_base_param_lookup_string() to retrieve the value of the
+     * ocoms_mca_base_param_lookup_string() to retrieve the value of the
      * parameter.
      *
      * Note that if a string value is read in from a file then it will
      * never be NULL. It will always have a value, even if that value is
      * the empty string.
      *
-     * This function is identical to ccs_mca_base_param_reg_string()
+     * This function is identical to ocoms_mca_base_param_reg_string()
      * except that it registers parameters that are not associated
      * with components.  For example, it can be used to register
      * parameters associated with a framework base or an overall layer
@@ -391,12 +391,12 @@ BEGIN_C_DECLS
      * parameters that have recongized types, although they can be
      * used by the user, will not be displayed by ompi_info.
      *
-     * Note that if you use ccs_mca_base_param_find() to lookup the index
+     * Note that if you use ocoms_mca_base_param_find() to lookup the index
      * of the registered parameter, the "component" argument should be
      * NULL (because it is not specified in this registration
      * function, and is therefore registered with a NULL value).
      */
-    CCS_DECLSPEC int ccs_mca_base_param_reg_string_name(const char *type,
+    OCOMS_DECLSPEC int ocoms_mca_base_param_reg_string_name(const char *type,
                                                      const char *param_name,
                                                      const char *help_msg,
                                                      bool internal,
@@ -417,9 +417,9 @@ BEGIN_C_DECLS
      * synonym is used to set the parameter's value (unless the
      * warnings are silenced)
      *
-     * @returns CCS_SUCCESS Upon success.
-     * @returns CCS_ERR_BAD_PARAM If the index value is invalid.
-     * @returns CCS_ERROR Otherwise
+     * @returns OCOMS_SUCCESS Upon success.
+     * @returns OCOMS_ERR_BAD_PARAM If the index value is invalid.
+     * @returns OCOMS_ERROR Otherwise
      * 
      * Upon success, this function creates a synonym MCA parameter
      * that will be treated almost exactly like the original.  The
@@ -434,12 +434,12 @@ BEGIN_C_DECLS
      * for both MCA parameter names "A" and "B", the value associated
      * with the "A" name will be used and the value associated with
      * the "B" will be ignored (and will not even be visible by the
-     * ccs_mca_base_param_*() API).  If the user sets values for both MCA
+     * ocoms_mca_base_param_*() API).  If the user sets values for both MCA
      * parameter names "B" and "C" (and does *not* set a value for
      * "A"), it is undefined as to which value will be used.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_reg_syn(int orignal_index, 
-                                             const ccs_mca_base_component_t *syn_component,
+    OCOMS_DECLSPEC int ocoms_mca_base_param_reg_syn(int orignal_index, 
+                                             const ocoms_mca_base_component_t *syn_component,
                                              const char *syn_param_name, 
                                              bool deprecated);
 
@@ -458,13 +458,13 @@ BEGIN_C_DECLS
      * synonym is used to set the parameter's value (unless the
      * warnings are silenced)
      *
-     * Essentially the same as ccs_mca_base_param_reg_syn(), but using a
+     * Essentially the same as ocoms_mca_base_param_reg_syn(), but using a
      * type name instead of a component.
      *
-     * See ccs_mca_base_param_reg_int_name() for guidence on type string
+     * See ocoms_mca_base_param_reg_int_name() for guidence on type string
      * values.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_reg_syn_name(int orignal_index, 
+    OCOMS_DECLSPEC int ocoms_mca_base_param_reg_syn_name(int orignal_index, 
                                                   const char *syn_type,
                                                   const char *syn_param_name, 
                                                   bool deprecated);
@@ -472,40 +472,40 @@ BEGIN_C_DECLS
     /**
      * Deregister a MCA parameter
      *
-     * @param index Index returned from ccs_mca_base_param_register_init()
+     * @param index Index returned from ocoms_mca_base_param_register_init()
      *
      */
-    CCS_DECLSPEC int ccs_mca_base_param_deregister(int index);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_deregister(int index);
 
     /**
      * Look up an integer MCA parameter.
      *
      * @param index Index previous returned from
-     * ccs_mca_base_param_register_int().
+     * ocoms_mca_base_param_register_int().
      * @param value Pointer to int where the parameter value will be
      * stored.
      *
-     * @return CCS_ERROR Upon failure.  The contents of value are
+     * @return OCOMS_ERROR Upon failure.  The contents of value are
      * undefined.
-     * @return CCS_SUCCESS Upon success.  value will be filled with the
+     * @return OCOMS_SUCCESS Upon success.  value will be filled with the
      * parameter's current value.
      *
      * The value of a specific MCA parameter can be looked up using the
-     * return value from ccs_mca_base_param_register_int().
+     * return value from ocoms_mca_base_param_register_int().
      */
-    CCS_DECLSPEC int ccs_mca_base_param_lookup_int(int index, int *value);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_lookup_int(int index, int *value);
     
     /**
      * Look up a string MCA parameter.
      *
      * @param index Index previous returned from
-     * ccs_mca_base_param_register_string().
+     * ocoms_mca_base_param_register_string().
      * @param value Pointer to (char *) where the parameter value will be
      * stored.
      *
-     * @return CCS_ERROR Upon failure.  The contents of value are
+     * @return OCOMS_ERROR Upon failure.  The contents of value are
      * undefined.
-     * @return CCS_SUCCESS Upon success.  value will be filled with the
+     * @return OCOMS_SUCCESS Upon success.  value will be filled with the
      * parameter's current value.
      *
      * Note that if a string value is read in from a file then it will
@@ -516,9 +516,9 @@ BEGIN_C_DECLS
      * free()'ed.
      *
      * The value of a specific MCA parameter can be looked up using the
-     * return value from ccs_mca_base_param_register_string().
+     * return value from ocoms_mca_base_param_register_string().
      */
-    CCS_DECLSPEC int ccs_mca_base_param_lookup_string(int index, char **value);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_lookup_string(int index, char **value);
 
     /**
      * Lookup the source of an MCA parameter's value
@@ -530,14 +530,14 @@ BEGIN_C_DECLS
      * string.  It is permissable to specify source_file==NULL if the
      * caller does not care to know the filename.
      *
-     * @retval CCS_ERROR If the parameter was not found.
-     * @retval CCS_SUCCESS Upon success.
+     * @retval OCOMS_ERROR If the parameter was not found.
+     * @retval OCOMS_SUCCESS Upon success.
      *
      * This function looks up to see where the value of an MCA
      * parameter came from.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_lookup_source(int index, 
-                                                   ccs_mca_base_param_source_t *source,
+    OCOMS_DECLSPEC int ocoms_mca_base_param_lookup_source(int index, 
+                                                   ocoms_mca_base_param_source_t *source,
                                                    char **source_file);
 
     /**
@@ -546,19 +546,19 @@ BEGIN_C_DECLS
      * @param index [in] Index of MCA parameter to set
      * @param value [in] The integer value to set
      *
-     * @retval CCS_ERROR If the parameter was not found.
-     * @retval CCS_SUCCESS Upon success.
+     * @retval OCOMS_ERROR If the parameter was not found.
+     * @retval OCOMS_SUCCESS Upon success.
      *
      * This function sets an integer value on the MCA parameter
      * indicated by the index value index.  This value will be used in
      * lieu of any other value from any other MCA source (environment
      * variable, file, etc.) until the value is unset with
-     * ccs_mca_base_param_unset().
+     * ocoms_mca_base_param_unset().
      *
      * This function may be invoked multiple times; each time, the
      * last "set" value is replaced with the newest value.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_set_int(int index, int value);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_set_int(int index, int value);
 
     /**
      * Sets an "override" value for an string MCA parameter.
@@ -566,14 +566,14 @@ BEGIN_C_DECLS
      * @param index [in] Index of MCA parameter to set
      * @param value [in] The string value to set
      *
-     * @retval CCS_ERROR If the parameter was not found.
-     * @retval CCS_SUCCESS Upon success.
+     * @retval OCOMS_ERROR If the parameter was not found.
+     * @retval OCOMS_SUCCESS Upon success.
      *
      * This function sets a string value on the MCA parameter
      * indicated by the index value index.  This value will be used in
      * lieu of any other value from any other MCA source (environment
      * variable, file, etc.) until the value is unset with
-     * ccs_mca_base_param_unset().  
+     * ocoms_mca_base_param_unset().  
      *
      * The string is copied by value; the string "value" parameter
      * does not become "owned" by the parameter subsystem.
@@ -582,21 +582,21 @@ BEGIN_C_DECLS
      * last "set" value is replaced with the newest value (the old
      * value is discarded).
      */
-    CCS_DECLSPEC int ccs_mca_base_param_set_string(int index, char *value);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_set_string(int index, char *value);
 
     /**
      * Unset a parameter that was previously set by
-     * ccs_mca_base_param_set_int() or ccs_mca_base_param_set_string().
+     * ocoms_mca_base_param_set_int() or ocoms_mca_base_param_set_string().
      *
      * @param index [in] Index of MCA parameter to set
      *
-     * @retval CCS_ERROR If the parameter was not found.
-     * @retval CCS_SUCCESS Upon success.
+     * @retval OCOMS_ERROR If the parameter was not found.
+     * @retval OCOMS_SUCCESS Upon success.
      *
      * Resets previous value that was set (if any) on the given MCA
      * parameter.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_unset(int index);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_unset(int index);
 
     /**
      * Get the string name corresponding to the MCA parameter
@@ -611,7 +611,7 @@ BEGIN_C_DECLS
      * The string that is returned is owned by the caller; if
      * appropriate, it must be eventually freed by the caller.
      */
-    CCS_DECLSPEC char *ccs_mca_base_param_env_var(const char *param_name);
+    OCOMS_DECLSPEC char *ocoms_mca_base_param_env_var(const char *param_name);
 
     /**
      * Find the index for an MCA parameter based on its names.
@@ -620,19 +620,19 @@ BEGIN_C_DECLS
      * @param component Name of the component containing the parameter.
      * @param param Name of the parameter.
      *
-     * @retval CCS_ERROR If the parameter was not found.
+     * @retval OCOMS_ERROR If the parameter was not found.
      * @retval index If the parameter was found.
      *
      * It is not always convenient to widely propagate a parameter's index
      * value, or it may be necessary to look up the parameter from a
      * different component -- where it is not possible to have the return
-     * value from ccs_mca_base_param_register_int() or
-     * ccs_mca_base_param_register_string().  This function can be used to
+     * value from ocoms_mca_base_param_register_int() or
+     * ocoms_mca_base_param_register_string().  This function can be used to
      * look up the index of any registered parameter.  The returned index
-     * can be used with ccs_mca_base_param_lookup_int() and
-     * ccs_mca_base_param_lookup_string().
+     * can be used with ocoms_mca_base_param_lookup_int() and
+     * ocoms_mca_base_param_lookup_string().
      */
-    CCS_DECLSPEC int ccs_mca_base_param_find(const char *type, 
+    OCOMS_DECLSPEC int ocoms_mca_base_param_find(const char *type, 
                                           const char *component, 
                                           const char *param);
 
@@ -646,11 +646,11 @@ BEGIN_C_DECLS
  * @param env [in] NULL-terminated list of strings (e.g., from an environment).
  * @param current_value [out] Return the current value (if found).
  *
- * @retval CCS_ERROR If the parameter was not found.
+ * @retval OCOMS_ERROR If the parameter was not found.
  *
  * Look for a specific MCA parameter in an environment and return its value
  */
-CCS_DECLSPEC int ccs_mca_base_param_find_int(const ccs_mca_base_component_t *component,
+OCOMS_DECLSPEC int ocoms_mca_base_param_find_int(const ocoms_mca_base_component_t *component,
                                           const char *param_name,
                                           char **env,
                                           int *current_value);
@@ -667,11 +667,11 @@ CCS_DECLSPEC int ccs_mca_base_param_find_int(const ccs_mca_base_component_t *com
  * @param env [in] NULL-terminated list of strings (e.g., from an environment).
  * @param current_value [out] Return the current value (if found).
  *
- * @retval CCS_ERROR If the parameter was not found.
+ * @retval OCOMS_ERROR If the parameter was not found.
  *
  * Look for a specific MCA parameter in an environment and return its value
  */
-CCS_DECLSPEC int ccs_mca_base_param_find_int_name(const char *type,
+OCOMS_DECLSPEC int ocoms_mca_base_param_find_int_name(const char *type,
                                                const char *param_name,
                                                char **env,
                                                int *current_value);
@@ -685,11 +685,11 @@ CCS_DECLSPEC int ccs_mca_base_param_find_int_name(const char *type,
  * @param env [in] NULL-terminated list of strings (e.g., from an environment).
  * @param current_value [out] Return the current value (if found).
  *
- * @retval CCS_ERROR If the parameter was not found.
+ * @retval OCOMS_ERROR If the parameter was not found.
  *
  * Look for a specific MCA parameter in an environment and return its value
  */
-CCS_DECLSPEC int ccs_mca_base_param_find_string(const ccs_mca_base_component_t *component,
+OCOMS_DECLSPEC int ocoms_mca_base_param_find_string(const ocoms_mca_base_component_t *component,
                                              const char *param_name,
                                              char **env,
                                              char **current_value);
@@ -706,11 +706,11 @@ CCS_DECLSPEC int ccs_mca_base_param_find_string(const ccs_mca_base_component_t *
  * @param env [in] NULL-terminated list of strings (e.g., from an environment).
  * @param current_value [out] Return the current value (if found).
  *
- * @retval CCS_ERROR If the parameter was not found.
+ * @retval OCOMS_ERROR If the parameter was not found.
  *
  * Look for a specific MCA parameter in an environment and return its value
  */
-CCS_DECLSPEC int ccs_mca_base_param_find_string_name(const char *type,
+OCOMS_DECLSPEC int ocoms_mca_base_param_find_string_name(const char *type,
                                                   const char *param_name,
                                                   char **env,
                                                   char **current_value);
@@ -719,12 +719,12 @@ CCS_DECLSPEC int ccs_mca_base_param_find_string_name(const char *type,
      * Set the "internal" flag on an MCA parameter to true or false.
      *
      * @param index [in] Index previous returned from
-     * ccs_mca_base_param_register_string() or ccs_mca_base_param_register_int(). 
+     * ocoms_mca_base_param_register_string() or ocoms_mca_base_param_register_int(). 
      * @param internal [in] Boolean indicating whether the MCA
      * parameter is internal (private) or public.
      *
-     * @returns CCS_SUCCESS If it can find the parameter to reset
-     * @returns CCS_ERROR Otherwise
+     * @returns OCOMS_SUCCESS If it can find the parameter to reset
+     * @returns OCOMS_ERROR Otherwise
      *
      * "Internal" MCA parameters are ones that are not intentended to
      * be seen or modified by users or user applications.  These
@@ -734,33 +734,33 @@ CCS_DECLSPEC int ccs_mca_base_param_find_string_name(const char *type,
      * MPI_INIT (at least, they're not displayed by default), thus
      * keeping them away from prying user eyes.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_set_internal(int index, bool internal);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_set_internal(int index, bool internal);
 
     /**
      * Obtain a list of all the MCA parameters currently defined as
      * well as their types.  
      *
-     * @param info [out] An service_list_t of ccs_mca_base_param_info_t
+     * @param info [out] An service_list_t of ocoms_mca_base_param_info_t
      * instances.
      * @param internal [in] Whether to include the internal parameters
      * or not.
      *
-     * @retval CCS_SUCCESS Upon success.
-     * @retval CCS_ERROR Upon failure.
+     * @retval OCOMS_SUCCESS Upon success.
+     * @retval OCOMS_ERROR Upon failure.
      *
      * This function is used to obtain a list of all the currently
      * registered MCA parameters along with their associated types
      * (currently: string or integer).  The results from this function
-     * can be used to repeatedly invoke ccs_mca_base_param_lookup_int()
-     * and/or ccs_mca_base_param_lookup_string() to obtain a comprehensive
+     * can be used to repeatedly invoke ocoms_mca_base_param_lookup_int()
+     * and/or ocoms_mca_base_param_lookup_string() to obtain a comprehensive
      * list of all MCA parameters and their current values.
      *
      * Releasing the list, and all the items in the list, is a
      * relatively complicated process.  Use the companion function
-     * ccs_mca_base_param_dump_release() when finished with the returned
+     * ocoms_mca_base_param_dump_release() when finished with the returned
      * info list to release all associated memory.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_dump(service_list_t **info, bool internal);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_dump(service_list_t **info, bool internal);
 
     /**
      * Obtain a list of all the MCA parameters currently defined as
@@ -773,50 +773,50 @@ CCS_DECLSPEC int ccs_mca_base_param_find_string_name(const char *type,
      * @param internal [in] Whether to include the internal parameters
      * or not.
      *
-     * @retval CCS_SUCCESS Upon success.
-     * @retval CCS_ERROR Upon failure.
+     * @retval OCOMS_SUCCESS Upon success.
+     * @retval OCOMS_ERROR Upon failure.
      *
-     * This function is similar to ccs_mca_base_param_dump() except that
+     * This function is similar to ocoms_mca_base_param_dump() except that
      * its output is in terms of an argv-style array of key=value
      * strings, suitable for using in an environment.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_build_env(char ***env, int *num_env,
+    OCOMS_DECLSPEC int ocoms_mca_base_param_build_env(char ***env, int *num_env,
                                                bool internal);
 
     /**
      * Release the memory associated with the info list returned from
-     * ccs_mca_base_param_dump().
+     * ocoms_mca_base_param_dump().
      *
      * @param info [in/out] An service_list_t previously returned from
-     * ccs_mca_base_param_dump().
+     * ocoms_mca_base_param_dump().
      *
-     * @retval CCS_SUCCESS Upon success.
-     * @retval CCS_ERROR Upon failure.
+     * @retval OCOMS_SUCCESS Upon success.
+     * @retval OCOMS_ERROR Upon failure.
      * 
      * This function is intended to be used to free the info list
-     * returned from ccs_mca_base_param_dump().  There are a bunch of
+     * returned from ocoms_mca_base_param_dump().  There are a bunch of
      * strings and other associated memory in the list making it
      * cumbersome for the caller to free it all properly.  Hence, once
      * the caller is finished with the info list, invoke this
      * function and all memory associated with the list will be freed.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_dump_release(service_list_t *info);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_dump_release(service_list_t *info);
 
     /**
      * Shut down the MCA parameter system (normally only invoked by the
      * MCA framework itself).
      *
-     * @returns CCS_SUCCESS This function never fails.
+     * @returns OCOMS_SUCCESS This function never fails.
      *
      * This function shuts down the MCA parameter repository and frees all
-     * associated memory.  No other ccs_mca_base_param*() functions can be
+     * associated memory.  No other ocoms_mca_base_param*() functions can be
      * invoked after this function.
      *
      * This function is normally only invoked by the MCA framework itself
      * when the process is shutting down (e.g., during MPI_FINALIZE).  It
      * is only documented here for completeness.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_finalize(void);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_finalize(void);
 
     /***************************************************************
      * Deprecated interface
@@ -836,11 +836,11 @@ CCS_DECLSPEC int ccs_mca_base_param_find_string_name(const char *type,
      * @param default_value [in] The value that is used for this
      * parameter if the user does not supply one.
      *
-     * @retval CCS_ERROR Upon failure to register the parameter.
+     * @retval OCOMS_ERROR Upon failure to register the parameter.
      * @retval index Index value that can be used with
-     * ccs_mca_base_param_lookup_int() to retrieve the value of the parameter.
+     * ocoms_mca_base_param_lookup_int() to retrieve the value of the parameter.
      *
-     * This function is deprecated.  Use ccs_mca_base_param_reg_int() instead.
+     * This function is deprecated.  Use ocoms_mca_base_param_reg_int() instead.
      *
      * This function registers an integer MCA parameter and associates it
      * with a specific component.
@@ -868,7 +868,7 @@ CCS_DECLSPEC int ccs_mca_base_param_find_string_name(const char *type,
      * returned, but the default value will be changed to reflect the
      * last registration.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_register_int(const char *type_name, 
+    OCOMS_DECLSPEC int ocoms_mca_base_param_register_int(const char *type_name, 
                                                   const char *component_name,
                                                   const char *param_name, 
                                                   const char *mca_param_name,
@@ -888,24 +888,24 @@ CCS_DECLSPEC int ccs_mca_base_param_find_string_name(const char *type,
      * @param default_value [in] The value that is used for this
      * parameter if the user does not supply one.
      *
-     * @retval CCS_ERROR Upon failure to register the parameter.
+     * @retval OCOMS_ERROR Upon failure to register the parameter.
      * @retval index Index value that can be used with
-     * ccs_mca_base_param_lookup_string() to retrieve the value of the
+     * ocoms_mca_base_param_lookup_string() to retrieve the value of the
      * parameter.
      *
-     * This function is deprecated.  Use ccs_mca_base_param_reg_string()
+     * This function is deprecated.  Use ocoms_mca_base_param_reg_string()
      * instead.
      *
      * Note that if a string value is read in from a file then it will
      * never be NULL. It will always have a value, even if that value is
      * the empty string.
      *
-     * This function is identical to ccs_mca_base_param_register_int()
+     * This function is identical to ocoms_mca_base_param_register_int()
      * except that you are registering a string parameter with an
      * associated string default value (which is \em not allowed to be NULL).
-     * See ccs_mca_base_param_register_int() for all other details.
+     * See ocoms_mca_base_param_register_int() for all other details.
      */
-    CCS_DECLSPEC int ccs_mca_base_param_register_string(const char *type_name, 
+    OCOMS_DECLSPEC int ocoms_mca_base_param_register_string(const char *type_name, 
                                                      const char *component_name,
                                                      const char *param_name, 
                                                      const char *mca_param_name,
@@ -925,16 +925,16 @@ CCS_DECLSPEC int ccs_mca_base_param_find_string_name(const char *type,
      * an environ-style string array.
      * @retval NULL Upon failure.
      *
-     * This function is deprecated.  Use ccs_mca_base_param_env_var()
+     * This function is deprecated.  Use ocoms_mca_base_param_env_var()
      * instead.
      *
      * The string that is returned is owned by the caller; if
      * appropriate, it must be eventually freed by the caller.
      */
-    CCS_DECLSPEC char *ccs_mca_base_param_environ_variable(const char *type,
+    OCOMS_DECLSPEC char *ocoms_mca_base_param_environ_variable(const char *type,
                                                         const char *comp,
                                                         const char *param) /* __service_attribute_deprecated__ */;
 
 END_C_DECLS
 
-#endif /* CCS_MCA_BASE_PARAM_H */
+#endif /* OCOMS_MCA_BASE_PARAM_H */

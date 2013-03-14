@@ -10,7 +10,7 @@
 
 # This file is m4_included in the top-level configure.ac
 
-AC_DEFUN([CCS_CONFIG_FILES],[
+AC_DEFUN([OCOMS_CONFIG_FILES],[
     AC_CONFIG_FILES([
         service/platform/Makefile
         service/asm/Makefile

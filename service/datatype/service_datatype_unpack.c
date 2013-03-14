@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -27,14 +27,14 @@
 #include "service/datatype/service_convertor_internal.h"
 #include "service/datatype/service_datatype_internal.h"
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #include "service/util/output.h"
 
 extern int service_unpack_debug;
 #define DO_DEBUG(INST)  if( service_unpack_debug ) { INST }
 #else
 #define DO_DEBUG(INST)
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
 
 #include "service/datatype/service_datatype_checksum.h"
 #include "service/datatype/service_datatype_unpack.h"
@@ -57,7 +57,7 @@ extern int service_unpack_debug;
  */
 /* Convert data from multiple input buffers (as received from the network layer)
  * to a contiguous output buffer with a predefined size.
- * return CCS_SUCCESS if everything went OK and if there is still room before the complete
+ * return OCOMS_SUCCESS if everything went OK and if there is still room before the complete
  *          conversion of the data (need additional call with others input buffers )
  *        1 if everything went fine and the data was completly converted
  *       -1 something wrong occurs.
@@ -71,13 +71,13 @@ service_unpack_general_function( service_convertor_t* pConvertor,
     dt_stack_t* pStack;              /* pointer to the position on the stack */
     uint32_t pos_desc;               /* actual position in the description of the derived datatype */
     int32_t count_desc;              /* the number of items already done in the actual pos_desc */
-    int type = CCS_DATATYPE_INT8;   /* type at current position */
-    CCS_PTRDIFF_TYPE advance;       /* number of bytes that we should advance the buffer */
-    CCS_PTRDIFF_TYPE disp_desc = 0; /* compute displacement for truncated data */
+    int type = OCOMS_DATATYPE_INT8;   /* type at current position */
+    OCOMS_PTRDIFF_TYPE advance;       /* number of bytes that we should advance the buffer */
+    OCOMS_PTRDIFF_TYPE disp_desc = 0; /* compute displacement for truncated data */
     size_t bConverted = 0;           /* number of bytes converted this time */
     const service_convertor_master_t* master = pConvertor->master;
     dt_elem_desc_t* description;
-    CCS_PTRDIFF_TYPE extent = pConvertor->pDesc->ub - pConvertor->pDesc->lb;
+    OCOMS_PTRDIFF_TYPE extent = pConvertor->pDesc->ub - pConvertor->pDesc->lb;
     size_t oCount = extent * pConvertor->count;
     size_t iCount, total_bytes_converted = 0;
     char* pInput;
@@ -101,7 +101,7 @@ service_unpack_general_function( service_convertor_t* pConvertor,
         pInput = iov[iov_count].iov_base;
         iCount = iov[iov_count].iov_len;
         while( 1 ) {
-            if( CCS_DATATYPE_END_LOOP == description[pos_desc].elem.common.type ) { /* end of the current loop */
+            if( OCOMS_DATATYPE_END_LOOP == description[pos_desc].elem.common.type ) { /* end of the current loop */
                 if( --(pStack->count) == 0 ) { /* end of loop */
                     if( pConvertor->stack_pos == 0 ) {
                         goto save_and_return;  /* completed */
@@ -114,25 +114,25 @@ service_unpack_general_function( service_convertor_t* pConvertor,
                     if( pStack->index == -1 ) {
                         pStack->disp += extent;
                     } else {
-                        assert( CCS_DATATYPE_LOOP == description[pStack->index].elem.common.type );
+                        assert( OCOMS_DATATYPE_LOOP == description[pStack->index].elem.common.type );
                         pStack->disp += description[pStack->index].loop.extent;
                     }
                 }
                 count_desc = description[pos_desc].elem.count;
                 disp_desc = description[pos_desc].elem.disp;
             }
-            if( CCS_DATATYPE_LOOP == description[pos_desc].elem.common.type ) {
+            if( OCOMS_DATATYPE_LOOP == description[pos_desc].elem.common.type ) {
                 do {
                     PUSH_STACK( pStack, pConvertor->stack_pos,
-                                pos_desc, CCS_DATATYPE_LOOP, description[pos_desc].loop.loops, pStack->disp );
+                                pos_desc, OCOMS_DATATYPE_LOOP, description[pos_desc].loop.loops, pStack->disp );
                     pos_desc++;
-                } while( CCS_DATATYPE_LOOP == description[pos_desc].loop.common.type ); /* let's start another loop */
+                } while( OCOMS_DATATYPE_LOOP == description[pos_desc].loop.common.type ); /* let's start another loop */
                 DDT_DUMP_STACK( pConvertor->pStack, pConvertor->stack_pos, description, "advance loops" );
                 /* update the current state */
                 count_desc = description[pos_desc].elem.count;
                 disp_desc = description[pos_desc].elem.disp;
             }
-            while( description[pos_desc].elem.common.flags & CCS_DATATYPE_FLAG_DATA ) {
+            while( description[pos_desc].elem.common.flags & OCOMS_DATATYPE_FLAG_DATA ) {
                 /* now here we have a basic datatype */
                 type = description[pos_desc].elem.common.type;
                 rc = master->pFunctions[type]( pConvertor, count_desc,
@@ -196,8 +196,8 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
     uint32_t iov_count, i;
     size_t bConverted, remaining, length, initial_bytes_converted = pConv->bConverted;
     dt_stack_t* stack = pConv->pStack;
-    CCS_PTRDIFF_TYPE extent = pData->ub - pData->lb;
-    CCS_PTRDIFF_TYPE initial_displ = pConv->use_desc->desc[pConv->use_desc->used].end_loop.first_elem_disp;
+    OCOMS_PTRDIFF_TYPE extent = pData->ub - pData->lb;
+    OCOMS_PTRDIFF_TYPE initial_displ = pConv->use_desc->desc[pConv->use_desc->used].end_loop.first_elem_disp;
 
     DO_DEBUG( service_output( 0, "unpack_homogeneous_contig( pBaseBuf %p, iov_count %d )\n",
                            pConv->pBaseBuf, *out_size ); );
@@ -209,13 +209,13 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
         bConverted = remaining; /* how much will get unpacked this time */
         user_memory = pConv->pBaseBuf + initial_displ;
 
-        if( (CCS_PTRDIFF_TYPE)pData->size == extent ) {
+        if( (OCOMS_PTRDIFF_TYPE)pData->size == extent ) {
             user_memory += pConv->bConverted;
             DO_DEBUG( service_output( 0, "unpack_homogeneous_contig( user_memory %p, packed_buffer %p length %lu\n",
                                    user_memory, packed_buffer, (unsigned long)remaining ); );
 
             /* contiguous data or basic datatype with count */
-            CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, remaining,
+            OCOMS_DATATYPE_SAFEGUARD_POINTER( user_memory, remaining,
                                         pConv->pBaseBuf, pData, pConv->count );
             DO_DEBUG( service_output( 0, "1. unpack contig dest %p src %p length %lu\n",
                                    user_memory, packed_buffer, (unsigned long)remaining ); );
@@ -233,7 +233,7 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
             if( length != 0 ) {
                 length = pData->size - length;
                 if( length <= remaining ) {
-                    CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, length, pConv->pBaseBuf,
+                    OCOMS_DATATYPE_SAFEGUARD_POINTER( user_memory, length, pConv->pBaseBuf,
                                                 pData, pConv->count );
                     DO_DEBUG( service_output( 0, "2. unpack dest %p src %p length %lu\n",
                                            user_memory, packed_buffer, (unsigned long)length ); );
@@ -244,7 +244,7 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
                 }
             }
             for( i = 0; pData->size <= remaining; i++ ) {
-                CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, pData->size, pConv->pBaseBuf,
+                OCOMS_DATATYPE_SAFEGUARD_POINTER( user_memory, pData->size, pConv->pBaseBuf,
                                             pData, pConv->count );
                 DO_DEBUG( service_output( 0, "3. unpack dest %p src %p length %lu\n",
                                        user_memory, packed_buffer, (unsigned long)pData->size ); );
@@ -257,7 +257,7 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
             stack[1].disp = remaining;
             /* copy the last bits */
             if( remaining != 0 ) {
-                CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, remaining, pConv->pBaseBuf,
+                OCOMS_DATATYPE_SAFEGUARD_POINTER( user_memory, remaining, pConv->pBaseBuf,
                                             pData, pConv->count );
                 DO_DEBUG( service_output( 0, "4. unpack dest %p src %p length %lu\n",
                                        user_memory, packed_buffer, (unsigned long)remaining ); );
@@ -291,7 +291,7 @@ service_unpack_homogeneous_contig_function( service_convertor_t* pConv,
 static inline uint32_t
 service_unpack_partial_datatype( service_convertor_t* pConvertor, dt_elem_desc_t* pElem,
                               unsigned char* partial_data,
-                              CCS_PTRDIFF_TYPE start_position, CCS_PTRDIFF_TYPE end_position,
+                              OCOMS_PTRDIFF_TYPE start_position, OCOMS_PTRDIFF_TYPE end_position,
                               unsigned char** user_buffer )
 {
     char unused_byte = 0x7F, saved_data[16];
@@ -319,7 +319,7 @@ service_unpack_partial_datatype( service_convertor_t* pConvertor, dt_elem_desc_t
     memset( temporary, unused_byte, data_length );
     MEMCPY( temporary + start_position, partial_data, (end_position - start_position) );
 
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
     /* In the case where the data is being unpacked from device
      * memory, need to use the special host to device memory copy.
      * Note this code path was only seen on large receives of
@@ -340,7 +340,7 @@ service_unpack_partial_datatype( service_convertor_t* pConvertor, dt_elem_desc_t
     /* For every occurence of the unused byte move data from the saved
      * buffer back into the user memory.
      */
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
     /* Need to copy the modified real_data again so we can see which
      * bytes need to be converted back to their original values.  Note
      * this code path was only seen on large receives of noncontiguous
@@ -368,9 +368,9 @@ service_unpack_partial_datatype( service_convertor_t* pConvertor, dt_elem_desc_t
  * But first let's make some global assumptions:
  * - a datatype (with the flag DT_DATA set) will have the contiguous flags set if and only if
  *   the data is really contiguous (extent equal with size)
- * - for the CCS_DATATYPE_LOOP type the DT_CONTIGUOUS flag set means that the content of the loop is
+ * - for the OCOMS_DATATYPE_LOOP type the DT_CONTIGUOUS flag set means that the content of the loop is
  *   contiguous but with a gap in the begining or at the end.
- * - the DT_CONTIGUOUS flag for the type CCS_DATATYPE_END_LOOP is meaningless.
+ * - the DT_CONTIGUOUS flag for the type OCOMS_DATATYPE_END_LOOP is meaningless.
  */
 int32_t
 service_generic_simple_unpack_function( service_convertor_t* pConvertor,
@@ -380,7 +380,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
     dt_stack_t* pStack;                /* pointer to the position on the stack */
     uint32_t pos_desc;                 /* actual position in the description of the derived datatype */
     uint32_t count_desc;               /* the number of items already done in the actual pos_desc */
-    uint16_t type = CCS_DATATYPE_MAX_PREDEFINED; /* type at current position */
+    uint16_t type = OCOMS_DATATYPE_MAX_PREDEFINED; /* type at current position */
     size_t total_unpacked = 0;         /* total size unpacked this time */
     dt_elem_desc_t* description;
     dt_elem_desc_t* pElem;
@@ -420,7 +420,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
             size_t element_length = service_datatype_basicDatatypes[pElem->elem.common.type]->size;
             size_t missing_length = element_length - pConvertor->partial_length;
 
-            assert( pElem->elem.common.flags & CCS_DATATYPE_FLAG_DATA );
+            assert( pElem->elem.common.flags & OCOMS_DATATYPE_FLAG_DATA );
             COMPUTE_CSUM( packed_buffer, missing_length, pConvertor );
             service_unpack_partial_datatype( pConvertor, pElem,
                                           packed_buffer,
@@ -437,7 +437,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
             pConvertor->partial_length = 0;  /* nothing more inside */
         }
         while( 1 ) {
-            while( pElem->elem.common.flags & CCS_DATATYPE_FLAG_DATA ) {
+            while( pElem->elem.common.flags & OCOMS_DATATYPE_FLAG_DATA ) {
                 /* now here we have a basic datatype */
                 UNPACK_PREDEFINED_DATATYPE( pConvertor, pElem, count_desc,
                                             packed_buffer, user_memory_base, iov_len_local );
@@ -448,7 +448,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
                     continue;
                 }
                 type = pElem->elem.common.type;
-                assert( type < CCS_DATATYPE_MAX_PREDEFINED );
+                assert( type < OCOMS_DATATYPE_MAX_PREDEFINED );
                 if( 0 != iov_len_local ) {
                     unsigned char* temp = user_memory_base;
                     /* We have some partial data here. Let's copy it into the convertor
@@ -466,7 +466,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
                 }
                 goto complete_loop;
             }
-            if( CCS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
+            if( OCOMS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
                 DO_DEBUG( service_output( 0, "unpack end_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
                                        (int)pStack->count, pConvertor->stack_pos, pos_desc,
                                        (long)pStack->disp, (unsigned long)iov_len_local ); );
@@ -486,7 +486,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
                     if( pStack->index == -1 ) {
                         pStack->disp += (pData->ub - pData->lb);
                     } else {
-                        assert( CCS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
+                        assert( OCOMS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
                         pStack->disp += description[pStack->index].loop.extent;
                     }
                 }
@@ -496,9 +496,9 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
                                        (int)pStack->count, pConvertor->stack_pos, pos_desc,
                                        (long)pStack->disp, (unsigned long)iov_len_local ); );
             }
-            if( CCS_DATATYPE_LOOP == pElem->elem.common.type ) {
-                CCS_PTRDIFF_TYPE local_disp = (CCS_PTRDIFF_TYPE)user_memory_base;
-                if( pElem->loop.common.flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
+            if( OCOMS_DATATYPE_LOOP == pElem->elem.common.type ) {
+                OCOMS_PTRDIFF_TYPE local_disp = (OCOMS_PTRDIFF_TYPE)user_memory_base;
+                if( pElem->loop.common.flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
                     UNPACK_CONTIGUOUS_LOOP( pConvertor, pElem, count_desc, 
                                             packed_buffer, user_memory_base, iov_len_local );
                     if( 0 == count_desc ) {  /* completed */
@@ -507,8 +507,8 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
                     }
                     /* Save the stack with the correct last_count value. */
                 }
-                local_disp = (CCS_PTRDIFF_TYPE)user_memory_base - local_disp;
-                PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_LOOP, count_desc,
+                local_disp = (OCOMS_PTRDIFF_TYPE)user_memory_base - local_disp;
+                PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, OCOMS_DATATYPE_LOOP, count_desc,
                             pStack->disp + local_disp);
                 pos_desc++;
             update_loop_description:  /* update the current state */
@@ -531,7 +531,7 @@ service_generic_simple_unpack_function( service_convertor_t* pConvertor,
         return 1;
     }
     /* I complete an element, next step I should go to the next one */
-    PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_UINT1, count_desc,
+    PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, OCOMS_DATATYPE_UINT1, count_desc,
                 user_memory_base - pStack->disp - pConvertor->pBaseBuf );
     DO_DEBUG( service_output( 0, "unpack save stack stack_pos %d pos_desc %d count_desc %d disp %ld\n",
                            pConvertor->stack_pos, pStack->index, (int)pStack->count, (long)pStack->disp ); );

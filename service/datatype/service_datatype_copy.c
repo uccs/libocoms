@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 #ifdef HAVE_ALLOCA_H
@@ -35,12 +35,12 @@
 #include "service/datatype/service_datatype_checksum.h"
 
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 extern int service_copy_debug;
 #define DO_DEBUG(INST)  if( service_copy_debug ) { INST }
 #else
 #define DO_DEBUG(INST)
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
 
 static size_t service_datatype_memop_block_size = 128 * 1024;
 
@@ -72,7 +72,7 @@ static size_t service_datatype_memop_block_size = 128 * 1024;
 #define MEM_OP       MEMMOVE
 #include "service_datatype_copy.h"
 
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
 #include "service_datatype_cuda.h"
 
 #undef MEM_OP_NAME
@@ -100,11 +100,11 @@ static size_t service_datatype_memop_block_size = 128 * 1024;
 int32_t service_datatype_copy_content_same_ddt( const service_datatype_t* datatype, int32_t count,
                                              char* destination_base, char* source_base )
 {
-    CCS_PTRDIFF_TYPE extent;
+    OCOMS_PTRDIFF_TYPE extent;
     size_t iov_len_local;
     int32_t (*fct)( const service_datatype_t*, int32_t, char*, char*);
 
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
     bool cuda_device_bufs = service_cuda_check_bufs(destination_base, source_base);
 #endif
 

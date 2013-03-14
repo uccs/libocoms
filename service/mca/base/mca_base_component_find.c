@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -40,9 +40,9 @@
 #include <netdb.h>
 #endif
 
-#if CCS_WANT_LIBLTDL
+#if OCOMS_WANT_LIBLTDL
   #ifndef __WINDOWS__
-    #if CCS_LIBLTDL_INTERNAL
+    #if OCOMS_LIBLTDL_INTERNAL
       #include "service/libltdl/ltdl.h"
     #else
       #include "ltdl.h"
@@ -53,7 +53,7 @@
 #endif
 
 #if 0
-#include "service/util/ccs_environ.h"
+#include "service/util/ocoms_environ.h"
 #include "service/util/show_help.h"
 #endif
 #include "service/util/output.h"
@@ -65,7 +65,7 @@
 #include "service/platform/service_constants.h"
 
 
-#if CCS_WANT_LIBLTDL
+#if OCOMS_WANT_LIBLTDL
 /*
  * Private types; only necessary when we're dlopening components.
  */
@@ -83,8 +83,8 @@ struct component_file_item_t {
 
   char type[MCA_BASE_MAX_TYPE_NAME_LEN + 1];
   char name[MCA_BASE_MAX_COMPONENT_NAME_LEN + 1];
-  char basename[CCS_PATH_MAX + 1];
-  char filename[CCS_PATH_MAX + 1];
+  char basename[OCOMS_PATH_MAX + 1];
+  char filename[OCOMS_PATH_MAX + 1];
   component_status_t status;
 };
 typedef struct component_file_item_t component_file_item_t;
@@ -100,13 +100,13 @@ typedef struct dependency_item_t dependency_item_t;
 
 static OBJ_CLASS_INSTANCE(dependency_item_t, service_list_item_t, NULL, NULL);
 
-#if CCS_HAVE_LTDL_ADVISE
-extern lt_dladvise ccs_mca_dladvise;
+#if OCOMS_HAVE_LTDL_ADVISE
+extern lt_dladvise ocoms_mca_dladvise;
 #endif
-#endif /* CCS_WANT_LIBLTDL */
+#endif /* OCOMS_WANT_LIBLTDL */
 
 
-#if CCS_WANT_LIBLTDL
+#if OCOMS_WANT_LIBLTDL
 /*
  * Private functions
  */
@@ -133,7 +133,7 @@ static const char component_template[] = "mca_%s_";
 static service_list_t found_files;
 static char **found_filenames = NULL;
 static char *last_path_to_use = NULL;
-#endif /* CCS_WANT_LIBLTDL */
+#endif /* OCOMS_WANT_LIBLTDL */
 
 static bool use_component(const bool include_mode,
                           const char **requested_component_names,
@@ -146,11 +146,11 @@ static bool use_component(const bool include_mode,
  * directory and looking for shared-library MCA components of the
  * appropriate type (load them if available).
  *
- * Return one consolidated array of (ccs_mca_base_component_t*) pointing to all
+ * Return one consolidated array of (ocoms_mca_base_component_t*) pointing to all
  * available components.
  */
-int ccs_mca_base_component_find(const char *directory, const char *type, 
-                            const ccs_mca_base_component_t *static_components[], 
+int ocoms_mca_base_component_find(const char *directory, const char *type, 
+                            const ocoms_mca_base_component_t *static_components[], 
                             char **requested_component_names,
                             bool include_mode,
                             service_list_t *found_components,
@@ -158,7 +158,7 @@ int ccs_mca_base_component_find(const char *directory, const char *type,
 {
     int i;
     service_list_item_t *item;
-    ccs_mca_base_component_list_item_t *cli;
+    ocoms_mca_base_component_list_item_t *cli;
 
     /* Find all the components that were statically linked in */
     OBJ_CONSTRUCT(found_components, service_list_t);
@@ -167,21 +167,21 @@ int ccs_mca_base_component_find(const char *directory, const char *type,
         if ( use_component(include_mode,
                            (const char**)requested_component_names,
                            static_components[i]->mca_component_name) ) {
-            cli = OBJ_NEW(ccs_mca_base_component_list_item_t);
+            cli = OBJ_NEW(ocoms_mca_base_component_list_item_t);
             if (NULL == cli) {
-                return CCS_ERR_OUT_OF_RESOURCE;
+                return OCOMS_ERR_OUT_OF_RESOURCE;
             }
             cli->cli_component = static_components[i];
             service_list_append(found_components, (service_list_item_t *) cli);
         }
     }
 
-#if CCS_WANT_LIBLTDL
+#if OCOMS_WANT_LIBLTDL
     /* Find any available dynamic components in the specified directory */
     if (open_dso_components) {
         int param, param_disable_dlopen;
-        param = ccs_mca_base_param_find("mca", NULL, "component_disable_dlopen");
-        ccs_mca_base_param_lookup_int(param, &param_disable_dlopen);
+        param = ocoms_mca_base_param_find("mca", NULL, "component_disable_dlopen");
+        ocoms_mca_base_param_lookup_int(param, &param_disable_dlopen);
         
         if (0 == param_disable_dlopen) {
             find_dyn_components(directory, type,
@@ -202,7 +202,7 @@ int ccs_mca_base_component_find(const char *directory, const char *type,
         for (item = service_list_get_first(found_components);
              service_list_get_end(found_components) != item; 
              item = service_list_get_next(item)) {
-            cli = (ccs_mca_base_component_list_item_t*) item;
+            cli = (ocoms_mca_base_component_list_item_t*) item;
             if (0 == strcmp(requested_component_names[i], 
                             cli->cli_component->mca_component_name)) {
                 break;
@@ -215,18 +215,18 @@ int ccs_mca_base_component_find(const char *directory, const char *type,
             orte_show_help("help-mca-base.txt", 
                            "find-available:not-valid", true,
                            h, type, requested_component_names[i]);
-            return CCS_ERR_NOT_FOUND;
+            return OCOMS_ERR_NOT_FOUND;
         }
     }
 
     /* All done */
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
-int ccs_mca_base_component_find_finalize(void)
+int ocoms_mca_base_component_find_finalize(void)
 {
-#if CCS_WANT_LIBLTDL
+#if OCOMS_WANT_LIBLTDL
     if (NULL != found_filenames) {
         service_argv_free(found_filenames);
         found_filenames = NULL;
@@ -236,10 +236,10 @@ int ccs_mca_base_component_find_finalize(void)
         last_path_to_use = NULL;
     }
 #endif
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
-#if CCS_WANT_LIBLTDL
+#if OCOMS_WANT_LIBLTDL
 
 /*
  * Open up all directories in a given path and search for components of
@@ -263,11 +263,11 @@ static void find_dyn_components(const char *path, const char *type_name,
     char prefix[32 + MCA_BASE_MAX_TYPE_NAME_LEN], *basename;
     
     /* If path is NULL, iterate over the set of directories specified by
-       the MCA param ccs_mca_base_component_path.  If path is not NULL, then
+       the MCA param ocoms_mca_base_component_path.  If path is not NULL, then
        use that as the path. */
   
     if (NULL == path) {
-        ccs_mca_base_param_lookup_string(ccs_mca_base_param_component_path, 
+        ocoms_mca_base_param_lookup_string(ocoms_mca_base_param_component_path, 
                                      &path_to_use);
         if (NULL == path_to_use) {
             /* If there's no path, then there's nothing to search -- we're
@@ -299,20 +299,20 @@ static void find_dyn_components(const char *path, const char *type_name,
         dir = path_to_use;
         if (NULL != dir) {
             do {
-                end = strchr(dir, CCS_ENV_SEP);
+                end = strchr(dir, OCOMS_ENV_SEP);
                 if (NULL != end) {
                     *end = '\0';
                 }
                 if ((0 == strcmp(dir, "USER_DEFAULT") ||
                      0 == strcmp(dir, "USR_DEFAULT"))
-                    && NULL != ccs_mca_base_user_default_path) {
-                    if (0 != lt_dlforeachfile(ccs_mca_base_user_default_path,
+                    && NULL != ocoms_mca_base_user_default_path) {
+                    if (0 != lt_dlforeachfile(ocoms_mca_base_user_default_path,
                                               save_filename, NULL)) {
                         break;
                     }
                 } else if (0 == strcmp(dir, "SYS_DEFAULT") ||
                            0 == strcmp(dir, "SYSTEM_DEFAULT")) {
-                    if (0 != lt_dlforeachfile(ccs_mca_base_system_default_path,
+                    if (0 != lt_dlforeachfile(ocoms_mca_base_system_default_path,
                                               save_filename, NULL)) {
                         break;
                     }                    
@@ -353,10 +353,10 @@ static void find_dyn_components(const char *path, const char *type_name,
         file->type[MCA_BASE_MAX_TYPE_NAME_LEN] = '\0';
         strncpy(file->name, basename + len, MCA_BASE_MAX_COMPONENT_NAME_LEN);
         file->name[MCA_BASE_MAX_COMPONENT_NAME_LEN] = '\0';
-        strncpy(file->basename, basename, CCS_PATH_MAX);
-        file->basename[CCS_PATH_MAX] = '\0';
-        strncpy(file->filename, found_filenames[i], CCS_PATH_MAX);
-        file->filename[CCS_PATH_MAX] = '\0';
+        strncpy(file->basename, basename, OCOMS_PATH_MAX);
+        file->basename[OCOMS_PATH_MAX] = '\0';
+        strncpy(file->filename, found_filenames[i], OCOMS_PATH_MAX);
+        file->filename[OCOMS_PATH_MAX] = '\0';
         file->status = UNVISITED;
 
 #if defined(__WINDOWS__) && defined(_DEBUG)
@@ -444,11 +444,11 @@ static int open_component(component_file_item_t *target_file,
 {
   int show_errors, param;
   lt_dlhandle component_handle;
-  ccs_mca_base_component_t *component_struct;
+  ocoms_mca_base_component_t *component_struct;
   char *struct_name, *err;
   service_list_t dependencies;
   service_list_item_t *cur;
-  ccs_mca_base_component_list_item_t *mitem;
+  ocoms_mca_base_component_list_item_t *mitem;
   dependency_item_t *ditem;
   size_t len;
   int vl;
@@ -456,32 +456,32 @@ static int open_component(component_file_item_t *target_file,
   service_output_verbose(40, 0, "mca: base: component_find: examining dyanmic %s MCA component \"%s\"",
                      target_file->type, target_file->name);
   service_output_verbose(40, 0, "mca: base: component_find: %s", target_file->filename);
-  param = ccs_mca_base_param_find("mca", NULL, "component_show_load_errors");
-  ccs_mca_base_param_lookup_int(param, &show_errors);
+  param = ocoms_mca_base_param_find("mca", NULL, "component_show_load_errors");
+  ocoms_mca_base_param_lookup_int(param, &show_errors);
   vl = show_errors ? 0 : 40;
 
   /* Was this component already loaded (e.g., via dependency)? */
 
   if (LOADED == target_file->status) {
     service_output_verbose(40, 0, "mca: base: component_find: already loaded (ignored)");
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
   }
 
   /* Ensure that this component is not already loaded (should only happen
      if it was statically loaded).  It's an error if it's already
      loaded because we're evaluating this file -- not this component.
-     Hence, returning CCS_ERR_PARAM indicates that the *file* failed
+     Hence, returning OCOMS_ERR_PARAM indicates that the *file* failed
      to load, not the component. */
 
   for (cur = service_list_get_first(found_components); 
        service_list_get_end(found_components) != cur;
        cur = service_list_get_next(cur)) {
-    mitem = (ccs_mca_base_component_list_item_t *) cur;
+    mitem = (ocoms_mca_base_component_list_item_t *) cur;
     if (0 == strcmp(mitem->cli_component->mca_type_name, target_file->type) &&
         0 == strcmp(mitem->cli_component->mca_component_name, target_file->name)) {
       service_output_verbose(40, 0, "mca: base: component_find: already loaded (ignored)");
       target_file->status = FAILED_TO_LOAD;
-      return CCS_ERR_BAD_PARAM;
+      return OCOMS_ERR_BAD_PARAM;
     }
   }
 
@@ -493,13 +493,13 @@ static int open_component(component_file_item_t *target_file,
   if (0 != check_ompi_info(target_file, &dependencies, found_components)) {
     target_file->status = FAILED_TO_LOAD;
     free_dependency_list(&dependencies);
-    return CCS_ERR_OUT_OF_RESOURCE;
+    return OCOMS_ERR_OUT_OF_RESOURCE;
   }
 
   /* Now try to load the component */
 
-#if CCS_HAVE_LTDL_ADVISE
-  component_handle = lt_dlopenadvise(target_file->filename, ccs_mca_dladvise);
+#if OCOMS_HAVE_LTDL_ADVISE
+  component_handle = lt_dlopenadvise(target_file->filename, ocoms_mca_dladvise);
 #else
   component_handle = lt_dlopenext(target_file->filename);
 #endif
@@ -530,7 +530,7 @@ static int open_component(component_file_item_t *target_file,
       free(err);
       target_file->status = FAILED_TO_LOAD;
       free_dependency_list(&dependencies);
-      return CCS_ERR_BAD_PARAM;
+      return OCOMS_ERR_BAD_PARAM;
   }
 
   /* Successfully opened the component; now find the public struct.
@@ -542,21 +542,21 @@ static int open_component(component_file_item_t *target_file,
     lt_dlclose(component_handle);
     target_file->status = FAILED_TO_LOAD;
     free_dependency_list(&dependencies);
-    return CCS_ERR_OUT_OF_RESOURCE;
+    return OCOMS_ERR_OUT_OF_RESOURCE;
   }
   snprintf(struct_name, len, "mca_%s_%s_component", target_file->type,
            target_file->name);
 
-  mitem = OBJ_NEW(ccs_mca_base_component_list_item_t);
+  mitem = OBJ_NEW(ocoms_mca_base_component_list_item_t);
   if (NULL == mitem) {
     free(struct_name);
     lt_dlclose(component_handle);
     target_file->status = FAILED_TO_LOAD;
     free_dependency_list(&dependencies);
-    return CCS_ERR_OUT_OF_RESOURCE;
+    return OCOMS_ERR_OUT_OF_RESOURCE;
   }
 
-  component_struct = (ccs_mca_base_component_t*)lt_dlsym(component_handle, struct_name);
+  component_struct = (ocoms_mca_base_component_t*)lt_dlsym(component_handle, struct_name);
   if (NULL == component_struct) {
       /* Apparently lt_dlerror() sometimes returns NULL! */
       const char *str = lt_dlerror();
@@ -571,7 +571,7 @@ static int open_component(component_file_item_t *target_file,
       lt_dlclose(component_handle);
       target_file->status = FAILED_TO_LOAD;
       free_dependency_list(&dependencies);
-      return CCS_ERR_BAD_PARAM;
+      return OCOMS_ERR_BAD_PARAM;
   }
 
   /* We found the public struct.  Make sure its MCA major.minor
@@ -591,7 +591,7 @@ static int open_component(component_file_item_t *target_file,
     lt_dlclose(component_handle);
     target_file->status = FAILED_TO_LOAD;
     free_dependency_list(&dependencies);
-    return CCS_ERR_BAD_PARAM;
+    return OCOMS_ERR_BAD_PARAM;
   }
 
   /* Also check that the component struct framework and component
@@ -607,7 +607,7 @@ static int open_component(component_file_item_t *target_file,
       lt_dlclose(component_handle);
       target_file->status = FAILED_TO_LOAD;
       free_dependency_list(&dependencies);
-      return CCS_ERR_BAD_PARAM;
+      return OCOMS_ERR_BAD_PARAM;
   }
 
   /* Alles gut.  Save the component struct, and register this
@@ -615,7 +615,7 @@ static int open_component(component_file_item_t *target_file,
 
   mitem->cli_component = component_struct;
   service_list_append(found_components, (service_list_item_t *) mitem);
-  ccs_mca_base_component_repository_retain(target_file->type, component_handle, 
+  ocoms_mca_base_component_repository_retain(target_file->type, component_handle, 
                                     component_struct);
 
   /* Now that that's all done, link all the dependencies in to this
@@ -625,7 +625,7 @@ static int open_component(component_file_item_t *target_file,
        NULL != cur;
        cur = service_list_remove_first(&dependencies)) {
     ditem = (dependency_item_t *) cur;
-    ccs_mca_base_component_repository_link(target_file->type,
+    ocoms_mca_base_component_repository_link(target_file->type,
                                        target_file->name,
                                        ditem->di_component_file_item->type,
                                        ditem->di_component_file_item->name);
@@ -640,7 +640,7 @@ static int open_component(component_file_item_t *target_file,
   /* All done */
     
   free(struct_name);
-  return CCS_SUCCESS;
+  return OCOMS_SUCCESS;
 }
 
 
@@ -665,7 +665,7 @@ static int check_ompi_info(component_file_item_t *target_file,
   len = strlen(target_file->filename) + strlen(ompi_info_suffix) + 16;
   depname = (char*)malloc(len);
   if (NULL == depname)
-    return CCS_ERR_OUT_OF_RESOURCE;
+    return OCOMS_ERR_OUT_OF_RESOURCE;
   snprintf(depname, len, "%s%s", target_file->filename, ompi_info_suffix);
 
   /* Try to open the file.  If there's no file, return success (i.e.,
@@ -704,7 +704,7 @@ static int check_ompi_info(component_file_item_t *target_file,
     /* Is it a dependency? */
 
     else if (0 == strncasecmp(p, key_dependency, strlen(key_dependency))) {
-      if (CCS_SUCCESS != check_dependency(p + strlen(key_dependency), 
+      if (OCOMS_SUCCESS != check_dependency(p + strlen(key_dependency), 
                                           target_file, dependencies, 
                                           found_components)) {
         fclose(fp);
@@ -718,7 +718,7 @@ static int check_ompi_info(component_file_item_t *target_file,
            list. */
 
         free_dependency_list(dependencies);
-        return CCS_ERR_OUT_OF_RESOURCE;
+        return OCOMS_ERR_OUT_OF_RESOURCE;
       }
     }
   }
@@ -753,9 +753,9 @@ static int check_dependency(char *line, component_file_item_t *target_file,
   /* Ensure that this was a valid dependency statement */
 
   type = line;
-  name = strchr(line, CCS_ENV_SEP);
+  name = strchr(line, OCOMS_ENV_SEP);
   if (NULL == name) {
-    return CCS_ERR_OUT_OF_RESOURCE;
+    return OCOMS_ERR_OUT_OF_RESOURCE;
   }
   *name = '\0';
   ++name;
@@ -764,7 +764,7 @@ static int check_dependency(char *line, component_file_item_t *target_file,
 
   if (strlen(type) + strlen(name) + 32 >= BUFSIZ) {
     target_file->status = FAILED_TO_LOAD;
-    return CCS_ERR_OUT_OF_RESOURCE;
+    return OCOMS_ERR_OUT_OF_RESOURCE;
   }
   snprintf(buffer, BUFSIZ, component_template, type);
   len = strlen(buffer);
@@ -828,7 +828,7 @@ static int check_dependency(char *line, component_file_item_t *target_file,
     else if (UNVISITED == mitem->status) {
       service_output_verbose(40, 0, "mca: base: component_find: loading dependency (%s)",
                          mitem->basename);
-      if (CCS_SUCCESS == open_component(target_file, found_components)) {
+      if (OCOMS_SUCCESS == open_component(target_file, found_components)) {
         happiness = true;
       } else {
         service_output_verbose(40, 0, "mca: base: component_find: dependency failed to load (%s)",
@@ -842,7 +842,7 @@ static int check_dependency(char *line, component_file_item_t *target_file,
 
   if (!happiness) {
     target_file->status = FAILED_TO_LOAD;
-    return CCS_ERR_BAD_PARAM;
+    return OCOMS_ERR_BAD_PARAM;
   }
 
   /* The dependency loaded properly.  Increment its refcount so that
@@ -854,7 +854,7 @@ static int check_dependency(char *line, component_file_item_t *target_file,
   if (NULL != mitem) {
       ditem = OBJ_NEW(dependency_item_t);
       if (NULL == ditem) {
-          return CCS_ERR_OUT_OF_RESOURCE;
+          return OCOMS_ERR_OUT_OF_RESOURCE;
       }
       ditem->di_component_file_item = mitem;
       service_list_append(dependencies, (service_list_item_t*) ditem);
@@ -862,7 +862,7 @@ static int check_dependency(char *line, component_file_item_t *target_file,
   
   /* All done -- all depenencies satisfied */
 
-  return CCS_SUCCESS;
+  return OCOMS_SUCCESS;
 }
 
 
@@ -881,7 +881,7 @@ static void free_dependency_list(service_list_t *dependencies)
   OBJ_DESTRUCT(dependencies);
 }
 
-#endif /* CCS_WANT_LIBLTDL */
+#endif /* OCOMS_WANT_LIBLTDL */
 
 static bool use_component(const bool include_mode,
                           const char **requested_component_names,

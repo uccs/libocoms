@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -93,7 +93,7 @@ static int make_string(char **no_newline_string, output_desc_t *ldi,
 static int output(int output_id, const char *format, va_list arglist);
 
 
-#define CCS_OUTPUT_MAX_STREAMS 64
+#define OCOMS_OUTPUT_MAX_STREAMS 64
 #if defined(__WINDOWS__) || defined(HAVE_SYSLOG)
 #define USE_SYSLOG 1
 #else
@@ -105,7 +105,7 @@ static int output(int output_id, const char *format, va_list arglist);
  */
 static bool initialized = false;
 static int default_stderr_fd = -1;
-static output_desc_t info[CCS_OUTPUT_MAX_STREAMS];
+static output_desc_t info[OCOMS_OUTPUT_MAX_STREAMS];
 static char *temp_str = 0;
 static size_t temp_str_len = 0;
 static service_mutex_t mutex;
@@ -127,7 +127,7 @@ bool service_output_init(void)
         return true;
     }
 
-    str = getenv("CCS_OUTPUT_STDERR_FD");
+    str = getenv("OCOMS_OUTPUT_STDERR_FD");
     if (NULL != str) {
         default_stderr_fd = atoi(str);
     }
@@ -143,7 +143,7 @@ bool service_output_init(void)
     verbose.lds_want_stderr = true;
     asprintf(&verbose.lds_prefix, "[%s:%05d] ", hostname, getpid());
 
-    for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
+    for (i = 0; i < OCOMS_OUTPUT_MAX_STREAMS; ++i) {
         info[i].ldi_used = false;
         info[i].ldi_enabled = false;
 
@@ -202,7 +202,7 @@ bool service_output_switch(int output_id, bool enable)
         service_output_init();
     }
 
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS) {
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS) {
         ret = info[output_id].ldi_enabled;
         info[output_id].ldi_enabled = enable;
     }
@@ -219,7 +219,7 @@ void service_output_reopen_all(void)
     char *str;
     char hostname[32];
 
-    str = getenv("CCS_OUTPUT_STDERR_FD");
+    str = getenv("OCOMS_OUTPUT_STDERR_FD");
     if (NULL != str) {
         default_stderr_fd = atoi(str);
     } else {
@@ -236,7 +236,7 @@ void service_output_reopen_all(void)
     int i;
     service_output_stream_t lds;
 
-    for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
+    for (i = 0; i < OCOMS_OUTPUT_MAX_STREAMS; ++i) {
 
         /* scan till we find ldi_used == 0, which is the end-marker */
 
@@ -293,20 +293,20 @@ void service_output_close(int output_id)
      * free the resources associated with the descriptor */
 
     SERVICE_THREAD_LOCK(&mutex);
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_used && info[output_id].ldi_enabled) {
         free_descriptor(output_id);
 
         /* If no one has the syslog open, we should close it */
         
-        for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
+        for (i = 0; i < OCOMS_OUTPUT_MAX_STREAMS; ++i) {
             if (info[i].ldi_used && info[i].ldi_syslog) {
                 break;
             }
         }
 
 #if defined(HAVE_SYSLOG)
-        if (i >= CCS_OUTPUT_MAX_STREAMS && syslog_opened) {
+        if (i >= OCOMS_OUTPUT_MAX_STREAMS && syslog_opened) {
             closelog();
         }
 #elif defined(__WINDOWS__)
@@ -332,7 +332,7 @@ void service_output_close(int output_id)
  */
 void service_output(int output_id, const char *format, ...)
 {
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS) {
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS) {
         va_list arglist;
         va_start(arglist, format);
         output(output_id, format, arglist);
@@ -346,7 +346,7 @@ void service_output(int output_id, const char *format, ...)
  */
 void service_output_verbose(int level, int output_id, const char *format, ...)
 {
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
         va_list arglist;
         va_start(arglist, format);
@@ -362,7 +362,7 @@ void service_output_verbose(int level, int output_id, const char *format, ...)
 void service_output_vverbose(int level, int output_id, const char *format, 
                           va_list arglist)
 {
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
         output(output_id, format, arglist);
     }
@@ -377,13 +377,13 @@ char *service_output_string(int level, int output_id, const char *format, ...)
     int rc;
     char *ret = NULL;
 
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
         va_list arglist;
         va_start(arglist, format);
         rc = make_string(&ret, &info[output_id], format, arglist);
         va_end(arglist);
-        if (CCS_SUCCESS != rc) {
+        if (OCOMS_SUCCESS != rc) {
             ret = NULL;
         }
     }
@@ -401,10 +401,10 @@ char *service_output_vstring(int level, int output_id, const char *format,
     int rc;
     char *ret = NULL;
 
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
         rc = make_string(&ret, &info[output_id], format, arglist);
-        if (CCS_SUCCESS != rc) {
+        if (OCOMS_SUCCESS != rc) {
             ret = NULL;
         }
     }
@@ -418,7 +418,7 @@ char *service_output_vstring(int level, int output_id, const char *format,
  */
 void service_output_set_verbosity(int output_id, int level)
 {
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS) {
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS) {
         info[output_id].ldi_verbose_level = level;
     }
 }
@@ -511,18 +511,18 @@ static int do_open(int output_id, service_output_stream_t * lds)
     }
 
     /* If output_id == -1, find an available stream, or return
-     * CCS_ERROR */
+     * OCOMS_ERROR */
 
     if (-1 == output_id) {
         SERVICE_THREAD_LOCK(&mutex);
-        for (i = 0; i < CCS_OUTPUT_MAX_STREAMS; ++i) {
+        for (i = 0; i < OCOMS_OUTPUT_MAX_STREAMS; ++i) {
             if (!info[i].ldi_used) {
                 break;
             }
         }
-        if (i >= CCS_OUTPUT_MAX_STREAMS) {
+        if (i >= OCOMS_OUTPUT_MAX_STREAMS) {
             SERVICE_THREAD_UNLOCK(&mutex);
-            return CCS_ERR_OUT_OF_RESOURCE;
+            return OCOMS_ERR_OUT_OF_RESOURCE;
         }
     }
 
@@ -548,7 +548,7 @@ static int do_open(int output_id, service_output_stream_t * lds)
         SERVICE_THREAD_UNLOCK(&mutex);
     }
     info[i].ldi_enabled = lds->lds_is_debugging ?
-        (bool) CCS_ENABLE_DEBUG : true;
+        (bool) OCOMS_ENABLE_DEBUG : true;
     info[i].ldi_verbose_level = lds->lds_verbose_level;
 
 #if USE_SYSLOG
@@ -567,7 +567,7 @@ static int do_open(int output_id, service_output_stream_t * lds)
         if (NULL == (info[i].ldi_syslog_ident =
                      RegisterEventSource(NULL, TEXT("opal: ")))) {
             /* handle the error */
-            return CCS_ERROR;
+            return OCOMS_ERROR;
         }
 #endif
 
@@ -619,11 +619,11 @@ static int open_file(int i)
     /* Setup the filename and open flags */
 
     if (NULL != output_dir) {
-        filename = (char *) malloc(CCS_PATH_MAX);
+        filename = (char *) malloc(OCOMS_PATH_MAX);
         if (NULL == filename) {
-            return CCS_ERR_OUT_OF_RESOURCE;
+            return OCOMS_ERR_OUT_OF_RESOURCE;
         }
-        strncpy(filename, output_dir, CCS_PATH_MAX);
+        strncpy(filename, output_dir, OCOMS_PATH_MAX);
         strcat(filename, "/");
         if (NULL != output_prefix) {
             strcat(filename, output_prefix);
@@ -644,7 +644,7 @@ static int open_file(int i)
         if (-1 == info[i].ldi_fd) {
             info[i].ldi_used = false;
             free(filename);
-            return CCS_ERR_IN_ERRNO;
+            return OCOMS_ERR_IN_ERRNO;
         }
 
         free(filename);
@@ -655,7 +655,7 @@ static int open_file(int i)
 #ifndef __WINDOWS__
         /* TODO: Need to find out the equivalent in windows */
         if (-1 == fcntl(info[i].ldi_fd, F_SETFD, 1)) {
-           return CCS_ERR_IN_ERRNO;
+           return OCOMS_ERR_IN_ERRNO;
         }
 #endif
 
@@ -664,7 +664,7 @@ static int open_file(int i)
     /* Return successfully even if the session dir did not exist yet;
      * we'll try opening it later */
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -675,7 +675,7 @@ static void free_descriptor(int output_id)
 {
     output_desc_t *ldi;
 
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
 	info[output_id].ldi_used && info[output_id].ldi_enabled) {
 	ldi = &info[output_id];
 
@@ -746,7 +746,7 @@ static int make_string(char **no_newline_string, output_desc_t *ldi,
         }
         temp_str = (char *) malloc(total_len * 2);
         if (NULL == temp_str) {
-            return CCS_ERR_OUT_OF_RESOURCE;
+            return OCOMS_ERR_OUT_OF_RESOURCE;
         }
         temp_str_len = total_len * 2;
     }
@@ -782,7 +782,7 @@ static int make_string(char **no_newline_string, output_desc_t *ldi,
         }
     }
     
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
     
 /*
@@ -792,7 +792,7 @@ static int make_string(char **no_newline_string, output_desc_t *ldi,
  */
 static int output(int output_id, const char *format, va_list arglist)
 {
-    int rc = CCS_SUCCESS;
+    int rc = OCOMS_SUCCESS;
     char *str, *out = NULL;
     output_desc_t *ldi;
 
@@ -804,13 +804,13 @@ static int output(int output_id, const char *format, va_list arglist)
 
     /* If it's valid, used, and enabled, output */
 
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS &&
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_used && info[output_id].ldi_enabled) {
         SERVICE_THREAD_LOCK(&mutex);
         ldi = &info[output_id];
 
         /* Make the strings */
-        if (CCS_SUCCESS != (rc = make_string(&str, ldi, format, arglist))) {
+        if (OCOMS_SUCCESS != (rc = make_string(&str, ldi, format, arglist))) {
             SERVICE_THREAD_UNLOCK(&mutex);
             return rc;
         }
@@ -848,7 +848,7 @@ static int output(int output_id, const char *format, va_list arglist)
 
         if (ldi->ldi_file) {
             if (ldi->ldi_fd == -1) {
-                if (CCS_SUCCESS != open_file(output_id)) {
+                if (OCOMS_SUCCESS != open_file(output_id)) {
                     ++ldi->ldi_file_num_lines_lost;
                 } else if (ldi->ldi_file_num_lines_lost > 0) {
                     char buffer[BUFSIZ];
@@ -877,7 +877,7 @@ static int output(int output_id, const char *format, va_list arglist)
 
 int service_output_get_verbosity(int output_id)
 {
-    if (output_id >= 0 && output_id < CCS_OUTPUT_MAX_STREAMS && info[output_id].ldi_used) {
+    if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS && info[output_id].ldi_used) {
         return info[output_id].ldi_verbose_level;
     } else {
         return -1;

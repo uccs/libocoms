@@ -10,10 +10,10 @@
  *
  * $HEADER$
  */
-#ifndef CCS_CONVERTOR_INTERNAL_HAS_BEEN_INCLUDED
-#define CCS_CONVERTOR_INTERNAL_HAS_BEEN_INCLUDED
+#ifndef OCOMS_CONVERTOR_INTERNAL_HAS_BEEN_INCLUDED
+#define OCOMS_CONVERTOR_INTERNAL_HAS_BEEN_INCLUDED
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 
@@ -24,16 +24,16 @@
 BEGIN_C_DECLS
 
 typedef int32_t (*conversion_fct_t)( service_convertor_t* pConvertor, uint32_t count,
-                                     const void* from, size_t from_len, CCS_PTRDIFF_TYPE from_extent,
-                                     void* to, size_t to_length, CCS_PTRDIFF_TYPE to_extent,
-                                     CCS_PTRDIFF_TYPE *advance );
+                                     const void* from, size_t from_len, OCOMS_PTRDIFF_TYPE from_extent,
+                                     void* to, size_t to_length, OCOMS_PTRDIFF_TYPE to_extent,
+                                     OCOMS_PTRDIFF_TYPE *advance );
 
 typedef struct service_convertor_master_t {
     struct service_convertor_master_t* next;
     uint32_t                        remote_arch;
     uint32_t                        flags;
     uint32_t                        hetero_mask;
-    const size_t                    remote_sizes[CCS_DATATYPE_MAX_PREDEFINED];
+    const size_t                    remote_sizes[OCOMS_DATATYPE_MAX_PREDEFINED];
     conversion_fct_t*               pFunctions;   /**< the convertor functions pointer */
 } service_convertor_master_t;
 
@@ -52,4 +52,4 @@ void service_convertor_destroy_masters( void );
 
 END_C_DECLS
 
-#endif  /* CCS_CONVERTOR_INTERNAL_HAS_BEEN_INCLUDED */
+#endif  /* OCOMS_CONVERTOR_INTERNAL_HAS_BEEN_INCLUDED */

@@ -16,10 +16,10 @@
  * $HEADER$
  */
 
-#ifndef CCS_TYPES_H
-#define CCS_TYPES_H
+#ifndef OCOMS_TYPES_H
+#define OCOMS_TYPES_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
@@ -37,7 +37,7 @@
 #include <arpa/inet.h>
 #endif
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #include "service/util/output.h"
 #endif
 
@@ -54,7 +54,7 @@ typedef union {
        uint32_t uval;
        uint32_t lval;
    } sval;
-} ccs_ptr_t;
+} ocoms_ptr_t;
 
 /*
  * handle differences in iovec
@@ -137,7 +137,7 @@ static inline uint64_t service_ptr_ptol( void* ptr )
 static inline void* service_ptr_ltop( uint64_t value ) __service_attribute_const__;
 static inline void* service_ptr_ltop( uint64_t value )
 {
-#if SIZEOF_VOID_P == 4 && CCS_ENABLE_DEBUG
+#if SIZEOF_VOID_P == 4 && OCOMS_ENABLE_DEBUG
     if (value > ((1ULL << 32) - 1ULL)) {
         service_output(0, "Warning: truncating value in service_ptr_ltop");
     }
@@ -202,4 +202,4 @@ static inline uint64_t service_swap_bytes8(uint64_t val)
 #define service_swap_bytes8 hton64
 #endif /* WORDS_BIGENDIAN || !HAVE_UNIX_BYTESWAP */
 
-#endif /* CCS_TYPES_H */
+#endif /* OCOMS_TYPES_H */

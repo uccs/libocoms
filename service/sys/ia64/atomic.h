@@ -16,8 +16,8 @@
  * $HEADER$
  */
 
-#ifndef CCS_SYS_ARCH_ATOMIC_H
-#define CCS_SYS_ARCH_ATOMIC_H 1
+#ifndef OCOMS_SYS_ARCH_ATOMIC_H
+#define OCOMS_SYS_ARCH_ATOMIC_H 1
 
 /*
  * On ia64, we use cmpxchg, which supports acquire/release semantics natively.
@@ -32,17 +32,17 @@
  * Define constants for IA64
  *
  *********************************************************************/
-#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
+#define OCOMS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define CCS_HAVE_ATOMIC_CMPSET_32 1
-#define CCS_HAVE_ATOMIC_CMPSET_64 1
+#define OCOMS_HAVE_ATOMIC_CMPSET_32 1
+#define OCOMS_HAVE_ATOMIC_CMPSET_64 1
 
 /**********************************************************************
  *
  * Memory Barriers
  *
  *********************************************************************/
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 static inline void service_atomic_mb(void)
 {
@@ -62,7 +62,7 @@ static inline void service_atomic_wmb(void)
 }
 
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
 
 /**********************************************************************
@@ -70,7 +70,7 @@ static inline void service_atomic_wmb(void)
  * Atomic math operations
  *
  *********************************************************************/
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 #define ia64_cmpxchg4_acq(ptr, new, old)                 \
 ({                               \
@@ -103,12 +103,12 @@ static inline int service_atomic_cmpset_rel_32( volatile int32_t *addr,
     return ((int32_t)ret == oldval);
 }
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
 
 #define service_atomic_cmpset_32 service_atomic_cmpset_acq_32
 
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 static inline int service_atomic_cmpset_acq_64( volatile int64_t *addr,
                                              int64_t oldval, int64_t newval)
@@ -135,8 +135,8 @@ static inline int service_atomic_cmpset_rel_64( volatile int64_t *addr,
     return ((int32_t)ret == oldval);
 }
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
 #define service_atomic_cmpset_64 service_atomic_cmpset_acq_64
 
-#endif /* ! CCS_SYS_ARCH_ATOMIC_H */
+#endif /* ! OCOMS_SYS_ARCH_ATOMIC_H */

@@ -22,7 +22,7 @@
 #ifndef _SERVICE_CRC_H_
 #define _SERVICE_CRC_H_
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 
@@ -40,7 +40,7 @@ BEGIN_C_DECLS
 #define SERVICE_CSUM_ZERO  0
 
 
-CCS_DECLSPEC unsigned long
+OCOMS_DECLSPEC unsigned long
 service_bcopy_csum_partial(
     const void *  source,
     void *  destination,
@@ -63,7 +63,7 @@ service_bcopy_csum (
     return service_bcopy_csum_partial(source, destination, copylen, csumlen, &plong, &plength);
 }
                                                                                                                   
-CCS_DECLSPEC unsigned int 
+OCOMS_DECLSPEC unsigned int 
 service_bcopy_uicsum_partial (
     const void *  source,
     void *  destination,
@@ -86,7 +86,7 @@ service_bcopy_uicsum (
     return service_bcopy_uicsum_partial(source, destination, copylen, csumlen, &pint, &plength);
 }
                                                                                                                   
-CCS_DECLSPEC unsigned long 
+OCOMS_DECLSPEC unsigned long 
 service_csum_partial (
     const void *  source,
     size_t csumlen,
@@ -125,7 +125,7 @@ service_csum16 (const void *  source, size_t csumlen)
     return csum;
 }
 
-CCS_DECLSPEC unsigned int
+OCOMS_DECLSPEC unsigned int
 service_uicsum_partial (
     const void *  source,
     size_t csumlen,
@@ -147,7 +147,7 @@ service_uicsum(const void *  source, size_t csumlen)
 
 void service_initialize_crc_table(void);
 
-CCS_DECLSPEC unsigned int 
+OCOMS_DECLSPEC unsigned int 
 service_bcopy_uicrc_partial(
     const void *  source,
     void *  destination,
@@ -165,7 +165,7 @@ service_bcopy_uicrc(
     return service_bcopy_uicrc_partial(source, destination, copylen, crclen, CRC_INITIAL_REGISTER);
 }
 
-CCS_DECLSPEC unsigned int 
+OCOMS_DECLSPEC unsigned int 
 service_uicrc_partial(
     const void *  source, 
     size_t crclen, 

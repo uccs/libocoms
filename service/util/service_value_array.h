@@ -16,15 +16,15 @@
  * $HEADER$
  */
 
-#ifndef CCS_VALUE_ARRAY_H
-#define CCS_VALUE_ARRAY_H
+#ifndef OCOMS_VALUE_ARRAY_H
+#define OCOMS_VALUE_ARRAY_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <string.h>
 
 #include "service/util/service_object.h"
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #include "service/util/output.h"
 #endif
 #include "service/platform/service_constants.h"
@@ -45,7 +45,7 @@ struct service_value_array_t
 };
 typedef struct service_value_array_t service_value_array_t;
 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_value_array_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_value_array_t);
 
 /**
  *  Initialize the array to hold items by value. This routine must 
@@ -66,7 +66,7 @@ static inline int service_value_array_init(service_value_array_t *array, size_t 
     array->array_alloc_size = 1; 
     array->array_size = 0;
     array->array_items = (unsigned char*)realloc(array->array_items, item_sizeof * array->array_alloc_size);
-    return (NULL != array->array_items) ? CCS_SUCCESS : CCS_ERR_OUT_OF_RESOURCE;
+    return (NULL != array->array_items) ? OCOMS_SUCCESS : OCOMS_ERR_OUT_OF_RESOURCE;
 }
 
 
@@ -85,11 +85,11 @@ static inline int service_value_array_reserve(service_value_array_t* array, size
          if(NULL == array->array_items) {
              array->array_size = 0;
              array->array_alloc_size = 0;
-             return CCS_ERR_OUT_OF_RESOURCE;
+             return OCOMS_ERR_OUT_OF_RESOURCE;
          }
          array->array_alloc_size = size;
      }
-     return CCS_SUCCESS;
+     return OCOMS_SUCCESS;
 }
 
 
@@ -122,7 +122,7 @@ static inline size_t service_value_array_get_size(service_value_array_t* array)
  *  return the new size.
  */
 
-CCS_DECLSPEC int service_value_array_set_size(service_value_array_t* array, size_t size);
+OCOMS_DECLSPEC int service_value_array_set_size(service_value_array_t* array, size_t size);
 
 
 /** 
@@ -156,7 +156,7 @@ CCS_DECLSPEC int service_value_array_set_size(service_value_array_t* array, size
 
 static inline void* service_value_array_get_item(service_value_array_t *array, size_t item_index)
 {
-    if(item_index >= array->array_size && service_value_array_set_size(array, item_index+1) != CCS_SUCCESS)
+    if(item_index >= array->array_size && service_value_array_set_size(array, item_index+1) != OCOMS_SUCCESS)
         return NULL;
     return array->array_items + (item_index * array->array_item_sizeof);
 }
@@ -198,10 +198,10 @@ static inline int service_value_array_set_item(service_value_array_t *array, siz
 {
     int rc;
     if(item_index >= array->array_size && 
-       (rc = service_value_array_set_size(array, item_index+1)) != CCS_SUCCESS)
+       (rc = service_value_array_set_size(array, item_index+1)) != OCOMS_SUCCESS)
         return rc;
     memcpy(array->array_items + (item_index * array->array_item_sizeof), item, array->array_item_sizeof);
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -239,17 +239,17 @@ static inline int service_value_array_append_item(service_value_array_t *array, 
 
 static inline int service_value_array_remove_item(service_value_array_t *array, size_t item_index)
 {
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if (item_index >= array->array_size) {
         service_output(0, "service_value_array_remove_item: invalid index %lu\n", (unsigned long)item_index);
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 #endif   
     memmove(array->array_items+(array->array_item_sizeof * item_index), 
             array->array_items+(array->array_item_sizeof * (item_index+1)),
             array->array_item_sizeof * (array->array_size - item_index - 1));
     array->array_size--;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 /**

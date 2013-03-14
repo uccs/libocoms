@@ -11,10 +11,10 @@
  * $HEADER$
  */
 
-#ifndef CCS_DATATYPE_PROTOTYPES_H_HAS_BEEN_INCLUDED
-#define CCS_DATATYPE_PROTOTYPES_H_HAS_BEEN_INCLUDED
+#ifndef OCOMS_DATATYPE_PROTOTYPES_H_HAS_BEEN_INCLUDED
+#define OCOMS_DATATYPE_PROTOTYPES_H_HAS_BEEN_INCLUDED
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 
 BEGIN_C_DECLS
@@ -23,11 +23,11 @@ BEGIN_C_DECLS
  * First the public ones
  */
 
-CCS_DECLSPEC int32_t
+OCOMS_DECLSPEC int32_t
 service_unpack_general( service_convertor_t* pConvertor,
                      struct iovec* iov, uint32_t* out_size,
                      size_t* max_data );
-CCS_DECLSPEC int32_t
+OCOMS_DECLSPEC int32_t
 service_unpack_general_checksum( service_convertor_t* pConvertor,
                               struct iovec* iov, uint32_t* out_size,
                               size_t* max_data );
@@ -78,4 +78,4 @@ service_generic_simple_unpack_checksum( service_convertor_t* pConvertor,
 
 END_C_DECLS
 
-#endif  /* CCS_DATATYPE_PROTOTYPES_H_HAS_BEEN_INCLUDED */
+#endif  /* OCOMS_DATATYPE_PROTOTYPES_H_HAS_BEEN_INCLUDED */

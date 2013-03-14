@@ -20,8 +20,8 @@
  * gathered by configure.
  */
 
-#ifndef CCS_STDINT_H
-#define CCS_STDINT_H 1
+#ifndef OCOMS_STDINT_H
+#define OCOMS_STDINT_H 1
 
 /*
  * Include what we can and define what is missing.
@@ -321,5 +321,5 @@ typedef unsigned long long uintptr_t;
 # endif
 #endif
 
-#endif /* CCS_STDINT_H */
+#endif /* OCOMS_STDINT_H */
 

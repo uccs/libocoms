@@ -19,20 +19,20 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "service/platform/service_constants.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_datatype_internal.h"
 
 /*
  * As the new type has the same commit state as the old one, I have to copy the fake
- * CCS_DATATYPE_END_LOOP from the description (both normal and optimized).
+ * OCOMS_DATATYPE_END_LOOP from the description (both normal and optimized).
  *
  * Clone all the values from oldType into newType without allocating a new datatype.
  */
 int32_t service_datatype_clone( const service_datatype_t * src_type, service_datatype_t * dest_type )
 {
-    int32_t desc_length = src_type->desc.used + 1;  /* +1 because of the fake CCS_DATATYPE_END_LOOP entry */
+    int32_t desc_length = src_type->desc.used + 1;  /* +1 because of the fake OCOMS_DATATYPE_END_LOOP entry */
     dt_elem_desc_t* temp = dest_type->desc.desc;    /* temporary copy of the desc pointer */
 
     /* copy _excluding_ the super object, we want to keep the cls_destruct_array */
@@ -40,7 +40,7 @@ int32_t service_datatype_clone( const service_datatype_t * src_type, service_dat
             (char*)src_type + sizeof(service_object_t),
             sizeof(service_datatype_t)-sizeof(service_object_t) );
 
-    dest_type->flags &= (~CCS_DATATYPE_FLAG_PREDEFINED);
+    dest_type->flags &= (~OCOMS_DATATYPE_FLAG_PREDEFINED);
     dest_type->desc.desc = temp;
 
     /**
@@ -65,5 +65,5 @@ int32_t service_datatype_clone( const service_datatype_t * src_type, service_dat
     }
     dest_type->id  = src_type->id;  /* preserve the default id. This allow us to
                                      * copy predefined types. */
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }

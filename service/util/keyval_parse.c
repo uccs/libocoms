@@ -1,5 +1,5 @@
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/platform/service_constants.h"
 #include "service/util/keyval_parse.h"
@@ -23,7 +23,7 @@ int service_util_keyval_parse_init(void)
 {
     OBJ_CONSTRUCT(&keyval_mutex, service_mutex_t);
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -34,7 +34,7 @@ service_util_keyval_parse_finalize(void)
 
     OBJ_DESTRUCT(&keyval_mutex);
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -43,7 +43,7 @@ service_util_keyval_parse(const char *filename,
                        service_keyval_parse_fn_t callback)
 {
     int val;
-    int ret = CCS_SUCCESS;;
+    int ret = OCOMS_SUCCESS;;
 
     SERVICE_THREAD_LOCK(&keyval_mutex);
 
@@ -53,7 +53,7 @@ service_util_keyval_parse(const char *filename,
     /* Open the opal */
     service_util_keyval_yyin = fopen(keyval_filename, "r");
     if (NULL == service_util_keyval_yyin) {
-        ret = CCS_ERR_NOT_FOUND;
+        ret = OCOMS_ERR_NOT_FOUND;
         goto cleanup;
     }
 
@@ -104,7 +104,7 @@ static int parse_line(void)
             free(key_buffer);
             key_buffer_len = 0;
             key_buffer = NULL;
-            return CCS_ERR_TEMP_OUT_OF_RESOURCE;
+            return OCOMS_ERR_TEMP_OUT_OF_RESOURCE;
         }
         key_buffer = tmp;
     }
@@ -116,7 +116,7 @@ static int parse_line(void)
     val = service_util_keyval_yylex();
     if (service_util_keyval_parse_done || SERVICE_UTIL_KEYVAL_PARSE_EQUAL != val) {
         parse_error(2);
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
 
     /* Next we get the value */
@@ -131,7 +131,7 @@ static int parse_line(void)
         val = service_util_keyval_yylex();
         if (SERVICE_UTIL_KEYVAL_PARSE_NEWLINE == val ||
             SERVICE_UTIL_KEYVAL_PARSE_DONE == val) {
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     }
 
@@ -140,12 +140,12 @@ static int parse_line(void)
     else if (SERVICE_UTIL_KEYVAL_PARSE_DONE == val ||
              SERVICE_UTIL_KEYVAL_PARSE_NEWLINE == val) {
         keyval_callback(key_buffer, NULL);
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /* Nope -- we got something unexpected.  Bonk! */
     parse_error(3);
-    return CCS_ERROR;
+    return OCOMS_ERROR;
 }
 
 

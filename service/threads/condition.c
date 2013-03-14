@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/threads/condition.h"
 
@@ -25,17 +25,17 @@ static void service_condition_construct(service_condition_t *c)
 {
     c->c_waiting = 0;
     c->c_signaled = 0;
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
     pthread_cond_init(&c->c_cond, NULL);
 #endif
     c->name = NULL;
-    c->ccs_progress_fn = NULL;
+    c->ocoms_progress_fn = NULL;
 }
 
 
 static void service_condition_destruct(service_condition_t *c)
 {
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
     pthread_cond_destroy(&c->c_cond);
 #endif
     if (NULL != c->name) {

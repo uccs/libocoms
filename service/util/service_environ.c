@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -109,18 +109,18 @@ int service_setenv(const char *name, const char *value, bool overwrite,
         asprintf(&newvalue, "%s=%s", name, value);
     }
     if (NULL == newvalue) {
-        return CCS_ERR_OUT_OF_RESOURCE;
+        return OCOMS_ERR_OUT_OF_RESOURCE;
     }
 
     /* Check the bozo case */
 
     if( NULL == env ) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     } else if (NULL == *env) {
         i = 0;
         service_argv_append(&i, env, newvalue);
         free(newvalue);
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /* If this is the "environ" array, use putenv */
@@ -131,7 +131,7 @@ int service_setenv(const char *name, const char *value, bool overwrite,
            check the return code of service_setenv() and notice that we
            returned an error if you passed in the real environ) */
         putenv(newvalue);
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /* Make something easy to compare to */
@@ -139,7 +139,7 @@ int service_setenv(const char *name, const char *value, bool overwrite,
     asprintf(&compare, "%s=", name);
     if (NULL == compare) {
         free(newvalue);
-        return CCS_ERR_OUT_OF_RESOURCE;
+        return OCOMS_ERR_OUT_OF_RESOURCE;
     }
     len = strlen(compare);
 
@@ -151,11 +151,11 @@ int service_setenv(const char *name, const char *value, bool overwrite,
                 free((*env)[i]);
                 (*env)[i] = newvalue;
                 free(compare);
-                return CCS_SUCCESS;
+                return OCOMS_SUCCESS;
             } else {
                 free(compare);
                 free(newvalue);
-                return CCS_EXISTS;
+                return OCOMS_EXISTS;
             }
         }
     }
@@ -169,7 +169,7 @@ int service_setenv(const char *name, const char *value, bool overwrite,
 
     free(compare);
     free(newvalue);
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -187,14 +187,14 @@ int service_unsetenv(const char *name, char ***env)
     /* Check for bozo case */
 
     if (NULL == *env) {
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /* Make something easy to compare to */
 
     asprintf(&compare, "%s=", name);
     if (NULL == compare) {
-        return CCS_ERR_OUT_OF_RESOURCE;
+        return OCOMS_ERR_OUT_OF_RESOURCE;
     }
     len = strlen(compare);
 
@@ -220,7 +220,7 @@ int service_unsetenv(const char *name, char ***env)
 
     /* All done */
 
-    return (found) ? CCS_SUCCESS : CCS_ERR_NOT_FOUND;
+    return (found) ? OCOMS_SUCCESS : OCOMS_ERR_NOT_FOUND;
 }
 
 const char* service_tmp_directory( void )

@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 
@@ -28,26 +28,26 @@
 #include "service/datatype/service_datatype_internal.h"
 
 /* macros to play with the flags */
-#define SET_CONTIGUOUS_FLAG( INT_VALUE )     (INT_VALUE) = (INT_VALUE) | (CCS_DATATYPE_FLAG_CONTIGUOUS)
-#define SET_NO_GAP_FLAG( INT_VALUE )         (INT_VALUE) = (INT_VALUE) | (CCS_DATATYPE_FLAG_NO_GAPS)
-#define UNSET_CONTIGUOUS_FLAG( INT_VALUE )   (INT_VALUE) = (INT_VALUE) & (~(CCS_DATATYPE_FLAG_CONTIGUOUS | CCS_DATATYPE_FLAG_NO_GAPS))
+#define SET_CONTIGUOUS_FLAG( INT_VALUE )     (INT_VALUE) = (INT_VALUE) | (OCOMS_DATATYPE_FLAG_CONTIGUOUS)
+#define SET_NO_GAP_FLAG( INT_VALUE )         (INT_VALUE) = (INT_VALUE) | (OCOMS_DATATYPE_FLAG_NO_GAPS)
+#define UNSET_CONTIGUOUS_FLAG( INT_VALUE )   (INT_VALUE) = (INT_VALUE) & (~(OCOMS_DATATYPE_FLAG_CONTIGUOUS | OCOMS_DATATYPE_FLAG_NO_GAPS))
 
 #if defined(__GNUC__) && !defined(__STDC__)
-#define LMAX(A,B)  ({ CCS_PTRDIFF_TYPE _a = (A), _b = (B); (_a < _b ? _b : _a) })
-#define LMIN(A,B)  ({ CCS_PTRDIFF_TYPE _a = (A), _b = (B); (_a < _b ? _a : _b); })
+#define LMAX(A,B)  ({ OCOMS_PTRDIFF_TYPE _a = (A), _b = (B); (_a < _b ? _b : _a) })
+#define LMIN(A,B)  ({ OCOMS_PTRDIFF_TYPE _a = (A), _b = (B); (_a < _b ? _a : _b); })
 #define IMAX(A,B)  ({ int _a = (A), _b = (B); (_a < _b ? _b : _a); })
 #define IMIN(A,B)  ({ int _a = (A), _b = (B); (_a < _b ? _a : _b); })
 #else
-static inline CCS_PTRDIFF_TYPE LMAX( CCS_PTRDIFF_TYPE a, CCS_PTRDIFF_TYPE b ) { return ( a < b ? b : a ); }
-static inline CCS_PTRDIFF_TYPE LMIN( CCS_PTRDIFF_TYPE a, CCS_PTRDIFF_TYPE b ) { return ( a < b ? a : b ); }
+static inline OCOMS_PTRDIFF_TYPE LMAX( OCOMS_PTRDIFF_TYPE a, OCOMS_PTRDIFF_TYPE b ) { return ( a < b ? b : a ); }
+static inline OCOMS_PTRDIFF_TYPE LMIN( OCOMS_PTRDIFF_TYPE a, OCOMS_PTRDIFF_TYPE b ) { return ( a < b ? a : b ); }
 static inline int  IMAX( int a, int b ) { return ( a < b ? b : a ); }
 static inline int  IMIN( int a, int b ) { return ( a < b ? a : b ); }
 #endif  /* __GNU__ */
 
-#define CCS_DATATYPE_COMPUTE_REQUIRED_ENTRIES( _pdtAdd, _count, _extent, _place_needed) \
+#define OCOMS_DATATYPE_COMPUTE_REQUIRED_ENTRIES( _pdtAdd, _count, _extent, _place_needed) \
 { \
-    if( (_pdtAdd)->flags & CCS_DATATYPE_FLAG_PREDEFINED ) { /* add a basic datatype */ \
-        (_place_needed) = ((_extent) == (CCS_PTRDIFF_TYPE)(_pdtAdd)->size ? 1 : 3); \
+    if( (_pdtAdd)->flags & OCOMS_DATATYPE_FLAG_PREDEFINED ) { /* add a basic datatype */ \
+        (_place_needed) = ((_extent) == (OCOMS_PTRDIFF_TYPE)(_pdtAdd)->size ? 1 : 3); \
     } else { \
         (_place_needed) = (_pdtAdd)->desc.used; \
         if( (_count) != 1 ) { \
@@ -59,19 +59,19 @@ static inline int  IMIN( int a, int b ) { return ( a < b ? a : b ); }
                  */ \
                 service_output( 0, "Too many elements in the datatype. The limit is %ud\n", \
                              MAX_DT_COMPONENT_COUNT ); \
-                return CCS_ERROR; \
+                return OCOMS_ERROR; \
             } \
         } \
     } \
 }
 
-#define CCS_DATATYPE_LB_UB_CONT( _count, _disp, _old_lb, _old_ub, _old_extent, _new_lb, _new_ub ) \
+#define OCOMS_DATATYPE_LB_UB_CONT( _count, _disp, _old_lb, _old_ub, _old_extent, _new_lb, _new_ub ) \
 { \
     if( 0 == _count ) { \
         _new_lb = (_old_lb) + (_disp); \
         _new_ub = (_old_ub) + (_disp); \
     } else { \
-        CCS_PTRDIFF_TYPE lower, upper; \
+        OCOMS_PTRDIFF_TYPE lower, upper; \
         upper = (_disp) + (_old_extent) * ((_count) - 1); \
         lower = (_disp); \
         if( lower < upper ) { \
@@ -101,12 +101,12 @@ static inline int  IMIN( int a, int b ) { return ( a < b ? a : b ); }
  * set to ZERO if it's a empty datatype.
  */
 int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatype_t* pdtAdd,
-                           uint32_t count, CCS_PTRDIFF_TYPE disp, CCS_PTRDIFF_TYPE extent )
+                           uint32_t count, OCOMS_PTRDIFF_TYPE disp, OCOMS_PTRDIFF_TYPE extent )
 {
     uint32_t newLength, place_needed = 0, i;
     short localFlags = 0;  /* no specific options yet */
     dt_elem_desc_t *pLast, *pLoop = NULL;
-    CCS_PTRDIFF_TYPE lb, ub, true_lb, true_ub, epsilon, old_true_ub;
+    OCOMS_PTRDIFF_TYPE lb, ub, true_lb, true_ub, epsilon, old_true_ub;
 
     /* the extent should always be positive. So a negative
      * value here have a special meaning ie. default extent as
@@ -114,35 +114,35 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
      */
     if( extent == -1 ) extent = (pdtAdd->ub - pdtAdd->lb);
 
-    /* Deal with the special markers (CCS_DATATYPE_LB and CCS_DATATYPE_UB) */
-    if( CCS_DATATYPE_LB == pdtAdd->id ) {
-        pdtBase->bdt_used |= (((uint32_t)1) << CCS_DATATYPE_LB);
-        if( pdtBase->flags & CCS_DATATYPE_FLAG_USER_LB ) {
+    /* Deal with the special markers (OCOMS_DATATYPE_LB and OCOMS_DATATYPE_UB) */
+    if( OCOMS_DATATYPE_LB == pdtAdd->id ) {
+        pdtBase->bdt_used |= (((uint32_t)1) << OCOMS_DATATYPE_LB);
+        if( pdtBase->flags & OCOMS_DATATYPE_FLAG_USER_LB ) {
             pdtBase->lb = LMIN( pdtBase->lb, disp );
         } else {
             pdtBase->lb = disp;
-            pdtBase->flags |= CCS_DATATYPE_FLAG_USER_LB;
+            pdtBase->flags |= OCOMS_DATATYPE_FLAG_USER_LB;
         }
-        if( (pdtBase->ub - pdtBase->lb) != (CCS_PTRDIFF_TYPE)pdtBase->size ) {
-            pdtBase->flags &= ~CCS_DATATYPE_FLAG_NO_GAPS;
+        if( (pdtBase->ub - pdtBase->lb) != (OCOMS_PTRDIFF_TYPE)pdtBase->size ) {
+            pdtBase->flags &= ~OCOMS_DATATYPE_FLAG_NO_GAPS;
         }
-        return CCS_SUCCESS; /* Just ignore the CCS_DATATYPE_LOOP and CCS_DATATYPE_END_LOOP */
-    } else if( CCS_DATATYPE_UB == pdtAdd->id ) {
-        pdtBase->bdt_used |= (((uint32_t)1) << CCS_DATATYPE_UB);
-        if( pdtBase->flags & CCS_DATATYPE_FLAG_USER_UB ) {
+        return OCOMS_SUCCESS; /* Just ignore the OCOMS_DATATYPE_LOOP and OCOMS_DATATYPE_END_LOOP */
+    } else if( OCOMS_DATATYPE_UB == pdtAdd->id ) {
+        pdtBase->bdt_used |= (((uint32_t)1) << OCOMS_DATATYPE_UB);
+        if( pdtBase->flags & OCOMS_DATATYPE_FLAG_USER_UB ) {
             pdtBase->ub = LMAX( pdtBase->ub, disp );
         } else {
             pdtBase->ub = disp;
-            pdtBase->flags |= CCS_DATATYPE_FLAG_USER_UB;
+            pdtBase->flags |= OCOMS_DATATYPE_FLAG_USER_UB;
         }
-        if( (pdtBase->ub - pdtBase->lb) != (CCS_PTRDIFF_TYPE)pdtBase->size ) {
-            pdtBase->flags &= ~CCS_DATATYPE_FLAG_NO_GAPS;
+        if( (pdtBase->ub - pdtBase->lb) != (OCOMS_PTRDIFF_TYPE)pdtBase->size ) {
+            pdtBase->flags &= ~OCOMS_DATATYPE_FLAG_NO_GAPS;
         }
-        return CCS_SUCCESS; /* Just ignore the CCS_DATATYPE_LOOP and CCS_DATATYPE_END_LOOP */
+        return OCOMS_SUCCESS; /* Just ignore the OCOMS_DATATYPE_LOOP and OCOMS_DATATYPE_END_LOOP */
     }
 
     /* Compute the number of entries we need in the datatype description */
-    CCS_DATATYPE_COMPUTE_REQUIRED_ENTRIES( pdtAdd, count, extent, place_needed );
+    OCOMS_DATATYPE_COMPUTE_REQUIRED_ENTRIES( pdtAdd, count, extent, place_needed );
 
     /*
      * Compute the lower and upper bound of the datatype. We do it in 2 steps.
@@ -150,7 +150,7 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
      * count. Then update the lb value depending on the user markers and
      * update the global lb and ub.
      */
-    CCS_DATATYPE_LB_UB_CONT( count, disp, pdtAdd->lb, pdtAdd->ub, extent, lb, ub );
+    OCOMS_DATATYPE_LB_UB_CONT( count, disp, pdtAdd->lb, pdtAdd->ub, extent, lb, ub );
 
     /* Compute the true_lb and true_ub for the datatype to be added, taking
      * in account the number of repetions. These values do not include the
@@ -166,7 +166,7 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
 
 #if 0
     /* Avoid claiming overlap as much as possible. */
-    if( !(pdtBase->flags & CCS_DATATYPE_FLAG_OVERLAP) ) {
+    if( !(pdtBase->flags & OCOMS_DATATYPE_FLAG_OVERLAP) ) {
         if( ((disp + true_lb) >= pdtBase->true_ub) ||
             ((disp + true_ub) <= pdtBase->true_lb) ) {
         } else {
@@ -179,11 +179,11 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
      * if the USER has explicitly set it. The result lb is the MIN between
      * the all lb + disp if and only if all or nobody flags's contain the LB.
      */
-    if( (pdtAdd->flags ^ pdtBase->flags) & CCS_DATATYPE_FLAG_USER_LB ) {
-        if( pdtBase->flags & CCS_DATATYPE_FLAG_USER_LB ) {
+    if( (pdtAdd->flags ^ pdtBase->flags) & OCOMS_DATATYPE_FLAG_USER_LB ) {
+        if( pdtBase->flags & OCOMS_DATATYPE_FLAG_USER_LB ) {
             lb = pdtBase->lb;  /* base type has a user provided lb */
         }
-        pdtBase->flags |= CCS_DATATYPE_FLAG_USER_LB;
+        pdtBase->flags |= OCOMS_DATATYPE_FLAG_USER_LB;
     } else {
         /* both of them have the LB flag or both of them dont have it */
         lb = LMIN( pdtBase->lb, lb );
@@ -193,11 +193,11 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
      * either of them has the flag UB, in which case we should
      * compute the UB including the natural alignement of the data.
      */
-    if( (pdtBase->flags ^ pdtAdd->flags) & CCS_DATATYPE_FLAG_USER_UB ) {
-        if( pdtBase->flags & CCS_DATATYPE_FLAG_USER_UB ) {
+    if( (pdtBase->flags ^ pdtAdd->flags) & OCOMS_DATATYPE_FLAG_USER_UB ) {
+        if( pdtBase->flags & OCOMS_DATATYPE_FLAG_USER_UB ) {
             ub = pdtBase->ub;
         }
-        pdtBase->flags |= CCS_DATATYPE_FLAG_USER_UB;
+        pdtBase->flags |= OCOMS_DATATYPE_FLAG_USER_UB;
     } else {
         /* both of them have the UB flag or both of them dont have it */
         /* we should compute the extent depending on the alignement */
@@ -219,14 +219,14 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
      * This rule apply only if there is user specified upper bound as stated in the
      * MPI standard MPI 1.2 page 71.
      */
-    if( !(pdtBase->flags & CCS_DATATYPE_FLAG_USER_UB) ) {
+    if( !(pdtBase->flags & OCOMS_DATATYPE_FLAG_USER_UB) ) {
         epsilon = (pdtBase->ub - pdtBase->lb) % pdtBase->align;
         if( 0 != epsilon ) {
             pdtBase->ub += (pdtBase->align - epsilon);
         }
     }
     /* now we know it contain some data */
-    pdtBase->flags |= CCS_DATATYPE_FLAG_DATA;
+    pdtBase->flags |= OCOMS_DATATYPE_FLAG_DATA;
 
     /*
      * the count == 0 is LEGAL only for MPI_UB and MPI_LB. Therefore we support it
@@ -235,7 +235,7 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
      * the true_lb and true_ub.
      */
     if( (0 == count) || (0 == pdtAdd->size) ) {
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /* Now, once we know everything is fine and there are some bytes in
@@ -265,37 +265,37 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
      * of an predefined contiguous datatype. This part is unable to handle any
      * predefined non contiguous datatypes (like MPI_SHORT_INT).
      */
-    if( (pdtAdd->flags & (CCS_DATATYPE_FLAG_PREDEFINED | CCS_DATATYPE_FLAG_DATA)) == (CCS_DATATYPE_FLAG_PREDEFINED | CCS_DATATYPE_FLAG_DATA) ) {
+    if( (pdtAdd->flags & (OCOMS_DATATYPE_FLAG_PREDEFINED | OCOMS_DATATYPE_FLAG_DATA)) == (OCOMS_DATATYPE_FLAG_PREDEFINED | OCOMS_DATATYPE_FLAG_DATA) ) {
         pdtBase->btypes[pdtAdd->id] += count;
-        if( (extent != (CCS_PTRDIFF_TYPE)pdtAdd->size) && (count > 1) ) {  /* gaps around the datatype */
-            localFlags = pdtAdd->flags & ~(CCS_DATATYPE_FLAG_COMMITED | CCS_DATATYPE_FLAG_CONTIGUOUS | CCS_DATATYPE_FLAG_NO_GAPS);
+        if( (extent != (OCOMS_PTRDIFF_TYPE)pdtAdd->size) && (count > 1) ) {  /* gaps around the datatype */
+            localFlags = pdtAdd->flags & ~(OCOMS_DATATYPE_FLAG_COMMITED | OCOMS_DATATYPE_FLAG_CONTIGUOUS | OCOMS_DATATYPE_FLAG_NO_GAPS);
             CREATE_LOOP_START( pLast, count, 2, extent, localFlags );
             pLast++;
             pLast->elem.common.type  = pdtAdd->id;
             pLast->elem.count        = 1;
             pLast->elem.disp         = disp;
             pLast->elem.extent       = pdtAdd->size;
-            pLast->elem.common.flags = localFlags | CCS_DATATYPE_FLAG_CONTIGUOUS;
+            pLast->elem.common.flags = localFlags | OCOMS_DATATYPE_FLAG_CONTIGUOUS;
             pLast++;
             CREATE_LOOP_END( pLast, 2, disp, pdtAdd->size, localFlags );
             pdtBase->desc.used += 3;
-            pdtBase->btypes[CCS_DATATYPE_LOOP]     = 1;
-            pdtBase->btypes[CCS_DATATYPE_END_LOOP] = 1;
+            pdtBase->btypes[OCOMS_DATATYPE_LOOP]     = 1;
+            pdtBase->btypes[OCOMS_DATATYPE_END_LOOP] = 1;
         } else {
             pLast->elem.common.type = pdtAdd->id;
             pLast->elem.count       = count;
             pLast->elem.disp        = disp;
             pLast->elem.extent      = extent;
             pdtBase->desc.used++;
-            pLast->elem.common.flags  = pdtAdd->flags & ~(CCS_DATATYPE_FLAG_COMMITED);
+            pLast->elem.common.flags  = pdtAdd->flags & ~(OCOMS_DATATYPE_FLAG_COMMITED);
         }
     } else {
         /* keep trace of the total number of basic datatypes in the datatype definition */
-        pdtBase->btypes[CCS_DATATYPE_LOOP]     += pdtAdd->btypes[CCS_DATATYPE_LOOP];
-        pdtBase->btypes[CCS_DATATYPE_END_LOOP] += pdtAdd->btypes[CCS_DATATYPE_END_LOOP];
-        pdtBase->btypes[CCS_DATATYPE_LB]       |= pdtAdd->btypes[CCS_DATATYPE_LB];
-        pdtBase->btypes[CCS_DATATYPE_UB]       |= pdtAdd->btypes[CCS_DATATYPE_UB];
-        for( i = 4; i < CCS_DATATYPE_MAX_PREDEFINED; i++ )
+        pdtBase->btypes[OCOMS_DATATYPE_LOOP]     += pdtAdd->btypes[OCOMS_DATATYPE_LOOP];
+        pdtBase->btypes[OCOMS_DATATYPE_END_LOOP] += pdtAdd->btypes[OCOMS_DATATYPE_END_LOOP];
+        pdtBase->btypes[OCOMS_DATATYPE_LB]       |= pdtAdd->btypes[OCOMS_DATATYPE_LB];
+        pdtBase->btypes[OCOMS_DATATYPE_UB]       |= pdtAdd->btypes[OCOMS_DATATYPE_UB];
+        for( i = 4; i < OCOMS_DATATYPE_MAX_PREDEFINED; i++ )
             if( pdtAdd->btypes[i] != 0 ) pdtBase->btypes[i] += (count * pdtAdd->btypes[i]);
 
         if( (1 == pdtAdd->desc.used) && (extent == (pdtAdd->ub - pdtAdd->lb)) &&
@@ -311,17 +311,17 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
             if( count != 1 ) {
                 pLoop = pLast;
                 CREATE_LOOP_START( pLast, count, pdtAdd->desc.used + 1, extent,
-                                   (pdtAdd->flags & ~(CCS_DATATYPE_FLAG_COMMITED)) );
-                pdtBase->btypes[CCS_DATATYPE_LOOP] += 2;
+                                   (pdtAdd->flags & ~(OCOMS_DATATYPE_FLAG_COMMITED)) );
+                pdtBase->btypes[OCOMS_DATATYPE_LOOP] += 2;
                 pdtBase->desc.used += 2;
                 pLast++;
             }
 
             for( i = 0; i < pdtAdd->desc.used; i++ ) {
                 pLast->elem               = pdtAdd->desc.desc[i].elem;
-                if( CCS_DATATYPE_FLAG_DATA & pLast->elem.common.flags )
+                if( OCOMS_DATATYPE_FLAG_DATA & pLast->elem.common.flags )
                     pLast->elem.disp += disp;
-                else if( CCS_DATATYPE_END_LOOP == pLast->elem.common.type ) {
+                else if( OCOMS_DATATYPE_END_LOOP == pLast->elem.common.type ) {
                     pLast->end_loop.first_elem_disp += disp;
                 }
                 pLast++;
@@ -329,7 +329,7 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
             pdtBase->desc.used += pdtAdd->desc.used;
             if( pLoop != NULL ) {
                 int index = GET_FIRST_NON_LOOP( pLoop );
-                assert( pLoop[index].elem.common.flags & CCS_DATATYPE_FLAG_DATA );
+                assert( pLoop[index].elem.common.flags & OCOMS_DATATYPE_FLAG_DATA );
                 CREATE_LOOP_END( pLast, pdtAdd->desc.used + 1, pLoop[index].elem.disp,
                                  pdtAdd->size, pLoop->loop.common.flags );
             }
@@ -344,21 +344,21 @@ int32_t service_datatype_add( service_datatype_t* pdtBase, const service_datatyp
      */
     localFlags = pdtBase->flags & pdtAdd->flags;
     UNSET_CONTIGUOUS_FLAG(pdtBase->flags);
-    if( (localFlags & CCS_DATATYPE_FLAG_CONTIGUOUS)             /* both type were contiguous */
+    if( (localFlags & OCOMS_DATATYPE_FLAG_CONTIGUOUS)             /* both type were contiguous */
         && ((disp + pdtAdd->true_lb) == old_true_ub)  /* and there is no gap between them */
-        && ( ((CCS_PTRDIFF_TYPE)pdtAdd->size == extent)      /* the size and the extent of the
+        && ( ((OCOMS_PTRDIFF_TYPE)pdtAdd->size == extent)      /* the size and the extent of the
                                                        * added type have to match */
              || (count < 2)) ) {                      /* if the count is bigger than 2 */
             SET_CONTIGUOUS_FLAG(pdtBase->flags);
-            if( (CCS_PTRDIFF_TYPE)pdtBase->size == (pdtBase->ub - pdtBase->lb) )
+            if( (OCOMS_PTRDIFF_TYPE)pdtBase->size == (pdtBase->ub - pdtBase->lb) )
                 SET_NO_GAP_FLAG(pdtBase->flags);
     }
 
     /* If the NO_GAP flag is set the contiguous have to be set too */
-    if( pdtBase->flags & CCS_DATATYPE_FLAG_NO_GAPS ) {
-        assert( pdtBase->flags & CCS_DATATYPE_FLAG_CONTIGUOUS );
+    if( pdtBase->flags & OCOMS_DATATYPE_FLAG_NO_GAPS ) {
+        assert( pdtBase->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS );
     }
     pdtBase->nbElems += (count * pdtAdd->nbElems);
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }

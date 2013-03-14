@@ -113,24 +113,24 @@
  * @endcode
  */
 
-#ifndef CCS_OBJECT_H
-#define CCS_OBJECT_H
+#ifndef OCOMS_OBJECT_H
+#define OCOMS_OBJECT_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include <assert.h>
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
 #endif  /* HAVE_STDLIB_H */
 
-#if CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_MULTI_THREADS
 #include "service/sys/atomic.h"
-#endif  /* CCS_ENABLE_MULTI_THREADS */
+#endif  /* OCOMS_ENABLE_MULTI_THREADS */
 
 BEGIN_C_DECLS
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 /* Any kind of unique ID should do the job */
-#define CCS_OBJ_MAGIC_ID ((0xdeafbeedULL << 32) + 0xdeafbeedULL)
+#define OCOMS_OBJ_MAGIC_ID ((0xdeafbeedULL << 32) + 0xdeafbeedULL)
 #endif
 
 /* typedefs ***********************************************************/
@@ -168,10 +168,10 @@ struct service_class_t {
  *
  * @param NAME   Name of the class to initialize
  */
-#if CCS_ENABLE_DEBUG
-#define CCS_OBJ_STATIC_INIT(BASE_CLASS) { CCS_OBJ_MAGIC_ID, OBJ_CLASS(BASE_CLASS), 1, __FILE__, __LINE__ }
+#if OCOMS_ENABLE_DEBUG
+#define OCOMS_OBJ_STATIC_INIT(BASE_CLASS) { OCOMS_OBJ_MAGIC_ID, OBJ_CLASS(BASE_CLASS), 1, __FILE__, __LINE__ }
 #else
-#define CCS_OBJ_STATIC_INIT(BASE_CLASS) { OBJ_CLASS(BASE_CLASS), 1 }
+#define OCOMS_OBJ_STATIC_INIT(BASE_CLASS) { OBJ_CLASS(BASE_CLASS), 1 }
 #endif
 
 /**
@@ -180,17 +180,17 @@ struct service_class_t {
  * This is special and does not follow the pattern for other classes.
  */
 struct service_object_t {
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     /** Magic ID -- want this to be the very first item in the
         struct's memory */
     uint64_t obj_magic_id;
 #endif
     service_class_t *obj_class;            /**< class descriptor */
     volatile int32_t obj_reference_count;   /**< reference count */
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
    const char* cls_init_file_name;        /**< In debug mode store the file where the object get contructed */
    int   cls_init_lineno;           /**< In debug mode store the line number where the object get contructed */
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
 };
 
 /* macros ************************************************************/
@@ -245,11 +245,11 @@ struct service_object_t {
  * @return              Pointer to the object 
  */
 static inline service_object_t *service_obj_new(service_class_t * cls);
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 static inline service_object_t *service_obj_new_debug(service_class_t* type, const char* file, int line)
 {
     service_object_t* object = service_obj_new(type);
-    object->obj_magic_id = CCS_OBJ_MAGIC_ID;
+    object->obj_magic_id = OCOMS_OBJ_MAGIC_ID;
     object->cls_init_file_name = file;
     object->cls_init_lineno = line;
     return object;
@@ -259,18 +259,18 @@ static inline service_object_t *service_obj_new_debug(service_class_t* type, con
 #else
 #define OBJ_NEW(type)                                   \
     ((type *) service_obj_new(OBJ_CLASS(type)))
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
 
 /**
  * Retain an object (by incrementing its reference count)
  *
  * @param object        Pointer to the object
  */
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #define OBJ_RETAIN(object)                                              \
     do {                                                                \
         assert(NULL != ((service_object_t *) (object))->obj_class);        \
-        assert(CCS_OBJ_MAGIC_ID == ((service_object_t *) (object))->obj_magic_id); \
+        assert(OCOMS_OBJ_MAGIC_ID == ((service_object_t *) (object))->obj_magic_id); \
         service_obj_update((service_object_t *) (object), 1);                 \
         assert(((service_object_t *) (object))->obj_reference_count >= 0); \
     } while (0)
@@ -282,7 +282,7 @@ static inline service_object_t *service_obj_new_debug(service_class_t* type, con
  * Helper macro for the debug mode to store the locations where the status of
  * an object change.
  */
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #define OBJ_REMEMBER_FILE_AND_LINENO( OBJECT, FILE, LINENO )    \
     do {                                                        \
         ((service_object_t*)(OBJECT))->cls_init_file_name = FILE;  \
@@ -295,7 +295,7 @@ static inline service_object_t *service_obj_new_debug(service_class_t* type, con
 #else
 #define OBJ_REMEMBER_FILE_AND_LINENO( OBJECT, FILE, LINENO )
 #define OBJ_SET_MAGIC_ID( OBJECT, VALUE )
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
 
 /**
  * Release an object (by decrementing its reference count).  If the
@@ -307,11 +307,11 @@ static inline service_object_t *service_obj_new_debug(service_class_t* type, con
  *
  * @param object        Pointer to the object
  */
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #define OBJ_RELEASE(object)                                             \
     do {                                                                \
         assert(NULL != ((service_object_t *) (object))->obj_class);        \
-        assert(CCS_OBJ_MAGIC_ID == ((service_object_t *) (object))->obj_magic_id); \
+        assert(OCOMS_OBJ_MAGIC_ID == ((service_object_t *) (object))->obj_magic_id); \
         if (0 == service_obj_update((service_object_t *) (object), -1)) {     \
             OBJ_SET_MAGIC_ID((object), 0);                              \
             service_obj_run_destructors((service_object_t *) (object));       \
@@ -346,7 +346,7 @@ do {                                                            \
 
 #define OBJ_CONSTRUCT_INTERNAL(object, type)                        \
 do {                                                                \
-    OBJ_SET_MAGIC_ID((object), CCS_OBJ_MAGIC_ID);              \
+    OBJ_SET_MAGIC_ID((object), OCOMS_OBJ_MAGIC_ID);              \
     if (0 == (type)->cls_initialized) {                             \
         service_class_initialize((type));                              \
     }                                                               \
@@ -362,10 +362,10 @@ do {                                                                \
  *
  * @param object        Pointer to the object
  */
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #define OBJ_DESTRUCT(object)                                    \
 do {                                                            \
-    assert(CCS_OBJ_MAGIC_ID == ((service_object_t *) (object))->obj_magic_id); \
+    assert(OCOMS_OBJ_MAGIC_ID == ((service_object_t *) (object))->obj_magic_id); \
     OBJ_SET_MAGIC_ID((object), 0);                              \
     service_obj_run_destructors((service_object_t *) (object));       \
     OBJ_REMEMBER_FILE_AND_LINENO( object, __FILE__, __LINE__ ); \
@@ -378,7 +378,7 @@ do {                                                            \
 } while (0)
 #endif
 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_object_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_object_t);
 
 /* declarations *******************************************************/
 
@@ -390,7 +390,7 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_object_t);
  *
  * @param class    Pointer to class descriptor
  */
-CCS_DECLSPEC void service_class_initialize(service_class_t *);
+OCOMS_DECLSPEC void service_class_initialize(service_class_t *);
 
 /**
  * Shut down the class system and release all memory
@@ -401,7 +401,7 @@ CCS_DECLSPEC void service_class_initialize(service_class_t *);
  * tools like valgrind and purify don't report still-reachable memory
  * upon process termination.
  */
-CCS_DECLSPEC int service_class_finalize(void);
+OCOMS_DECLSPEC int service_class_finalize(void);
 
 /**
  * Run the hierarchy of class constructors for this object, in a
@@ -492,7 +492,7 @@ static inline service_object_t *service_obj_new(service_class_t * cls)
 static inline int service_obj_update(service_object_t *object, int inc) __service_attribute_always_inline__;
 static inline int service_obj_update(service_object_t *object, int inc)
 {
-#if CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_MULTI_THREADS
     return service_atomic_add_32(&(object->obj_reference_count), inc );
 #else
     object->obj_reference_count += inc;

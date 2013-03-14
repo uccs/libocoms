@@ -9,7 +9,7 @@
  */
 
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdio.h>
 # if HAVE_STDLIB_H
@@ -20,7 +20,7 @@
 
 #include "service/threads/tsd.h"
 
-#if !CCS_HAVE_POSIX_THREADS && !CCS_HAVE_SOLARIS_THREADS && !defined(__WINDOWS__)
+#if !OCOMS_HAVE_POSIX_THREADS && !OCOMS_HAVE_SOLARIS_THREADS && !defined(__WINDOWS__)
 
 #define TSD_ENTRIES 32
 
@@ -65,7 +65,7 @@ service_tsd_key_create(service_tsd_key_t *key,
     if (!atexit_registered) {
         atexit_registered = true;
         if (0 != atexit(run_destructors)) {
-            return CCS_ERR_TEMP_OUT_OF_RESOURCE;
+            return OCOMS_ERR_TEMP_OUT_OF_RESOURCE;
         }
     }
 
@@ -80,38 +80,38 @@ service_tsd_key_create(service_tsd_key_t *key,
     }
     if (i == TSD_ENTRIES) return ENOMEM;
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
 int
 service_tsd_key_delete(service_tsd_key_t key)
 {
-    if (!entries[key].used) return CCS_ERR_BAD_PARAM;
+    if (!entries[key].used) return OCOMS_ERR_BAD_PARAM;
 
     entries[key].used = false;
     entries[key].value = NULL;
     entries[key].destructor = NULL;
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
 int
 service_tsd_setspecific(service_tsd_key_t key, void *value)
 {
-    if (!entries[key].used) return CCS_ERR_BAD_PARAM;
+    if (!entries[key].used) return OCOMS_ERR_BAD_PARAM;
     entries[key].value = value;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
 int
 service_tsd_getspecific(service_tsd_key_t key, void **valuep)
 {
-    if (!entries[key].used) return CCS_ERR_BAD_PARAM;
+    if (!entries[key].used) return OCOMS_ERR_BAD_PARAM;
     *valuep = entries[key].value;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 #endif

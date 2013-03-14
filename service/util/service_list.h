@@ -38,7 +38,7 @@
  * first list), you will effectively be hosing the first list.  You
  * have been warned.
  *
- * If CCS_ENABLE_DEBUG is true, a bunch of checks occur, including
+ * If OCOMS_ENABLE_DEBUG is true, a bunch of checks occur, including
  * some spot checks for a debugging reference count in an attempt to
  * ensure that an service_list_item_t is only one *one* list at a time.
  * Given the highly concurrent nature of this class, these spot checks
@@ -63,12 +63,12 @@
 #ifndef SERVICE_LIST_H
 #define SERVICE_LIST_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "service/util/service_object.h"
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 /* Need atomics for debugging (reference counting) */
 #include "service/sys/atomic.h"
 #include "service/threads/mutex.h"
@@ -81,13 +81,13 @@ BEGIN_C_DECLS
  *
  * The class for the list container.
  */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_list_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_list_t);
 /**
  * \internal
  *
  * Base class for items that are put in list (service_list_t) containers.
  */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_list_item_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_list_item_t);
 
 
 /**
@@ -105,7 +105,7 @@ struct service_list_item_t
     /**< Pointer to previous list item */
     int32_t item_free;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     /** Atomic reference count for debugging */
     volatile int32_t service_list_item_refcount;
     /** The list this item belong to */
@@ -194,7 +194,7 @@ static inline bool service_list_is_empty(service_list_t* list)
 static inline service_list_item_t* service_list_get_first(service_list_t* list)
 {
     service_list_item_t* item = (service_list_item_t*)list->service_list_sentinel.service_list_next;
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     /* Spot check: ensure that the first item is only on one list */
 
     assert(1 == item->service_list_item_refcount);
@@ -221,7 +221,7 @@ static inline service_list_item_t* service_list_get_first(service_list_t* list)
 static inline service_list_item_t* service_list_get_last(service_list_t* list)
 {
     service_list_item_t* item = (service_list_item_t *)list->service_list_sentinel.service_list_prev;
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     /* Spot check: ensure that the last item is only on one list */
 
     assert( 1 == item->service_list_item_refcount );
@@ -297,7 +297,7 @@ static inline service_list_item_t* service_list_get_end(service_list_t* list)
  */
 static inline size_t service_list_get_size(service_list_t* list)
 {
-#if CCS_ENABLE_DEBUG && 0
+#if OCOMS_ENABLE_DEBUG && 0
     /* not sure if we really want this running in devel, as it does
      * slow things down.  Wanted for development of splice / join to
      * make sure length was reset properly 
@@ -346,7 +346,7 @@ static inline size_t service_list_get_size(service_list_t* list)
 static inline service_list_item_t *service_list_remove_item
   (service_list_t *list, service_list_item_t *item)
 {
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     service_list_item_t *item_ptr;
     bool found = false;
 
@@ -376,7 +376,7 @@ static inline service_list_item_t *service_list_remove_item
 
     list->service_list_length--;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     /* Spot check: ensure that this item is still only on one list */
 
     SERVICE_THREAD_ADD32( &(item->service_list_item_refcount), -1 );
@@ -402,22 +402,22 @@ static inline service_list_item_t *service_list_remove_item
  * it's usually a cheap operation.
  */
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #define service_list_append(l,i) \
 _service_list_append(l,i,__FILE__,__LINE__)
 #else
 #define service_list_append(l,i) \
 _service_list_append(l,i)
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
 
 static inline void _service_list_append(service_list_t *list, service_list_item_t *item
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
                                      , const char* FILE_NAME, int LINENO
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
                                      )
 {
     service_list_item_t* sentinel = &(list->service_list_sentinel);
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
   /* Spot check: ensure that this item is previously on no lists */
 
   assert(0 == item->service_list_item_refcount);
@@ -441,7 +441,7 @@ static inline void _service_list_append(service_list_t *list, service_list_item_
   /* increment list element counter */
   list->service_list_length++;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
   /* Spot check: ensure this item is only on the list that we just
      appended it to */
 
@@ -469,7 +469,7 @@ static inline void service_list_prepend(service_list_t *list,
                                      service_list_item_t *item) 
 {
     service_list_item_t* sentinel = &(list->service_list_sentinel);
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
   /* Spot check: ensure that this item is previously on no lists */
 
   assert(0 == item->service_list_item_refcount);
@@ -491,7 +491,7 @@ static inline void service_list_prepend(service_list_t *list,
   /* increment list element counter */
   list->service_list_length++;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
   /* Spot check: ensure this item is only on the list that we just
      prepended it to */
 
@@ -529,7 +529,7 @@ static inline service_list_item_t *service_list_remove_first(service_list_t *lis
     return (service_list_item_t *)NULL;
   }
   
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
   /* Spot check: ensure that the first item is only on this list */
 
   assert(1 == list->service_list_sentinel.service_list_next->service_list_item_refcount);
@@ -547,7 +547,7 @@ static inline service_list_item_t *service_list_remove_first(service_list_t *lis
   /* reset the head next pointer */
   list->service_list_sentinel.service_list_next = item->service_list_next;
   
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
   assert( list == item->service_list_item_belong_to );
   item->service_list_item_belong_to = NULL;
   item->service_list_prev=(service_list_item_t *)NULL;
@@ -591,7 +591,7 @@ static inline service_list_item_t *service_list_remove_last(service_list_t *list
       return (service_list_item_t *)NULL;
   }
   
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
   /* Spot check: ensure that the first item is only on this list */
 
   assert(1 == list->service_list_sentinel.service_list_prev->service_list_item_refcount);
@@ -609,7 +609,7 @@ static inline service_list_item_t *service_list_remove_last(service_list_t *list
   /* reset tail's previous pointer */
   list->service_list_sentinel.service_list_prev = item->service_list_prev;
   
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
   assert( list == item->service_list_item_belong_to );
   item->service_list_next = item->service_list_prev = (service_list_item_t *)NULL;
 
@@ -636,7 +636,7 @@ static inline service_list_item_t *service_list_remove_last(service_list_t *list
 static inline void service_list_insert_pos(service_list_t *list, service_list_item_t *pos,
                                         service_list_item_t *item)
 {
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     /* Spot check: ensure that the item we're insertting is currently
        not on any list */
 
@@ -655,7 +655,7 @@ static inline void service_list_insert_pos(service_list_t *list, service_list_it
     /* reset list length counter */
     list->service_list_length++;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     /* Spot check: double check that this item is only on the list
        that we just added it to */
 
@@ -683,7 +683,7 @@ static inline void service_list_insert_pos(service_list_t *list, service_list_it
    * If index is greater than the length of the list, no action is
    * performed and false is returned.
    */
-  CCS_DECLSPEC bool service_list_insert(service_list_t *list, service_list_item_t *item, 
+  OCOMS_DECLSPEC bool service_list_insert(service_list_t *list, service_list_item_t *item, 
                                       long long idx);
 
 
@@ -704,7 +704,7 @@ static inline void service_list_insert_pos(service_list_t *list, service_list_it
      * containers remain valid, including those that point to elements
      * in \c xlist.
      */
-    CCS_DECLSPEC void service_list_join(service_list_t *thislist, service_list_item_t *pos, 
+    OCOMS_DECLSPEC void service_list_join(service_list_t *thislist, service_list_item_t *pos, 
                                       service_list_t *xlist);
 
 
@@ -731,7 +731,7 @@ static inline void service_list_insert_pos(service_list_t *list, service_list_it
      * This is an O(N) operation because the length of both lists must
      * be recomputed.
      */
-    CCS_DECLSPEC void service_list_splice(service_list_t *thislist, service_list_item_t *pos,
+    OCOMS_DECLSPEC void service_list_splice(service_list_t *thislist, service_list_item_t *pos,
                                         service_list_t *xlist, service_list_item_t *first,
                                         service_list_item_t *last);
 
@@ -794,7 +794,7 @@ static inline void service_list_insert_pos(service_list_t *list, service_list_it
      * whatever the underlying type is).  See the documentation of
      * service_list_item_compare_fn_t for an example).
      */
-    CCS_DECLSPEC int service_list_sort(service_list_t* list, service_list_item_compare_fn_t compare);
+    OCOMS_DECLSPEC int service_list_sort(service_list_t* list, service_list_item_compare_fn_t compare);
 
 END_C_DECLS
 

@@ -86,9 +86,3 @@ libserviceutil_la_DEPENDENCIES = \
 CFLAGS += @RTE_CFLAGS@
 LDFLAGS += @RTE_LDFLAGS@
 
-# Conditionally install the header files
-
-#if WANT_INSTALL_HEADERS
-#opaldir = $(includedir)/ccs/$(subdir)
-#opal_HEADERS = $(headers)
-#endif

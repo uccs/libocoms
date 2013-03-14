@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/util/service_list.h"
 #include "service/util/output.h"
@@ -25,13 +25,13 @@
 #include "service/mca/base/mca_base_component_repository.h"
 #include "service/platform/service_constants.h"
 
-int ccs_mca_base_components_close(int output_id, 
+int ocoms_mca_base_components_close(int output_id, 
                               service_list_t *components_available, 
-                              const ccs_mca_base_component_t *skip)
+                              const ocoms_mca_base_component_t *skip)
 {
   service_list_item_t *item;
-  ccs_mca_base_component_priority_list_item_t *pcli, *skipped_pcli = NULL;
-  const ccs_mca_base_component_t *component;
+  ocoms_mca_base_component_priority_list_item_t *pcli, *skipped_pcli = NULL;
+  const ocoms_mca_base_component_t *component;
 
   /* Close and unload all components in the available list, except the
      "skip" item.  This is handy to close out all non-selected
@@ -41,7 +41,7 @@ int ccs_mca_base_components_close(int output_id,
   for (item = service_list_remove_first(components_available);
        NULL != item; 
        item = service_list_remove_first(components_available)) {
-    pcli = (ccs_mca_base_component_priority_list_item_t *) item;
+    pcli = (ocoms_mca_base_component_priority_list_item_t *) item;
     component = pcli->super.cli_component;
 
     if (component != skip) {
@@ -61,7 +61,7 @@ int ccs_mca_base_components_close(int output_id,
       service_output_verbose(10, output_id, 
                           "mca: base: close: unloading component %s",
                          component->mca_component_name);
-      ccs_mca_base_component_repository_release((ccs_mca_base_component_t *) component);
+      ocoms_mca_base_component_repository_release((ocoms_mca_base_component_t *) component);
       free(pcli);
     } else {
       skipped_pcli = pcli;
@@ -85,5 +85,5 @@ int ccs_mca_base_components_close(int output_id,
       service_output_close (output_id);
   }
   /* All done */
-  return CCS_SUCCESS;
+  return OCOMS_SUCCESS;
 }

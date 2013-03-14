@@ -107,10 +107,10 @@
  * service_cmd_line_make_opt3(), etc.
  */
 
-#ifndef CCS_CMD_LINE_H
-#define CCS_CMD_LINE_H
+#ifndef OCOMS_CMD_LINE_H
+#define OCOMS_CMD_LINE_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/util/service_object.h"
 #include "service/util/service_list.h"
@@ -156,13 +156,13 @@ BEGIN_C_DECLS
      * Data types supported by the parser
      */
     enum service_cmd_line_type_t {
-        CCS_CMD_LINE_TYPE_NULL,
-        CCS_CMD_LINE_TYPE_STRING,
-        CCS_CMD_LINE_TYPE_INT,
-        CCS_CMD_LINE_TYPE_SIZE_T,
-        CCS_CMD_LINE_TYPE_BOOL,
+        OCOMS_CMD_LINE_TYPE_NULL,
+        OCOMS_CMD_LINE_TYPE_STRING,
+        OCOMS_CMD_LINE_TYPE_INT,
+        OCOMS_CMD_LINE_TYPE_SIZE_T,
+        OCOMS_CMD_LINE_TYPE_BOOL,
 
-        CCS_CMD_LINE_TYPE_MAX
+        OCOMS_CMD_LINE_TYPE_MAX
     };
     /**
      * \internal
@@ -236,7 +236,7 @@ BEGIN_C_DECLS
      * destructor for service_cmd_line_t handles will free all memory
      * associated with the handle.
      */
-    CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_cmd_line_t);
+    OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_cmd_line_t);
 
     /**
      * Make a command line handle from a table of initializers.
@@ -246,7 +246,7 @@ BEGIN_C_DECLS
      * the options to be included in the resulting command line
      * handler.
      *
-     * @retval CCS_SUCCESS Upon success.
+     * @retval OCOMS_SUCCESS Upon success.
      *
      * This function takes a table of service_cmd_line_init_t instances
      * to pre-seed an OPAL command line handle.  The last instance in
@@ -260,19 +260,19 @@ BEGIN_C_DECLS
      * \code
      * service_cmd_line_init_t cmd_line_init[] = {
      *    { NULL, NULL, NULL, 'h', NULL, "help", 0, 
-     *      &orterun_globals.help, CCS_CMD_LINE_TYPE_BOOL,
+     *      &orterun_globals.help, OCOMS_CMD_LINE_TYPE_BOOL,
      *      "This help message" },
      *
      *    { NULL, NULL, NULL, '\0', NULL, "wd", 1,
-     *      &orterun_globals.wd, CCS_CMD_LINE_TYPE_STRING,
+     *      &orterun_globals.wd, OCOMS_CMD_LINE_TYPE_STRING,
      *      "Set the working directory of the started processes" },
      *
      *    { NULL, NULL, NULL, '\0', NULL, NULL, 0,
-     *      NULL, CCS_CMD_LINE_TYPE_NULL, NULL }
+     *      NULL, OCOMS_CMD_LINE_TYPE_NULL, NULL }
      * };
      * \endcode
      */
-    CCS_DECLSPEC int service_cmd_line_create(service_cmd_line_t *cmd,
+    OCOMS_DECLSPEC int service_cmd_line_create(service_cmd_line_t *cmd,
                                            service_cmd_line_init_t *table);
 
     /**
@@ -281,10 +281,10 @@ BEGIN_C_DECLS
      * @param cmd OPAL command line handle.
      * @param entry Command line entry to add to the command line.
      *
-     * @retval CCS_SUCCESS Upon success.
+     * @retval OCOMS_SUCCESS Upon success.
      *
      */
-    CCS_DECLSPEC int service_cmd_line_make_opt_mca(service_cmd_line_t *cmd,
+    OCOMS_DECLSPEC int service_cmd_line_make_opt_mca(service_cmd_line_t *cmd,
                                                  service_cmd_line_init_t entry);
 
     /**
@@ -297,7 +297,7 @@ BEGIN_C_DECLS
      * service_cmd_line_make_opt3(cmd, short_name, NULL, long_name,
      * num_params, desc).
      */
-    CCS_DECLSPEC int service_cmd_line_make_opt(service_cmd_line_t *cmd,
+    OCOMS_DECLSPEC int service_cmd_line_make_opt(service_cmd_line_t *cmd,
                                              char short_name, 
                                              const char *long_name,
                                              int num_params, 
@@ -313,9 +313,9 @@ BEGIN_C_DECLS
      * @param num_params How many parameters this option takes.
      * @param dest Short string description of this option.
      *
-     * @retval CCS_ERR_OUT_OF_RESOURCE If out of memory.
-     * @retval CCS_ERR_BAD_PARAM If bad parameters passed.
-     * @retval CCS_SUCCESS Upon success.
+     * @retval OCOMS_ERR_OUT_OF_RESOURCE If out of memory.
+     * @retval OCOMS_ERR_BAD_PARAM If bad parameters passed.
+     * @retval OCOMS_SUCCESS Upon success.
      *
      * Adds a command line option to the list of options that a a OPAL
      * command line handle will accept.  The short_name may take the
@@ -331,7 +331,7 @@ BEGIN_C_DECLS
      * used to generate the output from service_cmd_line_get_usage_msg().
      *
      */
-    CCS_DECLSPEC int service_cmd_line_make_opt3(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC int service_cmd_line_make_opt3(service_cmd_line_t *cmd, 
                                               char short_name, 
                                               const char *sd_name,
                                               const char *long_name, 
@@ -348,7 +348,7 @@ BEGIN_C_DECLS
      * @param argc Length of the argv array.
      * @param argv Array of strings from the command line.
      *
-     * @retval CCS_SUCCESS Upon success.
+     * @retval OCOMS_SUCCESS Upon success.
      *
      * Parse a series of command line tokens according to the option
      * descriptions from a OPAL command line handle.  The OPAL command line
@@ -389,7 +389,7 @@ BEGIN_C_DECLS
      * Invoking this function multiple times on different sets of argv
      * tokens is safe, but will erase any previous parsing results.
      */
-    CCS_DECLSPEC int service_cmd_line_parse(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC int service_cmd_line_parse(service_cmd_line_t *cmd, 
                                           bool ignore_unknown,
                                           int argc, char **argv);
 
@@ -414,7 +414,7 @@ BEGIN_C_DECLS
      *
      * The returned string must be freed by the caller.
      */
-    CCS_DECLSPEC char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
+    OCOMS_DECLSPEC char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
 
     /**
      * Test if a given option was taken on the parsed command line.
@@ -435,7 +435,7 @@ BEGIN_C_DECLS
      * (either by its short or long name) during token parsing.
      * Otherwise, it will return false.
      */
-    CCS_DECLSPEC bool service_cmd_line_is_taken(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC bool service_cmd_line_is_taken(service_cmd_line_t *cmd, 
                                               const char *opt) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
 
     /**
@@ -443,13 +443,13 @@ BEGIN_C_DECLS
      *
      * @param cmd A pointer to the OPAL command line handle.
      *
-     * @retval CCS_ERROR If cmd is NULL.
+     * @retval OCOMS_ERROR If cmd is NULL.
      * @retval argc Number of arguments previously added to the handle.
      *
      * Arguments are added to the handle via the service_cmd_line_parse()
      * function.
      */
-    CCS_DECLSPEC int service_cmd_line_get_argc(service_cmd_line_t *cmd) __service_attribute_unused__;
+    OCOMS_DECLSPEC int service_cmd_line_get_argc(service_cmd_line_t *cmd) __service_attribute_unused__;
 
     /**
      * Return a string argument parsed on a OPAL command line handle.
@@ -468,7 +468,7 @@ BEGIN_C_DECLS
      * What is returned is a pointer to the actual string that is on
      * the handle; it should not be modified or freed.
      */
-    CCS_DECLSPEC char *service_cmd_line_get_argv(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC char *service_cmd_line_get_argv(service_cmd_line_t *cmd, 
                                                int index);
 
     /**
@@ -480,18 +480,18 @@ BEGIN_C_DECLS
      * @retval num Number of instances (to include 0) of a given potion
      * found during service_cmd_line_parse().
      *
-     * @retval CCS_ERR If the command line option was not found during
+     * @retval OCOMS_ERR If the command line option was not found during
      * service_cmd_line_parse(), or service_cmd_line_parse() was not invoked on
      * this handle.
      *
      * This function should only be called after service_cmd_line_parse().
      *
      * The function will return the number of instances of a given option
-     * (either by its short or long name) -- to include 0 -- or CCS_ERR if
+     * (either by its short or long name) -- to include 0 -- or OCOMS_ERR if
      * either the option was not specified as part of the OPAL command line
      * handle, or service_cmd_line_parse() was not invoked on this handle.
      */
-    CCS_DECLSPEC int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, 
                                                const char *opt) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
 
     /**
@@ -521,7 +521,7 @@ BEGIN_C_DECLS
      * The returned string should \em not be modified or freed by the
      * caller.
      */
-    CCS_DECLSPEC char *service_cmd_line_get_param(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC char *service_cmd_line_get_param(service_cmd_line_t *cmd, 
                                                 const char *opt, 
                                                 int instance_num,
                                                 int param_num);
@@ -536,8 +536,8 @@ BEGIN_C_DECLS
      * @param tailv Pointer to the output null-terminated argv of all
      * unprocessed arguments from the command line.
      *
-     * @retval CCS_ERROR If cmd is NULL or otherwise invalid.
-     * @retval CCS_SUCCESS Upon success.
+     * @retval OCOMS_ERROR If cmd is NULL or otherwise invalid.
+     * @retval OCOMS_SUCCESS Upon success.
      *
      * The "tail" is all the arguments on the command line that were
      * not processed for some reason.  Reasons for not processing
@@ -553,10 +553,10 @@ BEGIN_C_DECLS
      * of the tail parameters, and must be freed (likely with a call
      * to service_argv_free()) by the caller.
      */
-    CCS_DECLSPEC int service_cmd_line_get_tail(service_cmd_line_t *cmd, int *tailc, 
+    OCOMS_DECLSPEC int service_cmd_line_get_tail(service_cmd_line_t *cmd, int *tailc, 
                                              char ***tailv) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
 
 END_C_DECLS
 
 
-#endif /* CCS_CMD_LINE_H */
+#endif /* OCOMS_CMD_LINE_H */

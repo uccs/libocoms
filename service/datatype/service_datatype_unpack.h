@@ -12,17 +12,17 @@
  * $HEADER$
  */
 
-#ifndef CCS_DATATYPE_UNPACK_H_HAS_BEEN_INCLUDED
-#define CCS_DATATYPE_UNPACK_H_HAS_BEEN_INCLUDED
+#ifndef OCOMS_DATATYPE_UNPACK_H_HAS_BEEN_INCLUDED
+#define OCOMS_DATATYPE_UNPACK_H_HAS_BEEN_INCLUDED
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
 #endif
 
-#if !defined(CHECKSUM) && CCS_CUDA_SUPPORT
+#if !defined(CHECKSUM) && OCOMS_CUDA_SUPPORT
 /* Make use of existing macro to do CUDA style memcpy */
 #undef MEMCPY_CSUM
 #define MEMCPY_CSUM( DST, SRC, BLENGTH, CONVERTOR ) \
@@ -50,10 +50,10 @@ static inline void unpack_predefined_data( service_convertor_t* CONVERTOR, /* th
         if( 0 == _copy_count ) return;  /* nothing to do */
     }
 
-    if( (CCS_PTRDIFF_TYPE)_copy_blength == _elem->extent ) {
+    if( (OCOMS_PTRDIFF_TYPE)_copy_blength == _elem->extent ) {
         _copy_blength *= _copy_count;
         /* the extent and the size of the basic datatype are equal */
-        CCS_DATATYPE_SAFEGUARD_POINTER( _destination, _copy_blength, (CONVERTOR)->pBaseBuf,
+        OCOMS_DATATYPE_SAFEGUARD_POINTER( _destination, _copy_blength, (CONVERTOR)->pBaseBuf,
                                     (CONVERTOR)->pDesc, (CONVERTOR)->count );
         DO_DEBUG( service_output( 0, "unpack 1. memcpy( %p, %p, %lu ) => space %lu\n",
                                _destination, *(SOURCE), (unsigned long)_copy_blength, (unsigned long)(*(SPACE)) ); );
@@ -63,7 +63,7 @@ static inline void unpack_predefined_data( service_convertor_t* CONVERTOR, /* th
     } else {
         uint32_t _i;
         for( _i = 0; _i < _copy_count; _i++ ) {
-            CCS_DATATYPE_SAFEGUARD_POINTER( _destination, _copy_blength, (CONVERTOR)->pBaseBuf,
+            OCOMS_DATATYPE_SAFEGUARD_POINTER( _destination, _copy_blength, (CONVERTOR)->pBaseBuf,
                                         (CONVERTOR)->pDesc, (CONVERTOR)->count );
             DO_DEBUG( service_output( 0, "unpack 2. memcpy( %p, %p, %lu ) => space %lu\n",
                                    _destination, *(SOURCE), (unsigned long)_copy_blength, (unsigned long)(*(SPACE) - (_i * _copy_blength)) ); );
@@ -94,7 +94,7 @@ static inline void unpack_contiguous_loop( service_convertor_t* CONVERTOR,
     if( (_copy_loops * _end_loop->size) > *(SPACE) )
         _copy_loops = (uint32_t)(*(SPACE) / _end_loop->size);
     for( _i = 0; _i < _copy_loops; _i++ ) {
-        CCS_DATATYPE_SAFEGUARD_POINTER( _destination, _end_loop->size, (CONVERTOR)->pBaseBuf,
+        OCOMS_DATATYPE_SAFEGUARD_POINTER( _destination, _end_loop->size, (CONVERTOR)->pBaseBuf,
                                     (CONVERTOR)->pDesc, (CONVERTOR)->count );
         DO_DEBUG( service_output( 0, "unpack 3. memcpy( %p, %p, %lu ) => space %lu\n",
                                _destination, *(SOURCE), (unsigned long)_end_loop->size, (unsigned long)(*(SPACE) - _i * _end_loop->size) ); );
@@ -113,4 +113,4 @@ static inline void unpack_contiguous_loop( service_convertor_t* CONVERTOR,
 #define UNPACK_CONTIGUOUS_LOOP( CONVERTOR, ELEM, COUNT, SOURCE, DESTINATION, SPACE ) \
     unpack_contiguous_loop( (CONVERTOR), (ELEM), &(COUNT), &(SOURCE), &(DESTINATION), &(SPACE) )
 
-#endif  /* CCS_DATATYPE_UNPACK_H_HAS_BEEN_INCLUDED */
+#endif  /* OCOMS_DATATYPE_UNPACK_H_HAS_BEEN_INCLUDED */

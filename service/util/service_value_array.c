@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/util/service_value_array.h"
 
@@ -45,10 +45,10 @@ OBJ_CLASS_INSTANCE(
 
 int service_value_array_set_size(service_value_array_t* array, size_t size)
 {
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(array->array_item_sizeof == 0) {
         service_output(0, "service_value_array_set_size: item size must be initialized");
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 #endif
 
@@ -58,9 +58,9 @@ int service_value_array_set_size(service_value_array_t* array, size_t size)
         array->array_items = (unsigned char *)realloc(array->array_items,
             array->array_alloc_size * array->array_item_sizeof);
         if (NULL == array->array_items)
-            return CCS_ERR_OUT_OF_RESOURCE;
+            return OCOMS_ERR_OUT_OF_RESOURCE;
     }
     array->array_size = size;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 

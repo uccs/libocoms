@@ -87,7 +87,7 @@ date="Unreleased developer copy"
 # Version numbers are described in the Libtool current:revision:age
 # format.
 
-libccs_so_version=0:0:0
+libocoms_so_version=0:0:0
 #libmpi_cxx_so_version=0:0:0
 #libmpi_f77_so_version=0:0:0
 #libmpi_f90_so_version=0:0:0
@@ -102,5 +102,5 @@ libccs_so_version=0:0:0
 libmca_common_sm_so_version=0:0:0
 libmca_common_mx_so_version=0:0:0
 libmca_common_portals_so_version=0:0:0
-libmca_ccs_common_hwloc_so_version=0:0:0
+libmca_ocoms_common_hwloc_so_version=0:0:0
 

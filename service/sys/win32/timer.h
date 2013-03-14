@@ -16,14 +16,14 @@
  * $HEADER$
  */
 
-#ifndef CCS_SYS_ARCH_TIMER_H
-#define CCS_SYS_ARCH_TIMER_H 1
+#ifndef OCOMS_SYS_ARCH_TIMER_H
+#define OCOMS_SYS_ARCH_TIMER_H 1
 
 
-typedef LONGLONG ccs_timer_t;
+typedef LONGLONG ocoms_timer_t;
 
-ccs_timer_t ccs_sys_timer_get_cycles(void);
+ocoms_timer_t ocoms_sys_timer_get_cycles(void);
 
-#define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
+#define OCOMS_HAVE_SYS_TIMER_GET_CYCLES 1
 
-#endif /* ! CCS_SYS_ARCH_TIMER_H */
+#endif /* ! OCOMS_SYS_ARCH_TIMER_H */

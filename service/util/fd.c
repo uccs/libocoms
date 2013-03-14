@@ -9,7 +9,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -36,12 +36,12 @@ int service_fd_read(int fd, int len, void *buffer)
             len -= rc;
             b += rc;
         } else if (0 == rc) {
-            return CCS_ERR_TIMEOUT;
+            return OCOMS_ERR_TIMEOUT;
         } else {
-            return CCS_ERR_IN_ERRNO;
+            return OCOMS_ERR_IN_ERRNO;
         }
     }
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -61,11 +61,11 @@ int service_fd_write(int fd, int len, const void *buffer)
             len -= rc;
             b += rc;
         } else {
-            return CCS_ERR_IN_ERRNO;
+            return OCOMS_ERR_IN_ERRNO;
         }
     }
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 

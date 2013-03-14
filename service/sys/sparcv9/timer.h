@@ -16,32 +16,32 @@
  * $HEADER$
  */
 
-#ifndef CCS_SYS_ARCH_TIMER_H
-#define CCS_SYS_ARCH_TIMER_H 1
+#ifndef OCOMS_SYS_ARCH_TIMER_H
+#define OCOMS_SYS_ARCH_TIMER_H 1
 
-typedef uint64_t ccs_timer_t;
+typedef uint64_t ocoms_timer_t;
 
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 
-#if CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64
+#if OCOMS_ASSEMBLY_ARCH == OCOMS_SPARCV9_64
 
-static inline ccs_timer_t
-ccs_sys_timer_get_cycles(void)
+static inline ocoms_timer_t
+ocoms_sys_timer_get_cycles(void)
 {
-    ccs_timer_t ret;
+    ocoms_timer_t ret;
 
     __asm__ __volatile__("rd %%tick, %0" : "=r"(ret));
 
     return ret;
 }
 
-#else /* CCS_SPARCV9_32 */
+#else /* OCOMS_SPARCV9_32 */
 
-static inline ccs_timer_t
-ccs_sys_timer_get_cycles(void)
+static inline ocoms_timer_t
+ocoms_sys_timer_get_cycles(void)
 {
-    ccs_timer_t ret;
+    ocoms_timer_t ret;
     int a, b;
 
     __asm__ __volatile__("rd %%tick, %0    \n"
@@ -49,19 +49,19 @@ ccs_sys_timer_get_cycles(void)
                          "=r"(a), "=r"(b) 
                          );
 
-    ret = (0x00000000FFFFFFFF & a) | (((ccs_timer_t) b) << 32);
+    ret = (0x00000000FFFFFFFF & a) | (((ocoms_timer_t) b) << 32);
 
     return ret;
 }
 
 #endif
 
-#define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
+#define OCOMS_HAVE_SYS_TIMER_GET_CYCLES 1
 
 #else
 
-#define CCS_HAVE_SYS_TIMER_GET_CYCLES 0
+#define OCOMS_HAVE_SYS_TIMER_GET_CYCLES 0
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
-#endif /* ! CCS_SYS_ARCH_TIMER_H */
+#endif /* ! OCOMS_SYS_ARCH_TIMER_H */

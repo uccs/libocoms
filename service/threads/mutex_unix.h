@@ -18,8 +18,8 @@
  * $HEADER$
  */
 
-#ifndef  CCS_MUTEX_UNIX_H
-#define  CCS_MUTEX_UNIX_H 1
+#ifndef  OCOMS_MUTEX_UNIX_H
+#define  OCOMS_MUTEX_UNIX_H 1
 
 /**
  * @file:
@@ -32,15 +32,15 @@
  * available.
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
 #ifdef HAVE_PTHREAD_H
 #include <pthread.h>
 #endif
 #include <errno.h>
 #include <stdio.h>
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
 #include <thread.h>
 #include <synch.h>
 #endif
@@ -53,13 +53,13 @@ BEGIN_C_DECLS
 struct service_mutex_t {
     service_object_t super;
 
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
     pthread_mutex_t m_lock_pthread;
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
     mutex_t m_lock_solaris;
 #endif
 
-#if !CCS_ENABLE_MULTI_THREADS && CCS_ENABLE_DEBUG
+#if !OCOMS_ENABLE_MULTI_THREADS && OCOMS_ENABLE_DEBUG
     int m_lock_debug;
     const char *m_lock_file;
     int m_lock_line;
@@ -67,7 +67,7 @@ struct service_mutex_t {
 
     service_atomic_lock_t m_lock_atomic;
 };
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_mutex_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_mutex_t);
 
 /************************************************************************
  *
@@ -75,7 +75,7 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_mutex_t);
  *
  ************************************************************************/
 
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
 
 /************************************************************************
  * POSIX threads
@@ -83,7 +83,7 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_mutex_t);
 
 static inline int service_mutex_trylock(service_mutex_t *m)
 {
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     int ret = pthread_mutex_trylock(&m->m_lock_pthread);
     if (ret == EDEADLK) {
         errno = ret;
@@ -98,7 +98,7 @@ static inline int service_mutex_trylock(service_mutex_t *m)
 
 static inline void service_mutex_lock(service_mutex_t *m)
 {
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     int ret = pthread_mutex_lock(&m->m_lock_pthread);
     if (ret == EDEADLK) {
         errno = ret;
@@ -112,7 +112,7 @@ static inline void service_mutex_lock(service_mutex_t *m)
 
 static inline void service_mutex_unlock(service_mutex_t *m)
 {
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     int ret = pthread_mutex_unlock(&m->m_lock_pthread);
     if (ret == EPERM) {
         errno = ret;
@@ -124,7 +124,7 @@ static inline void service_mutex_unlock(service_mutex_t *m)
 #endif
 }
 
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
 
 /************************************************************************
  * Solaris threads
@@ -146,7 +146,7 @@ static inline void service_mutex_unlock(service_mutex_t *m)
     mutex_unlock(&m->m_lock_solaris);
 }
 
-#elif CCS_HAVE_ATOMIC_SPINLOCKS
+#elif OCOMS_HAVE_ATOMIC_SPINLOCKS
 
 /************************************************************************
  * Spin Locks
@@ -180,7 +180,7 @@ static inline void service_mutex_unlock(service_mutex_t *m)
  *
  ************************************************************************/
 
-#if CCS_HAVE_ATOMIC_SPINLOCKS
+#if OCOMS_HAVE_ATOMIC_SPINLOCKS
 
 /************************************************************************
  * Spin Locks
@@ -226,4 +226,4 @@ static inline void service_mutex_atomic_unlock(service_mutex_t *m)
 
 END_C_DECLS
 
-#endif                          /* CCS_MUTEX_UNIX_H */
+#endif                          /* OCOMS_MUTEX_UNIX_H */

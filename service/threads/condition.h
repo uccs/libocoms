@@ -17,26 +17,26 @@
  * 
  * $HEADER$
  */
-#ifndef CCS_CONDITION_SPINLOCK_H
-#define CCS_CONDITION_SPINLOCK_H
+#ifndef OCOMS_CONDITION_SPINLOCK_H
+#define OCOMS_CONDITION_SPINLOCK_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
 #endif
 #ifdef HAVE_TIME_H
 #include <time.h>
 #endif
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
 #include <pthread.h>
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
 #include <thread.h>
 #include <synch.h>
 #endif
 
 #include "service/threads/mutex.h"
 #if 0
-#include "opal/runtime/ccs_cr.h"
+#include "opal/runtime/ocoms_cr.h"
 #endif
 
 BEGIN_C_DECLS
@@ -46,23 +46,23 @@ BEGIN_C_DECLS
  * of threading vs. non-threading progress.
  */
 
-typedef int (*ccs_progress_fn_t)(void);
+typedef int (*ocoms_progress_fn_t)(void);
 
 struct service_condition_t {
     service_object_t super;
     volatile int c_waiting;
     volatile int c_signaled;
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
     pthread_cond_t c_cond;
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
     cond_t c_cond;
 #endif
-    ccs_progress_fn_t ccs_progress_fn;
+    ocoms_progress_fn_t ocoms_progress_fn;
     char *name;
 };
 typedef struct service_condition_t service_condition_t;
 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_condition_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_condition_t);
 
 
 static inline int service_condition_wait(service_condition_t *c, service_mutex_t *m)
@@ -70,39 +70,39 @@ static inline int service_condition_wait(service_condition_t *c, service_mutex_t
     int rc = 0;
     c->c_waiting++;
 
-#if CCS_ENABLE_DEBUG && !CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_DEBUG && !OCOMS_ENABLE_MULTI_THREADS
     if (service_mutex_check_locks && 0 == m->m_lock_debug) {                                         \
         service_output(0, "Warning -- mutex not locked in condition_wait"); \
     }                                                                   \
     m->m_lock_debug--;
 #endif
 
-    if (ccs_using_threads()) {
-#if CCS_HAVE_POSIX_THREADS && CCS_ENABLE_MULTI_THREADS
+    if (ocoms_using_threads()) {
+#if OCOMS_HAVE_POSIX_THREADS && OCOMS_ENABLE_MULTI_THREADS
         rc = pthread_cond_wait(&c->c_cond, &m->m_lock_pthread);
-#elif CCS_HAVE_SOLARIS_THREADS && CCS_ENABLE_MULTI_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS && OCOMS_ENABLE_MULTI_THREADS
         rc = cond_wait(&c->c_cond, &m->m_lock_solaris);
 #else
         if (c->c_signaled) {
             c->c_waiting--;
             service_mutex_unlock(m);
-            c->ccs_progress_fn();
+            c->ocoms_progress_fn();
             service_mutex_lock(m);
             return 0;
         }
         while (c->c_signaled == 0) {
             service_mutex_unlock(m);
-            c->ccs_progress_fn();
+            c->ocoms_progress_fn();
             service_mutex_lock(m);
         }
 #endif
     } else {
         while (c->c_signaled == 0) {
-            c->ccs_progress_fn();
+            c->ocoms_progress_fn();
         }
     }
 
-#if CCS_ENABLE_DEBUG && !CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_DEBUG && !OCOMS_ENABLE_MULTI_THREADS
     m->m_lock_debug++;
 #endif
 
@@ -119,7 +119,7 @@ static inline int service_condition_timedwait(service_condition_t *c,
     struct timeval absolute;
     int rc = 0;
 
-#if CCS_ENABLE_DEBUG && !CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_DEBUG && !OCOMS_ENABLE_MULTI_THREADS
     if (service_mutex_check_locks && 0 == m->m_lock_debug) {                                         \
         service_output(0, "Warning -- mutex not locked in condition_wait"); \
     }                                                                   \
@@ -127,10 +127,10 @@ static inline int service_condition_timedwait(service_condition_t *c,
 #endif
 
     c->c_waiting++;
-    if (ccs_using_threads()) {
-#if CCS_HAVE_POSIX_THREADS && CCS_ENABLE_MULTI_THREADS
+    if (ocoms_using_threads()) {
+#if OCOMS_HAVE_POSIX_THREADS && OCOMS_ENABLE_MULTI_THREADS
         rc = pthread_cond_timedwait(&c->c_cond, &m->m_lock_pthread, abstime);
-#elif CCS_HAVE_SOLARIS_THREADS && CCS_ENABLE_MULTI_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS && OCOMS_ENABLE_MULTI_THREADS
         /* deal with const-ness */
         timestruc_t to;
         to.tv_sec = abstime->tv_sec;
@@ -143,7 +143,7 @@ static inline int service_condition_timedwait(service_condition_t *c,
         if (c->c_signaled == 0) {
             do {
                 service_mutex_unlock(m);
-                c->ccs_progress_fn();
+                c->ocoms_progress_fn();
                 gettimeofday(&tv,NULL);
                 service_mutex_lock(m);
                 } while (c->c_signaled == 0 &&  
@@ -157,7 +157,7 @@ static inline int service_condition_timedwait(service_condition_t *c,
         gettimeofday(&tv,NULL);
         if (c->c_signaled == 0) {
             do {
-                c->ccs_progress_fn();
+                c->ocoms_progress_fn();
                 gettimeofday(&tv,NULL);
                 } while (c->c_signaled == 0 &&  
                          (tv.tv_sec <= absolute.tv_sec ||
@@ -165,7 +165,7 @@ static inline int service_condition_timedwait(service_condition_t *c,
         }
     }
 
-#if CCS_ENABLE_DEBUG && !CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_DEBUG && !OCOMS_ENABLE_MULTI_THREADS
     m->m_lock_debug++;
 #endif
 
@@ -178,12 +178,12 @@ static inline int service_condition_signal(service_condition_t *c)
 {
     if (c->c_waiting) {
         c->c_signaled++;
-#if CCS_HAVE_POSIX_THREADS && CCS_ENABLE_MULTI_THREADS
-        if(ccs_using_threads()) {
+#if OCOMS_HAVE_POSIX_THREADS && OCOMS_ENABLE_MULTI_THREADS
+        if(ocoms_using_threads()) {
             pthread_cond_signal(&c->c_cond);
         }
-#elif CCS_HAVE_SOLARIS_THREADS && CCS_ENABLE_MULTI_THREADS
-        if(ccs_using_threads()) {
+#elif OCOMS_HAVE_SOLARIS_THREADS && OCOMS_ENABLE_MULTI_THREADS
+        if(ocoms_using_threads()) {
             cond_signal(&c->c_cond);
         }
 #endif
@@ -194,16 +194,16 @@ static inline int service_condition_signal(service_condition_t *c)
 static inline int service_condition_broadcast(service_condition_t *c)
 {
     c->c_signaled = c->c_waiting;
-#if CCS_HAVE_POSIX_THREADS && CCS_ENABLE_MULTI_THREADS
-    if (ccs_using_threads()) {
+#if OCOMS_HAVE_POSIX_THREADS && OCOMS_ENABLE_MULTI_THREADS
+    if (ocoms_using_threads()) {
         if( 1 == c->c_waiting ) {
             pthread_cond_signal(&c->c_cond);
         } else {
             pthread_cond_broadcast(&c->c_cond);
         }
     }
-#elif CCS_HAVE_SOLARIS_THREADS && CCS_ENABLE_MULTI_THREADS
-    if (ccs_using_threads()) {
+#elif OCOMS_HAVE_SOLARIS_THREADS && OCOMS_ENABLE_MULTI_THREADS
+    if (ocoms_using_threads()) {
         cond_broadcast(&c->c_cond);
     }
 #endif

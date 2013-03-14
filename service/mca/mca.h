@@ -63,7 +63,7 @@
  *   possibility of loading an MCA v1.0 binary component in Open MPI
  *   v1.3 or beyond (source compatibility is much easier -- the binary
  *   "refuse to load MCA components <v2.0.0" policy is enforced in
- *   ccs_mca_base_component_find.c).
+ *   ocoms_mca_base_component_find.c).
  *
  *   ***IF YOU NEED BACKWARDS BINARY COMPATIBILITY, please let us
  *   know!***
@@ -83,10 +83,10 @@
  *   the end that may account for future version data fields.
  */
 
-#ifndef CCS_MCA_H
-#define CCS_MCA_H
+#ifndef OCOMS_MCA_H
+#define OCOMS_MCA_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include <stdint.h>
 
 
@@ -98,23 +98,23 @@
  * particular version of a specific framework, and to publish its own
  * name and version.
  */
-struct ccs_mca_base_module_2_0_0_t {
+struct ocoms_mca_base_module_2_0_0_t {
     int dummy_value;
 };
 /** Unversioned convenience typedef; use this name in
     frameworks/components to stay forward source-compatible */
-typedef struct ccs_mca_base_module_2_0_0_t ccs_mca_base_module_t;
+typedef struct ocoms_mca_base_module_2_0_0_t ocoms_mca_base_module_t;
 /** Versioned convenience typedef */
-typedef struct ccs_mca_base_module_2_0_0_t ccs_mca_base_module_2_0_0_t;
+typedef struct ocoms_mca_base_module_2_0_0_t ocoms_mca_base_module_2_0_0_t;
 
 
 /**
  * MCA component open function.
  *
- * @retval MCA_SUCCESS (or CCS_SUCCESS or ORTE_SUCCESS or
- * CCS_SUCCESS) This component can be used in the process.
+ * @retval MCA_SUCCESS (or OCOMS_SUCCESS or ORTE_SUCCESS or
+ * OCOMS_SUCCESS) This component can be used in the process.
  *
- * @retval CCS_ERR_NOT_AVAILABLE Silently ignore this component for
+ * @retval OCOMS_ERR_NOT_AVAILABLE Silently ignore this component for
  * the duration of the process (it may even be unloaded from the
  * process).
  *
@@ -125,7 +125,7 @@ typedef struct ccs_mca_base_module_2_0_0_t ccs_mca_base_module_2_0_0_t;
  * All MCA components can have an "open" function that is invoked once
  * per process, when the component is located and loaded.  This function
  * should register any MCA parameters (using
- * ccs_mca_base_param_register_int() and ccs_mca_base_param_register_string())
+ * ocoms_mca_base_param_register_int() and ocoms_mca_base_param_register_string())
  * that will be used by the component.  Parameter registrations should
  * occur in this function because the ompi_info command can be used by
  * users to display all available MCA parameters (and their default
@@ -148,7 +148,7 @@ typedef struct ccs_mca_base_module_2_0_0_t ccs_mca_base_module_2_0_0_t;
  * function.  In this cause, the MCA will act as if it called the open
  * function and it returned MCA_SUCCESS.
  */
-typedef int (*ccs_mca_base_open_component_1_0_0_fn_t)(void);
+typedef int (*ocoms_mca_base_open_component_1_0_0_fn_t)(void);
 
 /** 
  * MCA component close function.
@@ -171,12 +171,12 @@ typedef int (*ccs_mca_base_open_component_1_0_0_fn_t)(void);
  * this function.  In this case, the MCA will act as if it called the
  * close function and it returned MCA_SUCCESS.
  */
-typedef int (*ccs_mca_base_close_component_1_0_0_fn_t)(void);
+typedef int (*ocoms_mca_base_close_component_1_0_0_fn_t)(void);
 
 /** 
  * MCA component query function.
  *
- * @retval CCS_SUCCESS The component successfully queried.
+ * @retval OCOMS_SUCCESS The component successfully queried.
  *
  * @retval any_other_value Some error occurred, but is likely to be
  * ignored.
@@ -185,12 +185,12 @@ typedef int (*ccs_mca_base_close_component_1_0_0_fn_t)(void);
  *
  * @param priority The priority of this component.
  *
- * This function is used by the ccs_mca_base_select function to find the
+ * This function is used by the ocoms_mca_base_select function to find the
  * highest priority component to select. Frameworks are free to
  * implement their own query function, but must also implment their
  * own select function as a result.
  */
-typedef int (*ccs_mca_base_query_component_2_0_0_fn_t)(ccs_mca_base_module_2_0_0_t **module, int *priority);
+typedef int (*ocoms_mca_base_query_component_2_0_0_fn_t)(ocoms_mca_base_module_2_0_0_t **module, int *priority);
 
 /**
  * MCA component parameter registration function.
@@ -228,7 +228,7 @@ typedef int (*ccs_mca_base_query_component_2_0_0_fn_t)(ccs_mca_base_module_2_0_0
  * function.  In this cause, the MCA will act as if it called the
  * registration function and it returned MCA_SUCCESS.
  */
-typedef int (*ccs_mca_base_register_component_params_2_0_0_fn_t)(void);
+typedef int (*ocoms_mca_base_register_component_params_2_0_0_fn_t)(void);
 
 
 /**
@@ -248,7 +248,7 @@ typedef int (*ccs_mca_base_register_component_params_2_0_0_fn_t)(void);
  * particular version of a specific framework, and to publish its own
  * name and version.
  */
-struct ccs_mca_base_component_2_0_0_t {
+struct ocoms_mca_base_component_2_0_0_t {
 
   int mca_major_version; 
   /**< Major number of the MCA. */
@@ -278,13 +278,13 @@ struct ccs_mca_base_component_2_0_0_t {
   int mca_component_release_version;
   /**< This component's release version number. */
   
-  ccs_mca_base_open_component_1_0_0_fn_t mca_open_component;
+  ocoms_mca_base_open_component_1_0_0_fn_t mca_open_component;
   /**< Method for opening this component. */
-  ccs_mca_base_close_component_1_0_0_fn_t mca_close_component;
+  ocoms_mca_base_close_component_1_0_0_fn_t mca_close_component;
   /**< Method for closing this component. */
-  ccs_mca_base_query_component_2_0_0_fn_t mca_query_component;
+  ocoms_mca_base_query_component_2_0_0_fn_t mca_query_component;
   /**< Method for querying this component. */
-  ccs_mca_base_register_component_params_2_0_0_fn_t mca_register_component_params;
+  ocoms_mca_base_register_component_params_2_0_0_fn_t mca_register_component_params;
   /**< Method for registering the component's MCA parameters */
 
   /** Extra space to allow for expansion in the future without
@@ -293,9 +293,9 @@ struct ccs_mca_base_component_2_0_0_t {
 };
 /** Unversioned convenience typedef; use this name in
     frameworks/components to stay forward source-compatible */
-typedef struct ccs_mca_base_component_2_0_0_t ccs_mca_base_component_t;
+typedef struct ocoms_mca_base_component_2_0_0_t ocoms_mca_base_component_t;
 /** Versioned convenience typedef */
-typedef struct ccs_mca_base_component_2_0_0_t ccs_mca_base_component_2_0_0_t;
+typedef struct ocoms_mca_base_component_2_0_0_t ocoms_mca_base_component_2_0_0_t;
 
 /*
  * Metadata Bit field parameters
@@ -307,7 +307,7 @@ typedef struct ccs_mca_base_component_2_0_0_t ccs_mca_base_component_2_0_0_t;
 /**
  * Meta data for MCA v2.0.0 components.
  */
-struct ccs_mca_base_component_data_2_0_0_t {
+struct ocoms_mca_base_component_data_2_0_0_t {
     uint32_t param_field;
     /**< Metadata parameter bit field filled in by the parameters
          defined above */
@@ -318,9 +318,9 @@ struct ccs_mca_base_component_data_2_0_0_t {
 };
 /** Unversioned convenience typedef; use this name in
     frameworks/components to stay forward source-compatible */
-typedef struct ccs_mca_base_component_data_2_0_0_t ccs_mca_base_component_data_t;
+typedef struct ocoms_mca_base_component_data_2_0_0_t ocoms_mca_base_component_data_t;
 /** Versioned convenience typedef */
-typedef struct ccs_mca_base_component_data_2_0_0_t ccs_mca_base_component_data_2_0_0_t;
+typedef struct ocoms_mca_base_component_data_2_0_0_t ocoms_mca_base_component_data_2_0_0_t;
 
 /**
  * Macro for framework author convenience.  
@@ -334,13 +334,13 @@ typedef struct ccs_mca_base_component_data_2_0_0_t ccs_mca_base_component_data_2
 #define MCA_BASE_VERSION_RELEASE 0
 #define MCA_BASE_VERSION_2_0_0 MCA_BASE_VERSION_MAJOR, MCA_BASE_VERSION_MINOR, MCA_BASE_VERSION_RELEASE
 
-typedef struct ccs_mca_service_install_dirs_t {
+typedef struct ocoms_mca_service_install_dirs_t {
     char* sysconfdir;
     char* pkgdatadir;
     char* pkglibdir;
-} ccs_mca_service_install_dirs_t;
+} ocoms_mca_service_install_dirs_t;
 
-CCS_DECLSPEC extern ccs_mca_service_install_dirs_t service_install_dirs;
+OCOMS_DECLSPEC extern ocoms_mca_service_install_dirs_t service_install_dirs;
 
 /**
  * MCA return codes.
@@ -366,4 +366,4 @@ enum {
   /**< Maximum error code. */
 };
 
-#endif /* CCS_MCA_H */
+#endif /* OCOMS_MCA_H */

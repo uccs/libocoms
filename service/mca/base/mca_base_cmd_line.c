@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -24,7 +24,7 @@
 #include "service/util/cmd_line.h"
 #include "service/util/argv.h"
 #if 0
-#include "service/util/ccs_environ.h"
+#include "service/util/ocoms_environ.h"
 #endif
 #include "service/mca/base/base.h"
 #include "service/platform/service_constants.h"
@@ -45,31 +45,31 @@ static void add_to_env(char **params, char **values, char ***env);
 /*
  * Add -mca to the possible command line options list
  */
-int ccs_mca_base_cmd_line_setup(service_cmd_line_t *cmd)
+int ocoms_mca_base_cmd_line_setup(service_cmd_line_t *cmd)
 {
-    int ret = CCS_SUCCESS;
+    int ret = OCOMS_SUCCESS;
 
     ret = service_cmd_line_make_opt3(cmd, '\0', "mca", "mca", 2,
                                   "Pass context-specific MCA parameters; they are considered global if --gmca is not used and only one context is specified (arg0 is the parameter name; arg1 is the parameter value)");
-    if (CCS_SUCCESS != ret) {
+    if (OCOMS_SUCCESS != ret) {
         return ret;
     }
 
     ret = service_cmd_line_make_opt3(cmd, '\0', "gmca", "gmca", 2,
                                   "Pass global MCA parameters that are applicable to all contexts (arg0 is the parameter name; arg1 is the parameter value)");
 
-    if (CCS_SUCCESS != ret) {
+    if (OCOMS_SUCCESS != ret) {
         return ret;
     }
 
     {
         service_cmd_line_init_t entry = 
             {"mca", "base", "param_file_prefix", '\0', "am", NULL, 1,
-             NULL, CCS_CMD_LINE_TYPE_STRING,
+             NULL, OCOMS_CMD_LINE_TYPE_STRING,
              "Aggregate MCA parameter set file list"
             };
         ret = service_cmd_line_make_opt_mca(cmd, entry);
-        if (CCS_SUCCESS != ret) {
+        if (OCOMS_SUCCESS != ret) {
             return ret;
         }
     }
@@ -81,7 +81,7 @@ int ccs_mca_base_cmd_line_setup(service_cmd_line_t *cmd)
 /*
  * Look for and handle any -mca options on the command line
  */
-int ccs_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
+int ocoms_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
                                    char ***context_env, char ***global_env)
 {
   int i, num_insts;
@@ -92,7 +92,7 @@ int ccs_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
 
   if (!service_cmd_line_is_taken(cmd, "mca") &&
       !service_cmd_line_is_taken(cmd, "gmca")) {
-      return CCS_SUCCESS;
+      return OCOMS_SUCCESS;
   }
 
   /* Handle app context-specific parameters */
@@ -127,7 +127,7 @@ int ccs_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
 
   /* All done */
 
-  return CCS_SUCCESS;
+  return OCOMS_SUCCESS;
 }
 
 
@@ -150,7 +150,7 @@ static int process_arg(const char *param, const char *value,
             free((*values)[i]);
             (*values)[i] = new_str;
             
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     }
 
@@ -160,7 +160,7 @@ static int process_arg(const char *param, const char *value,
     service_argv_append_nosize(params, param);
     service_argv_append_nosize(values, value);
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -173,7 +173,7 @@ static void add_to_env(char **params, char **values, char ***env)
        vars of the form OMPI_MCA_*=value. */
 
     for (i = 0; NULL != params && NULL != params[i]; ++i) {
-        name = ccs_mca_base_param_environ_variable(params[i], NULL, NULL);
+        name = ocoms_mca_base_param_environ_variable(params[i], NULL, NULL);
         service_setenv(name, values[i], true, env);
         free(name);
     }

@@ -18,14 +18,14 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 
 #include "service/datatype/service_convertor_internal.h"
 #include "service/datatype/service_datatype_internal.h"
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 
 #include "service/util/output.h"
 
@@ -33,7 +33,7 @@ extern int service_pack_debug;
 #define DO_DEBUG(INST)  if( service_pack_debug ) { INST }
 #else
 #define DO_DEBUG(INST)
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
 
 #include "service/datatype/service_datatype_checksum.h"
 #include "service/datatype/service_datatype_pack.h"
@@ -66,7 +66,7 @@ service_pack_homogeneous_contig_function( service_convertor_t* pConv,
     unsigned char *source_base = NULL;
     uint32_t iov_count;
     size_t length = pConv->local_size - pConv->bConverted, initial_amount = pConv->bConverted;
-    CCS_PTRDIFF_TYPE initial_displ = pConv->use_desc->desc[pConv->use_desc->used].end_loop.first_elem_disp;
+    OCOMS_PTRDIFF_TYPE initial_displ = pConv->use_desc->desc[pConv->use_desc->used].end_loop.first_elem_disp;
 
     source_base = (pConv->pBaseBuf + initial_displ + pStack[0].disp + pStack[1].disp);
 
@@ -82,7 +82,7 @@ service_pack_homogeneous_contig_function( service_convertor_t* pConv,
             COMPUTE_CSUM( iov[iov_count].iov_base, iov[iov_count].iov_len, pConv );
         } else {
             /* contiguous data just memcpy the smallest data in the user buffer */
-            CCS_DATATYPE_SAFEGUARD_POINTER( source_base, iov[iov_count].iov_len,
+            OCOMS_DATATYPE_SAFEGUARD_POINTER( source_base, iov[iov_count].iov_len,
                                         pConv->pBaseBuf, pConv->pDesc, pConv->count );
             MEMCPY_CSUM( iov[iov_count].iov_base, source_base, iov[iov_count].iov_len, pConv );
         }
@@ -113,11 +113,11 @@ service_pack_homogeneous_contig_with_gaps_function( service_convertor_t* pConv,
     unsigned char *user_memory, *packed_buffer;
     uint32_t i, index, iov_count;
     size_t max_allowed, total_bytes_converted = 0;
-    CCS_PTRDIFF_TYPE extent;
-    CCS_PTRDIFF_TYPE initial_displ = pConv->use_desc->desc[pConv->use_desc->used].end_loop.first_elem_disp;
+    OCOMS_PTRDIFF_TYPE extent;
+    OCOMS_PTRDIFF_TYPE initial_displ = pConv->use_desc->desc[pConv->use_desc->used].end_loop.first_elem_disp;
 
     extent = pData->ub - pData->lb;
-    assert( (pData->flags & CCS_DATATYPE_FLAG_CONTIGUOUS) && ((CCS_PTRDIFF_TYPE)pData->size != extent) );
+    assert( (pData->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS) && ((OCOMS_PTRDIFF_TYPE)pData->size != extent) );
 
     /* Limit the amount of packed data to the data left over on this convertor */
     max_allowed = pConv->local_size - pConv->bConverted;
@@ -196,7 +196,7 @@ service_pack_homogeneous_contig_with_gaps_function( service_convertor_t* pConv,
             done = pConv->bConverted - i * pData->size;  /* partial data from last pack */
             if( done != 0 ) {  /* still some data to copy from the last time */
                 done = pData->size - done;
-                CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, done, pConv->pBaseBuf, pData, pConv->count );
+                OCOMS_DATATYPE_SAFEGUARD_POINTER( user_memory, done, pConv->pBaseBuf, pData, pConv->count );
                 MEMCPY_CSUM( packed_buffer, user_memory, done, pConv );
                 packed_buffer += done;
                 max_allowed -= done;
@@ -206,7 +206,7 @@ service_pack_homogeneous_contig_with_gaps_function( service_convertor_t* pConv,
             counter = (uint32_t)(max_allowed / pData->size);
             if( counter > pConv->count ) counter = pConv->count;
             for( i = 0; i < counter; i++ ) {
-                CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, pData->size, pConv->pBaseBuf, pData, pConv->count );
+                OCOMS_DATATYPE_SAFEGUARD_POINTER( user_memory, pData->size, pConv->pBaseBuf, pData, pConv->count );
                 MEMCPY_CSUM( packed_buffer, user_memory, pData->size, pConv );
                 packed_buffer+= pData->size;
                 user_memory += extent;
@@ -217,7 +217,7 @@ service_pack_homogeneous_contig_with_gaps_function( service_convertor_t* pConv,
             /* If there is anything pending ... */
             if( 0 != max_allowed ) {
                 done = max_allowed;
-                CCS_DATATYPE_SAFEGUARD_POINTER( user_memory, done, pConv->pBaseBuf, pData, pConv->count );
+                OCOMS_DATATYPE_SAFEGUARD_POINTER( user_memory, done, pConv->pBaseBuf, pData, pConv->count );
                 MEMCPY_CSUM( packed_buffer, user_memory, done, pConv );
                 packed_buffer += done;
                 max_allowed = 0;
@@ -244,9 +244,9 @@ service_pack_homogeneous_contig_with_gaps_function( service_convertor_t* pConv,
  * But first let's make some global assumptions:
  * - a datatype (with the flag DT_DATA set) will have the contiguous flags set if and only if
  *   the data is really contiguous (extent equal with size)
- * - for the CCS_DATATYPE_LOOP type the DT_CONTIGUOUS flag set means that the content of the loop is
+ * - for the OCOMS_DATATYPE_LOOP type the DT_CONTIGUOUS flag set means that the content of the loop is
  *   contiguous but with a gap in the begining or at the end.
- * - the DT_CONTIGUOUS flag for the type CCS_DATATYPE_END_LOOP is meaningless.
+ * - the DT_CONTIGUOUS flag for the type OCOMS_DATATYPE_END_LOOP is meaningless.
  */
 int32_t
 service_generic_simple_pack_function( service_convertor_t* pConvertor,
@@ -291,7 +291,7 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
         destination = (unsigned char *) iov[iov_count].iov_base;
         iov_len_local = iov[iov_count].iov_len;
         while( 1 ) {
-            while( pElem->elem.common.flags & CCS_DATATYPE_FLAG_DATA ) {
+            while( pElem->elem.common.flags & OCOMS_DATATYPE_FLAG_DATA ) {
                 /* now here we have a basic datatype */
                 PACK_PREDEFINED_DATATYPE( pConvertor, pElem, count_desc,
                                           source_base, destination, iov_len_local );
@@ -303,7 +303,7 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
                 }
                 goto complete_loop;
             }
-            if( CCS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
+            if( OCOMS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
                 DO_DEBUG( service_output( 0, "pack end_loop count %d stack_pos %d"
 				       " pos_desc %d disp %ld space %lu\n",
                                        (int)pStack->count, pConvertor->stack_pos,
@@ -324,7 +324,7 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
                     if( pStack->index == -1 ) {
                         pStack->disp += (pData->ub - pData->lb);
                     } else {
-                        assert( CCS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
+                        assert( OCOMS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
                         pStack->disp += description[pStack->index].loop.extent;
                     }
                 }
@@ -333,9 +333,9 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
                 DO_DEBUG( service_output( 0, "pack new_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
                                        (int)pStack->count, pConvertor->stack_pos, pos_desc, (long)pStack->disp, (unsigned long)iov_len_local ); );
             }
-            if( CCS_DATATYPE_LOOP == pElem->elem.common.type ) {
-                CCS_PTRDIFF_TYPE local_disp = (CCS_PTRDIFF_TYPE)source_base;
-                if( pElem->loop.common.flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
+            if( OCOMS_DATATYPE_LOOP == pElem->elem.common.type ) {
+                OCOMS_PTRDIFF_TYPE local_disp = (OCOMS_PTRDIFF_TYPE)source_base;
+                if( pElem->loop.common.flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
                     PACK_CONTIGUOUS_LOOP( pConvertor, pElem, count_desc,
                                           source_base, destination, iov_len_local );
                     if( 0 == count_desc ) {  /* completed */
@@ -344,8 +344,8 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
                     }
                     /* Save the stack with the correct last_count value. */
                 }
-                local_disp = (CCS_PTRDIFF_TYPE)source_base - local_disp;
-                PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_LOOP, count_desc,
+                local_disp = (OCOMS_PTRDIFF_TYPE)source_base - local_disp;
+                PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, OCOMS_DATATYPE_LOOP, count_desc,
                             pStack->disp + local_disp);
                 pos_desc++;
             update_loop_description:  /* update the current state */
@@ -368,7 +368,7 @@ service_generic_simple_pack_function( service_convertor_t* pConvertor,
         return 1;
     }
     /* I complete an element, next step I should go to the next one */
-    PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_INT8, count_desc,
+    PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, OCOMS_DATATYPE_INT8, count_desc,
                 source_base - pStack->disp - pConvertor->pBaseBuf );
     DO_DEBUG( service_output( 0, "pack save stack stack_pos %d pos_desc %d count_desc %d disp %ld\n",
                            pConvertor->stack_pos, pStack->index, (int)pStack->count, (long)pStack->disp ); );

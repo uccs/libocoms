@@ -21,7 +21,7 @@
 #ifndef SERVICE_UTIL_KEYVAL_PARSE_H
 #define SERVICE_UTIL_KEYVAL_PARSE_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 BEGIN_C_DECLS
 
@@ -43,12 +43,12 @@ typedef void (*service_keyval_parse_fn_t)(const char *key, const char *value);
  * called exactly once.  In a multithreaded context, calls to
  * service_util_keyval_parse() will serialize multiple calls.
  */
-CCS_DECLSPEC int service_util_keyval_parse(const char *filename, 
+OCOMS_DECLSPEC int service_util_keyval_parse(const char *filename, 
                                          service_keyval_parse_fn_t callback);
 
-CCS_DECLSPEC int service_util_keyval_parse_init(void);
+OCOMS_DECLSPEC int service_util_keyval_parse_init(void);
 
-CCS_DECLSPEC int service_util_keyval_parse_finalize(void);
+OCOMS_DECLSPEC int service_util_keyval_parse_finalize(void);
 
 END_C_DECLS
 

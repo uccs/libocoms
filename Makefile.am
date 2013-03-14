@@ -25,7 +25,7 @@ EXTRA_DIST = README VERSION LICENSE autogen.pl
 libservice_ladir = $(includedir)
 
 nobase_dist_libservice_la_HEADERS = \
-							service/libservice_version.h \
+							service/libocoms_version.h \
 							service/util/arch.h \
 							service/util/cmd_line.h \
 							service/util/fd.h \
@@ -83,7 +83,7 @@ nobase_dist_libservice_la_HEADERS = \
 							service/threads/tsd.h \
 							service/memoryhooks/memory.h \
 							service/memoryhooks/memory_internal.h \
-							service/platform/ccs_config.h \
+							service/platform/ocoms_config.h \
 							service/platform/service_config_top.h \
 							service/platform/service_portable_platform.h \
 							service/platform/service_config_bottom.h \
@@ -140,8 +140,8 @@ rpms: rpmcheck $(rpmspec)
 		(exit 1); exit 1; \
 	fi
 
-ver:
-	@echo $(VERSION)
+#ver:
+#	@echo $(VERSION)
 
 rpms-all: rpms
 

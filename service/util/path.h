@@ -21,7 +21,7 @@
 #ifndef SERVICE_PATH_H
 #define SERVICE_PATH_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -48,7 +48,7 @@ BEGIN_C_DECLS
  *
  * The caller is responsible for freeing the returned string.
  */
-CCS_DECLSPEC char *service_path_find(char *fname, char **pathv, int mode,
+OCOMS_DECLSPEC char *service_path_find(char *fname, char **pathv, int mode,
                                    char **envv) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
 
 /**
@@ -69,7 +69,7 @@ CCS_DECLSPEC char *service_path_find(char *fname, char **pathv, int mode,
  *
  * The caller is responsible for freeing the returned string.
  */
-CCS_DECLSPEC char *service_path_findv(char *fname, int mode, 
+OCOMS_DECLSPEC char *service_path_findv(char *fname, int mode, 
                                     char **envv, char *wrkdir) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
 /**
  *  Detect if the requested path is absolute or relative.
@@ -83,7 +83,7 @@ CCS_DECLSPEC char *service_path_findv(char *fname, int mode,
  *  with special care as an absolute path on Windows starts
  *  with [A-Za-z]: or \\ instead of the usual / on UNIX.
  */
-CCS_DECLSPEC bool service_path_is_absolute( const char *path );
+OCOMS_DECLSPEC bool service_path_is_absolute( const char *path );
 
 /**
  * Find the absolute path for an executable and return it.
@@ -102,7 +102,7 @@ CCS_DECLSPEC bool service_path_is_absolute( const char *path );
  * function will return NULL. Otherwise, an newly allocated string
  * will be returned.
  */
-CCS_DECLSPEC char* service_find_absolute_path( char* app_name ) __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC char* service_find_absolute_path( char* app_name ) __service_attribute_warn_unused_result__;
 
 /**
  * Forms a complete pathname and checks it for existance and
@@ -117,7 +117,7 @@ CCS_DECLSPEC char* service_find_absolute_path( char* app_name ) __service_attrib
  *
  * The caller is responsible for freeing the returned string.
  */
-CCS_DECLSPEC char *service_path_access(char *fname, char *path, int mode) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC char *service_path_access(char *fname, char *path, int mode) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
 
 
 /**
@@ -134,9 +134,9 @@ CCS_DECLSPEC char *service_path_access(char *fname, char *path, int mode) __serv
  * @retval true                If fname is on NFS, Lustre or Panasas
  * @retval false               otherwise
  */
-CCS_DECLSPEC bool service_path_nfs(char *fname) __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC bool service_path_nfs(char *fname) __service_attribute_warn_unused_result__;
 
-CCS_DECLSPEC int service_path_df(const char *path, uint64_t *out_avail);
+OCOMS_DECLSPEC int service_path_df(const char *path, uint64_t *out_avail);
 
 END_C_DECLS
 #endif /* SERVICE_PATH_H */

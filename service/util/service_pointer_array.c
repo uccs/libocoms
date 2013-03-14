@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -78,7 +78,7 @@ int service_pointer_array_init(service_pointer_array_t* array,
     
     /* check for errors */
     if (NULL == array || max_size < block_size) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     
     array->max_size = max_size;
@@ -92,10 +92,10 @@ int service_pointer_array_init(service_pointer_array_t* array,
     /* Allocate and set the array to NULL */   
     array->addr = (void **)calloc(num_bytes, 1);
     if (NULL == array->addr) { /* out of memory */
-        return CCS_ERR_OUT_OF_RESOURCE;
+        return OCOMS_ERR_OUT_OF_RESOURCE;
     }
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 /**
@@ -104,7 +104,7 @@ int service_pointer_array_init(service_pointer_array_t* array,
  * @param table Pointer to service_pointer_array_t object (IN)
  * @param ptr Pointer to be added to table    (IN)
  *
- * @return Array index where ptr is inserted or CCS_ERROR if it fails
+ * @return Array index where ptr is inserted or OCOMS_ERROR if it fails
  */
 int service_pointer_array_add(service_pointer_array_t *table, void *ptr)
 {
@@ -116,9 +116,9 @@ int service_pointer_array_add(service_pointer_array_t *table, void *ptr)
         /* need to grow table */
         if (!grow_table(table, 
                         (NULL == table->addr ? TABLE_INIT : table->size * TABLE_GROW), 
-                        CCS_FORTRAN_HANDLE_MAX)) {
+                        OCOMS_FORTRAN_HANDLE_MAX)) {
             SERVICE_THREAD_UNLOCK(&(table->lock));
-            return CCS_ERR_OUT_OF_RESOURCE;
+            return OCOMS_ERR_OUT_OF_RESOURCE;
         }
     }
 
@@ -173,7 +173,7 @@ int service_pointer_array_set_item(service_pointer_array_t *table, int index,
         if (!grow_table(table, ((index / TABLE_GROW) + 1) * TABLE_GROW,
                         index)) {
             SERVICE_THREAD_UNLOCK(&(table->lock));
-            return CCS_ERROR;
+            return OCOMS_ERROR;
         }
     }
 
@@ -213,7 +213,7 @@ int service_pointer_array_set_item(service_pointer_array_t *table, int index,
 #endif
 
     SERVICE_THREAD_UNLOCK(&(table->lock));
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 /**
@@ -298,11 +298,11 @@ int service_pointer_array_set_size(service_pointer_array_t *array, int new_size)
     if(new_size > array->size) {
         if (!grow_table(array, new_size, new_size)) {
             SERVICE_THREAD_UNLOCK(&(array->lock));
-            return CCS_ERROR;
+            return OCOMS_ERROR;
         }
     }
     SERVICE_THREAD_UNLOCK(&(array->lock));
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 static bool grow_table(service_pointer_array_t *table, int soft, int hard)
@@ -330,7 +330,7 @@ static bool grow_table(service_pointer_array_t *table, int soft, int hard)
     }
     
     /* We've already established (above) that the arithmetic
-       below will be less than CCS_FORTRAN_HANDLE_MAX */
+       below will be less than OCOMS_FORTRAN_HANDLE_MAX */
     
     new_size_int = (int) new_size;
     table->number_free += new_size_int - table->size;

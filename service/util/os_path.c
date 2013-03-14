@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <string.h>
 #ifdef HAVE_UNISTD_H
@@ -30,7 +30,7 @@
 
 #include "service/util/os_path.h"
 
-static const char *path_sep = CCS_PATH_SEP;
+static const char *path_sep = OCOMS_PATH_SEP;
 
 char *service_os_path(bool relative, ...)
 {
@@ -73,7 +73,7 @@ char *service_os_path(bool relative, ...)
         total_length++;
     }
         
-    if (total_length > CCS_PATH_MAX) {  /* path length is too long - reject it */
+    if (total_length > OCOMS_PATH_MAX) {  /* path length is too long - reject it */
     	return(NULL);
     }
 

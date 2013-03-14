@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -31,14 +31,14 @@
 #include "service/datatype/service_convertor.h"
 #include "service/datatype/service_datatype_internal.h"
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #include "service/util/output.h"
 
 extern int service_position_debug;
 #define DO_DEBUG(INST)  if( service_position_debug ) { INST }
 #else
 #define DO_DEBUG(INST)
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
 
 /* The pack/unpack functions need a cleanup. I have to create a proper interface to access
  * all basic functionalities, hence using them as basic blocks for all conversion functions.
@@ -46,9 +46,9 @@ extern int service_position_debug;
  * But first let's make some global assumptions:
  * - a datatype (with the flag DT_DATA set) will have the contiguous flags set if and only if
  *   the data is really contiguous (extent equal with size)
- * - for the CCS_DATATYPE_LOOP type the DT_CONTIGUOUS flag set means that the content of the loop is
+ * - for the OCOMS_DATATYPE_LOOP type the DT_CONTIGUOUS flag set means that the content of the loop is
  *   contiguous but with a gap in the begining or at the end.
- * - the DT_CONTIGUOUS flag for the type CCS_DATATYPE_END_LOOP is meaningless.
+ * - the DT_CONTIGUOUS flag for the type OCOMS_DATATYPE_END_LOOP is meaningless.
  */
 
 static inline void position_predefined_data( service_convertor_t* CONVERTOR,
@@ -68,7 +68,7 @@ static inline void position_predefined_data( service_convertor_t* CONVERTOR,
     }
     _copy_blength *= _copy_count;
 
-    CCS_DATATYPE_SAFEGUARD_POINTER( *(POINTER) + _elem->disp, _copy_blength, (CONVERTOR)->pBaseBuf,
+    OCOMS_DATATYPE_SAFEGUARD_POINTER( *(POINTER) + _elem->disp, _copy_blength, (CONVERTOR)->pBaseBuf,
                                 (CONVERTOR)->pDesc, (CONVERTOR)->count );
     *(POINTER) += (_copy_count * _elem->extent);
     *(SPACE)   -= _copy_blength;
@@ -87,7 +87,7 @@ static inline void position_contiguous_loop( service_convertor_t* CONVERTOR,
 
     if( (_copy_loops * _end_loop->size) > *(SPACE) )
         _copy_loops = (uint32_t)(*(SPACE) / _end_loop->size);
-    CCS_DATATYPE_SAFEGUARD_POINTER( *(POINTER) + _end_loop->first_elem_disp,
+    OCOMS_DATATYPE_SAFEGUARD_POINTER( *(POINTER) + _end_loop->first_elem_disp,
                                 (_copy_loops - 1) * _loop->extent + _end_loop->size,
                                 (CONVERTOR)->pBaseBuf, (CONVERTOR)->pDesc, (CONVERTOR)->count );
     *(POINTER) += _copy_loops * _loop->extent;
@@ -112,7 +112,7 @@ int service_convertor_generic_simple_position( service_convertor_t* pConvertor,
     dt_elem_desc_t* pElem;
     unsigned char *base_pointer = pConvertor->pBaseBuf;
     size_t iov_len_local;
-    CCS_PTRDIFF_TYPE extent = pConvertor->pDesc->ub - pConvertor->pDesc->lb;
+    OCOMS_PTRDIFF_TYPE extent = pConvertor->pDesc->ub - pConvertor->pDesc->lb;
 
     DUMP( "service_convertor_generic_simple_position( %p, &%ld )\n", (void*)pConvertor, (long)*position );
 
@@ -157,7 +157,7 @@ int service_convertor_generic_simple_position( service_convertor_t* pConvertor,
                            pConvertor->stack_pos, pStack->index, (int)pStack->count, (unsigned long long)pStack->disp ); );
 
     while( 1 ) {
-        if( CCS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
+        if( OCOMS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
             DO_DEBUG( service_output( 0, "position end_loop count %d stack_pos %d pos_desc %d disp %llx space %lu\n",
                                    (int)pStack->count, pConvertor->stack_pos, pos_desc,
                                    (unsigned long long)pStack->disp, (unsigned long)iov_len_local ); );
@@ -174,7 +174,7 @@ int service_convertor_generic_simple_position( service_convertor_t* pConvertor,
                 if( pStack->index == -1 ) {
                     pStack->disp += extent;
                 } else {
-                    assert( CCS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
+                    assert( OCOMS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
                     pStack->disp += description[pStack->index].loop.extent;
                 }
                 pos_desc = pStack->index + 1;
@@ -185,9 +185,9 @@ int service_convertor_generic_simple_position( service_convertor_t* pConvertor,
                                    (int)pStack->count, pConvertor->stack_pos, pos_desc,
                                    (unsigned long long)pStack->disp, (unsigned long)iov_len_local ); );
         }
-        if( CCS_DATATYPE_LOOP == pElem->elem.common.type ) {
-            CCS_PTRDIFF_TYPE local_disp = (CCS_PTRDIFF_TYPE)base_pointer;
-            if( pElem->loop.common.flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
+        if( OCOMS_DATATYPE_LOOP == pElem->elem.common.type ) {
+            OCOMS_PTRDIFF_TYPE local_disp = (OCOMS_PTRDIFF_TYPE)base_pointer;
+            if( pElem->loop.common.flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
                 POSITION_CONTIGUOUS_LOOP( pConvertor, pElem, count_desc,
                                           base_pointer, iov_len_local );
                 if( 0 == count_desc ) {  /* completed */
@@ -196,8 +196,8 @@ int service_convertor_generic_simple_position( service_convertor_t* pConvertor,
                 }
                 /* Save the stack with the correct last_count value. */
             }
-            local_disp = (CCS_PTRDIFF_TYPE)base_pointer - local_disp;
-            PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_LOOP, count_desc,
+            local_disp = (OCOMS_PTRDIFF_TYPE)base_pointer - local_disp;
+            PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, OCOMS_DATATYPE_LOOP, count_desc,
                         pStack->disp + local_disp );
             pos_desc++;
         update_loop_description:  /* update the current state */
@@ -209,7 +209,7 @@ int service_convertor_generic_simple_position( service_convertor_t* pConvertor,
                                    (unsigned long long)pStack->disp, (unsigned long)iov_len_local ); );
             continue;
         }
-        while( pElem->elem.common.flags & CCS_DATATYPE_FLAG_DATA ) {
+        while( pElem->elem.common.flags & OCOMS_DATATYPE_FLAG_DATA ) {
             /* now here we have a basic datatype */
             POSITION_PREDEFINED_DATATYPE( pConvertor, pElem, count_desc,
                                           base_pointer, iov_len_local );
@@ -231,7 +231,7 @@ int service_convertor_generic_simple_position( service_convertor_t* pConvertor,
 
     if( !(pConvertor->flags & CONVERTOR_COMPLETED) ) {
         /* I complete an element, next step I should go to the next one */
-        PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_UINT1, count_desc,
+        PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, OCOMS_DATATYPE_UINT1, count_desc,
                     base_pointer - pStack->disp - pConvertor->pBaseBuf );
         DO_DEBUG( service_output( 0, "position save stack stack_pos %d pos_desc %d count_desc %d disp %llx\n",
                                pConvertor->stack_pos, pStack->index, (int)pStack->count, (unsigned long long)pStack->disp ); );

@@ -17,14 +17,14 @@
  */
 
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "service/sys/architecture.h"
 #include "service/sys/atomic.h"
 
 
-#if CCS_ASSEMBLY_ARCH == OMPI_SPARC
+#if OCOMS_ASSEMBLY_ARCH == OMPI_SPARC
 
-#if CCS_WANT_SMP_LOCKS
+#if OCOMS_WANT_SMP_LOCKS
 
 #define LOCKS_TABLE_SIZE 8
 /* make sure to get into reasonably useful bits (so shift at least 5) */
@@ -33,24 +33,24 @@
 
 /* have to fix if you change LOCKS_TABLE_SIZE */
 static service_atomic_lock_t locks_table[LOCKS_TABLE_SIZE] = {
-    { { CCS_ATOMIC_UNLOCKED } }, 
-    { { CCS_ATOMIC_UNLOCKED } },
-    { { CCS_ATOMIC_UNLOCKED } },
-    { { CCS_ATOMIC_UNLOCKED } },
-    { { CCS_ATOMIC_UNLOCKED } },
-    { { CCS_ATOMIC_UNLOCKED } },
-    { { CCS_ATOMIC_UNLOCKED } },
-    { { CCS_ATOMIC_UNLOCKED } }
+    { { OCOMS_ATOMIC_UNLOCKED } }, 
+    { { OCOMS_ATOMIC_UNLOCKED } },
+    { { OCOMS_ATOMIC_UNLOCKED } },
+    { { OCOMS_ATOMIC_UNLOCKED } },
+    { { OCOMS_ATOMIC_UNLOCKED } },
+    { { OCOMS_ATOMIC_UNLOCKED } },
+    { { OCOMS_ATOMIC_UNLOCKED } },
+    { { OCOMS_ATOMIC_UNLOCKED } }
 };
 
-# else /* CCS_WANT_SMP_LOCKS */
+# else /* OCOMS_WANT_SMP_LOCKS */
 
 #define LOCKS_TABLE_SIZE 1
 #define FIND_LOCK(addr) (&(locks_table[0]))
 
-static service_atomic_lock_t locks_table[1] = { CCS_ATOMIC_UNLOCKED };
+static service_atomic_lock_t locks_table[1] = { OCOMS_ATOMIC_UNLOCKED };
 
-#endif /* CCS_WANT_SMP_LOCKS */
+#endif /* OCOMS_WANT_SMP_LOCKS */
 
 
 int32_t
@@ -83,4 +83,4 @@ service_atomic_sub_32(volatile int32_t *addr, int delta)
 }
 
 
-#endif /* CCS_ASSEMBLY_ARCH == OMPI_SPARC32 */
+#endif /* OCOMS_ASSEMBLY_ARCH == OMPI_SPARC32 */

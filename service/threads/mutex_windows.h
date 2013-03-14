@@ -18,8 +18,8 @@
  * $HEADER$
  */
 
-#ifndef  CCS_MUTEX_WINDOWS_H
-#define  CCS_MUTEX_WINDOWS_H 1
+#ifndef  OCOMS_MUTEX_WINDOWS_H
+#define  OCOMS_MUTEX_WINDOWS_H 1
 
 /**
  * @file:
@@ -31,7 +31,7 @@
  * On Windows, base everything on InterlockedExchange().
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "service/util/service_object.h"
 #include "service/sys/atomic.h"
 
@@ -41,14 +41,14 @@ struct service_mutex_t {
     service_object_t super;
     volatile LONG m_lock;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     int m_lock_debug;
     const char *m_lock_file;
     int m_lock_line;
 #endif
 };
 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_mutex_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_mutex_t);
 
 
 static inline int service_mutex_trylock(service_mutex_t *m)
@@ -92,4 +92,4 @@ static inline void service_mutex_atomic_unlock(service_mutex_t *m)
 
 END_C_DECLS
 
-#endif  /* CCS_MUTEX_WINDOWS_H */
+#endif  /* OCOMS_MUTEX_WINDOWS_H */

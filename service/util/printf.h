@@ -21,10 +21,10 @@
  * Buffer safe printf functions for portability to archaic platforms.
  */
 
-#ifndef CCS_PRINTF_H
-#define CCS_PRINTF_H
+#ifndef OCOMS_PRINTF_H
+#define OCOMS_PRINTF_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdarg.h>
 #include <stdlib.h>
@@ -51,7 +51,7 @@ BEGIN_C_DECLS
  *
  * THIS IS A PORTABILITY FEATURE: USE snprintf() in CODE.
  */
-CCS_DECLSPEC int  service_snprintf(char *str, size_t size, const char *fmt, ...) __service_attribute_format__(__printf__, 3, 4);
+OCOMS_DECLSPEC int  service_snprintf(char *str, size_t size, const char *fmt, ...) __service_attribute_format__(__printf__, 3, 4);
 
 
 /**
@@ -76,7 +76,7 @@ CCS_DECLSPEC int  service_snprintf(char *str, size_t size, const char *fmt, ...)
  *
  * THIS IS A PORTABILITY FEATURE: USE vsnprintf() in CODE.
  */
-CCS_DECLSPEC int  service_vsnprintf(char *str, size_t size, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 3, 0);
+OCOMS_DECLSPEC int  service_vsnprintf(char *str, size_t size, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 3, 0);
 
 /**
  * Allocates and writes to a string under the control of a format
@@ -97,7 +97,7 @@ CCS_DECLSPEC int  service_vsnprintf(char *str, size_t size, const char *fmt, va_
  *
  * THIS IS A PORTABILITY FEATURE: USE asprintf() in CODE.
  */
-CCS_DECLSPEC int  service_asprintf(char **ptr, const char *fmt, ...) __service_attribute_format__(__printf__, 2, 3);
+OCOMS_DECLSPEC int  service_asprintf(char **ptr, const char *fmt, ...) __service_attribute_format__(__printf__, 2, 3);
 
 
 /**
@@ -121,10 +121,10 @@ CCS_DECLSPEC int  service_asprintf(char **ptr, const char *fmt, ...) __service_a
  *
  * THIS IS A PORTABILITY FEATURE: USE vasprintf() in CODE.
  */
-CCS_DECLSPEC int  service_vasprintf(char **ptr, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 2, 0);
+OCOMS_DECLSPEC int  service_vasprintf(char **ptr, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 2, 0);
 
 
 END_C_DECLS
 
-#endif /* CCS_PRINTF_H */
+#endif /* OCOMS_PRINTF_H */
 

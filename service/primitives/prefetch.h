@@ -16,41 +16,41 @@
  * directives to improve memory prefetching and branch prediction
  */
 
-#ifndef CCS_PREFETCH_H
-#define CCS_PREFETCH_H
+#ifndef OCOMS_PREFETCH_H
+#define OCOMS_PREFETCH_H
 
 #if defined(c_plusplus) || defined(__cplusplus)
 /* C++ code */
 
 #if OMPI_CXX_HAVE_BUILTIN_EXPECT
-#define CCS_LIKELY(expression) __builtin_expect(!!(expression), 1)
-#define CCS_UNLIKELY(expression) __builtin_expect(!!(expression), 0)
+#define OCOMS_LIKELY(expression) __builtin_expect(!!(expression), 1)
+#define OCOMS_UNLIKELY(expression) __builtin_expect(!!(expression), 0)
 #else
-#define CCS_LIKELY(expression) (expression)
-#define CCS_UNLIKELY(expression) (expression)
+#define OCOMS_LIKELY(expression) (expression)
+#define OCOMS_UNLIKELY(expression) (expression)
 #endif
 
 #if OMPI_CXX_HAVE_BUILTIN_PREFETCH
-#define CCS_PREFETCH(address,rw,locality) __builtin_prefetch(address,rw,locality)
+#define OCOMS_PREFETCH(address,rw,locality) __builtin_prefetch(address,rw,locality)
 #else
-#define CCS_PREFETCH(address,rw,locality)
+#define OCOMS_PREFETCH(address,rw,locality)
 #endif
 
 #else
 /* C code */
 
-#if CCS_C_HAVE_BUILTIN_EXPECT
-#define CCS_LIKELY(expression) __builtin_expect(!!(expression), 1)
-#define CCS_UNLIKELY(expression) __builtin_expect(!!(expression), 0)
+#if OCOMS_C_HAVE_BUILTIN_EXPECT
+#define OCOMS_LIKELY(expression) __builtin_expect(!!(expression), 1)
+#define OCOMS_UNLIKELY(expression) __builtin_expect(!!(expression), 0)
 #else
-#define CCS_LIKELY(expression) (expression)
-#define CCS_UNLIKELY(expression) (expression)
+#define OCOMS_LIKELY(expression) (expression)
+#define OCOMS_UNLIKELY(expression) (expression)
 #endif
 
-#if CCS_C_HAVE_BUILTIN_PREFETCH
-#define CCS_PREFETCH(address,rw,locality) __builtin_prefetch(address,rw,locality)
+#if OCOMS_C_HAVE_BUILTIN_PREFETCH
+#define OCOMS_PREFETCH(address,rw,locality) __builtin_prefetch(address,rw,locality)
 #else
-#define CCS_PREFETCH(address,rw,locality)
+#define OCOMS_PREFETCH(address,rw,locality)
 #endif
 
 #endif

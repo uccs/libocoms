@@ -1,72 +1,72 @@
-#ifndef CCS_CONSTANTS_H
-#define CCS_CONSTANTS_H
+#ifndef OCOMS_CONSTANTS_H
+#define OCOMS_CONSTANTS_H
 
-#define CCS_ERR_BASE             0 /* internal use only */
+#define OCOMS_ERR_BASE             0 /* internal use only */
 
 enum {
-    CCS_SUCCESS                            = (CCS_ERR_BASE),
+    OCOMS_SUCCESS                            = (OCOMS_ERR_BASE),
 
-    CCS_ERROR                              = (CCS_ERR_BASE -  1),
-    CCS_ERR_OUT_OF_RESOURCE                = (CCS_ERR_BASE -  2), /* fatal error */
-    CCS_ERR_TEMP_OUT_OF_RESOURCE           = (CCS_ERR_BASE -  3), /* try again later */
-    CCS_ERR_RESOURCE_BUSY                  = (CCS_ERR_BASE -  4),
-    CCS_ERR_BAD_PARAM                      = (CCS_ERR_BASE -  5),  /* equivalent to MPI_ERR_ARG error code */
-    CCS_ERR_FATAL                          = (CCS_ERR_BASE -  6),
-    CCS_ERR_NOT_IMPLEMENTED                = (CCS_ERR_BASE -  7),
-    CCS_ERR_NOT_SUPPORTED                  = (CCS_ERR_BASE -  8),
-    CCS_ERR_INTERUPTED                     = (CCS_ERR_BASE -  9),
-    CCS_ERR_WOULD_BLOCK                    = (CCS_ERR_BASE - 10),
-    CCS_ERR_IN_ERRNO                       = (CCS_ERR_BASE - 11),
-    CCS_ERR_UNREACH                        = (CCS_ERR_BASE - 12),
-    CCS_ERR_NOT_FOUND                      = (CCS_ERR_BASE - 13),
-    CCS_EXISTS                             = (CCS_ERR_BASE - 14), /* indicates that the specified object already exists */
-    CCS_ERR_TIMEOUT                        = (CCS_ERR_BASE - 15),
-    CCS_ERR_NOT_AVAILABLE                  = (CCS_ERR_BASE - 16),
-    CCS_ERR_PERM                           = (CCS_ERR_BASE - 17), /* no permission */
-    CCS_ERR_VALUE_OUT_OF_BOUNDS            = (CCS_ERR_BASE - 18),
-    CCS_ERR_FILE_READ_FAILURE              = (CCS_ERR_BASE - 19),
-    CCS_ERR_FILE_WRITE_FAILURE             = (CCS_ERR_BASE - 20),
-    CCS_ERR_FILE_OPEN_FAILURE              = (CCS_ERR_BASE - 21),
-    CCS_ERR_PACK_MISMATCH                  = (CCS_ERR_BASE - 22),
-    CCS_ERR_PACK_FAILURE                   = (CCS_ERR_BASE - 23),
-    CCS_ERR_UNPACK_FAILURE                 = (CCS_ERR_BASE - 24),
-    CCS_ERR_UNPACK_INADEQUATE_SPACE        = (CCS_ERR_BASE - 25),
-    CCS_ERR_UNPACK_READ_PAST_END_OF_BUFFER = (CCS_ERR_BASE - 26),
-    CCS_ERR_TYPE_MISMATCH                  = (CCS_ERR_BASE - 27),
-    CCS_ERR_OPERATION_UNSUPPORTED          = (CCS_ERR_BASE - 28),
-    CCS_ERR_UNKNOWN_DATA_TYPE              = (CCS_ERR_BASE - 29),
-    CCS_ERR_BUFFER                         = (CCS_ERR_BASE - 30),
-    CCS_ERR_DATA_TYPE_REDEF                = (CCS_ERR_BASE - 31),
-    CCS_ERR_DATA_OVERWRITE_ATTEMPT         = (CCS_ERR_BASE - 32),
-    CCS_ERR_MODULE_NOT_FOUND               = (CCS_ERR_BASE - 33),
-    CCS_ERR_TOPO_SLOT_LIST_NOT_SUPPORTED   = (CCS_ERR_BASE - 34),
-    CCS_ERR_TOPO_SOCKET_NOT_SUPPORTED      = (CCS_ERR_BASE - 35),
-    CCS_ERR_TOPO_CORE_NOT_SUPPORTED        = (CCS_ERR_BASE - 36),
-    CCS_ERR_NOT_ENOUGH_SOCKETS             = (CCS_ERR_BASE - 37),
-    CCS_ERR_NOT_ENOUGH_CORES               = (CCS_ERR_BASE - 38),
-    CCS_ERR_INVALID_PHYS_CPU               = (CCS_ERR_BASE - 39),
-    CCS_ERR_MULTIPLE_AFFINITIES            = (CCS_ERR_BASE - 40),
-    CCS_ERR_SLOT_LIST_RANGE                = (CCS_ERR_BASE - 41),
-    CCS_ERR_NETWORK_NOT_PARSEABLE          = (CCS_ERR_BASE - 42)
+    OCOMS_ERROR                              = (OCOMS_ERR_BASE -  1),
+    OCOMS_ERR_OUT_OF_RESOURCE                = (OCOMS_ERR_BASE -  2), /* fatal error */
+    OCOMS_ERR_TEMP_OUT_OF_RESOURCE           = (OCOMS_ERR_BASE -  3), /* try again later */
+    OCOMS_ERR_RESOURCE_BUSY                  = (OCOMS_ERR_BASE -  4),
+    OCOMS_ERR_BAD_PARAM                      = (OCOMS_ERR_BASE -  5),  /* equivalent to MPI_ERR_ARG error code */
+    OCOMS_ERR_FATAL                          = (OCOMS_ERR_BASE -  6),
+    OCOMS_ERR_NOT_IMPLEMENTED                = (OCOMS_ERR_BASE -  7),
+    OCOMS_ERR_NOT_SUPPORTED                  = (OCOMS_ERR_BASE -  8),
+    OCOMS_ERR_INTERUPTED                     = (OCOMS_ERR_BASE -  9),
+    OCOMS_ERR_WOULD_BLOCK                    = (OCOMS_ERR_BASE - 10),
+    OCOMS_ERR_IN_ERRNO                       = (OCOMS_ERR_BASE - 11),
+    OCOMS_ERR_UNREACH                        = (OCOMS_ERR_BASE - 12),
+    OCOMS_ERR_NOT_FOUND                      = (OCOMS_ERR_BASE - 13),
+    OCOMS_EXISTS                             = (OCOMS_ERR_BASE - 14), /* indicates that the specified object already exists */
+    OCOMS_ERR_TIMEOUT                        = (OCOMS_ERR_BASE - 15),
+    OCOMS_ERR_NOT_AVAILABLE                  = (OCOMS_ERR_BASE - 16),
+    OCOMS_ERR_PERM                           = (OCOMS_ERR_BASE - 17), /* no permission */
+    OCOMS_ERR_VALUE_OUT_OF_BOUNDS            = (OCOMS_ERR_BASE - 18),
+    OCOMS_ERR_FILE_READ_FAILURE              = (OCOMS_ERR_BASE - 19),
+    OCOMS_ERR_FILE_WRITE_FAILURE             = (OCOMS_ERR_BASE - 20),
+    OCOMS_ERR_FILE_OPEN_FAILURE              = (OCOMS_ERR_BASE - 21),
+    OCOMS_ERR_PACK_MISMATCH                  = (OCOMS_ERR_BASE - 22),
+    OCOMS_ERR_PACK_FAILURE                   = (OCOMS_ERR_BASE - 23),
+    OCOMS_ERR_UNPACK_FAILURE                 = (OCOMS_ERR_BASE - 24),
+    OCOMS_ERR_UNPACK_INADEQUATE_SPACE        = (OCOMS_ERR_BASE - 25),
+    OCOMS_ERR_UNPACK_READ_PAST_END_OF_BUFFER = (OCOMS_ERR_BASE - 26),
+    OCOMS_ERR_TYPE_MISMATCH                  = (OCOMS_ERR_BASE - 27),
+    OCOMS_ERR_OPERATION_UNSUPPORTED          = (OCOMS_ERR_BASE - 28),
+    OCOMS_ERR_UNKNOWN_DATA_TYPE              = (OCOMS_ERR_BASE - 29),
+    OCOMS_ERR_BUFFER                         = (OCOMS_ERR_BASE - 30),
+    OCOMS_ERR_DATA_TYPE_REDEF                = (OCOMS_ERR_BASE - 31),
+    OCOMS_ERR_DATA_OVERWRITE_ATTEMPT         = (OCOMS_ERR_BASE - 32),
+    OCOMS_ERR_MODULE_NOT_FOUND               = (OCOMS_ERR_BASE - 33),
+    OCOMS_ERR_TOPO_SLOT_LIST_NOT_SUPPORTED   = (OCOMS_ERR_BASE - 34),
+    OCOMS_ERR_TOPO_SOCKET_NOT_SUPPORTED      = (OCOMS_ERR_BASE - 35),
+    OCOMS_ERR_TOPO_CORE_NOT_SUPPORTED        = (OCOMS_ERR_BASE - 36),
+    OCOMS_ERR_NOT_ENOUGH_SOCKETS             = (OCOMS_ERR_BASE - 37),
+    OCOMS_ERR_NOT_ENOUGH_CORES               = (OCOMS_ERR_BASE - 38),
+    OCOMS_ERR_INVALID_PHYS_CPU               = (OCOMS_ERR_BASE - 39),
+    OCOMS_ERR_MULTIPLE_AFFINITIES            = (OCOMS_ERR_BASE - 40),
+    OCOMS_ERR_SLOT_LIST_RANGE                = (OCOMS_ERR_BASE - 41),
+    OCOMS_ERR_NETWORK_NOT_PARSEABLE          = (OCOMS_ERR_BASE - 42)
 };
 
-#define CCS_ERR_MAX                (CCS_ERR_BASE - 100)
+#define OCOMS_ERR_MAX                (OCOMS_ERR_BASE - 100)
 
 /* Predefined RTE TAGS */
 typedef enum {
-    CCS_RTE_TAG_COMMON_SM_COMP_INDEX = 100,
-    CCS_RTE_TAG_COMMON_SM_BACK_FILE_CREATED,
-} ccs_rte_tags_t;
+    OCOMS_RTE_TAG_COMMON_SM_COMP_INDEX = 100,
+    OCOMS_RTE_TAG_COMMON_SM_BACK_FILE_CREATED,
+} ocoms_rte_tags_t;
 
 /* Pasha: dummy orte_show_help declaration */
 #define orte_show_help(A...)
-/* Pasha: dummy CCS_SOS_GET_ERROR_CODE */
-#define CCS_SOS_GET_ERROR_CODE(rc) rc
+/* Pasha: dummy OCOMS_SOS_GET_ERROR_CODE */
+#define OCOMS_SOS_GET_ERROR_CODE(rc) rc
 
 enum {
     AM_TAG_OPENIB = 1,
 };
 
-#define CCS_MODEX_TAG 100 
+#define OCOMS_MODEX_TAG 100 
 
-#endif /* CCS_CONSTANTS_H */
+#endif /* OCOMS_CONSTANTS_H */

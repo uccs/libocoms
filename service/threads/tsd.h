@@ -10,14 +10,14 @@
  */
 
 
-#ifndef CCS_THREADS_TSD_H
-#define CCS_THREADS_TSD_H
+#ifndef OCOMS_THREADS_TSD_H
+#define OCOMS_THREADS_TSD_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
 #include <pthread.h>
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
 #include <thread.h>
 #endif
 
@@ -68,12 +68,12 @@ typedef void* service_tsd_key_t;
  * @param key[out]       The key for accessing thread-specific data
  * @param destructor[in] Cleanup function to call when a thread exits
  *
- * @retval CCS_SUCCESS  Success
+ * @retval OCOMS_SUCCESS  Success
  * @retval EAGAIN        The system lacked the necessary resource to 
  *                       create another thread specific data key
  * @retval ENOMEM        Insufficient memory exists to create the key
  */
-CCS_DECLSPEC int service_tsd_key_create(service_tsd_key_t *key, 
+OCOMS_DECLSPEC int service_tsd_key_create(service_tsd_key_t *key, 
                                       service_tsd_destructor_t destructor);
 
 
@@ -91,10 +91,10 @@ CCS_DECLSPEC int service_tsd_key_create(service_tsd_key_t *key,
  *
  * @param key[in]       The key for accessing thread-specific data
  *
- * @retval CCS_SUCCESS Success
+ * @retval OCOMS_SUCCESS Success
  * @retval EINVAL       Invalid key
  */
-CCS_DECLSPEC int service_tsd_key_delete(service_tsd_key_t key);
+OCOMS_DECLSPEC int service_tsd_key_delete(service_tsd_key_t key);
 
 
 /**
@@ -110,12 +110,12 @@ CCS_DECLSPEC int service_tsd_key_delete(service_tsd_key_t key);
  * @param key[in]       Thread specific data key to modify
  * @param value[in]     Value to associate with key
  *
- * @retval CCS_SUCCESS Success
+ * @retval OCOMS_SUCCESS Success
  * @retval ENOMEM       Insufficient memory exists to associate the
  *                      value with the key
  * @retval EINVAL       Invalid key
  */
-CCS_DECLSPEC int service_tsd_setspecific(service_tsd_key_t key, void *value);
+OCOMS_DECLSPEC int service_tsd_setspecific(service_tsd_key_t key, void *value);
 
 
 /**
@@ -129,14 +129,14 @@ CCS_DECLSPEC int service_tsd_setspecific(service_tsd_key_t key, void *value);
  * @param key[in]       Thread specific data key to modify
  * @param value[out]     Value to associate with key
  *
- * @retval CCS_SUCCESS Success
+ * @retval OCOMS_SUCCESS Success
  * @retval ENOMEM       Insufficient memory exists to associate the
  *                      value with the key
  * @retval EINVAL       Invalid key
  */
-CCS_DECLSPEC int service_tsd_getspecific(service_tsd_key_t key, void **valuep);
+OCOMS_DECLSPEC int service_tsd_getspecific(service_tsd_key_t key, void **valuep);
 
-#elif CCS_HAVE_POSIX_THREADS
+#elif OCOMS_HAVE_POSIX_THREADS
 
 typedef pthread_key_t service_tsd_key_t;
 
@@ -163,10 +163,10 @@ static inline int
 service_tsd_getspecific(service_tsd_key_t key, void **valuep)
 {
     *valuep = pthread_getspecific(key);
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
 
 typedef thread_key_t service_tsd_key_t;
 
@@ -180,7 +180,7 @@ service_tsd_key_create(service_tsd_key_t *key,
 static inline int
 service_tsd_key_delete(service_tsd_key_t key)
 {
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 static inline int
@@ -209,7 +209,7 @@ service_tsd_key_create(service_tsd_key_t *key,
 {
     *key = TlsAlloc();
 
-    return (*key == TLS_OUT_OF_INDEXES) ? CCS_ERROR : CCS_SUCCESS;
+    return (*key == TLS_OUT_OF_INDEXES) ? OCOMS_ERROR : OCOMS_SUCCESS;
 }
 
 static inline int
@@ -217,7 +217,7 @@ service_tsd_key_delete(service_tsd_key_t key)
 {
     key = TlsFree(key);
 
-    return (key == 0) ? CCS_ERROR : CCS_SUCCESS;
+    return (key == 0) ? OCOMS_ERROR : OCOMS_SUCCESS;
 }
 
 static inline int
@@ -225,31 +225,31 @@ service_tsd_setspecific(service_tsd_key_t key, void *value)
 {
     BOOL ret = TlsSetValue(key, (LPVOID) value);
 
-    return (ret) ? CCS_SUCCESS : CCS_ERROR;
+    return (ret) ? OCOMS_SUCCESS : OCOMS_ERROR;
 }
 
 static inline int
 service_tsd_getspecific(service_tsd_key_t key, void **valuep)
 {
     *valuep = TlsGetValue(key);
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 #else
 
 typedef int service_tsd_key_t;
 
-CCS_DECLSPEC int service_tsd_key_create(service_tsd_key_t *key, 
+OCOMS_DECLSPEC int service_tsd_key_create(service_tsd_key_t *key, 
                                       service_tsd_destructor_t destructor);
 
-CCS_DECLSPEC int service_tsd_key_delete(service_tsd_key_t key);
+OCOMS_DECLSPEC int service_tsd_key_delete(service_tsd_key_t key);
 
-CCS_DECLSPEC int service_tsd_setspecific(service_tsd_key_t key, void *value);
+OCOMS_DECLSPEC int service_tsd_setspecific(service_tsd_key_t key, void *value);
 
-CCS_DECLSPEC int service_tsd_getspecific(service_tsd_key_t key, void **valuep);
+OCOMS_DECLSPEC int service_tsd_getspecific(service_tsd_key_t key, void **valuep);
 
 #endif
 
 END_C_DECLS
 
-#endif /* CCS_MTHREADS_TSD_H */
+#endif /* OCOMS_MTHREADS_TSD_H */

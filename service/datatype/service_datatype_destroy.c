@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "service/platform/service_constants.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_datatype_internal.h"
@@ -27,11 +27,11 @@ int32_t service_datatype_destroy( service_datatype_t** dt )
 {
     service_datatype_t* pData = *dt;
 
-    if( (pData->flags & CCS_DATATYPE_FLAG_PREDEFINED) &&
+    if( (pData->flags & OCOMS_DATATYPE_FLAG_PREDEFINED) &&
         (pData->super.obj_reference_count <= 1) )
-        return CCS_ERROR;
+        return OCOMS_ERROR;
 
     OBJ_RELEASE( pData );
     *dt = NULL;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }

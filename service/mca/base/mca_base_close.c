@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "service/mca/mca.h"
 
 #include "service/mca/base/base.h"
@@ -30,31 +30,31 @@
 /*
  * Main MCA shutdown.
  */
-int ccs_mca_base_close(void)
+int ocoms_mca_base_close(void)
 {
-  extern bool ccs_mca_base_opened;
-  if (ccs_mca_base_opened) {
+  extern bool ocoms_mca_base_opened;
+  if (ocoms_mca_base_opened) {
 
       /* release the default paths */
-      if (NULL != ccs_mca_base_system_default_path) {
-          free(ccs_mca_base_system_default_path);
+      if (NULL != ocoms_mca_base_system_default_path) {
+          free(ocoms_mca_base_system_default_path);
       }
-      if (NULL != ccs_mca_base_user_default_path) {
-          free(ccs_mca_base_user_default_path);
+      if (NULL != ocoms_mca_base_user_default_path) {
+          free(ocoms_mca_base_user_default_path);
       }
       
     /* Close down the component repository */
-    ccs_mca_base_component_repository_finalize();
+    ocoms_mca_base_component_repository_finalize();
 
     /* Shut down the dynamic component finder */
-    ccs_mca_base_component_find_finalize();
+    ocoms_mca_base_component_find_finalize();
 
     /* Close opal output stream 0 */
     service_output_close(0);
   }
-  ccs_mca_base_opened = false;
+  ocoms_mca_base_opened = false;
 
   /* All done */
 
-  return CCS_SUCCESS;
+  return OCOMS_SUCCESS;
 }

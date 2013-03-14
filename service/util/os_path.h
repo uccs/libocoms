@@ -41,7 +41,7 @@
 #ifndef SERVICE_OS_PATH_H
 #define SERVICE_OS_PATH_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdio.h>
 #include <stdarg.h>
@@ -63,7 +63,7 @@ BEGIN_C_DECLS
  * appropriate to the local operating system. The path_name string has been malloc'd
  * and therefore the user is responsible for free'ing the field.
 */
-CCS_DECLSPEC char *service_os_path(bool relative, ...) __service_attribute_malloc__ __service_attribute_sentinel__ __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC char *service_os_path(bool relative, ...) __service_attribute_malloc__ __service_attribute_sentinel__ __service_attribute_warn_unused_result__;
 
 /**
  * Convert the path to be OS friendly. On UNIX this function will

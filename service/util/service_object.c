@@ -22,7 +22,7 @@
  * Implementation of service_object_t, the base opal foundation class
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdio.h>
 #include "service/sys/atomic.h"
@@ -49,7 +49,7 @@ service_class_t service_object_t_class = {
 /*
  * Local variables
  */
-static service_atomic_lock_t class_lock = { { CCS_ATOMIC_UNLOCKED } };
+static service_atomic_lock_t class_lock = { { OCOMS_ATOMIC_UNLOCKED } };
 static void** classes = NULL;
 static int num_classes = 0;
 static int max_classes = 0;
@@ -178,7 +178,7 @@ int service_class_finalize(void)
         max_classes = 0;
     }
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 

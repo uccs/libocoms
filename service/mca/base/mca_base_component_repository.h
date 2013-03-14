@@ -19,11 +19,11 @@
 #ifndef MCA_BASE_COMPONENT_REPOSITORY_H
 #define MCA_BASE_COMPONENT_REPOSITORY_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 BEGIN_C_DECLS
 
-    CCS_DECLSPEC int ccs_mca_base_component_repository_init(void);
+    OCOMS_DECLSPEC int ocoms_mca_base_component_repository_init(void);
 
 /* This file provide the external interface to our base component
  * module.  Most of the components that depend on it, will use the
@@ -53,7 +53,7 @@ BEGIN_C_DECLS
  * used anywhere."  Incorrect, Grasshopper.  A small number of places
  * (like the retain() function) are still prototyped, but have 99% of
  * their innards #if'ed out -- i.e., they just return
- * CCS_ERR_NOT_SUPPORTED.  Why was it coded up this way?  I'm not
+ * OCOMS_ERR_NOT_SUPPORTED.  Why was it coded up this way?  I'm not
  * entirely sure -- there may be a reason (and that reason may just be
  * conservative coding), but I'm not really too inspired to look into
  * it any further at this point.  :-)
@@ -62,18 +62,18 @@ BEGIN_C_DECLS
     typedef void *lt_dlhandle;
 #endif
 
-    CCS_DECLSPEC int ccs_mca_base_component_repository_retain(char *type, 
+    OCOMS_DECLSPEC int ocoms_mca_base_component_repository_retain(char *type, 
                               lt_dlhandle component_handle, 
-                              const ccs_mca_base_component_t *component_struct);
+                              const ocoms_mca_base_component_t *component_struct);
 
-    CCS_DECLSPEC int ccs_mca_base_component_repository_retain_component(const char *type, 
+    OCOMS_DECLSPEC int ocoms_mca_base_component_repository_retain_component(const char *type, 
                               const char *name);
-    CCS_DECLSPEC int ccs_mca_base_component_repository_link(const char *src_type, 
+    OCOMS_DECLSPEC int ocoms_mca_base_component_repository_link(const char *src_type, 
                               const char *src_name,
                               const char *depend_type,
                               const char *depend_name);
-    CCS_DECLSPEC void ccs_mca_base_component_repository_release(const ccs_mca_base_component_t *component);
-    CCS_DECLSPEC void ccs_mca_base_component_repository_finalize(void);
+    OCOMS_DECLSPEC void ocoms_mca_base_component_repository_release(const ocoms_mca_base_component_t *component);
+    OCOMS_DECLSPEC void ocoms_mca_base_component_repository_finalize(void);
     
 END_C_DECLS
 

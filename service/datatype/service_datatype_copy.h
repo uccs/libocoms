@@ -52,7 +52,7 @@ static inline void _predefined_data( const dt_elem_desc_t* ELEM,
 
     if( _copy_blength == (uint32_t)_elem->extent ) {
         _copy_blength *= _copy_count;
-        CCS_DATATYPE_SAFEGUARD_POINTER( _source, _copy_blength, (SOURCE_BASE),
+        OCOMS_DATATYPE_SAFEGUARD_POINTER( _source, _copy_blength, (SOURCE_BASE),
                                     (DATATYPE), (TOTAL_COUNT) );
         /* the extent and the size of the basic datatype are equals */
         DO_DEBUG( service_output( 0, "copy 1. %s( %p, %p, %lu ) => space %lu\n",
@@ -63,7 +63,7 @@ static inline void _predefined_data( const dt_elem_desc_t* ELEM,
     } else {
         uint32_t _i;
         for( _i = 0; _i < _copy_count; _i++ ) {
-            CCS_DATATYPE_SAFEGUARD_POINTER( _source, _copy_blength, (SOURCE_BASE),
+            OCOMS_DATATYPE_SAFEGUARD_POINTER( _source, _copy_blength, (SOURCE_BASE),
                                         (DATATYPE), (TOTAL_COUNT) );
             DO_DEBUG( service_output( 0, "copy 2. %s( %p, %p, %lu ) => space %lu\n",
                                    STRINGIFY(MEM_OP_NAME), _destination, _source, (unsigned long)_copy_blength, (unsigned long)(*(SPACE) - (_i * _copy_blength)) ); );
@@ -92,14 +92,14 @@ static inline void _contiguous_loop( const dt_elem_desc_t* ELEM,
     size_t _copy_loops = (COUNT);
     uint32_t _i;
 
-    if( _loop->extent == (CCS_PTRDIFF_TYPE)_end_loop->size ) {  /* the loop is contiguous */
+    if( _loop->extent == (OCOMS_PTRDIFF_TYPE)_end_loop->size ) {  /* the loop is contiguous */
         _copy_loops *= _end_loop->size;
-        CCS_DATATYPE_SAFEGUARD_POINTER( _source, _copy_loops, (SOURCE_BASE),
+        OCOMS_DATATYPE_SAFEGUARD_POINTER( _source, _copy_loops, (SOURCE_BASE),
                                     (DATATYPE), (TOTAL_COUNT) );
         MEM_OP( _destination, _source, _copy_loops );
     } else {
         for( _i = 0; _i < _copy_loops; _i++ ) {
-            CCS_DATATYPE_SAFEGUARD_POINTER( _source, _end_loop->size, (SOURCE_BASE),
+            OCOMS_DATATYPE_SAFEGUARD_POINTER( _source, _end_loop->size, (SOURCE_BASE),
                                         (DATATYPE), (TOTAL_COUNT) );
             DO_DEBUG( service_output( 0, "copy 3. %s( %p, %p, %lu ) => space %lu\n",
                                    STRINGIFY(MEM_OP_NAME), _destination, _source, (unsigned long)_end_loop->size, (unsigned long)(*(SPACE) - _i * _end_loop->size) ); );
@@ -133,21 +133,21 @@ static inline int32_t _copy_content_same_ddt( const service_datatype_t* datatype
     /* If we have to copy a contiguous datatype then simply
      * do a MEM_OP.
      */
-    if( datatype->flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
-        CCS_PTRDIFF_TYPE extent = (datatype->ub - datatype->lb);
+    if( datatype->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
+        OCOMS_PTRDIFF_TYPE extent = (datatype->ub - datatype->lb);
         /* Now that we know the datatype is contiguous, we should move the 2 pointers
          * source and destination to the correct displacement.
          */
         destination += datatype->true_lb;
         source      += datatype->true_lb;
-        if( (CCS_PTRDIFF_TYPE)datatype->size == extent ) {  /* all contiguous == no gaps around */
+        if( (OCOMS_PTRDIFF_TYPE)datatype->size == extent ) {  /* all contiguous == no gaps around */
             size_t total_length = iov_len_local;
             size_t memop_chunk = service_datatype_memop_block_size;
             while( total_length > 0 ) {
                 if( memop_chunk > total_length ) memop_chunk = total_length;
-                CCS_DATATYPE_SAFEGUARD_POINTER( destination, memop_chunk,
+                OCOMS_DATATYPE_SAFEGUARD_POINTER( destination, memop_chunk,
                                             (unsigned char*)destination_base, datatype, count );
-                CCS_DATATYPE_SAFEGUARD_POINTER( source, memop_chunk,
+                OCOMS_DATATYPE_SAFEGUARD_POINTER( source, memop_chunk,
                                             (unsigned char*)source_base, datatype, count );
                 DO_DEBUG( service_output( 0, "copy c1. %s( %p, %p, %lu ) => space %lu\n",
                                        STRINGIFY(MEM_OP_NAME), destination, source, (unsigned long)memop_chunk, (unsigned long)total_length ); );
@@ -159,9 +159,9 @@ static inline int32_t _copy_content_same_ddt( const service_datatype_t* datatype
             return 0;  /* completed */
         }
         for( pos_desc = 0; (int32_t)pos_desc < count; pos_desc++ ) {
-            CCS_DATATYPE_SAFEGUARD_POINTER( destination, datatype->size,
+            OCOMS_DATATYPE_SAFEGUARD_POINTER( destination, datatype->size,
                                         (unsigned char*)destination_base, datatype, count );
-            CCS_DATATYPE_SAFEGUARD_POINTER( source, datatype->size,
+            OCOMS_DATATYPE_SAFEGUARD_POINTER( source, datatype->size,
                                         (unsigned char*)source_base, datatype, count );
             DO_DEBUG( service_output( 0, "copy c2. %s( %p, %p, %lu ) => space %lu\n",
                                    STRINGIFY(MEM_OP_NAME), destination, source, (unsigned long)datatype->size,
@@ -173,7 +173,7 @@ static inline int32_t _copy_content_same_ddt( const service_datatype_t* datatype
         return 0;  /* completed */
     }
 
-    pStack = (dt_stack_t*)alloca( sizeof(dt_stack_t) * (datatype->btypes[CCS_DATATYPE_LOOP] + 1) );
+    pStack = (dt_stack_t*)alloca( sizeof(dt_stack_t) * (datatype->btypes[OCOMS_DATATYPE_LOOP] + 1) );
     pStack->count = count;
     pStack->index   = -1;
     pStack->disp    = 0;
@@ -186,21 +186,21 @@ static inline int32_t _copy_content_same_ddt( const service_datatype_t* datatype
         description = datatype->desc.desc;
     }
 
-    if( description[0].elem.common.type == CCS_DATATYPE_LOOP )
+    if( description[0].elem.common.type == OCOMS_DATATYPE_LOOP )
         count_desc = description[0].loop.loops;
     else
         count_desc = description[0].elem.count;
     pElem = &(description[pos_desc]);
 
     while( 1 ) {
-        while( CCS_LIKELY(pElem->elem.common.flags & CCS_DATATYPE_FLAG_DATA) ) {
+        while( OCOMS_LIKELY(pElem->elem.common.flags & OCOMS_DATATYPE_FLAG_DATA) ) {
             /* now here we have a basic datatype */
             _predefined_data( pElem, datatype, (unsigned char*)source_base, count, count_desc,
                               source, destination, &iov_len_local );
             pos_desc++;  /* advance to the next data */
             UPDATE_INTERNAL_COUNTERS( description, pos_desc, pElem, count_desc );
         }
-        if( CCS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
+        if( OCOMS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
             DO_DEBUG( service_output( 0, "copy end_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
                                    (int)pStack->count, stack_pos, pos_desc, (long)pStack->disp, (unsigned long)iov_len_local ); );
             if( --(pStack->count) == 0 ) { /* end of loop */
@@ -216,7 +216,7 @@ static inline int32_t _copy_content_same_ddt( const service_datatype_t* datatype
                 if( pStack->index == -1 ) {
                     pStack->disp += (datatype->ub - datatype->lb);
                 } else {
-                    assert( CCS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
+                    assert( OCOMS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
                     pStack->disp += description[pStack->index].loop.extent;
                 }
             }
@@ -226,16 +226,16 @@ static inline int32_t _copy_content_same_ddt( const service_datatype_t* datatype
             DO_DEBUG( service_output( 0, "copy new_loop count %d stack_pos %d pos_desc %d disp %ld space %lu\n",
                                    (int)pStack->count, stack_pos, pos_desc, (long)pStack->disp, (unsigned long)iov_len_local ); );
         }
-        if( CCS_DATATYPE_LOOP == pElem->elem.common.type ) {
-            CCS_PTRDIFF_TYPE local_disp = (CCS_PTRDIFF_TYPE)source;
-            if( pElem->loop.common.flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
+        if( OCOMS_DATATYPE_LOOP == pElem->elem.common.type ) {
+            OCOMS_PTRDIFF_TYPE local_disp = (OCOMS_PTRDIFF_TYPE)source;
+            if( pElem->loop.common.flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
                 _contiguous_loop( pElem, datatype, (unsigned char*)source_base, count, count_desc,
                                   source, destination, &iov_len_local );
                 pos_desc += pElem->loop.items + 1;
                 goto update_loop_description;
             }
-            local_disp = (CCS_PTRDIFF_TYPE)source - local_disp;
-            PUSH_STACK( pStack, stack_pos, pos_desc, CCS_DATATYPE_LOOP, count_desc,
+            local_disp = (OCOMS_PTRDIFF_TYPE)source - local_disp;
+            PUSH_STACK( pStack, stack_pos, pos_desc, OCOMS_DATATYPE_LOOP, count_desc,
                         pStack->disp + local_disp);
             pos_desc++;
         update_loop_description:  /* update the current state */

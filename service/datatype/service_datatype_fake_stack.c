@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 #include <stdlib.h>
@@ -42,7 +42,7 @@ service_convertor_compute_remote_size( const service_datatype_t* pData, const si
     uint32_t i;
     size_t length = 0;
 
-    for( i = CCS_DATATYPE_FIRST_TYPE; i < CCS_DATATYPE_MAX_PREDEFINED; i++ ) {
+    for( i = OCOMS_DATATYPE_FIRST_TYPE; i < OCOMS_DATATYPE_MAX_PREDEFINED; i++ ) {
         length += (pData->btypes[i] * sizes[i]);
     }
     return length;
@@ -70,27 +70,27 @@ int service_convertor_create_stack_with_pos_general( service_convertor_t* pConve
     pConvertor->stack_pos = 0;
     pStack = pConvertor->pStack;
     /* Fill the first position on the stack. This one correspond to the
-     * last fake CCS_DATATYPE_END_LOOP that we add to the data representation and
+     * last fake OCOMS_DATATYPE_END_LOOP that we add to the data representation and
      * allow us to move quickly inside the datatype when we have a count.
      */
     pElems = pConvertor->use_desc->desc;
 
-    if( (pConvertor->flags & CONVERTOR_HOMOGENEOUS) && (pData->flags & CCS_DATATYPE_FLAG_CONTIGUOUS) ) {
+    if( (pConvertor->flags & CONVERTOR_HOMOGENEOUS) && (pData->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS) ) {
         /* Special case for contiguous datatypes */
         int32_t cnt = (int32_t)(starting_point / pData->size);
-        CCS_PTRDIFF_TYPE extent = pData->ub - pData->lb;
+        OCOMS_PTRDIFF_TYPE extent = pData->ub - pData->lb;
 
         loop_length = GET_FIRST_NON_LOOP( pElems );
         pStack[0].disp  = pElems[loop_length].elem.disp;
-        pStack[0].type  = CCS_DATATYPE_LOOP;
+        pStack[0].type  = OCOMS_DATATYPE_LOOP;
         pStack[0].count = pConvertor->count - cnt;
         cnt = (int32_t)(starting_point - cnt * pData->size);  /* number of bytes after the loop */
         pStack[1].index    = 0;
-        pStack[1].type     = CCS_DATATYPE_UINT1;
+        pStack[1].type     = OCOMS_DATATYPE_UINT1;
         pStack[1].disp     = pStack[0].disp;
         pStack[1].count    = pData->size - cnt;
 
-        if( (CCS_PTRDIFF_TYPE)pData->size == extent ) { /* all elements are contiguous */
+        if( (OCOMS_PTRDIFF_TYPE)pData->size == extent ) { /* all elements are contiguous */
             pStack[1].disp += starting_point;
         } else {  /* each is contiguous but there are gaps inbetween */
             pStack[1].disp += (pConvertor->count - pStack[0].count) * extent + cnt;
@@ -98,7 +98,7 @@ int service_convertor_create_stack_with_pos_general( service_convertor_t* pConve
 
         pConvertor->bConverted = starting_point;
         pConvertor->stack_pos = 1;
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /* remove from the main loop all the complete datatypes */
@@ -112,7 +112,7 @@ int service_convertor_create_stack_with_pos_general( service_convertor_t* pConve
     pStack->disp = count * (pData->ub - pData->lb) + pElems[loop_length].elem.disp;
 
     pos_desc  = 0;
-    remoteLength = (size_t*)alloca( sizeof(size_t) * (pConvertor->pDesc->btypes[CCS_DATATYPE_LOOP] + 1));
+    remoteLength = (size_t*)alloca( sizeof(size_t) * (pConvertor->pDesc->btypes[OCOMS_DATATYPE_LOOP] + 1));
     remoteLength[0] = 0;  /* initial value set to ZERO */
     loop_length = 0;
 
@@ -120,9 +120,9 @@ int service_convertor_create_stack_with_pos_general( service_convertor_t* pConve
      * when we finish the whole datatype.
      */
     while( pos_desc < (int32_t)pConvertor->use_desc->used ) {
-        if( CCS_DATATYPE_END_LOOP == pElems->elem.common.type ) { /* end of the current loop */
+        if( OCOMS_DATATYPE_END_LOOP == pElems->elem.common.type ) { /* end of the current loop */
             ddt_endloop_desc_t* end_loop = (ddt_endloop_desc_t*)pElems;
-            CCS_PTRDIFF_TYPE extent;
+            OCOMS_PTRDIFF_TYPE extent;
 
             if( (loop_length * pStack->count) > resting_place ) {
                 /* We will stop somewhere on this loop. To avoid moving inside the loop
@@ -134,7 +134,7 @@ int service_convertor_create_stack_with_pos_general( service_convertor_t* pConve
                 if( pStack->index == -1 ) {
                     extent = pData->ub - pData->lb;
                 } else {
-                    assert( CCS_DATATYPE_LOOP == (pElems - end_loop->items)->loop.common.type );
+                    assert( OCOMS_DATATYPE_LOOP == (pElems - end_loop->items)->loop.common.type );
                     extent = ((ddt_loop_desc_t*)(pElems - end_loop->items))->extent;
                 }
                 pStack->count -= (cnt + 1);
@@ -159,16 +159,16 @@ int service_convertor_create_stack_with_pos_general( service_convertor_t* pConve
             loop_length = remoteLength[pConvertor->stack_pos];
             continue;
         }
-        if( CCS_DATATYPE_LOOP == pElems->elem.common.type ) {
+        if( OCOMS_DATATYPE_LOOP == pElems->elem.common.type ) {
             remoteLength[pConvertor->stack_pos] += loop_length;
-            PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_LOOP,
+            PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, OCOMS_DATATYPE_LOOP,
 				        pElems->loop.loops, pStack->disp );
             pos_desc++;
             pElems++;
             remoteLength[pConvertor->stack_pos] = 0;
             loop_length = 0;  /* starting a new loop */
         }
-        while( pElems->elem.common.flags & CCS_DATATYPE_FLAG_DATA ) {
+        while( pElems->elem.common.flags & OCOMS_DATATYPE_FLAG_DATA ) {
             /* now here we have a basic datatype */
             const service_datatype_t* basic_type = BASIC_DDT_FROM_ELEM( (*pElems) );
             lastLength = pElems->elem.count * basic_type->size;
@@ -182,7 +182,7 @@ int service_convertor_create_stack_with_pos_general( service_convertor_t* pConve
                 pConvertor->bConverted = starting_point - resting_place;
                 DDT_DUMP_STACK( pConvertor->pStack, pConvertor->stack_pos,
                                 pConvertor->pDesc->desc.desc, pConvertor->pDesc->name );
-                return CCS_SUCCESS;
+                return OCOMS_SUCCESS;
             }
             loop_length += lastLength;
             resting_place -= lastLength;
@@ -194,5 +194,5 @@ int service_convertor_create_stack_with_pos_general( service_convertor_t* pConve
     /* Correctly update the bConverted field */
     pConvertor->flags |= CONVERTOR_COMPLETED;
     pConvertor->bConverted = pConvertor->local_size;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }

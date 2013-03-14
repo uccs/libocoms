@@ -18,10 +18,10 @@
  * $HEADER$
  */
 
-#ifndef CCS_CONVERTOR_H_HAS_BEEN_INCLUDED
-#define CCS_CONVERTOR_H_HAS_BEEN_INCLUDED
+#ifndef OCOMS_CONVERTOR_H_HAS_BEEN_INCLUDED
+#define OCOMS_CONVERTOR_H_HAS_BEEN_INCLUDED
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 
@@ -77,9 +77,9 @@ struct service_convertor_master_t;
 
 struct dt_stack_t {
     int32_t           index;    /**< index in the element description */
-    int16_t           type;     /**< the type used for the last pack/unpack (original or CCS_DATATYPE_UINT1) */
+    int16_t           type;     /**< the type used for the last pack/unpack (original or OCOMS_DATATYPE_UINT1) */
     size_t            count;    /**< number of times we still have to do it */
-    CCS_PTRDIFF_TYPE disp;     /**< actual displacement depending on the count field */
+    OCOMS_PTRDIFF_TYPE disp;     /**< actual displacement depending on the count field */
 };
 typedef struct dt_stack_t dt_stack_t;
 
@@ -115,13 +115,13 @@ struct service_convertor_t {
     dt_stack_t                    static_stack[DT_STATIC_STACK_SIZE];  /**< local stack for small datatypes */
     /* --- cacheline 3 boundary (192 bytes) was 56 bytes ago --- */
 
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
     memcpy_fct_t                  cbmemcpy;       /**< memcpy or cuMemcpy */
 #endif
     /* size: 248, cachelines: 4, members: 20 */
     /* last cacheline: 56 bytes */
 };
-CCS_DECLSPEC OBJ_CLASS_DECLARATION( service_convertor_t );
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION( service_convertor_t );
 
 
 /*
@@ -136,19 +136,19 @@ static inline uint32_t service_convertor_get_checksum( service_convertor_t* conv
 /*
  *
  */
-CCS_DECLSPEC int32_t service_convertor_pack( service_convertor_t* pConv, struct iovec* iov,
+OCOMS_DECLSPEC int32_t service_convertor_pack( service_convertor_t* pConv, struct iovec* iov,
                                            uint32_t* out_size, size_t* max_data );
 
 /*
  *
  */
-CCS_DECLSPEC int32_t service_convertor_unpack( service_convertor_t* pConv, struct iovec* iov,
+OCOMS_DECLSPEC int32_t service_convertor_unpack( service_convertor_t* pConv, struct iovec* iov,
                                              uint32_t* out_size, size_t* max_data );
 
 /*
  *
  */
-CCS_DECLSPEC service_convertor_t* service_convertor_create( int32_t remote_arch, int32_t mode );
+OCOMS_DECLSPEC service_convertor_t* service_convertor_create( int32_t remote_arch, int32_t mode );
 
 
 /**
@@ -160,19 +160,19 @@ CCS_DECLSPEC service_convertor_t* service_convertor_create( int32_t remote_arch,
  */
 static inline int service_convertor_cleanup( service_convertor_t* convertor )
 {
-    if( CCS_UNLIKELY(convertor->stack_size > DT_STATIC_STACK_SIZE) ) {
+    if( OCOMS_UNLIKELY(convertor->stack_size > DT_STATIC_STACK_SIZE) ) {
         free( convertor->pStack );
         convertor->pStack     = convertor->static_stack;
         convertor->stack_size = DT_STATIC_STACK_SIZE;
     }
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
     convertor->cbmemcpy = &memcpy;
 #endif
     convertor->pDesc     = NULL;
     convertor->stack_pos = 0;
-    convertor->flags     = CCS_DATATYPE_FLAG_NO_GAPS | CONVERTOR_COMPLETED;
+    convertor->flags     = OCOMS_DATATYPE_FLAG_NO_GAPS | CONVERTOR_COMPLETED;
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -186,14 +186,14 @@ static inline int service_convertor_cleanup( service_convertor_t* convertor )
  */
 static inline int32_t service_convertor_need_buffers( const service_convertor_t* pConvertor )
 {
-#if CCS_ENABLE_HETEROGENEOUS_SUPPORT
-    if (CCS_UNLIKELY(0 == (pConvertor->flags & CONVERTOR_HOMOGENEOUS))) return 1;
+#if OCOMS_ENABLE_HETEROGENEOUS_SUPPORT
+    if (OCOMS_UNLIKELY(0 == (pConvertor->flags & CONVERTOR_HOMOGENEOUS))) return 1;
 #endif
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
     if( pConvertor->flags & CONVERTOR_CUDA ) return 1;
 #endif
-    if( pConvertor->flags & CCS_DATATYPE_FLAG_NO_GAPS ) return 0;
-    if( (pConvertor->count == 1) && (pConvertor->flags & CCS_DATATYPE_FLAG_CONTIGUOUS) ) return 0;
+    if( pConvertor->flags & OCOMS_DATATYPE_FLAG_NO_GAPS ) return 0;
+    if( (pConvertor->count == 1) && (pConvertor->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS) ) return 0;
     return 1;
 }
 
@@ -233,7 +233,7 @@ static inline void service_convertor_get_current_pointer( const service_converto
 /*
  *
  */
-CCS_DECLSPEC int32_t service_convertor_prepare_for_send( service_convertor_t* convertor,
+OCOMS_DECLSPEC int32_t service_convertor_prepare_for_send( service_convertor_t* convertor,
                                                        const struct service_datatype_t* datatype,
                                                        int32_t count,
                                                        const void* pUserBuf);
@@ -255,7 +255,7 @@ static inline int32_t service_convertor_copy_and_prepare_for_send( const service
 /*
  *
  */
-CCS_DECLSPEC int32_t service_convertor_prepare_for_recv( service_convertor_t* convertor,
+OCOMS_DECLSPEC int32_t service_convertor_prepare_for_recv( service_convertor_t* convertor,
                                                        const struct service_datatype_t* datatype,
                                                        int32_t count,
                                                        const void* pUserBuf );
@@ -276,7 +276,7 @@ static inline int32_t service_convertor_copy_and_prepare_for_recv( const service
 /*
  * Give access to the raw memory layout based on the datatype.
  */
-CCS_DECLSPEC int32_t
+OCOMS_DECLSPEC int32_t
 service_convertor_raw( service_convertor_t* convertor,  /* [IN/OUT] */
                     struct iovec* iov,            /* [IN/OUT] */
                     uint32_t* iov_count,          /* [IN/OUT] */
@@ -285,7 +285,7 @@ service_convertor_raw( service_convertor_t* convertor,  /* [IN/OUT] */
 /*
  * Upper level does not need to call the _nocheck function directly.
  */
-CCS_DECLSPEC int32_t
+OCOMS_DECLSPEC int32_t
 service_convertor_set_position_nocheck( service_convertor_t* convertor,
                                      size_t* position );
 static inline int32_t
@@ -296,27 +296,27 @@ service_convertor_set_position( service_convertor_t* convertor,
      * Do not allow the convertor to go outside the data boundaries. This test include
      * the check for datatype with size zero as well as for convertors with a count of zero.
      */
-    if( CCS_UNLIKELY(convertor->local_size <= *position) ) {
+    if( OCOMS_UNLIKELY(convertor->local_size <= *position) ) {
         convertor->flags |= CONVERTOR_COMPLETED;
         convertor->bConverted = convertor->local_size;
         *position = convertor->bConverted;
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /*
      * If the convertor is already at the correct position we are happy.
      */
-    if( CCS_LIKELY((*position) == convertor->bConverted) ) return CCS_SUCCESS;
+    if( OCOMS_LIKELY((*position) == convertor->bConverted) ) return OCOMS_SUCCESS;
 
     /* Remove the completed flag if it's already set */
     convertor->flags &= ~CONVERTOR_COMPLETED;
 
     if( !(convertor->flags & CONVERTOR_WITH_CHECKSUM) &&
-        (convertor->flags & CCS_DATATYPE_FLAG_NO_GAPS) &&
+        (convertor->flags & OCOMS_DATATYPE_FLAG_NO_GAPS) &&
         (convertor->flags & (CONVERTOR_SEND | CONVERTOR_HOMOGENEOUS)) ) {
         /* Contiguous and no checkpoint and no homogeneous unpack */
         convertor->bConverted = *position;
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     return service_convertor_set_position_nocheck( convertor, position );
@@ -332,15 +332,15 @@ service_convertor_personalize( service_convertor_t* convertor,
 {
     convertor->flags |= flags;
 
-    if( CCS_UNLIKELY(NULL == position) )
-        return CCS_SUCCESS;
+    if( OCOMS_UNLIKELY(NULL == position) )
+        return OCOMS_SUCCESS;
     return service_convertor_set_position( convertor, position );
 }
 
 /*
  *
  */
-CCS_DECLSPEC int
+OCOMS_DECLSPEC int
 service_convertor_clone( const service_convertor_t* source,
                       service_convertor_t* destination,
                       int32_t copy_stack );
@@ -358,10 +358,10 @@ service_convertor_clone_with_position( const service_convertor_t* source,
 /*
  *
  */
-CCS_DECLSPEC void
+OCOMS_DECLSPEC void
 service_convertor_dump( service_convertor_t* convertor );
 
-CCS_DECLSPEC void
+OCOMS_DECLSPEC void
 service_datatype_dump_stack( const dt_stack_t* pStack,
                           int stack_pos,
                           const union dt_elem_desc* pDesc,
@@ -370,10 +370,10 @@ service_datatype_dump_stack( const dt_stack_t* pStack,
 /*
  *
  */
-CCS_DECLSPEC int
+OCOMS_DECLSPEC int
 service_convertor_generic_simple_position( service_convertor_t* pConvertor,
                                         size_t* position );
 
 END_C_DECLS
 
-#endif  /* CCS_CONVERTOR_H_HAS_BEEN_INCLUDED */
+#endif  /* OCOMS_CONVERTOR_H_HAS_BEEN_INCLUDED */

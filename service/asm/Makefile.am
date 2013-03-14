@@ -26,24 +26,24 @@
 # time)
 #
 ######################################################################
-generated/@CCS_ASM_FILE@: base/@CCS_ASSEMBLY_ARCH@.asm
-	$(PERL) '$(top_srcdir)/service/asm/generate-asm.pl' '@CCS_ASSEMBLY_ARCH@' '@CCS_ASSEMBLY_FORMAT@' '$(top_srcdir)/service/asm/base' '$(top_builddir)/service/asm/generated/@CCS_ASM_FILE@'
+generated/@OCOMS_ASM_FILE@: base/@OCOMS_ASSEMBLY_ARCH@.asm
+	$(PERL) '$(top_srcdir)/service/asm/generate-asm.pl' '@OCOMS_ASSEMBLY_ARCH@' '@OCOMS_ASSEMBLY_FORMAT@' '$(top_srcdir)/service/asm/base' '$(top_builddir)/service/asm/generated/@OCOMS_ASM_FILE@'
 
-atomic-asm.S: generated/@CCS_ASM_FILE@
+atomic-asm.S: generated/@OCOMS_ASM_FILE@
 	rm -f atomic-asm.S
-	@ if test -f "$(top_builddir)/service/asm/generated/@CCS_ASM_FILE@" ; then \
-	    cmd="ln -s \"$(top_builddir)/service/asm/generated/@CCS_ASM_FILE@\" atomic-asm.S" ; \
+	@ if test -f "$(top_builddir)/service/asm/generated/@OCOMS_ASM_FILE@" ; then \
+	    cmd="ln -s \"$(top_builddir)/service/asm/generated/@OCOMS_ASM_FILE@\" atomic-asm.S" ; \
 	    echo "$$cmd" ; \
 	    eval $$cmd ; \
 	else \
-	    cmd="ln -s \"$(top_srcdir)/service/asm/generated/@CCS_ASM_FILE@\" atomic-asm.S" ; \
+	    cmd="ln -s \"$(top_srcdir)/service/asm/generated/@OCOMS_ASM_FILE@\" atomic-asm.S" ; \
 	    echo "$$cmd" ; \
 	    eval $$cmd ; \
 	fi
 
-if CCS_HAVE_ASM_FILE
+if OCOMS_HAVE_ASM_FILE
 nodist_libasm_la_SOURCES = atomic-asm.S
-libasm_la_DEPENDENCIES = generated/@CCS_ASM_FILE@
+libasm_la_DEPENDENCIES = generated/@OCOMS_ASM_FILE@
 else
 nodist_libasm_la_SOURCES =
 libasm_la_DEPENDENCIES =

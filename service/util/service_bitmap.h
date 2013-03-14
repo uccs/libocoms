@@ -33,15 +33,15 @@
  *  To allow these bitmaps to track fortran handles (which MPI defines
  *  to be Fortran INTEGER), we offer a service_bitmap_set_max_size, so that
  *  the upper layer can ask to never have more than
- *  CCS_FORTRAN_HANDLE_MAX, which is min(INT_MAX, fortran INTEGER max).
+ *  OCOMS_FORTRAN_HANDLE_MAX, which is min(INT_MAX, fortran INTEGER max).
  *  Currently the only user of this is ompi/attribute/attribute.c
  *
  */
 
-#ifndef CCS_BITMAP_H
-#define CCS_BITMAP_H
+#ifndef OCOMS_BITMAP_H
+#define OCOMS_BITMAP_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <string.h>
 
@@ -58,7 +58,7 @@ struct service_bitmap_t {
 
 typedef struct service_bitmap_t service_bitmap_t;
 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_bitmap_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_bitmap_t);
 
 /**
  * Set the maximum size of the bitmap.
@@ -69,7 +69,7 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_bitmap_t);
  * @return OPAL error code or success
  *
  */
-CCS_DECLSPEC int service_bitmap_set_max_size (service_bitmap_t *bm, int max_size);
+OCOMS_DECLSPEC int service_bitmap_set_max_size (service_bitmap_t *bm, int max_size);
 
 
 /**
@@ -81,7 +81,7 @@ CCS_DECLSPEC int service_bitmap_set_max_size (service_bitmap_t *bm, int max_size
  * @return OPAL error code or success
  *
  */
-CCS_DECLSPEC int service_bitmap_init (service_bitmap_t *bm, int size);
+OCOMS_DECLSPEC int service_bitmap_init (service_bitmap_t *bm, int size);
 
 
 /**
@@ -94,7 +94,7 @@ CCS_DECLSPEC int service_bitmap_init (service_bitmap_t *bm, int size);
  * @return OPAL error code or success
  *
  */
-CCS_DECLSPEC int service_bitmap_set_bit(service_bitmap_t *bm, int bit); 
+OCOMS_DECLSPEC int service_bitmap_set_bit(service_bitmap_t *bm, int bit); 
 
 
 /**
@@ -106,7 +106,7 @@ CCS_DECLSPEC int service_bitmap_set_bit(service_bitmap_t *bm, int bit);
  * @return OPAL error code if the bit is out of range, else success
  *
  */
-CCS_DECLSPEC int service_bitmap_clear_bit(service_bitmap_t *bm, int bit);
+OCOMS_DECLSPEC int service_bitmap_clear_bit(service_bitmap_t *bm, int bit);
 
 
 /**
@@ -120,7 +120,7 @@ CCS_DECLSPEC int service_bitmap_clear_bit(service_bitmap_t *bm, int bit);
   *                 bitmap
   *
   */
-CCS_DECLSPEC bool service_bitmap_is_set_bit(service_bitmap_t *bm, int bit);
+OCOMS_DECLSPEC bool service_bitmap_is_set_bit(service_bitmap_t *bm, int bit);
 
 
 /**
@@ -129,9 +129,9 @@ CCS_DECLSPEC bool service_bitmap_is_set_bit(service_bitmap_t *bm, int bit);
  * @param  bitmap     The input bitmap (IN)
  * @param  position   Position of the first clear bit (OUT)
 
- * @return err        CCS_SUCCESS on success
+ * @return err        OCOMS_SUCCESS on success
  */
-CCS_DECLSPEC int service_bitmap_find_and_set_first_unset_bit(service_bitmap_t *bm, 
+OCOMS_DECLSPEC int service_bitmap_find_and_set_first_unset_bit(service_bitmap_t *bm, 
                                                            int *position); 
 
 
@@ -142,7 +142,7 @@ CCS_DECLSPEC int service_bitmap_find_and_set_first_unset_bit(service_bitmap_t *b
  * @return OPAL error code if bm is NULL
  * 
  */
-CCS_DECLSPEC int service_bitmap_clear_all_bits(service_bitmap_t *bm);
+OCOMS_DECLSPEC int service_bitmap_clear_all_bits(service_bitmap_t *bm);
 
 
 /**
@@ -151,7 +151,7 @@ CCS_DECLSPEC int service_bitmap_clear_all_bits(service_bitmap_t *bm);
  * @return OPAL error code if bm is NULL
  *
  */
-CCS_DECLSPEC int service_bitmap_set_all_bits(service_bitmap_t *bm);
+OCOMS_DECLSPEC int service_bitmap_set_all_bits(service_bitmap_t *bm);
 
 
 /**

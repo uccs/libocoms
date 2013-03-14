@@ -16,7 +16,7 @@
  *
  * $HEADER$
  */
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/platform/service_constants.h"
 #include "service/util/arch.h"
@@ -52,11 +52,11 @@ int32_t service_arch_compute_local_id( uint32_t *me )
      * indicate that it will eventually be fixed
      */
 #if 0 /* Pasha: disable fortran logical sizhe check */
-    if (1 == sizeof(ccs_fortran_logical_t) ) {
+    if (1 == sizeof(ocoms_fortran_logical_t) ) {
         service_arch_setmask( me, SERVICE_ARCH_LOGICALIS8);
-    } else if (2 == sizeof(ccs_fortran_logical_t)) {
+    } else if (2 == sizeof(ocoms_fortran_logical_t)) {
         service_arch_setmask( me, SERVICE_ARCH_LOGICALIS16);
-    } else if (4 == sizeof(ccs_fortran_logical_t)) {
+    } else if (4 == sizeof(ocoms_fortran_logical_t)) {
         service_arch_setmask( me, SERVICE_ARCH_LOGICALIS32);
     }
 #endif
@@ -91,7 +91,7 @@ int32_t service_arch_compute_local_id( uint32_t *me )
     if( service_arch_ldisintel() )
         service_arch_setmask( me, SERVICE_ARCH_LDISINTEL );
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 int32_t service_arch_checkmask ( uint32_t *var, uint32_t mask )

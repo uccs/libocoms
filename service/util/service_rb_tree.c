@@ -19,7 +19,7 @@
  * @file
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "arch.h"
 #include "service/util/service_rb_tree.h"
 
@@ -77,12 +77,12 @@ int service_rb_tree_init(service_rb_tree_t * tree,
     /* we need to get memory for the root pointer from the free list */
     SERVICE_FREE_LIST_GET(&(tree->free_list), node, rc);
     tree->root_ptr = (service_rb_tree_node_t *) node;
-    if (CCS_SUCCESS != rc) {
+    if (OCOMS_SUCCESS != rc) {
         return rc;
     }
 
     SERVICE_FREE_LIST_GET(&(tree->free_list), node, rc);
-    if (CCS_SUCCESS != rc) {
+    if (OCOMS_SUCCESS != rc) {
         return rc;
     }
     tree->nill = (service_rb_tree_node_t *) node;
@@ -103,7 +103,7 @@ int service_rb_tree_init(service_rb_tree_t * tree,
     /* set the tree size to zero */
     tree->tree_size = 0;
 
-    return(CCS_SUCCESS);
+    return(OCOMS_SUCCESS);
 }
 
 
@@ -117,7 +117,7 @@ int service_rb_tree_insert(service_rb_tree_t *tree, void * key, void * value)
 
     /* get the memory for a node */
     SERVICE_FREE_LIST_GET(&(tree->free_list), item, rc);
-    if (CCS_SUCCESS != rc) {
+    if (OCOMS_SUCCESS != rc) {
         return rc;
     }
     node = (service_rb_tree_node_t *) item;
@@ -168,7 +168,7 @@ int service_rb_tree_insert(service_rb_tree_t *tree, void * key, void * value)
     }
     /* after the rotations the root is black */
     tree->root_ptr->left->color = BLACK;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 /* Finds the node in the tree based on the key */
@@ -224,7 +224,7 @@ int service_rb_tree_delete(service_rb_tree_t *tree, void *key)
 
     p = service_rb_tree_find_node(tree, key);
     if (NULL == p) {
-        return(CCS_ERR_NOT_FOUND);
+        return(OCOMS_ERR_NOT_FOUND);
     }
     if ((p->left == tree->nill) || (p->right == tree->nill)) {
         todelete = p;
@@ -261,7 +261,7 @@ int service_rb_tree_delete(service_rb_tree_t *tree, void *key)
     item = (service_free_list_item_t *) todelete;
     SERVICE_FREE_LIST_RETURN(&(tree->free_list), item);
     --tree->tree_size;
-    return(CCS_SUCCESS);
+    return(OCOMS_SUCCESS);
 }
 
 
@@ -280,7 +280,7 @@ int service_rb_tree_destroy(service_rb_tree_t *tree)
     /* free the tree->nill node */
     item = (service_free_list_item_t *) tree->nill;
     SERVICE_FREE_LIST_RETURN(&(tree->free_list), item);
-    return(CCS_SUCCESS);
+    return(OCOMS_SUCCESS);
 }
 
 
@@ -442,12 +442,12 @@ int service_rb_tree_traverse(service_rb_tree_t *tree,
                           service_rb_tree_action_fn_t action)
 {
     if ((cond == NULL) || (action == NULL)) {
-        return(CCS_ERROR);
+        return(OCOMS_ERROR);
     }
 
     inorder_traversal(tree, cond, action, tree->root_ptr->left);
 
-    return(CCS_SUCCESS);
+    return(OCOMS_SUCCESS);
 }
 
 

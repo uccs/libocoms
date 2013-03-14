@@ -27,7 +27,7 @@
 #ifndef SERVICE_ENVIRON_H
 #define SERVICE_ENVIRON_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #ifdef HAVE_CRT_EXTERNS_H
 #include <crt_externs.h>
@@ -58,7 +58,7 @@ BEGIN_C_DECLS
  * one of the two is NULL, the other list is simply copied to the
  * output.  If both are NULL, NULL is returned.
  */
-CCS_DECLSPEC char **service_environ_merge(char **minor, char **major) __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC char **service_environ_merge(char **minor, char **major) __service_attribute_warn_unused_result__;
 
 /**
  * Portable version of setenv(3), allowing editing of any
@@ -70,11 +70,11 @@ CCS_DECLSPEC char **service_environ_merge(char **minor, char **major) __service_
  * the same name
  * @param env The environment to use
  *
- * @retval CCS_ERR_OUT_OF_RESOURCE If internal malloc() fails.
- * @retval CCS_EXISTS If the name already exists in \em env and
+ * @retval OCOMS_ERR_OUT_OF_RESOURCE If internal malloc() fails.
+ * @retval OCOMS_EXISTS If the name already exists in \em env and
  * \em overwrite is false (and therefore the \em value was not
  * saved in \em env)
- * @retval CCS_SUCCESS If the value replaced another value or is
+ * @retval OCOMS_SUCCESS If the value replaced another value or is
  * appended to \em env.
  *
  * \em env is expected to be a NULL-terminated array of pointers
@@ -106,7 +106,7 @@ CCS_DECLSPEC char **service_environ_merge(char **minor, char **major) __service_
  *   service_setenv("foo", "bar", true, &my_env);
  * \endcode
  */
-CCS_DECLSPEC int service_setenv(const char *name, const char *value,
+OCOMS_DECLSPEC int service_setenv(const char *name, const char *value,
                               bool overwrite, char ***env) __service_attribute_nonnull__(1);
 
 /**
@@ -116,20 +116,20 @@ CCS_DECLSPEC int service_setenv(const char *name, const char *value,
  * @param name String name of the environment variable to look for
  * @param env The environment to use
  *
- * @retval CCS_ERR_OUT_OF_RESOURCE If an internal malloc fails.
- * @retval CCS_ERR_NOT_FOUND If \em name is not found in \em env.
- * @retval CCS_SUCCESS If \em name is found and successfully deleted.
+ * @retval OCOMS_ERR_OUT_OF_RESOURCE If an internal malloc fails.
+ * @retval OCOMS_ERR_NOT_FOUND If \em name is not found in \em env.
+ * @retval OCOMS_SUCCESS If \em name is found and successfully deleted.
  *
  * If \em name is found in \em env, the string corresponding to
  * that entry is freed and its entry is eliminated from the array.
  */
-CCS_DECLSPEC int service_unsetenv(const char *name, char ***env) __service_attribute_nonnull__(1);
+OCOMS_DECLSPEC int service_unsetenv(const char *name, char ***env) __service_attribute_nonnull__(1);
 
 /* A consistent way to retrieve the home and tmp directory on all supported
  * platforms.
  */
-CCS_DECLSPEC const char* service_home_directory( void );
-CCS_DECLSPEC const char* service_tmp_directory( void );
+OCOMS_DECLSPEC const char* service_home_directory( void );
+OCOMS_DECLSPEC const char* service_tmp_directory( void );
 
 /* Some care is needed with environ on OS X when dealing with shared
    libraries.  Handle that care here... */
@@ -138,7 +138,7 @@ CCS_DECLSPEC const char* service_tmp_directory( void );
 #ifdef HAVE__NSGETENVIRON
 #define environ (*_NSGetEnviron())
 #else
-CCS_DECLSPEC extern char **environ;
+OCOMS_DECLSPEC extern char **environ;
 #endif
 
 #endif  /* !defined(__WINDOWS__) */

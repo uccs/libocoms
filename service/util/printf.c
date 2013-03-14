@@ -21,7 +21,7 @@
  * Buffer safe printf functions for portability to archaic platforms.
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/util/printf.h"
 #include "service/util/output.h"
@@ -70,7 +70,7 @@ static int guess_strlen(const char *fmt, va_list ap)
                 if (NULL != sarg) {
                     len += (int)strlen(sarg);
                 } else {
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
                     service_output(0, "OPAL DEBUG WARNING: Got a NULL argument to service_vasprintf!\n");
 #endif
                     len += 5;

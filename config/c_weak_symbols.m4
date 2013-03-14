@@ -17,9 +17,9 @@ dnl
 dnl $HEADER$
 dnl
 
-# _CCS_C_WEAK_SYMBOLS(action_if_found, [action_if_not_found])
+# _OCOMS_C_WEAK_SYMBOLS(action_if_found, [action_if_not_found])
 # ------------------------------------------------------------
-AC_DEFUN([_CCS_C_WEAK_SYMBOLS],[
+AC_DEFUN([_OCOMS_C_WEAK_SYMBOLS],[
     # need two files because icc will incorrectly not create the
     # symbols if they are not used in the object file in which they
     # are defined.  Blah!
@@ -41,33 +41,33 @@ int main() { return fake(3); }
 EOF
 
 # Try the compile
-CCS_LOG_COMMAND(
+OCOMS_LOG_COMMAND(
     [$CC $CFLAGS  -c conftest_weak.c],
-    CCS_LOG_COMMAND(
+    OCOMS_LOG_COMMAND(
         [$CC $CFLAGS  conftest.c conftest_weak.o -o conftest $LDFLAGS $LIBS],
-        [ccs_c_weak_symbols_happy=1],
-	[ccs_c_weak_symbols_happy=0]),
-    [ccs_c_weak_symbols_happy=0])
+        [ocoms_c_weak_symbols_happy=1],
+	[ocoms_c_weak_symbols_happy=0]),
+    [ocoms_c_weak_symbols_happy=0])
 
-    AS_IF([test "$ccs_c_weak_symbols_happy" = "1"], [$1], [$2])
+    AS_IF([test "$ocoms_c_weak_symbols_happy" = "1"], [$1], [$2])
 
-    unset ccs_c_weak_symbols_happy
+    unset ocoms_c_weak_symbols_happy
     rm -f conftest_weak.h conftest_weak.c conftest.c conftest
 ])
 
 
-# CCS_C_WEAK_SYMBOLS()
+# OCOMS_C_WEAK_SYMBOLS()
 # ---------------------
-# sets CCS_C_WEAK_SYMBOLS=1 if C compiler has support for weak symbols
-AC_DEFUN([CCS_C_WEAK_SYMBOLS],[
+# sets OCOMS_C_WEAK_SYMBOLS=1 if C compiler has support for weak symbols
+AC_DEFUN([OCOMS_C_WEAK_SYMBOLS],[
     AC_CACHE_CHECK([for weak symbol support],
-                   [ccs_cv_c_weak_symbols],
-                   [_CCS_C_WEAK_SYMBOLS([ccs_cv_c_weak_symbols="yes"],
-                                         [ccs_cv_c_weak_symbols="no"])])
+                   [ocoms_cv_c_weak_symbols],
+                   [_OCOMS_C_WEAK_SYMBOLS([ocoms_cv_c_weak_symbols="yes"],
+                                         [ocoms_cv_c_weak_symbols="no"])])
 
-    AS_IF([test "$ccs_cv_c_weak_symbols" = "yes"],
-          [CCS_C_HAVE_WEAK_SYMBOLS=1], [CCS_C_HAVE_WEAK_SYMBOLS=0])
+    AS_IF([test "$ocoms_cv_c_weak_symbols" = "yes"],
+          [OCOMS_C_HAVE_WEAK_SYMBOLS=1], [OCOMS_C_HAVE_WEAK_SYMBOLS=0])
 
-    AC_DEFINE_UNQUOTED(CCS_HAVE_WEAK_SYMBOLS, $CCS_C_HAVE_WEAK_SYMBOLS,
+    AC_DEFINE_UNQUOTED(OCOMS_HAVE_WEAK_SYMBOLS, $OCOMS_C_HAVE_WEAK_SYMBOLS,
           [Whether we have weak symbols or not])
 ]) dnl

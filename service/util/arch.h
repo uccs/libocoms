@@ -20,7 +20,7 @@
 #ifndef SERVICE_ARCH_H_HAS_BEEN_INCLUDED
 #define SERVICE_ARCH_H_HAS_BEEN_INCLUDED
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <float.h>
 #include <assert.h>
@@ -38,7 +38,7 @@
 **
 *****************************************************/
 
-CCS_DECLSPEC extern int service_cache_line_size;
+OCOMS_DECLSPEC extern int service_cache_line_size;
 
 
 /*****************************************************************
@@ -233,9 +233,9 @@ CCS_DECLSPEC extern int service_cache_line_size;
 
 BEGIN_C_DECLS
 
-CCS_DECLSPEC int32_t service_arch_compute_local_id( uint32_t *var);
+OCOMS_DECLSPEC int32_t service_arch_compute_local_id( uint32_t *var);
 
-CCS_DECLSPEC int32_t service_arch_checkmask ( uint32_t *var, uint32_t mask );
+OCOMS_DECLSPEC int32_t service_arch_checkmask ( uint32_t *var, uint32_t mask );
 
 static inline int32_t service_arch_isbigendian ( void )
 {

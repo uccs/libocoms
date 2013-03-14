@@ -22,10 +22,10 @@
  * timer interface instead
  */
 
-#ifndef CCS_SYS_TIMER_H
-#define CCS_SYS_TIMER_H 1
+#ifndef OCOMS_SYS_TIMER_H
+#define OCOMS_SYS_TIMER_H 1
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/sys/architecture.h"
 
@@ -35,32 +35,32 @@
 
 /* do some quick #define cleanup in cases where we are doing
    testing... */
-#ifdef CCS_DISABLE_INLINE_ASM
-#undef CCS_C_GCC_INLINE_ASSEMBLY
-#define CCS_C_GCC_INLINE_ASSEMBLY 0
-#undef CCS_CXX_GCC_INLINE_ASSEMBLY
-#define CCS_CXX_GCC_INLINE_ASSEMBLY 0
-#undef CCS_C_DEC_INLINE_ASSEMBLY
-#define CCS_C_DEC_INLINE_ASSEMBLY 0
-#undef CCS_CXX_DEC_INLINE_ASSEMBLY
-#define CCS_CXX_DEC_INLINE_ASSEMBLY 0
-#undef CCS_C_XLC_INLINE_ASSEMBLY
-#define CCS_C_XLC_INLINE_ASSEMBLY 0
-#undef CCS_CXX_XLC_INLINE_ASSEMBLY
-#define CCS_CXX_XLC_INLINE_ASSEMBLY 0
+#ifdef OCOMS_DISABLE_INLINE_ASM
+#undef OCOMS_C_GCC_INLINE_ASSEMBLY
+#define OCOMS_C_GCC_INLINE_ASSEMBLY 0
+#undef OCOMS_CXX_GCC_INLINE_ASSEMBLY
+#define OCOMS_CXX_GCC_INLINE_ASSEMBLY 0
+#undef OCOMS_C_DEC_INLINE_ASSEMBLY
+#define OCOMS_C_DEC_INLINE_ASSEMBLY 0
+#undef OCOMS_CXX_DEC_INLINE_ASSEMBLY
+#define OCOMS_CXX_DEC_INLINE_ASSEMBLY 0
+#undef OCOMS_C_XLC_INLINE_ASSEMBLY
+#define OCOMS_C_XLC_INLINE_ASSEMBLY 0
+#undef OCOMS_CXX_XLC_INLINE_ASSEMBLY
+#define OCOMS_CXX_XLC_INLINE_ASSEMBLY 0
 #endif
 
-/* define CCS_{GCC,DEC,XLC}_INLINE_ASSEMBLY based on the
-   CCS_{C,CXX}_{GCC,DEC,XLC}_INLINE_ASSEMBLY defines and whether we
+/* define OCOMS_{GCC,DEC,XLC}_INLINE_ASSEMBLY based on the
+   OCOMS_{C,CXX}_{GCC,DEC,XLC}_INLINE_ASSEMBLY defines and whether we
    are in C or C++ */
 #if defined(c_plusplus) || defined(__cplusplus)
-#define CCS_GCC_INLINE_ASSEMBLY CCS_CXX_GCC_INLINE_ASSEMBLY
-#define CCS_DEC_INLINE_ASSEMBLY CCS_CXX_DEC_INLINE_ASSEMBLY
-#define CCS_XLC_INLINE_ASSEMBLY CCS_CXX_XLC_INLINE_ASSEMBLY
+#define OCOMS_GCC_INLINE_ASSEMBLY OCOMS_CXX_GCC_INLINE_ASSEMBLY
+#define OCOMS_DEC_INLINE_ASSEMBLY OCOMS_CXX_DEC_INLINE_ASSEMBLY
+#define OCOMS_XLC_INLINE_ASSEMBLY OCOMS_CXX_XLC_INLINE_ASSEMBLY
 #else
-#define CCS_GCC_INLINE_ASSEMBLY CCS_C_GCC_INLINE_ASSEMBLY
-#define CCS_DEC_INLINE_ASSEMBLY CCS_C_DEC_INLINE_ASSEMBLY
-#define CCS_XLC_INLINE_ASSEMBLY CCS_C_XLC_INLINE_ASSEMBLY
+#define OCOMS_GCC_INLINE_ASSEMBLY OCOMS_C_GCC_INLINE_ASSEMBLY
+#define OCOMS_DEC_INLINE_ASSEMBLY OCOMS_C_DEC_INLINE_ASSEMBLY
+#define OCOMS_XLC_INLINE_ASSEMBLY OCOMS_C_XLC_INLINE_ASSEMBLY
 #endif
 
 /**********************************************************************
@@ -73,40 +73,40 @@
 BEGIN_C_DECLS
 
 /* If you update this list, you probably also want to update
-   ccs/mca/systimer/linux/configure.m4.  Or not. */
+   ocoms/mca/systimer/linux/configure.m4.  Or not. */
 
 #if defined(DOXYGEN)
 /* don't include system-level gorp when generating doxygen files */ 
-#elif CCS_ASSEMBLY_ARCH == CCS_AMD64
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_AMD64
 #include "service/sys/amd64/timer.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_ARM
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_ARM
 #include "service/sys/arm/timer.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_IA32
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_IA32
 #include "service/sys/ia32/timer.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_IA64
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_IA64
 #include "service/sys/ia64/timer.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_POWERPC32
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_POWERPC32
 #include "service/sys/powerpc/timer.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_POWERPC64
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_POWERPC64
 #include "service/sys/powerpc/timer.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_32
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_SPARCV9_32
 #include "service/sys/sparcv9/timer.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_SPARCV9_64
 #include "service/sys/sparcv9/timer.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_WINDOWS
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_WINDOWS
 #include "service/sys/win32/timer.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_MIPS
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_MIPS
 #include "service/sys/mips/timer.h"
 #endif
 
 #ifndef DOXYGEN
-#ifndef CCS_HAVE_SYS_TIMER_GET_CYCLES
-#define CCS_HAVE_SYS_TIMER_GET_CYCLES 0
+#ifndef OCOMS_HAVE_SYS_TIMER_GET_CYCLES
+#define OCOMS_HAVE_SYS_TIMER_GET_CYCLES 0
 
-typedef int ccs_timer_t;
+typedef int ocoms_timer_t;
 #endif
 #endif
 
 END_C_DECLS
 
-#endif /* CCS_SYS_TIMER_H */
+#endif /* OCOMS_SYS_TIMER_H */

@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 
@@ -36,15 +36,15 @@ static void service_datatype_construct( service_datatype_t* pData )
     pData->id                 = 0;
     pData->nbElems            = 0;
     pData->bdt_used           = 0;
-    for( i = 0; i < CCS_DATATYPE_MAX_PREDEFINED; i++ )
+    for( i = 0; i < OCOMS_DATATYPE_MAX_PREDEFINED; i++ )
         pData->btypes[i]      = 0;
-    pData->btypes[CCS_DATATYPE_LOOP]    = 0;
+    pData->btypes[OCOMS_DATATYPE_LOOP]    = 0;
 
     pData->opt_desc.desc      = NULL;
     pData->opt_desc.length    = 0;
     pData->opt_desc.used      = 0;
     pData->align              = 1;
-    pData->flags              = CCS_DATATYPE_FLAG_CONTIGUOUS;
+    pData->flags              = OCOMS_DATATYPE_FLAG_CONTIGUOUS;
     pData->true_lb            = LONG_MAX;
     pData->true_ub            = LONG_MIN;
     pData->lb                 = LONG_MAX;
@@ -89,8 +89,8 @@ service_datatype_t* service_datatype_create( int32_t expectedSize )
     datatype->desc.length = expectedSize + 1;  /* one for the fake elem at the end */
     datatype->desc.used   = 0;
     datatype->desc.desc   = (dt_elem_desc_t*)calloc(datatype->desc.length, sizeof(dt_elem_desc_t));
-    /* BEWARE: an upper-layer configured with CCS_MAX_OBJECT_NAME different than the OPAL-layer will not work! */
-    memset( datatype->name, 0, CCS_MAX_OBJECT_NAME );
+    /* BEWARE: an upper-layer configured with OCOMS_MAX_OBJECT_NAME different than the OPAL-layer will not work! */
+    memset( datatype->name, 0, OCOMS_MAX_OBJECT_NAME );
     return datatype;
 }
 
@@ -102,6 +102,6 @@ int32_t service_datatype_create_desc( service_datatype_t * datatype, int32_t exp
     datatype->desc.used   = 0;
     datatype->desc.desc   = (dt_elem_desc_t*)calloc(datatype->desc.length, sizeof(dt_elem_desc_t));
     if (NULL == datatype->desc.desc)
-        return CCS_ERR_OUT_OF_RESOURCE;
-    return CCS_SUCCESS;
+        return OCOMS_ERR_OUT_OF_RESOURCE;
+    return OCOMS_SUCCESS;
 }

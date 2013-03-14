@@ -16,17 +16,17 @@
  * $HEADER$
  */
 
-#ifndef CCS_SYS_ARCH_ATOMIC_H
-#define CCS_SYS_ARCH_ATOMIC_H 1
+#ifndef OCOMS_SYS_ARCH_ATOMIC_H
+#define OCOMS_SYS_ARCH_ATOMIC_H 1
 
 
-#if CCS_WANT_SMP_LOCKS
+#if OCOMS_WANT_SMP_LOCKS
 #define MB() __asm__  __volatile__ ("" : : : "memory")
 #else
 #define MB()
 #endif
 
-#ifdef CCS_GENERATE_ASM_FILE
+#ifdef OCOMS_GENERATE_ASM_FILE
 struct service_atomic_lock_t {
     union {
         volatile int lock;         /**< The lock address (an integer) */
@@ -42,23 +42,23 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  * Define constants for Sparc
  *
  *********************************************************************/
-#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
+#define OCOMS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define CCS_HAVE_ATOMIC_CMPSET_32 0
-#define CCS_HAVE_ATOMIC_CMPSET_64 0
+#define OCOMS_HAVE_ATOMIC_CMPSET_32 0
+#define OCOMS_HAVE_ATOMIC_CMPSET_64 0
 
-#define CCS_HAVE_ATOMIC_MATH_32 1
-#define CCS_HAVE_ATOMIC_SUB_32 1
-#define CCS_HAVE_ATOMIC_ADD_32 1
+#define OCOMS_HAVE_ATOMIC_MATH_32 1
+#define OCOMS_HAVE_ATOMIC_SUB_32 1
+#define OCOMS_HAVE_ATOMIC_ADD_32 1
 
-#define CCS_HAVE_ATOMIC_SPINLOCKS 1
+#define OCOMS_HAVE_ATOMIC_SPINLOCKS 1
 
 /**********************************************************************
  *
  * Memory Barriers
  *
  *********************************************************************/
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 static inline void service_atomic_mb(void)
 {
@@ -77,7 +77,7 @@ static inline void service_atomic_wmb(void)
     MB();
 }
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
 
 /**********************************************************************
@@ -85,10 +85,10 @@ static inline void service_atomic_wmb(void)
  * Atomic spinlocks
  *
  *********************************************************************/
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 /* for these, the lock is held whenever lock.sparc_lock != 0.  We
-   attempt to leave it as CCS_LOCKED whenever possible */
+   attempt to leave it as OCOMS_LOCKED whenever possible */
 
 
 static inline void service_atomic_init(service_atomic_lock_t* lock, int value)
@@ -148,7 +148,7 @@ static inline void service_atomic_unlock(service_atomic_lock_t *lock)
                           : "memory");
 }
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
 
-#endif /* ! CCS_SYS_ARCH_ATOMIC_H */
+#endif /* ! OCOMS_SYS_ARCH_ATOMIC_H */

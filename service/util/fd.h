@@ -14,7 +14,7 @@
 #ifndef SERVICE_UTIL_FD_H_
 #define SERVICE_UTIL_FD_H_
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 BEGIN_C_DECLS
 
@@ -25,14 +25,14 @@ BEGIN_C_DECLS
  * @param len Number of bytes to read
  * @param buffer Pre-allocated buffer (large enough to hold len bytes)
  *
- * @returns CCS_SUCCESS upon success.
- * @returns CCS_ERR_TIMEOUT if the fd closes before reading the full amount.
- * @returns CCS_ERR_IN_ERRNO otherwise.
+ * @returns OCOMS_SUCCESS upon success.
+ * @returns OCOMS_ERR_TIMEOUT if the fd closes before reading the full amount.
+ * @returns OCOMS_ERR_IN_ERRNO otherwise.
  *
  * Loop over reading from the fd until len bytes are read or an error
  * occurs.  EAGAIN and EINTR are transparently handled.
  */
-CCS_DECLSPEC int service_fd_read(int fd, int len, void *buffer);
+OCOMS_DECLSPEC int service_fd_read(int fd, int len, void *buffer);
 
 /**
  * Write a complete buffer to a file descriptor.
@@ -41,13 +41,13 @@ CCS_DECLSPEC int service_fd_read(int fd, int len, void *buffer);
  * @param len Number of bytes to write
  * @param buffer Buffer to write from
  *
- * @returns CCS_SUCCESS upon success.
- * @returns CCS_ERR_IN_ERRNO otherwise.
+ * @returns OCOMS_SUCCESS upon success.
+ * @returns OCOMS_ERR_IN_ERRNO otherwise.
  *
  * Loop over writing to the fd until len bytes are written or an error
  * occurs.  EAGAIN and EINTR are transparently handled.
  */
-CCS_DECLSPEC int service_fd_write(int fd, int len, const void *buffer);
+OCOMS_DECLSPEC int service_fd_write(int fd, int len, const void *buffer);
 
 END_C_DECLS
 

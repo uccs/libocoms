@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
@@ -63,7 +63,7 @@ bool service_path_is_absolute( const char *path )
     if( (isalpha(path[0]) && (':' == path[1])) ||
         ('\\' == path[0]) && ('\\' == path[1]) ) return true;
 #else
-    if( CCS_PATH_SEP[0] == *path ) {
+    if( OCOMS_PATH_SEP[0] == *path ) {
         return true;
     }
 #endif  /* defined(__WINDOWS__) */
@@ -98,13 +98,13 @@ char *service_path_find(char *fname, char **pathv, int mode, char **envv)
 
         /* Replace environment variable at the head of the string. */
         if ('$' == *pathv[i]) {
-            delimit = strchr(pathv[i], CCS_PATH_SEP[0]);
+            delimit = strchr(pathv[i], OCOMS_PATH_SEP[0]);
             if (delimit) {
                 *delimit = '\0';
             }
             env = list_env_get(pathv[i]+1, envv);
             if (delimit) {
-                *delimit = CCS_PATH_SEP[0];
+                *delimit = OCOMS_PATH_SEP[0];
             }
             if (NULL != env) {
                 if (!delimit) {
@@ -281,7 +281,7 @@ static void path_env_load(char *path, int *pargc, char ***pargv)
 
         /* Locate the delimiter. */
 
-        for (p = path; *p && (*p != CCS_ENV_SEP); ++p) {
+        for (p = path; *p && (*p != OCOMS_ENV_SEP); ++p) {
             continue;
         }
 
@@ -345,14 +345,14 @@ static char *list_env_get(char *var, char **list)
 char* service_find_absolute_path( char* app_name )
 {
     char* abs_app_name;
-    char cwd[CCS_PATH_MAX], *pcwd;
+    char cwd[OCOMS_PATH_MAX], *pcwd;
 
     if( service_path_is_absolute(app_name) ) { /* already absolute path */
         abs_app_name = app_name;
     } else if ( '.' == app_name[0] ||
-               NULL != strchr(app_name, CCS_PATH_SEP[0])) {
+               NULL != strchr(app_name, OCOMS_PATH_SEP[0])) {
         /* the app is in the current directory or below it */
-        pcwd = getcwd( cwd, CCS_PATH_MAX );
+        pcwd = getcwd( cwd, OCOMS_PATH_MAX );
         if( NULL == pcwd ) {
             /* too bad there is no way we can get the app absolute name */
             return NULL;
@@ -364,7 +364,7 @@ char* service_find_absolute_path( char* app_name )
     }
     
     if( NULL != abs_app_name ) {
-        char* resolved_path = (char*)malloc(CCS_PATH_MAX);
+        char* resolved_path = (char*)malloc(OCOMS_PATH_MAX);
 #if !defined(__WINDOWS__)
         realpath( abs_app_name, resolved_path );
 #else
@@ -486,13 +486,13 @@ again:
     if (-1 == rc) {
         char * last_sep;
 
-        CCS_OUTPUT_VERBOSE((10, 0, "service_path_nfs: stat(v)fs on file:%s failed errno:%d directory:%s\n",
+        OCOMS_OUTPUT_VERBOSE((10, 0, "service_path_nfs: stat(v)fs on file:%s failed errno:%d directory:%s\n",
                              fname, errno, file));
 
-        last_sep = strrchr(file, CCS_PATH_SEP[0]);
+        last_sep = strrchr(file, OCOMS_PATH_SEP[0]);
         /* Stop the search, when we have searched past root '/' */
         if (NULL == last_sep || (1 == strlen(last_sep) && 
-            CCS_PATH_SEP[0] == *last_sep)) {
+            OCOMS_PATH_SEP[0] == *last_sep)) {
             free (file); 
             return false;
         }
@@ -524,7 +524,7 @@ again:
     return false;
 
 found:
-    CCS_OUTPUT_VERBOSE((10, 0, "service_path_nfs: file:%s on fs:%s\n",
+    OCOMS_OUTPUT_VERBOSE((10, 0, "service_path_nfs: file:%s on fs:%s\n",
                          fname, fs_types[i].f_fsname));
     free (file);
     return true;
@@ -553,7 +553,7 @@ service_path_df(const char *path,
 #endif
 
     if (NULL == path || NULL == out_avail) {
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
     *out_avail = 0;
 
@@ -568,21 +568,21 @@ service_path_df(const char *path,
     } while (-1 == rc && ESTALE == err && (--trials > 0));
 
     if (-1 == rc) {
-        CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs on "
+        OCOMS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs on "
                              "path: %s failed with errno: %d (%s)\n",
                              path, err, strerror(err)));
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
 
     /* now set the amount of free space available on path */
                                /* sometimes buf.f_bavail is negative */
     *out_avail = buf.f_bsize * ((int)buf.f_bavail < 0 ? 0 : buf.f_bavail);
 
-    /*CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
+    /*OCOMS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
                          "path: %s has %"PRIu64 " B of free space.",
                          path, *out_avail));*/
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 
 #else /* defined __WINDOWS__ */
     *out_avail = 0;
@@ -592,18 +592,18 @@ service_path_df(const char *path,
 
         if (!GetDiskFreeSpaceA(NULL, &dwSectorsPerCluster,
             &dwBytesPerSector, &dwFreeClusters, &dwTotalClusters)) {
-            CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: GetDiskFreeSpaceA on "
+            OCOMS_OUTPUT_VERBOSE((10, 2, "service_path_df: GetDiskFreeSpaceA on "
                         "path: %s failed with errno: %d (%s)\n",
                         path, err, strerror(err)));
-            return CCS_ERROR;
+            return OCOMS_ERROR;
         }
         *out_avail = dwFreeClusters * dwSectorsPerCluster * dwBytesPerSector;
     }
 
-    CCS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
+    OCOMS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
                         "path: %s has %"PRIu64 " B of free space.",
                         path, *out_avail));
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 #endif /* !defined(__WINDOWS__) */
 }

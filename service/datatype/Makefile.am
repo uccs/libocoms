@@ -70,12 +70,12 @@ libdatatype_la_LIBADD = libdatatype_reliable.la
 
 # Conditionally install the header files
 #if WANT_INSTALL_HEADERS
-#servicedir = $(includedir)/ccs/$(subdir)
+#servicedir = $(includedir)/ocoms/$(subdir)
 #service_HEADERS = $(headers)
 #endif
 
 # If we have cuda support, modify file list and flags
-if CCS_cuda_support
+if OCOMS_cuda_support
 libdatatype_la_SOURCES += service_datatype_cuda.c
 datatype_headers += service_datatype_cuda.h
 AM_CPPFLAGS = $(service_datatype_CPPFLAGS)

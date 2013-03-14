@@ -11,7 +11,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 
@@ -37,9 +37,9 @@
  */
 #define COPY_TYPE( TYPENAME, TYPE, COUNT )                                              \
 static int copy_##TYPENAME( service_convertor_t *pConvertor, uint32_t count,               \
-                            char* from, size_t from_len, CCS_PTRDIFF_TYPE from_extent, \
-                            char* to, size_t to_len, CCS_PTRDIFF_TYPE to_extent,       \
-                            CCS_PTRDIFF_TYPE *advance)                                 \
+                            char* from, size_t from_len, OCOMS_PTRDIFF_TYPE from_extent, \
+                            char* to, size_t to_len, OCOMS_PTRDIFF_TYPE to_extent,       \
+                            OCOMS_PTRDIFF_TYPE *advance)                                 \
 {                                                                                       \
     uint32_t i;                                                                         \
     size_t remote_TYPE_size = sizeof(TYPE) * (COUNT); /* TODO */                        \
@@ -58,8 +58,8 @@ static int copy_##TYPENAME( service_convertor_t *pConvertor, uint32_t count,    
         DUMP( "         copy %s count %d from buffer %p with length %d to %p space %d\n", \
               #TYPE, count, from, from_len, to, to_len );                               \
                                                                                         \
-    if( (from_extent == (CCS_PTRDIFF_TYPE)local_TYPE_size) &&                          \
-        (to_extent == (CCS_PTRDIFF_TYPE)remote_TYPE_size) ) {                          \
+    if( (from_extent == (OCOMS_PTRDIFF_TYPE)local_TYPE_size) &&                          \
+        (to_extent == (OCOMS_PTRDIFF_TYPE)remote_TYPE_size) ) {                          \
         /* copy of contigous data at both source and destination */                     \
         MEMCPY( to, from, count * local_TYPE_size );                                    \
     } else {                                                                            \
@@ -90,9 +90,9 @@ static int copy_##TYPENAME( service_convertor_t *pConvertor, uint32_t count,    
  */
 #define COPY_CONTIGUOUS_BYTES( TYPENAME, COUNT )                                          \
 static int copy_##TYPENAME##_##COUNT( service_convertor_t *pConvertor, uint32_t count,       \
-                                      char* from, size_t from_len, CCS_PTRDIFF_TYPE from_extent, \
-                                      char* to, size_t to_len, CCS_PTRDIFF_TYPE to_extent,       \
-                                      CCS_PTRDIFF_TYPE *advance )              \
+                                      char* from, size_t from_len, OCOMS_PTRDIFF_TYPE from_extent, \
+                                      char* to, size_t to_len, OCOMS_PTRDIFF_TYPE to_extent,       \
+                                      OCOMS_PTRDIFF_TYPE *advance )              \
 {                                                                               \
     uint32_t i;                                                                 \
     size_t remote_TYPE_size = (size_t)(COUNT); /* TODO */                       \
@@ -110,8 +110,8 @@ static int copy_##TYPENAME##_##COUNT( service_convertor_t *pConvertor, uint32_t 
         DUMP( "         copy %s count %d from buffer %p with length %d to %p space %d\n", \
               #TYPENAME, count, from, from_len, to, to_len );                   \
                                                                                 \
-    if( (from_extent == (CCS_PTRDIFF_TYPE)local_TYPE_size) &&                  \
-        (to_extent == (CCS_PTRDIFF_TYPE)remote_TYPE_size) ) {                  \
+    if( (from_extent == (OCOMS_PTRDIFF_TYPE)local_TYPE_size) &&                  \
+        (to_extent == (OCOMS_PTRDIFF_TYPE)remote_TYPE_size) ) {                  \
         MEMCPY( to, from, count * local_TYPE_size );                            \
     } else {                                                                    \
         for( i = 0; i < count; i++ ) {                                          \
@@ -218,27 +218,27 @@ COPY_TYPE (wchar, wchar_t, 1)
 
 /* Table of predefined copy functions - one for each OPAL type */
 /* NOTE: The order of this array *MUST* match the order in service_datatype_basicDatatypes */
-conversion_fct_t service_datatype_copy_functions[CCS_DATATYPE_MAX_PREDEFINED] = {
-    (conversion_fct_t)NULL,                      /* CCS_DATATYPE_LOOP         */
-    (conversion_fct_t)NULL,                      /* CCS_DATATYPE_END_LOOP     */
-    (conversion_fct_t)NULL,                      /* CCS_DATATYPE_LB           */
-    (conversion_fct_t)NULL,                      /* CCS_DATATYPE_UB           */
-    (conversion_fct_t)copy_bytes_1,              /* CCS_DATATYPE_INT1         */
-    (conversion_fct_t)copy_bytes_2,              /* CCS_DATATYPE_INT2         */
-    (conversion_fct_t)copy_bytes_4,              /* CCS_DATATYPE_INT4         */
-    (conversion_fct_t)copy_bytes_8,              /* CCS_DATATYPE_INT8         */
-    (conversion_fct_t)copy_bytes_16,             /* CCS_DATATYPE_INT16        */
-    (conversion_fct_t)copy_bytes_1,              /* CCS_DATATYPE_UINT1        */
-    (conversion_fct_t)copy_bytes_2,              /* CCS_DATATYPE_UINT2        */
-    (conversion_fct_t)copy_bytes_4,              /* CCS_DATATYPE_UINT4        */
-    (conversion_fct_t)copy_bytes_8,              /* CCS_DATATYPE_UINT8        */
-    (conversion_fct_t)copy_bytes_16,             /* CCS_DATATYPE_UINT16       */
-    (conversion_fct_t)copy_float_2,              /* CCS_DATATYPE_FLOAT2       */
-    (conversion_fct_t)copy_float_4,              /* CCS_DATATYPE_FLOAT4       */
-    (conversion_fct_t)copy_float_8,              /* CCS_DATATYPE_FLOAT8       */
-    (conversion_fct_t)copy_float_12,             /* CCS_DATATYPE_FLOAT12       */
-    (conversion_fct_t)copy_float_16,             /* CCS_DATATYPE_FLOAT16      */
-    (conversion_fct_t)copy_bool,                 /* CCS_DATATYPE_BOOL         */
-    (conversion_fct_t)copy_wchar,                /* CCS_DATATYPE_WCHAR        */
-    (conversion_fct_t)NULL                       /* CCS_DATATYPE_UNAVAILABLE  */
+conversion_fct_t service_datatype_copy_functions[OCOMS_DATATYPE_MAX_PREDEFINED] = {
+    (conversion_fct_t)NULL,                      /* OCOMS_DATATYPE_LOOP         */
+    (conversion_fct_t)NULL,                      /* OCOMS_DATATYPE_END_LOOP     */
+    (conversion_fct_t)NULL,                      /* OCOMS_DATATYPE_LB           */
+    (conversion_fct_t)NULL,                      /* OCOMS_DATATYPE_UB           */
+    (conversion_fct_t)copy_bytes_1,              /* OCOMS_DATATYPE_INT1         */
+    (conversion_fct_t)copy_bytes_2,              /* OCOMS_DATATYPE_INT2         */
+    (conversion_fct_t)copy_bytes_4,              /* OCOMS_DATATYPE_INT4         */
+    (conversion_fct_t)copy_bytes_8,              /* OCOMS_DATATYPE_INT8         */
+    (conversion_fct_t)copy_bytes_16,             /* OCOMS_DATATYPE_INT16        */
+    (conversion_fct_t)copy_bytes_1,              /* OCOMS_DATATYPE_UINT1        */
+    (conversion_fct_t)copy_bytes_2,              /* OCOMS_DATATYPE_UINT2        */
+    (conversion_fct_t)copy_bytes_4,              /* OCOMS_DATATYPE_UINT4        */
+    (conversion_fct_t)copy_bytes_8,              /* OCOMS_DATATYPE_UINT8        */
+    (conversion_fct_t)copy_bytes_16,             /* OCOMS_DATATYPE_UINT16       */
+    (conversion_fct_t)copy_float_2,              /* OCOMS_DATATYPE_FLOAT2       */
+    (conversion_fct_t)copy_float_4,              /* OCOMS_DATATYPE_FLOAT4       */
+    (conversion_fct_t)copy_float_8,              /* OCOMS_DATATYPE_FLOAT8       */
+    (conversion_fct_t)copy_float_12,             /* OCOMS_DATATYPE_FLOAT12       */
+    (conversion_fct_t)copy_float_16,             /* OCOMS_DATATYPE_FLOAT16      */
+    (conversion_fct_t)copy_bool,                 /* OCOMS_DATATYPE_BOOL         */
+    (conversion_fct_t)copy_wchar,                /* OCOMS_DATATYPE_WCHAR        */
+    (conversion_fct_t)NULL                       /* OCOMS_DATATYPE_UNAVAILABLE  */
 };

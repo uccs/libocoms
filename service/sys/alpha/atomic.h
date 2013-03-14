@@ -16,14 +16,14 @@
  * $HEADER$
  */
 
-#ifndef CCS_SYS_ARCH_ATOMIC_H
-#define CCS_SYS_ARCH_ATOMIC_H 1
+#ifndef OCOMS_SYS_ARCH_ATOMIC_H
+#define OCOMS_SYS_ARCH_ATOMIC_H 1
 
 /*
  * On alpha, everything is load-locked, store-conditional...
  */
 
-#if CCS_WANT_SMP_LOCKS
+#if OCOMS_WANT_SMP_LOCKS
 
 #define MB()  __asm__ __volatile__ ("mb");
 #define RMB() __asm__ __volatile__ ("mb");
@@ -43,11 +43,11 @@
  * Define constants for PowerPC 32
  *
  *********************************************************************/
-#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
+#define OCOMS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define CCS_HAVE_ATOMIC_CMPSET_32 1
+#define OCOMS_HAVE_ATOMIC_CMPSET_32 1
 
-#define CCS_HAVE_ATOMIC_CMPSET_64 1
+#define OCOMS_HAVE_ATOMIC_CMPSET_64 1
 
 
 /**********************************************************************
@@ -55,7 +55,7 @@
  * Memory Barriers
  *
  *********************************************************************/
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 static inline void service_atomic_mb(void)
 {
@@ -74,7 +74,7 @@ static inline void service_atomic_wmb(void)
     WMB();
 }
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
 
 /**********************************************************************
@@ -82,7 +82,7 @@ static inline void service_atomic_wmb(void)
  * Atomic math operations
  *
  *********************************************************************/
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 static inline int service_atomic_cmpset_32( volatile int32_t *addr,
                                          int32_t oldval, int32_t newval)
@@ -174,7 +174,7 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
 }
 
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
 
-#endif /* ! CCS_SYS_ARCH_ATOMIC_H */
+#endif /* ! OCOMS_SYS_ARCH_ATOMIC_H */

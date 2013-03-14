@@ -32,20 +32,20 @@
  * The following #defines will be true / false based on
  * assembly support:
  *
- *  - \c CCS_HAVE_ATOMIC_MEM_BARRIER atomic memory barriers
- *  - \c CCS_HAVE_ATOMIC_SPINLOCKS atomic spinlocks
- *  - \c CCS_HAVE_ATOMIC_MATH_32 if 32 bit add/sub/cmpset can be done "atomicly"
- *  - \c CCS_HAVE_ATOMIC_MATH_64 if 32 bit add/sub/cmpset can be done "atomicly"
+ *  - \c OCOMS_HAVE_ATOMIC_MEM_BARRIER atomic memory barriers
+ *  - \c OCOMS_HAVE_ATOMIC_SPINLOCKS atomic spinlocks
+ *  - \c OCOMS_HAVE_ATOMIC_MATH_32 if 32 bit add/sub/cmpset can be done "atomicly"
+ *  - \c OCOMS_HAVE_ATOMIC_MATH_64 if 32 bit add/sub/cmpset can be done "atomicly"
  *
  * Note that for the Atomic math, atomic add/sub may be implemented as
  * C code using service_atomic_cmpset.  The appearance of atomic
  * operation will be upheld in these cases.
  */
 
-#ifndef CCS_SYS_ATOMIC_H
-#define CCS_SYS_ATOMIC_H 1
+#ifndef OCOMS_SYS_ATOMIC_H
+#define OCOMS_SYS_ATOMIC_H 1
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/sys/architecture.h"
 
@@ -55,32 +55,32 @@
 
 /* do some quick #define cleanup in cases where we are doing
    testing... */
-#ifdef CCS_DISABLE_INLINE_ASM
-#undef CCS_C_GCC_INLINE_ASSEMBLY
-#define CCS_C_GCC_INLINE_ASSEMBLY 0
-#undef CCS_CXX_GCC_INLINE_ASSEMBLY
-#define CCS_CXX_GCC_INLINE_ASSEMBLY 0
-#undef CCS_C_DEC_INLINE_ASSEMBLY
-#define CCS_C_DEC_INLINE_ASSEMBLY 0
-#undef CCS_CXX_DEC_INLINE_ASSEMBLY
-#define CCS_CXX_DEC_INLINE_ASSEMBLY 0
-#undef CCS_C_XLC_INLINE_ASSEMBLY
-#define CCS_C_XLC_INLINE_ASSEMBLY 0
-#undef CCS_CXX_XLC_INLINE_ASSEMBLY
-#define CCS_CXX_XLC_INLINE_ASSEMBLY 0
+#ifdef OCOMS_DISABLE_INLINE_ASM
+#undef OCOMS_C_GCC_INLINE_ASSEMBLY
+#define OCOMS_C_GCC_INLINE_ASSEMBLY 0
+#undef OCOMS_CXX_GCC_INLINE_ASSEMBLY
+#define OCOMS_CXX_GCC_INLINE_ASSEMBLY 0
+#undef OCOMS_C_DEC_INLINE_ASSEMBLY
+#define OCOMS_C_DEC_INLINE_ASSEMBLY 0
+#undef OCOMS_CXX_DEC_INLINE_ASSEMBLY
+#define OCOMS_CXX_DEC_INLINE_ASSEMBLY 0
+#undef OCOMS_C_XLC_INLINE_ASSEMBLY
+#define OCOMS_C_XLC_INLINE_ASSEMBLY 0
+#undef OCOMS_CXX_XLC_INLINE_ASSEMBLY
+#define OCOMS_CXX_XLC_INLINE_ASSEMBLY 0
 #endif
 
-/* define CCS_{GCC,DEC,XLC}_INLINE_ASSEMBLY based on the
-   CCS_{C,CXX}_{GCC,DEC,XLC}_INLINE_ASSEMBLY defines and whether we
+/* define OCOMS_{GCC,DEC,XLC}_INLINE_ASSEMBLY based on the
+   OCOMS_{C,CXX}_{GCC,DEC,XLC}_INLINE_ASSEMBLY defines and whether we
    are in C or C++ */
 #if defined(c_plusplus) || defined(__cplusplus)
-#define CCS_GCC_INLINE_ASSEMBLY CCS_CXX_GCC_INLINE_ASSEMBLY
-#define CCS_DEC_INLINE_ASSEMBLY CCS_CXX_DEC_INLINE_ASSEMBLY
-#define CCS_XLC_INLINE_ASSEMBLY CCS_CXX_XLC_INLINE_ASSEMBLY
+#define OCOMS_GCC_INLINE_ASSEMBLY OCOMS_CXX_GCC_INLINE_ASSEMBLY
+#define OCOMS_DEC_INLINE_ASSEMBLY OCOMS_CXX_DEC_INLINE_ASSEMBLY
+#define OCOMS_XLC_INLINE_ASSEMBLY OCOMS_CXX_XLC_INLINE_ASSEMBLY
 #else
-#define CCS_GCC_INLINE_ASSEMBLY CCS_C_GCC_INLINE_ASSEMBLY
-#define CCS_DEC_INLINE_ASSEMBLY CCS_C_DEC_INLINE_ASSEMBLY
-#define CCS_XLC_INLINE_ASSEMBLY CCS_C_XLC_INLINE_ASSEMBLY
+#define OCOMS_GCC_INLINE_ASSEMBLY OCOMS_C_GCC_INLINE_ASSEMBLY
+#define OCOMS_DEC_INLINE_ASSEMBLY OCOMS_C_DEC_INLINE_ASSEMBLY
+#define OCOMS_XLC_INLINE_ASSEMBLY OCOMS_C_XLC_INLINE_ASSEMBLY
 #endif
 
 
@@ -114,22 +114,22 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  * files if we need to specify them as inline or non-inline 
  * 
  *********************************************************************/
-#if !CCS_GCC_INLINE_ASSEMBLY
-#define CCS_HAVE_INLINE_ATOMIC_MEM_BARRIER 0
-#define CCS_HAVE_INLINE_ATOMIC_CMPSET_32 0
-#define CCS_HAVE_INLINE_ATOMIC_CMPSET_64 0
-#define CCS_HAVE_INLINE_ATOMIC_ADD_32 0
-#define CCS_HAVE_INLINE_ATOMIC_SUB_32 0
-#define CCS_HAVE_INLINE_ATOMIC_ADD_64 0
-#define CCS_HAVE_INLINE_ATOMIC_SUB_64 0
+#if !OCOMS_GCC_INLINE_ASSEMBLY
+#define OCOMS_HAVE_INLINE_ATOMIC_MEM_BARRIER 0
+#define OCOMS_HAVE_INLINE_ATOMIC_CMPSET_32 0
+#define OCOMS_HAVE_INLINE_ATOMIC_CMPSET_64 0
+#define OCOMS_HAVE_INLINE_ATOMIC_ADD_32 0
+#define OCOMS_HAVE_INLINE_ATOMIC_SUB_32 0
+#define OCOMS_HAVE_INLINE_ATOMIC_ADD_64 0
+#define OCOMS_HAVE_INLINE_ATOMIC_SUB_64 0
 #else
-#define CCS_HAVE_INLINE_ATOMIC_MEM_BARRIER 1
-#define CCS_HAVE_INLINE_ATOMIC_CMPSET_32 1
-#define CCS_HAVE_INLINE_ATOMIC_CMPSET_64 1
-#define CCS_HAVE_INLINE_ATOMIC_ADD_32 1
-#define CCS_HAVE_INLINE_ATOMIC_SUB_32 1
-#define CCS_HAVE_INLINE_ATOMIC_ADD_64 1
-#define CCS_HAVE_INLINE_ATOMIC_SUB_64 1
+#define OCOMS_HAVE_INLINE_ATOMIC_MEM_BARRIER 1
+#define OCOMS_HAVE_INLINE_ATOMIC_CMPSET_32 1
+#define OCOMS_HAVE_INLINE_ATOMIC_CMPSET_64 1
+#define OCOMS_HAVE_INLINE_ATOMIC_ADD_32 1
+#define OCOMS_HAVE_INLINE_ATOMIC_SUB_32 1
+#define OCOMS_HAVE_INLINE_ATOMIC_ADD_64 1
+#define OCOMS_HAVE_INLINE_ATOMIC_SUB_64 1
 #endif
 
 /**********************************************************************
@@ -140,30 +140,30 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  *********************************************************************/
 #if defined(DOXYGEN)
 /* don't include system-level gorp when generating doxygen files */ 
-#elif CCS_ASSEMBLY_ARCH == CCS_WINDOWS
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_WINDOWS
 /* windows first, as they have API-level primitives for this stuff */
 #include "service/sys/win32/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_ALPHA
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_ALPHA
 #include "service/sys/alpha/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_AMD64
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_AMD64
 #include "service/sys/amd64/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_ARM
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_ARM
 #include "service/sys/arm/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_IA32
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_IA32
 #include "service/sys/ia32/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_IA64
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_IA64
 #include "service/sys/ia64/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_MIPS
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_MIPS
 #include "service/sys/mips/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_POWERPC32
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_POWERPC32
 #include "service/sys/powerpc/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_POWERPC64
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_POWERPC64
 #include "service/sys/powerpc/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_SPARC
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_SPARC
 #include "service/sys/sparc/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_32
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_SPARCV9_32
 #include "service/sys/sparcv9/atomic.h"
-#elif CCS_ASSEMBLY_ARCH == CCS_SPARCV9_64
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_SPARCV9_64
 #include "service/sys/sparcv9/atomic.h"
 #endif
 
@@ -171,11 +171,11 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
 /* compare and set operations can't really be emulated from software,
    so if these defines aren't already set, they should be set to 0
    now */
-#ifndef CCS_HAVE_ATOMIC_CMPSET_32
-#define CCS_HAVE_ATOMIC_CMPSET_32 0
+#ifndef OCOMS_HAVE_ATOMIC_CMPSET_32
+#define OCOMS_HAVE_ATOMIC_CMPSET_32 0
 #endif
-#ifndef CCS_HAVE_ATOMIC_CMPSET_64
-#define CCS_HAVE_ATOMIC_CMPSET_64 0
+#ifndef OCOMS_HAVE_ATOMIC_CMPSET_64
+#define OCOMS_HAVE_ATOMIC_CMPSET_64 0
 #endif
 #endif /* DOXYGEN */
 
@@ -185,12 +185,12 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  *                   but can't inline
  *
  *********************************************************************/
-#if !defined(CCS_HAVE_ATOMIC_MEM_BARRIER) && !defined(DOXYGEN)
+#if !defined(OCOMS_HAVE_ATOMIC_MEM_BARRIER) && !defined(DOXYGEN)
 /* no way to emulate in C code */
-#define CCS_HAVE_ATOMIC_MEM_BARRIER 0
+#define OCOMS_HAVE_ATOMIC_MEM_BARRIER 0
 #endif
 
-#if defined(DOXYGEN) || CCS_HAVE_ATOMIC_MEM_BARRIER
+#if defined(DOXYGEN) || OCOMS_HAVE_ATOMIC_MEM_BARRIER
 /**
  * Memory barrier
  *
@@ -205,7 +205,7 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  * if you need *both* read and write barriers.
  */
 
-#if CCS_HAVE_INLINE_ATOMIC_MEM_BARRIER
+#if OCOMS_HAVE_INLINE_ATOMIC_MEM_BARRIER
 static inline 
 #endif
 void service_atomic_mb(void);
@@ -220,7 +220,7 @@ void service_atomic_mb(void);
  * \c service_atomic_rmb().
  */
 
-#if CCS_HAVE_INLINE_ATOMIC_MEM_BARRIER
+#if OCOMS_HAVE_INLINE_ATOMIC_MEM_BARRIER
 static inline 
 #endif
 void service_atomic_rmb(void);
@@ -235,12 +235,12 @@ void service_atomic_rmb(void);
  * \c service_atomic_wmb().
  */
 
-#if CCS_HAVE_INLINE_ATOMIC_MEM_BARRIER
+#if OCOMS_HAVE_INLINE_ATOMIC_MEM_BARRIER
 static inline 
 #endif
 void service_atomic_wmb(void);
 
-#endif /* defined(DOXYGEN) || CCS_HAVE_ATOMIC_MEM_BARRIER */
+#endif /* defined(DOXYGEN) || OCOMS_HAVE_ATOMIC_MEM_BARRIER */
 
 
 /**********************************************************************
@@ -249,19 +249,19 @@ void service_atomic_wmb(void);
  *
  *********************************************************************/
 
-#if !defined(CCS_HAVE_ATOMIC_SPINLOCKS) && !defined(DOXYGEN)
+#if !defined(OCOMS_HAVE_ATOMIC_SPINLOCKS) && !defined(DOXYGEN)
 /* 0 is more like "pending" - we'll fix up at the end after all
    the static inline functions are declared */
-#define CCS_HAVE_ATOMIC_SPINLOCKS 0
+#define OCOMS_HAVE_ATOMIC_SPINLOCKS 0
 #endif
 
-#if defined(DOXYGEN) || CCS_HAVE_ATOMIC_SPINLOCKS || (CCS_HAVE_ATOMIC_CMPSET_32 || CCS_HAVE_ATOMIC_CMPSET_64)
+#if defined(DOXYGEN) || OCOMS_HAVE_ATOMIC_SPINLOCKS || (OCOMS_HAVE_ATOMIC_CMPSET_32 || OCOMS_HAVE_ATOMIC_CMPSET_64)
 /**
  * Enumeration of lock states
  */
 enum {
-    CCS_ATOMIC_UNLOCKED = 0,
-    CCS_ATOMIC_LOCKED = 1
+    OCOMS_ATOMIC_UNLOCKED = 0,
+    OCOMS_ATOMIC_LOCKED = 1
 };
 
 
@@ -271,7 +271,7 @@ enum {
  * @param lock         Address of the lock
  * @param value        Initial value to set lock to
  */
-#if CCS_HAVE_ATOMIC_SPINLOCKS == 0
+#if OCOMS_HAVE_ATOMIC_SPINLOCKS == 0
 static inline 
 #endif
 void service_atomic_init(service_atomic_lock_t* lock, int32_t value);
@@ -283,7 +283,7 @@ void service_atomic_init(service_atomic_lock_t* lock, int32_t value);
  * @param lock          Address of the lock.
  * @return              0 if the lock was acquired, 1 otherwise.
  */
-#if CCS_HAVE_ATOMIC_SPINLOCKS == 0
+#if OCOMS_HAVE_ATOMIC_SPINLOCKS == 0
 static inline
 #endif
 int service_atomic_trylock(service_atomic_lock_t *lock);
@@ -294,7 +294,7 @@ int service_atomic_trylock(service_atomic_lock_t *lock);
  *
  * @param lock          Address of the lock.
  */
-#if CCS_HAVE_ATOMIC_SPINLOCKS == 0
+#if OCOMS_HAVE_ATOMIC_SPINLOCKS == 0
 static inline
 #endif
 void service_atomic_lock(service_atomic_lock_t *lock);
@@ -305,19 +305,19 @@ void service_atomic_lock(service_atomic_lock_t *lock);
  *
  * @param lock          Address of the lock.
  */
-#if CCS_HAVE_ATOMIC_SPINLOCKS == 0
+#if OCOMS_HAVE_ATOMIC_SPINLOCKS == 0
 static inline
 #endif
 void service_atomic_unlock(service_atomic_lock_t *lock);
 
 
-#if CCS_HAVE_ATOMIC_SPINLOCKS == 0
-#undef CCS_HAVE_ATOMIC_SPINLOCKS
-#define CCS_HAVE_ATOMIC_SPINLOCKS (CCS_HAVE_ATOMIC_CMPSET_32 || CCS_HAVE_ATOMIC_CMPSET_64)
-#define CCS_NEED_INLINE_ATOMIC_SPINLOCKS
+#if OCOMS_HAVE_ATOMIC_SPINLOCKS == 0
+#undef OCOMS_HAVE_ATOMIC_SPINLOCKS
+#define OCOMS_HAVE_ATOMIC_SPINLOCKS (OCOMS_HAVE_ATOMIC_CMPSET_32 || OCOMS_HAVE_ATOMIC_CMPSET_64)
+#define OCOMS_NEED_INLINE_ATOMIC_SPINLOCKS
 #endif
 
-#endif /* CCS_HAVE_ATOMIC_SPINLOCKS */
+#endif /* OCOMS_HAVE_ATOMIC_SPINLOCKS */
 
 
 /**********************************************************************
@@ -325,24 +325,24 @@ void service_atomic_unlock(service_atomic_lock_t *lock);
  * Atomic math operations
  *
  *********************************************************************/
-#if !defined(CCS_HAVE_ATOMIC_CMPSET_32) && !defined(DOXYGEN)
-#define CCS_HAVE_ATOMIC_CMPSET_32 0
+#if !defined(OCOMS_HAVE_ATOMIC_CMPSET_32) && !defined(DOXYGEN)
+#define OCOMS_HAVE_ATOMIC_CMPSET_32 0
 #endif
-#if defined(DOXYGEN) || CCS_HAVE_ATOMIC_CMPSET_32
+#if defined(DOXYGEN) || OCOMS_HAVE_ATOMIC_CMPSET_32
 
-#if CCS_HAVE_INLINE_ATOMIC_CMPSET_32
+#if OCOMS_HAVE_INLINE_ATOMIC_CMPSET_32
 static inline 
 #endif
 int service_atomic_cmpset_32(volatile int32_t *addr, int32_t oldval,
                           int32_t newval);
 
-#if CCS_HAVE_INLINE_ATOMIC_CMPSET_32
+#if OCOMS_HAVE_INLINE_ATOMIC_CMPSET_32
 static inline 
 #endif
 int service_atomic_cmpset_acq_32(volatile int32_t *addr, int32_t oldval,
                               int32_t newval);
 
-#if CCS_HAVE_INLINE_ATOMIC_CMPSET_32
+#if OCOMS_HAVE_INLINE_ATOMIC_CMPSET_32
 static inline 
 #endif
 int service_atomic_cmpset_rel_32(volatile int32_t *addr, int32_t oldval,
@@ -350,24 +350,24 @@ int service_atomic_cmpset_rel_32(volatile int32_t *addr, int32_t oldval,
 #endif
 
 
-#if !defined(CCS_HAVE_ATOMIC_CMPSET_64) && !defined(DOXYGEN)
-#define CCS_HAVE_ATOMIC_CMPSET_64 0
+#if !defined(OCOMS_HAVE_ATOMIC_CMPSET_64) && !defined(DOXYGEN)
+#define OCOMS_HAVE_ATOMIC_CMPSET_64 0
 #endif
-#if defined(DOXYGEN) || CCS_HAVE_ATOMIC_CMPSET_64
+#if defined(DOXYGEN) || OCOMS_HAVE_ATOMIC_CMPSET_64
 
-#if CCS_HAVE_INLINE_ATOMIC_CMPSET_64
+#if OCOMS_HAVE_INLINE_ATOMIC_CMPSET_64
 static inline 
 #endif
 int service_atomic_cmpset_64(volatile int64_t *addr, int64_t oldval,
                           int64_t newval);
 
-#if CCS_HAVE_INLINE_ATOMIC_CMPSET_64
+#if OCOMS_HAVE_INLINE_ATOMIC_CMPSET_64
 static inline 
 #endif
 int service_atomic_cmpset_acq_64(volatile int64_t *addr, int64_t oldval,
                               int64_t newval);
 
-#if CCS_HAVE_INLINE_ATOMIC_CMPSET_64
+#if OCOMS_HAVE_INLINE_ATOMIC_CMPSET_64
 static inline 
 #endif
 int service_atomic_cmpset_rel_64(volatile int64_t *addr, int64_t oldval,
@@ -375,74 +375,74 @@ int service_atomic_cmpset_rel_64(volatile int64_t *addr, int64_t oldval,
 
 #endif
 
-#if !defined(CCS_HAVE_ATOMIC_MATH_32) && !defined(DOXYGEN)
+#if !defined(OCOMS_HAVE_ATOMIC_MATH_32) && !defined(DOXYGEN)
   /* define to 0 for these tests.  WIll fix up later. */
-  #define CCS_HAVE_ATOMIC_MATH_32 0
+  #define OCOMS_HAVE_ATOMIC_MATH_32 0
 #endif
 
-#if defined(DOXYGEN) ||  CCS_HAVE_ATOMIC_MATH_32 || CCS_HAVE_ATOMIC_CMPSET_32
+#if defined(DOXYGEN) ||  OCOMS_HAVE_ATOMIC_MATH_32 || OCOMS_HAVE_ATOMIC_CMPSET_32
 
-/* CCS_HAVE_INLINE_ATOMIC_*_32 will be 1 if <arch>/atomic.h provides
+/* OCOMS_HAVE_INLINE_ATOMIC_*_32 will be 1 if <arch>/atomic.h provides
    a static inline version of it (in assembly).  If it's 0 but
-   CCS_HAVE_ATOMIC_CMPSET_32 is 1, then atomic_impl.h (below) will
+   OCOMS_HAVE_ATOMIC_CMPSET_32 is 1, then atomic_impl.h (below) will
    define a static inline version of it (in C, using
    atomic_cmpset_32()).  */
-#if CCS_HAVE_INLINE_ATOMIC_ADD_32 || CCS_HAVE_ATOMIC_CMPSET_32
+#if OCOMS_HAVE_INLINE_ATOMIC_ADD_32 || OCOMS_HAVE_ATOMIC_CMPSET_32
 static inline
 #endif
 int32_t service_atomic_add_32(volatile int32_t *addr, int delta);
 
-/* CCS_HAVE_INLINE_ATOMIC_*_32 will be 1 if <arch>/atomic.h provides
+/* OCOMS_HAVE_INLINE_ATOMIC_*_32 will be 1 if <arch>/atomic.h provides
    a static inline version of it (in assembly).  If it's 0 but
-   CCS_HAVE_ATOMIC_CMPSET_32 is 1, then atomic_impl.h (below) will
+   OCOMS_HAVE_ATOMIC_CMPSET_32 is 1, then atomic_impl.h (below) will
    define a static inline version of it (in C, using
    atomic_cmpset_32()).  */
-#if CCS_HAVE_INLINE_ATOMIC_SUB_32 || CCS_HAVE_ATOMIC_CMPSET_32
+#if OCOMS_HAVE_INLINE_ATOMIC_SUB_32 || OCOMS_HAVE_ATOMIC_CMPSET_32
 static inline
 #endif
 int32_t service_atomic_sub_32(volatile int32_t *addr, int delta);
 
-#endif /* CCS_HAVE_ATOMIC_MATH_32 */
+#endif /* OCOMS_HAVE_ATOMIC_MATH_32 */
 
-#if ! CCS_HAVE_ATOMIC_MATH_32
-/* fix up the value of ccs_have_atomic_math_32 to allow for C versions */
-#undef CCS_HAVE_ATOMIC_MATH_32
-#define CCS_HAVE_ATOMIC_MATH_32 CCS_HAVE_ATOMIC_CMPSET_32
+#if ! OCOMS_HAVE_ATOMIC_MATH_32
+/* fix up the value of ocoms_have_atomic_math_32 to allow for C versions */
+#undef OCOMS_HAVE_ATOMIC_MATH_32
+#define OCOMS_HAVE_ATOMIC_MATH_32 OCOMS_HAVE_ATOMIC_CMPSET_32
 #endif
 
-#ifndef CCS_HAVE_ATOMIC_MATH_64
+#ifndef OCOMS_HAVE_ATOMIC_MATH_64
 /* define to 0 for these tests.  WIll fix up later. */
-#define CCS_HAVE_ATOMIC_MATH_64 0
+#define OCOMS_HAVE_ATOMIC_MATH_64 0
 #endif
 
-#if defined(DOXYGEN) || CCS_HAVE_ATOMIC_MATH_64 || CCS_HAVE_ATOMIC_CMPSET_64
+#if defined(DOXYGEN) || OCOMS_HAVE_ATOMIC_MATH_64 || OCOMS_HAVE_ATOMIC_CMPSET_64
 
-/* CCS_HAVE_INLINE_ATOMIC_*_64 will be 1 if <arch>/atomic.h provides
+/* OCOMS_HAVE_INLINE_ATOMIC_*_64 will be 1 if <arch>/atomic.h provides
    a static inline version of it (in assembly).  If it's 0 but
-   CCS_HAVE_ATOMIC_CMPSET_64 is 1, then atomic_impl.h (below) will
+   OCOMS_HAVE_ATOMIC_CMPSET_64 is 1, then atomic_impl.h (below) will
    define a static inline version of it (in C, using
    atomic_cmpset_64()).  */
-#if CCS_HAVE_INLINE_ATOMIC_ADD_64 || CCS_HAVE_ATOMIC_CMPSET_64
+#if OCOMS_HAVE_INLINE_ATOMIC_ADD_64 || OCOMS_HAVE_ATOMIC_CMPSET_64
 static inline
 #endif
 int64_t service_atomic_add_64(volatile int64_t *addr, int64_t delta);
 
-/* CCS_HAVE_INLINE_ATOMIC_*_64 will be 1 if <arch>/atomic.h provides
+/* OCOMS_HAVE_INLINE_ATOMIC_*_64 will be 1 if <arch>/atomic.h provides
    a static inline version of it (in assembly).  If it's 0 but
-   CCS_HAVE_ATOMIC_CMPSET_64 is 1, then atomic_impl.h (below) will
+   OCOMS_HAVE_ATOMIC_CMPSET_64 is 1, then atomic_impl.h (below) will
    define a static inline version of it (in C, using
    atomic_cmpset_64()).  */
-#if CCS_HAVE_INLINE_ATOMIC_SUB_64 || CCS_HAVE_ATOMIC_CMPSET_64
+#if OCOMS_HAVE_INLINE_ATOMIC_SUB_64 || OCOMS_HAVE_ATOMIC_CMPSET_64
 static inline
 #endif
 int64_t service_atomic_sub_64(volatile int64_t *addr, int64_t delta);
 
-#endif /* CCS_HAVE_ATOMIC_MATH_32 */
+#endif /* OCOMS_HAVE_ATOMIC_MATH_32 */
 
-#if ! CCS_HAVE_ATOMIC_MATH_64
-/* fix up the value of ccs_have_atomic_math_64 to allow for C versions */
-#undef CCS_HAVE_ATOMIC_MATH_64
-#define CCS_HAVE_ATOMIC_MATH_64 CCS_HAVE_ATOMIC_CMPSET_64
+#if ! OCOMS_HAVE_ATOMIC_MATH_64
+/* fix up the value of ocoms_have_atomic_math_64 to allow for C versions */
+#undef OCOMS_HAVE_ATOMIC_MATH_64
+#define OCOMS_HAVE_ATOMIC_MATH_64 OCOMS_HAVE_ATOMIC_CMPSET_64
 #endif
 
 /* provide a size_t add/subtract.  When in debug mode, make it an
@@ -450,7 +450,7 @@ int64_t service_atomic_sub_64(volatile int64_t *addr, int64_t delta);
  *  interface and can catch type errors.  When not in debug mode,
  * just make it a macro, so that there's no performance penalty
  */
-#if defined(DOXYGEN) || CCS_ENABLE_DEBUG
+#if defined(DOXYGEN) || OCOMS_ENABLE_DEBUG
 static inline size_t
 service_atomic_add_size_t(volatile size_t *addr, int delta)
 {
@@ -485,7 +485,7 @@ service_atomic_sub_size_t(volatile size_t *addr, int delta)
 #endif
 #endif
 
-#if defined(DOXYGEN) || (CCS_HAVE_ATOMIC_CMPSET_32 || CCS_HAVE_ATOMIC_CMPSET_64)
+#if defined(DOXYGEN) || (OCOMS_HAVE_ATOMIC_CMPSET_32 || OCOMS_HAVE_ATOMIC_CMPSET_64)
 /* these are always done with inline functions, so always mark as
    static inline */
 static inline int service_atomic_cmpset_xx(volatile void* addr, int64_t oldval,
@@ -559,18 +559,18 @@ static inline int service_atomic_cmpset_rel_ptr(volatile void* addr,
    service_atomic_cmpset_rel_xx( (volatile void*)(ADDR), (int64_t)(OLDVAL), \
                               (int64_t)(NEWVAL), sizeof(*(ADDR)) )
 
-#endif /* (CCS_HAVE_ATOMIC_CMPSET_32 || CCS_HAVE_ATOMIC_CMPSET_64) */
+#endif /* (OCOMS_HAVE_ATOMIC_CMPSET_32 || OCOMS_HAVE_ATOMIC_CMPSET_64) */
 
-#if defined(DOXYGEN) || (CCS_HAVE_ATOMIC_MATH_32 || CCS_HAVE_ATOMIC_MATH_64)
+#if defined(DOXYGEN) || (OCOMS_HAVE_ATOMIC_MATH_32 || OCOMS_HAVE_ATOMIC_MATH_64)
 
 static inline void service_atomic_add_xx(volatile void* addr, 
                                       int32_t value, size_t length);
 static inline void service_atomic_sub_xx(volatile void* addr, 
                                       int32_t value, size_t length);
-#if SIZEOF_VOID_P == 4 && CCS_HAVE_ATOMIC_CMPSET_32
+#if SIZEOF_VOID_P == 4 && OCOMS_HAVE_ATOMIC_CMPSET_32
 static inline int32_t service_atomic_add_ptr( volatile void* addr, void* delta );
 static inline int32_t service_atomic_sub_ptr( volatile void* addr, void* delta );
-#elif SIZEOF_VOID_P == 8 && CCS_HAVE_ATOMIC_CMPSET_64
+#elif SIZEOF_VOID_P == 8 && OCOMS_HAVE_ATOMIC_CMPSET_64
 static inline int64_t service_atomic_add_ptr( volatile void* addr, void* delta );
 static inline int64_t service_atomic_sub_ptr( volatile void* addr, void* delta );
 #else
@@ -605,7 +605,7 @@ static inline int64_t service_atomic_sub_ptr( volatile void* addr, void* delta )
    service_atomic_sub_xx( (volatile void*)(ADDR), (int32_t)(VALUE),        \
                       sizeof(*(ADDR)) )
 
-#endif /* CCS_HAVE_ATOMIC_MATH_32 || CCS_HAVE_ATOMIC_MATH_64 */
+#endif /* OCOMS_HAVE_ATOMIC_MATH_32 || OCOMS_HAVE_ATOMIC_MATH_64 */
 
 
 /**********************************************************************
@@ -618,4 +618,4 @@ static inline int64_t service_atomic_sub_ptr( volatile void* addr, void* delta )
 
 END_C_DECLS
 
-#endif /* CCS_SYS_ATOMIC_H */
+#endif /* OCOMS_SYS_ATOMIC_H */

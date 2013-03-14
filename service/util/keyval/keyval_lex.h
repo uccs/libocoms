@@ -20,7 +20,7 @@
 #ifndef SERVICE_UTIL_KEYVAL_LEX_H_
 #define SERVICE_UTIL_KEYVAL_LEX_H_
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #ifdef malloc
 #undef malloc

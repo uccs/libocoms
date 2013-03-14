@@ -59,7 +59,7 @@ libservice_la_SOURCES += $(headers)
 # Conditionally install the header files
 
 #if WANT_INSTALL_HEADERS
-#servicedir = $(includedir)/ccs/$(subdir)
+#servicedir = $(includedir)/ocoms/$(subdir)
 #nobase_service_HEADERS = $(headers)
 #
 ## This is somewhat of a hack -- libltdl is installed by libtoolize,

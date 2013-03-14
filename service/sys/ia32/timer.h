@@ -16,33 +16,33 @@
  * $HEADER$
  */
 
-#ifndef CCS_SYS_ARCH_TIMER_H
-#define CCS_SYS_ARCH_TIMER_H 1
+#ifndef OCOMS_SYS_ARCH_TIMER_H
+#define OCOMS_SYS_ARCH_TIMER_H 1
 
 
-typedef uint64_t ccs_timer_t;
+typedef uint64_t ocoms_timer_t;
 
 
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
-static inline ccs_timer_t
-ccs_sys_timer_get_cycles(void)
+static inline ocoms_timer_t
+ocoms_sys_timer_get_cycles(void)
 {
-    ccs_timer_t ret;
+    ocoms_timer_t ret;
 
     __asm__ __volatile__("rdtsc" : "=A"(ret));
 
     return ret;
 }
 
-#define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
+#define OCOMS_HAVE_SYS_TIMER_GET_CYCLES 1
 
 #else
 
-ccs_timer_t ccs_sys_timer_get_cycles(void);
+ocoms_timer_t ocoms_sys_timer_get_cycles(void);
 
-#define CCS_HAVE_SYS_TIMER_GET_CYCLES 1
+#define OCOMS_HAVE_SYS_TIMER_GET_CYCLES 1
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
-#endif /* ! CCS_SYS_ARCH_TIMER_H */
+#endif /* ! OCOMS_SYS_ARCH_TIMER_H */

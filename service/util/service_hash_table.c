@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <string.h>
 #include <stdlib.h>
@@ -80,14 +80,14 @@ int service_hash_table_init(service_hash_table_t* ht, size_t table_size)
     ht->ht_mask = power2-1;
     ht->ht_table = (service_list_t *)malloc(power2 * sizeof(service_list_t));
     if(NULL == ht->ht_table) {
-        return CCS_ERR_OUT_OF_RESOURCE;
+        return OCOMS_ERR_OUT_OF_RESOURCE;
     }
     for(i=ht->ht_table_size; i<power2; i++) {
         service_list_t* list = ht->ht_table+i;
         OBJ_CONSTRUCT(list, service_list_t);
     }
     ht->ht_table_size = power2;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 int service_hash_table_remove_all(service_hash_table_t* ht)
@@ -106,7 +106,7 @@ int service_hash_table_remove_all(service_hash_table_t* ht)
         OBJ_RELEASE(item);
     }
     ht->ht_size = 0;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
  
 /***************************************************************************/
@@ -135,11 +135,11 @@ int service_hash_table_get_value_uint32(service_hash_table_t* ht, uint32_t key,
     service_list_t* list = ht->ht_table + (key & ht->ht_mask);
     service_uint32_hash_node_t *node;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(ht->ht_table_size == 0) {
         service_output(0, "service_hash_table_get_value_uint32:"
 		   "service_hash_table_init() has not been called");
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
 #endif
     for(node =  (service_uint32_hash_node_t*)service_list_get_first(list);
@@ -147,10 +147,10 @@ int service_hash_table_get_value_uint32(service_hash_table_t* ht, uint32_t key,
         node =  (service_uint32_hash_node_t*)service_list_get_next(node)) {
         if (node->hn_key == key) {
 	    *ptr = node->hn_value;
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     } 
-    return CCS_ERR_NOT_FOUND;
+    return OCOMS_ERR_NOT_FOUND;
 }
 
 
@@ -160,11 +160,11 @@ int service_hash_table_set_value_uint32(service_hash_table_t* ht,
     service_list_t* list = ht->ht_table + (key & ht->ht_mask);
     service_uint32_hash_node_t *node;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(ht->ht_table_size == 0) {
         service_output(0, "service_hash_table_set_value_uint32:"
 		   "service_hash_table_init() has not been called");
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 #endif
     for(node =  (service_uint32_hash_node_t*)service_list_get_first(list);
@@ -172,7 +172,7 @@ int service_hash_table_set_value_uint32(service_hash_table_t* ht,
         node =  (service_uint32_hash_node_t*)service_list_get_next(node)) {
         if (node->hn_key == key) {
             node->hn_value = value;
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     } 
 
@@ -180,13 +180,13 @@ int service_hash_table_set_value_uint32(service_hash_table_t* ht,
     if(NULL == node) {
         node = OBJ_NEW(service_uint32_hash_node_t);
         if(NULL == node)
-            return CCS_ERR_OUT_OF_RESOURCE;
+            return OCOMS_ERR_OUT_OF_RESOURCE;
     }
     node->hn_key = key;
     node->hn_value = value;
     service_list_append(list, (service_list_item_t*)node);
     ht->ht_size++;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -195,11 +195,11 @@ int service_hash_table_remove_value_uint32(service_hash_table_t* ht, uint32_t ke
     service_list_t* list = ht->ht_table + (key & ht->ht_mask);
     service_uint32_hash_node_t *node;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(ht->ht_table_size == 0) {
         service_output(0, "service_hash_table_remove_value_uint32:"
 		   "service_hash_table_init() has not been called");
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 #endif
     for(node =  (service_uint32_hash_node_t*)service_list_get_first(list);
@@ -209,10 +209,10 @@ int service_hash_table_remove_value_uint32(service_hash_table_t* ht, uint32_t ke
             service_list_remove_item(list, (service_list_item_t*)node);
             service_list_append(&ht->ht_nodes, (service_list_item_t*)node);
             ht->ht_size--;
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     } 
-    return CCS_ERR_NOT_FOUND;
+    return OCOMS_ERR_NOT_FOUND;
 }
 
 /***************************************************************************/
@@ -241,11 +241,11 @@ int service_hash_table_get_value_uint64(service_hash_table_t* ht, uint64_t key,
     service_list_t* list = ht->ht_table + (key & ht->ht_mask);
     service_uint64_hash_node_t *node;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(ht->ht_table_size == 0) {
         service_output(0, "service_hash_table_get_value_uint64:"
 		   "service_hash_table_init() has not been called");
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
 #endif
     for(node =  (service_uint64_hash_node_t*)service_list_get_first(list);
@@ -253,10 +253,10 @@ int service_hash_table_get_value_uint64(service_hash_table_t* ht, uint64_t key,
         node =  (service_uint64_hash_node_t*)service_list_get_next(node)) {
         if (node->hn_key == key) {
             *ptr = node->hn_value;
-	    return CCS_SUCCESS;
+	    return OCOMS_SUCCESS;
         }
     } 
-    return CCS_ERR_NOT_FOUND;
+    return OCOMS_ERR_NOT_FOUND;
 }
 
 
@@ -266,11 +266,11 @@ int service_hash_table_set_value_uint64(service_hash_table_t* ht,
     service_list_t* list = ht->ht_table + (key & ht->ht_mask);
     service_uint64_hash_node_t *node;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(ht->ht_table_size == 0) {
         service_output(0, "service_hash_table_set_value_uint64:"
 		   "service_hash_table_init() has not been called");
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 #endif
     for(node =  (service_uint64_hash_node_t*)service_list_get_first(list);
@@ -278,7 +278,7 @@ int service_hash_table_set_value_uint64(service_hash_table_t* ht,
         node =  (service_uint64_hash_node_t*)service_list_get_next(node)) {
         if (node->hn_key == key) {
             node->hn_value = value;
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     } 
 
@@ -286,14 +286,14 @@ int service_hash_table_set_value_uint64(service_hash_table_t* ht,
     if(NULL == node) {
         node = OBJ_NEW(service_uint64_hash_node_t);
         if(NULL == node) {
-            return CCS_ERR_OUT_OF_RESOURCE;
+            return OCOMS_ERR_OUT_OF_RESOURCE;
         }
     }
     node->hn_key = key;
     node->hn_value = value;
     service_list_append(list, (service_list_item_t*)node);
     ht->ht_size++;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -302,11 +302,11 @@ int service_hash_table_remove_value_uint64(service_hash_table_t* ht, uint64_t ke
     service_list_t* list = ht->ht_table + (key & ht->ht_mask);
     service_uint64_hash_node_t *node;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(ht->ht_table_size == 0) {
         service_output(0, "service_hash_table_remove_value_uint64:"
 		   "service_hash_table_init() has not been called");
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 #endif
     for(node =  (service_uint64_hash_node_t*)service_list_get_first(list);
@@ -316,10 +316,10 @@ int service_hash_table_remove_value_uint64(service_hash_table_t* ht, uint64_t ke
             service_list_remove_item(list, (service_list_item_t*)node);
             service_list_append(&ht->ht_nodes, (service_list_item_t*)node);
             ht->ht_size--;
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     } 
-    return CCS_ERR_NOT_FOUND;
+    return OCOMS_ERR_NOT_FOUND;
 }
 
 /***************************************************************************/
@@ -377,11 +377,11 @@ int service_hash_table_get_value_ptr(service_hash_table_t* ht, const void* key,
                                                        key_size);
     service_ptr_hash_node_t *node;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(ht->ht_table_size == 0) {
         service_output(0, "service_hash_table_get_value_ptr:"
 		   "service_hash_table_init() has not been called");
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
 #endif
     for(node =  (service_ptr_hash_node_t*)service_list_get_first(list);
@@ -390,10 +390,10 @@ int service_hash_table_get_value_ptr(service_hash_table_t* ht, const void* key,
         if (node->hn_key_size == key_size &&
             memcmp(node->hn_key, key, key_size) == 0) {
             *ptr = node->hn_value;
-	    return CCS_SUCCESS;
+	    return OCOMS_SUCCESS;
         }
     } 
-    return CCS_ERR_NOT_FOUND;
+    return OCOMS_ERR_NOT_FOUND;
 }
 
 
@@ -404,11 +404,11 @@ int service_hash_table_set_value_ptr(service_hash_table_t* ht, const void* key,
                                                        key_size);
     service_ptr_hash_node_t *node;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(ht->ht_table_size == 0) {
         service_output(0, "service_hash_table_set_value_ptr:"
 		   "service_hash_table_init() has not been called");
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 #endif
     for(node =  (service_ptr_hash_node_t*)service_list_get_first(list);
@@ -417,7 +417,7 @@ int service_hash_table_set_value_ptr(service_hash_table_t* ht, const void* key,
         if (node->hn_key_size == key_size &&
             memcmp(node->hn_key, key, key_size) == 0) {
             node->hn_value = value;
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     } 
 
@@ -425,7 +425,7 @@ int service_hash_table_set_value_ptr(service_hash_table_t* ht, const void* key,
     if(NULL == node) {
         node = OBJ_NEW(service_ptr_hash_node_t);
         if(NULL == node) {
-            return CCS_ERR_OUT_OF_RESOURCE;
+            return OCOMS_ERR_OUT_OF_RESOURCE;
         }
     }
     node->hn_key = malloc(key_size);
@@ -434,7 +434,7 @@ int service_hash_table_set_value_ptr(service_hash_table_t* ht, const void* key,
     memcpy(node->hn_key, key, key_size);
     service_list_append(list, (service_list_item_t*)node);
     ht->ht_size++;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -445,11 +445,11 @@ int service_hash_table_remove_value_ptr(service_hash_table_t* ht,
                                                        key, key_size);
     service_ptr_hash_node_t *node;
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     if(ht->ht_table_size == 0) {
         service_output(0, "service_hash_table_remove_value_ptr: "
 		   "service_hash_table_init() has not been called");
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 #endif
     for(node =  (service_ptr_hash_node_t*)service_list_get_first(list);
@@ -463,10 +463,10 @@ int service_hash_table_remove_value_ptr(service_hash_table_t* ht,
             service_list_remove_item(list, (service_list_item_t*)node);
             service_list_append(&ht->ht_nodes, (service_list_item_t*)node);
             ht->ht_size--;
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     } 
- return CCS_ERR_NOT_FOUND;
+ return OCOMS_ERR_NOT_FOUND;
 }
 
 
@@ -487,13 +487,13 @@ service_hash_table_get_first_key_uint32(service_hash_table_t *ht, uint32_t *key,
             *node = list_node;
             *key = list_node->hn_key;
             *value = list_node->hn_value;
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     }
 
     /* The hash table is empty */
 
-    return CCS_ERROR;
+    return OCOMS_ERROR;
 }
 
 
@@ -526,7 +526,7 @@ service_hash_table_get_next_key_uint32(service_hash_table_t *ht, uint32_t *key,
            then we're at the end of the hash table */
 
         if (NULL == item) {
-            return CCS_ERROR;
+            return OCOMS_ERROR;
         }
     }
 
@@ -538,7 +538,7 @@ service_hash_table_get_next_key_uint32(service_hash_table_t *ht, uint32_t *key,
     *key = next->hn_key;
     *value = next->hn_value;
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -559,13 +559,13 @@ service_hash_table_get_first_key_uint64(service_hash_table_t *ht, uint64_t *key,
             *node = list_node;
             *key = list_node->hn_key;
             *value = list_node->hn_value;
-            return CCS_SUCCESS;
+            return OCOMS_SUCCESS;
         }
     }
 
     /* The hash table is empty */
 
-    return CCS_ERROR;
+    return OCOMS_ERROR;
 }
 
 
@@ -598,7 +598,7 @@ service_hash_table_get_next_key_uint64(service_hash_table_t *ht, uint64_t *key,
            then we're at the end of the hash table */
 
         if (NULL == item) {
-            return CCS_ERROR;
+            return OCOMS_ERROR;
         }
     }
 
@@ -610,5 +610,5 @@ service_hash_table_get_next_key_uint64(service_hash_table_t *ht, uint64_t *key,
     *key = next->hn_key;
     *value = next->hn_value;
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }

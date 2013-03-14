@@ -21,12 +21,12 @@
 #ifndef SERVICE_ATOMIC_LIFO_H_HAS_BEEN_INCLUDED
 #define SERVICE_ATOMIC_LIFO_H_HAS_BEEN_INCLUDED
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "service/util/service_list.h"
 
-#if CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_MULTI_THREADS
 #include "service/sys/atomic.h"
-#endif  /* CCS_ENABLE_MULTI_THREADS */
+#endif  /* OCOMS_ENABLE_MULTI_THREADS */
 
 BEGIN_C_DECLS
 
@@ -48,7 +48,7 @@ struct service_atomic_lifo_t
 
 typedef struct service_atomic_lifo_t service_atomic_lifo_t;
 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_atomic_lifo_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_atomic_lifo_t);
 
 
 /* The ghost pointer will never change. The head will change via an atomic
@@ -68,7 +68,7 @@ static inline bool service_atomic_lifo_is_empty( service_atomic_lifo_t* lifo )
 static inline service_list_item_t* service_atomic_lifo_push( service_atomic_lifo_t* lifo,
                                                        service_list_item_t* item )
 {
-#if CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_MULTI_THREADS
     do {
         item->service_list_next = lifo->service_lifo_head;
         service_atomic_wmb();
@@ -84,7 +84,7 @@ static inline service_list_item_t* service_atomic_lifo_push( service_atomic_lifo
     item->service_list_next = lifo->service_lifo_head;
     lifo->service_lifo_head = item;
     return (service_list_item_t*)item->service_list_next;
-#endif  /* CCS_ENABLE_MULTI_THREADS */
+#endif  /* OCOMS_ENABLE_MULTI_THREADS */
 }
 
 /* Retrieve one element from the LIFO. If we reach the ghost element then the LIFO
@@ -93,7 +93,7 @@ static inline service_list_item_t* service_atomic_lifo_push( service_atomic_lifo
 static inline service_list_item_t* service_atomic_lifo_pop( service_atomic_lifo_t* lifo )
 {
     service_list_item_t* item;
-#if CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_MULTI_THREADS
     while((item = lifo->service_lifo_head) != &(lifo->service_lifo_ghost))
     {
         service_atomic_rmb();
@@ -109,7 +109,7 @@ static inline service_list_item_t* service_atomic_lifo_pop( service_atomic_lifo_
 #else
     item = lifo->service_lifo_head;
     lifo->service_lifo_head = (service_list_item_t*)item->service_list_next;
-#endif  /* CCS_ENABLE_MULTI_THREADS */
+#endif  /* OCOMS_ENABLE_MULTI_THREADS */
     if( item == &(lifo->service_lifo_ghost) ) return NULL;
     item->service_list_next = NULL;
     return item;

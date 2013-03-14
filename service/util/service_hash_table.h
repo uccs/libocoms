@@ -25,10 +25,10 @@
  *  concurrently.
  */
 
-#ifndef CCS_HASH_TABLE_H
-#define CCS_HASH_TABLE_H
+#ifndef OCOMS_HASH_TABLE_H
+#define OCOMS_HASH_TABLE_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #ifdef HAVE_STDINT_H
 #include <stdint.h>
@@ -37,7 +37,7 @@
 
 BEGIN_C_DECLS
 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_hash_table_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_hash_table_t);
                            
 struct service_hash_table_t
 {
@@ -63,7 +63,7 @@ typedef struct service_hash_table_t service_hash_table_t;
  *
  */
 
-CCS_DECLSPEC int service_hash_table_init(service_hash_table_t* ht, size_t table_size);
+OCOMS_DECLSPEC int service_hash_table_init(service_hash_table_t* ht, size_t table_size);
 
 
 /**
@@ -87,7 +87,7 @@ static inline size_t service_hash_table_get_size(service_hash_table_t *ht)
  *
  */
 
-CCS_DECLSPEC int service_hash_table_remove_all(service_hash_table_t *ht);
+OCOMS_DECLSPEC int service_hash_table_remove_all(service_hash_table_t *ht);
 
 /**
  *  Retrieve value via uint32_t key.
@@ -96,13 +96,13 @@ CCS_DECLSPEC int service_hash_table_remove_all(service_hash_table_t *ht);
  *  @param   key     The input key (IN).
  *  @param   ptr     The value associated with the key
  *  @return  integer return code:
- *           - CCS_SUCCESS       if key was found
- *           - CCS_ERR_NOT_FOUND if key was not found
- *           - CCS_ERROR         other error
+ *           - OCOMS_SUCCESS       if key was found
+ *           - OCOMS_ERR_NOT_FOUND if key was not found
+ *           - OCOMS_ERROR         other error
  *
  */
 
-CCS_DECLSPEC int service_hash_table_get_value_uint32(service_hash_table_t* table, uint32_t key, 
+OCOMS_DECLSPEC int service_hash_table_get_value_uint32(service_hash_table_t* table, uint32_t key, 
 						   void** ptr);
 
 /**
@@ -115,7 +115,7 @@ CCS_DECLSPEC int service_hash_table_get_value_uint32(service_hash_table_t* table
  *
  */
 
-CCS_DECLSPEC int service_hash_table_set_value_uint32(service_hash_table_t* table, uint32_t key, void* value);
+OCOMS_DECLSPEC int service_hash_table_set_value_uint32(service_hash_table_t* table, uint32_t key, void* value);
 
 /**
  *  Remove value based on uint32_t key.
@@ -126,7 +126,7 @@ CCS_DECLSPEC int service_hash_table_set_value_uint32(service_hash_table_t* table
  *
  */
 
-CCS_DECLSPEC int service_hash_table_remove_value_uint32(service_hash_table_t* table, uint32_t key);
+OCOMS_DECLSPEC int service_hash_table_remove_value_uint32(service_hash_table_t* table, uint32_t key);
 
 /**
  *  Retrieve value via uint64_t key.
@@ -135,13 +135,13 @@ CCS_DECLSPEC int service_hash_table_remove_value_uint32(service_hash_table_t* ta
  *  @param   key     The input key (IN).
  *  @param   ptr     The value associated with the key
  *  @return  integer return code:
- *           - CCS_SUCCESS       if key was found
- *           - CCS_ERR_NOT_FOUND if key was not found
- *           - CCS_ERROR         other error
+ *           - OCOMS_SUCCESS       if key was found
+ *           - OCOMS_ERR_NOT_FOUND if key was not found
+ *           - OCOMS_ERROR         other error
  *
  */
 
-CCS_DECLSPEC int service_hash_table_get_value_uint64(service_hash_table_t *table, uint64_t key,
+OCOMS_DECLSPEC int service_hash_table_get_value_uint64(service_hash_table_t *table, uint64_t key,
 						   void **ptr);
 
 /**
@@ -154,7 +154,7 @@ CCS_DECLSPEC int service_hash_table_get_value_uint64(service_hash_table_t *table
  *
  */
 
-CCS_DECLSPEC int service_hash_table_set_value_uint64(service_hash_table_t *table, uint64_t key, void* value);
+OCOMS_DECLSPEC int service_hash_table_set_value_uint64(service_hash_table_t *table, uint64_t key, void* value);
 
 /**
  *  Remove value based on uint64_t key.
@@ -165,7 +165,7 @@ CCS_DECLSPEC int service_hash_table_set_value_uint64(service_hash_table_t *table
  *
  */
 
-CCS_DECLSPEC int service_hash_table_remove_value_uint64(service_hash_table_t *table, uint64_t key);
+OCOMS_DECLSPEC int service_hash_table_remove_value_uint64(service_hash_table_t *table, uint64_t key);
 
 /**
  *  Retrieve value via arbitrary length binary key.
@@ -174,13 +174,13 @@ CCS_DECLSPEC int service_hash_table_remove_value_uint64(service_hash_table_t *ta
  *  @param   key     The input key (IN).
  *  @param   ptr     The value associated with the key
  *  @return  integer return code:
- *           - CCS_SUCCESS       if key was found
- *           - CCS_ERR_NOT_FOUND if key was not found
- *           - CCS_ERROR         other error
+ *           - OCOMS_SUCCESS       if key was found
+ *           - OCOMS_ERR_NOT_FOUND if key was not found
+ *           - OCOMS_ERROR         other error
  *
  */
 
-CCS_DECLSPEC int service_hash_table_get_value_ptr(service_hash_table_t *table, const void* key, 
+OCOMS_DECLSPEC int service_hash_table_get_value_ptr(service_hash_table_t *table, const void* key, 
 						size_t keylen, void **ptr);
 
 /**
@@ -193,7 +193,7 @@ CCS_DECLSPEC int service_hash_table_get_value_ptr(service_hash_table_t *table, c
  *
  */
 
-CCS_DECLSPEC int service_hash_table_set_value_ptr(service_hash_table_t *table, const void* key, size_t keylen, void* value);
+OCOMS_DECLSPEC int service_hash_table_set_value_ptr(service_hash_table_t *table, const void* key, size_t keylen, void* value);
 
 /**
  *  Remove value based on arbitrary length binary key.
@@ -204,7 +204,7 @@ CCS_DECLSPEC int service_hash_table_set_value_ptr(service_hash_table_t *table, c
  *
  */
 
-CCS_DECLSPEC int service_hash_table_remove_value_ptr(service_hash_table_t *table, const void* key, size_t keylen);
+OCOMS_DECLSPEC int service_hash_table_remove_value_ptr(service_hash_table_t *table, const void* key, size_t keylen);
 
 
 /** The following functions are only for allowing iterating through
@@ -229,7 +229,7 @@ CCS_DECLSPEC int service_hash_table_remove_value_ptr(service_hash_table_t *table
  *
  */
 
-CCS_DECLSPEC int service_hash_table_get_first_key_uint32(service_hash_table_t *table, uint32_t *key,
+OCOMS_DECLSPEC int service_hash_table_get_first_key_uint32(service_hash_table_t *table, uint32_t *key,
 					void **value, void **node);
 
 
@@ -247,7 +247,7 @@ CCS_DECLSPEC int service_hash_table_get_first_key_uint32(service_hash_table_t *t
  *
  */
 
-CCS_DECLSPEC int service_hash_table_get_next_key_uint32(service_hash_table_t *table, uint32_t *key,
+OCOMS_DECLSPEC int service_hash_table_get_next_key_uint32(service_hash_table_t *table, uint32_t *key,
 				       void **value, void *in_node,
 				       void **out_node);
 
@@ -265,7 +265,7 @@ CCS_DECLSPEC int service_hash_table_get_next_key_uint32(service_hash_table_t *ta
  *
  */
 
-CCS_DECLSPEC int service_hash_table_get_first_key_uint64(service_hash_table_t *table, uint64_t *key,
+OCOMS_DECLSPEC int service_hash_table_get_first_key_uint64(service_hash_table_t *table, uint64_t *key,
 				       void **value, void **node);
 
 
@@ -283,10 +283,10 @@ CCS_DECLSPEC int service_hash_table_get_first_key_uint64(service_hash_table_t *t
  *
  */
     
-CCS_DECLSPEC int service_hash_table_get_next_key_uint64(service_hash_table_t *table, uint64_t *key,
+OCOMS_DECLSPEC int service_hash_table_get_next_key_uint64(service_hash_table_t *table, uint64_t *key,
 				       void **value, void *in_node,
 				       void **out_node);
 
 END_C_DECLS
 
-#endif  /* CCS_HASH_TABLE_H */
+#endif  /* OCOMS_HASH_TABLE_H */

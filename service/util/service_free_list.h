@@ -21,7 +21,7 @@
 #ifndef SERVICE_FREE_LIST_H
 #define SERVICE_FREE_LIST_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "service/util/service_atomic_lifo.h"
 #include "service/threads/mutex.h"
 #include "service/threads/condition.h"
@@ -81,7 +81,7 @@ struct service_free_list_t
     service_free_list_free_fn_t free;
 };
 typedef struct service_free_list_t service_free_list_t;
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_free_list_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_free_list_t);
 
 
 struct service_free_list_item_t
@@ -91,7 +91,7 @@ struct service_free_list_item_t
     void *ptr;
 }; 
 typedef struct service_free_list_item_t service_free_list_item_t; 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_free_list_item_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_free_list_item_t);
 
 /**
  * Initialize a free list.
@@ -105,7 +105,7 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_free_list_item_t);
  * @param mpool                    Optional memory pool for allocation.s
  */
  
-CCS_DECLSPEC int service_free_list_init_ex(
+OCOMS_DECLSPEC int service_free_list_init_ex(
     service_free_list_t *free_list, 
     size_t element_size,
     size_t alignment,
@@ -118,7 +118,7 @@ CCS_DECLSPEC int service_free_list_init_ex(
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
     allocator_handle_t handle,
-    ccs_progress_fn_t ccs_progress
+    ocoms_progress_fn_t ocoms_progress
     );
 
 /**
@@ -138,7 +138,7 @@ CCS_DECLSPEC int service_free_list_init_ex(
  * @param ctx                      (IN)
  */
  
-CCS_DECLSPEC int service_free_list_init_ex_new(
+OCOMS_DECLSPEC int service_free_list_init_ex_new(
     service_free_list_t *free_list, 
     size_t frag_size,
     size_t frag_alignment,
@@ -153,7 +153,7 @@ CCS_DECLSPEC int service_free_list_init_ex_new(
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
     allocator_handle_t handle,
-    ccs_progress_fn_t ccs_progress
+    ocoms_progress_fn_t ocoms_progress
     );
 
 /**
@@ -183,30 +183,30 @@ static inline int service_free_list_init_new(
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
     allocator_handle_t handle,
-    ccs_progress_fn_t ccs_progress
+    ocoms_progress_fn_t ocoms_progress
     )
 {
     return service_free_list_init_ex_new(free_list,
             frag_size, frag_alignment, frag_class,
             payload_buffer_size, payload_buffer_alignment,
             num_elements_to_alloc, max_elements_to_alloc,
-            num_elements_per_alloc, NULL, NULL, alloc, free, handle, ccs_progress);
+            num_elements_per_alloc, NULL, NULL, alloc, free, handle, ocoms_progress);
 }
 
-CCS_DECLSPEC int service_free_list_grow(service_free_list_t* flist, size_t num_elements);
+OCOMS_DECLSPEC int service_free_list_grow(service_free_list_t* flist, size_t num_elements);
 
 /* Grow the free list to be *at least* size elements.  This function
    will not shrink the list if it is already larger than size and may
    grow it past size if necessary (it will grow in
    num_elements_per_alloc chunks) */
-CCS_DECLSPEC int service_free_list_resize(service_free_list_t *flist, size_t size);
+OCOMS_DECLSPEC int service_free_list_resize(service_free_list_t *flist, size_t size);
 
 /**
  * Attemp to obtain an item from a free list. 
  *
  * @param fl (IN)        Free list.
  * @param item (OUT)     Allocated item.
- * @param rc (OUT)       CCS_SUCCESS or error status on failure.
+ * @param rc (OUT)       OCOMS_SUCCESS or error status on failure.
  *
  * If the requested item is not available the free list is grown to 
  * accomodate the request - unless the max number of allocations has 
@@ -216,10 +216,10 @@ CCS_DECLSPEC int service_free_list_resize(service_free_list_t *flist, size_t siz
  
 #define SERVICE_FREE_LIST_GET(fl, item, rc) \
 { \
-    rc = CCS_SUCCESS; \
+    rc = OCOMS_SUCCESS; \
     item = (service_free_list_item_t*) service_atomic_lifo_pop(&((fl)->super)); \
-    if( CCS_UNLIKELY(NULL == item) ) { \
-        if(ccs_using_threads()) { \
+    if( OCOMS_UNLIKELY(NULL == item) ) { \
+        if(ocoms_using_threads()) { \
             service_mutex_lock(&((fl)->fl_lock)); \
             service_free_list_grow((fl), (fl)->fl_num_per_alloc); \
             service_mutex_unlock(&((fl)->fl_lock)); \
@@ -227,7 +227,7 @@ CCS_DECLSPEC int service_free_list_resize(service_free_list_t *flist, size_t siz
             service_free_list_grow((fl), (fl)->fl_num_per_alloc); \
         } \
         item = (service_free_list_item_t*) service_atomic_lifo_pop(&((fl)->super)); \
-        if( CCS_UNLIKELY(NULL == item) ) rc = CCS_ERR_TEMP_OUT_OF_RESOURCE; \
+        if( OCOMS_UNLIKELY(NULL == item) ) rc = OCOMS_ERR_TEMP_OUT_OF_RESOURCE; \
     }  \
 } 
 
@@ -236,7 +236,7 @@ CCS_DECLSPEC int service_free_list_resize(service_free_list_t *flist, size_t siz
  *
  * @param fl (IN)        Free list.
  * @param item (OUT)     Allocated item.
- * @param rc (OUT)       CCS_SUCCESS or error status on failure.
+ * @param rc (OUT)       OCOMS_SUCCESS or error status on failure.
  *
  * If the requested item is not available the free list is grown to 
  * accomodate the request - unless the max number of allocations has 
@@ -259,7 +259,7 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
                 (fl)->fl_num_waiting--;
             } else {
                 if(service_free_list_grow((fl), (fl)->fl_num_per_alloc)
-                        == CCS_SUCCESS) {
+                        == OCOMS_SUCCESS) {
                     if( 0 < (fl)->fl_num_waiting ) {
                         if( 1 == (fl)->fl_num_waiting ) {
                             service_condition_signal(&((fl)->fl_condition));
@@ -283,7 +283,7 @@ static inline int __service_free_list_wait( service_free_list_t* fl,
         SERVICE_THREAD_UNLOCK(&((fl)->fl_lock));
         *item = (service_free_list_item_t*)service_atomic_lifo_pop(&((fl)->super));
     }
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 } 
 
 /**

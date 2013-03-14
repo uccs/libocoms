@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/util/service_list.h"
 #include "service/platform/service_constants.h"
@@ -304,7 +304,7 @@ int service_graph_add_edge(service_graph_t *graph, service_graph_edge_t *edge)
      * found - return an error.
      */
     if (false == start_found && false == end_found) {
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
     /* point the edge to the adjacency list of the start vertex (for easy search) */
     edge->in_adj_list=start_aj_list;
@@ -312,7 +312,7 @@ int service_graph_add_edge(service_graph_t *graph, service_graph_edge_t *edge)
     service_list_append(start_aj_list->edges, (service_list_item_t*)edge);
     /* increase the graph size */
     graph->number_of_edges++;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -395,14 +395,14 @@ uint32_t service_graph_adjacent(service_graph_t *graph, service_graph_vertex_t *
      * Verify that the first vertex belongs to the graph.
      */
     if (graph != vertex1->in_graph) {
-        CCS_OUTPUT((0,"service_graph_adjacent 1 Vertex1 %p not in the graph %p\n",(void *)vertex1,(void *)graph));
+        OCOMS_OUTPUT((0,"service_graph_adjacent 1 Vertex1 %p not in the graph %p\n",(void *)vertex1,(void *)graph));
         return DISTANCE_INFINITY;
     }
     /**
      * Verify that the second vertex belongs to the graph.
      */
     if (graph != vertex2->in_graph) {
-        CCS_OUTPUT((0,"service_graph_adjacent 2 Vertex2 %p not in the graph %p\n",(void *)vertex2,(void *)graph));
+        OCOMS_OUTPUT((0,"service_graph_adjacent 2 Vertex2 %p not in the graph %p\n",(void *)vertex2,(void *)graph));
         return DISTANCE_INFINITY;
     }
     /**
@@ -552,7 +552,7 @@ int service_graph_get_adjacent_vertices(service_graph_t *graph, service_graph_ve
      * Verify that the vertex belongs to the graph.
      */
     if (graph != vertex->in_graph) {
-        CCS_OUTPUT((0,"Vertex %p not in the graph %p\n", (void *)vertex, (void *)graph));
+        OCOMS_OUTPUT((0,"Vertex %p not in the graph %p\n", (void *)vertex, (void *)graph));
         return 0;
     }
     /**
@@ -596,14 +596,14 @@ uint32_t service_graph_spf(service_graph_t *graph, service_graph_vertex_t *verte
      * Verify that the first vertex belongs to the graph.
      */
     if (graph != vertex1->in_graph) {
-        CCS_OUTPUT((0,"service_graph_spf 1 Vertex1 %p not in the graph %p\n",(void *)vertex1,(void *)graph));
+        OCOMS_OUTPUT((0,"service_graph_spf 1 Vertex1 %p not in the graph %p\n",(void *)vertex1,(void *)graph));
         return DISTANCE_INFINITY;
     }
     /**
      * Verify that the second vertex belongs to the graph.
      */
     if (graph != vertex2->in_graph) {
-        CCS_OUTPUT((0,"service_graph_spf 2 Vertex2 %p not in the graph %p\n",(void *)vertex2,(void *)graph));
+        OCOMS_OUTPUT((0,"service_graph_spf 2 Vertex2 %p not in the graph %p\n",(void *)vertex2,(void *)graph));
         return DISTANCE_INFINITY;
     }
     /**
@@ -690,7 +690,7 @@ uint32_t service_graph_dijkstra(service_graph_t *graph, service_graph_vertex_t *
      * Verify that the reference vertex belongs to the graph.
      */
     if (graph != vertex->in_graph) {
-        CCS_OUTPUT((0,"opal:graph:dijkstra: vertex %p not in the graph %p\n",(void *)vertex,(void *)graph));
+        OCOMS_OUTPUT((0,"opal:graph:dijkstra: vertex %p not in the graph %p\n",(void *)vertex,(void *)graph));
         return 0;
     }
     /* get the order of the graph and allocate a working queue accordingly */

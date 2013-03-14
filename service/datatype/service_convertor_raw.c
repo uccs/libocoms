@@ -11,21 +11,21 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 
 #include "service/datatype/service_convertor_internal.h"
 #include "service/datatype/service_datatype_internal.h"
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
 #include "service/util/output.h"
 
 extern int service_pack_debug;
 #define DO_DEBUG(INST)  if( service_pack_debug ) { INST }
 #else
 #define DO_DEBUG(INST)
-#endif  /* CCS_ENABLE_DEBUG */
+#endif  /* OCOMS_ENABLE_DEBUG */
 
 /**
  * This function always work in local representation. This means no representation
@@ -47,7 +47,7 @@ service_convertor_raw( service_convertor_t* pConvertor,
     uint32_t index = 0, i;    /* the iov index and a simple counter */
 
     assert( (*iov_count) > 0 );
-    if( CCS_LIKELY(pConvertor->flags & CONVERTOR_NO_OP) ) {
+    if( OCOMS_LIKELY(pConvertor->flags & CONVERTOR_NO_OP) ) {
         /* The convertor contain minimal informations, we only use the bConverted
          * to manage the conversion. This function work even after the convertor
          * was moved to a specific position.
@@ -83,14 +83,14 @@ service_convertor_raw( service_convertor_t* pConvertor,
                            pos_desc, count_desc, (long)(source_base - pConvertor->pBaseBuf),
                            pConvertor->stack_pos, pStack->index, (int)pStack->count, (long)pStack->disp ); );
     while( 1 ) {
-        while( pElem->elem.common.flags & CCS_DATATYPE_FLAG_DATA ) {
+        while( pElem->elem.common.flags & OCOMS_DATATYPE_FLAG_DATA ) {
             size_t blength = service_datatype_basicDatatypes[pElem->elem.common.type]->size;
             source_base += pElem->elem.disp;
             if( blength == (size_t)pElem->elem.extent ) { /* no resized data */
                 if( index < *iov_count ) {
                     blength *= count_desc;
                     /* now here we have a basic datatype */
-                    CCS_DATATYPE_SAFEGUARD_POINTER( source_base, blength, pConvertor->pBaseBuf,
+                    OCOMS_DATATYPE_SAFEGUARD_POINTER( source_base, blength, pConvertor->pBaseBuf,
                                                 pConvertor->pDesc, pConvertor->count );
                     DO_DEBUG( service_output( 0, "raw 1. iov[%d] = {base %p, length %lu}\n",
                                            index, source_base, (unsigned long)blength ); );
@@ -103,7 +103,7 @@ service_convertor_raw( service_convertor_t* pConvertor,
                 }
             } else {
                 for( i = count_desc; (i > 0) && (index < *iov_count); i--, index++ ) {
-                    CCS_DATATYPE_SAFEGUARD_POINTER( source_base, blength, pConvertor->pBaseBuf,
+                    OCOMS_DATATYPE_SAFEGUARD_POINTER( source_base, blength, pConvertor->pBaseBuf,
                                                 pConvertor->pDesc, pConvertor->count );
                     DO_DEBUG( service_output( 0, "raw 2. iov[%d] = {base %p, length %lu}\n",
                                            index, source_base, (unsigned long)blength ); );
@@ -123,7 +123,7 @@ service_convertor_raw( service_convertor_t* pConvertor,
             }
             goto complete_loop;
         }
-        if( CCS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
+        if( OCOMS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
             DO_DEBUG( service_output( 0, "raw end_loop count %d stack_pos %d"
                                    " pos_desc %d disp %ld space %lu\n",
                                    (int)pStack->count, pConvertor->stack_pos,
@@ -144,7 +144,7 @@ service_convertor_raw( service_convertor_t* pConvertor,
                 if( pStack->index == -1 ) {
                     pStack->disp += (pData->ub - pData->lb);
                 } else {
-                    assert( CCS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
+                    assert( OCOMS_DATATYPE_LOOP == description[pStack->index].loop.common.type );
                     pStack->disp += description[pStack->index].loop.extent;
                 }
             }
@@ -155,15 +155,15 @@ service_convertor_raw( service_convertor_t* pConvertor,
                                    (int)pStack->count, pConvertor->stack_pos,
                                    pos_desc, (long)pStack->disp, (unsigned long)raw_data ); );
         }
-        if( CCS_DATATYPE_LOOP == pElem->elem.common.type ) {
-            CCS_PTRDIFF_TYPE local_disp = (CCS_PTRDIFF_TYPE)source_base;
+        if( OCOMS_DATATYPE_LOOP == pElem->elem.common.type ) {
+            OCOMS_PTRDIFF_TYPE local_disp = (OCOMS_PTRDIFF_TYPE)source_base;
             ddt_endloop_desc_t* end_loop = (ddt_endloop_desc_t*)(pElem + pElem->loop.items);
 
-            if( pElem->loop.common.flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
+            if( pElem->loop.common.flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
                 uint32_t i;
                 source_base += end_loop->first_elem_disp;
                 for( i = count_desc; (i > 0) && (index < *iov_count); i--, index++ ) {
-                    CCS_DATATYPE_SAFEGUARD_POINTER( source_base, end_loop->size, pConvertor->pBaseBuf,
+                    OCOMS_DATATYPE_SAFEGUARD_POINTER( source_base, end_loop->size, pConvertor->pBaseBuf,
                                                 pConvertor->pDesc, pConvertor->count );
                     iov[index].iov_base = (IOVBASE_TYPE *) source_base;
                     iov[index].iov_len  = end_loop->size;
@@ -177,8 +177,8 @@ service_convertor_raw( service_convertor_t* pConvertor,
                     goto update_loop_description;
                 }
             }
-            local_disp = (CCS_PTRDIFF_TYPE)source_base - local_disp;
-            PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_LOOP, count_desc,
+            local_disp = (OCOMS_PTRDIFF_TYPE)source_base - local_disp;
+            PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, OCOMS_DATATYPE_LOOP, count_desc,
                         pStack->disp + local_disp);
             pos_desc++;
           update_loop_description:  /* update the current state */
@@ -197,7 +197,7 @@ complete_loop:
         return 1;
     }
     /* I complete an element, next step I should go to the next one */
-    PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, CCS_DATATYPE_UINT1, count_desc,
+    PUSH_STACK( pStack, pConvertor->stack_pos, pos_desc, OCOMS_DATATYPE_UINT1, count_desc,
                 source_base - pStack->disp - pConvertor->pBaseBuf );
     DO_DEBUG( service_output( 0, "raw save stack stack_pos %d pos_desc %d count_desc %d disp %ld\n",
                            pConvertor->stack_pos, pStack->index, (int)pStack->count, (long)pStack->disp ); );

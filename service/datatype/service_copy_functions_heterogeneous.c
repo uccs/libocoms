@@ -11,7 +11,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 #ifdef HAVE_STDINT_H
@@ -55,9 +55,9 @@ service_dt_swap_bytes(void *to_p, const void *from_p, const size_t size)
 #define COPY_TYPE_HETEROGENEOUS( TYPENAME, TYPE )                                         \
 static int32_t                                                                            \
 copy_##TYPENAME##_heterogeneous(service_convertor_t *pConvertor, uint32_t count,             \
-                                const char* from, size_t from_len, CCS_PTRDIFF_TYPE from_extent, \
-                                char* to, size_t to_length, CCS_PTRDIFF_TYPE to_extent,          \
-                                CCS_PTRDIFF_TYPE *advance)             \
+                                const char* from, size_t from_len, OCOMS_PTRDIFF_TYPE from_extent, \
+                                char* to, size_t to_length, OCOMS_PTRDIFF_TYPE to_extent,          \
+                                OCOMS_PTRDIFF_TYPE *advance)             \
 {                                                                       \
     uint32_t i;                                                         \
                                                                         \
@@ -72,8 +72,8 @@ copy_##TYPENAME##_heterogeneous(service_convertor_t *pConvertor, uint32_t count,
             to += to_extent;                                            \
             from += from_extent;                                        \
         }                                                               \
-    } else if ((CCS_PTRDIFF_TYPE)sizeof(TYPE) == to_extent &&          \
-               (CCS_PTRDIFF_TYPE)sizeof(TYPE) == from_extent) {        \
+    } else if ((OCOMS_PTRDIFF_TYPE)sizeof(TYPE) == to_extent &&          \
+               (OCOMS_PTRDIFF_TYPE)sizeof(TYPE) == from_extent) {        \
          MEMCPY( to, from, count * sizeof(TYPE) );                      \
     } else {                                                            \
          /* source or destination are non-contigous */                  \
@@ -91,9 +91,9 @@ copy_##TYPENAME##_heterogeneous(service_convertor_t *pConvertor, uint32_t count,
 #define COPY_2TYPE_HETEROGENEOUS( TYPENAME, TYPE1, TYPE2 )              \
 static int32_t                                                          \
 copy_##TYPENAME##_heterogeneous(service_convertor_t *pConvertor, uint32_t count, \
-                                const char* from, uint32_t from_len, CCS_PTRDIFF_TYPE from_extent, \
-                                char* to, uint32_t to_length, CCS_PTRDIFF_TYPE to_extent, \
-                                CCS_PTRDIFF_TYPE *advance)             \
+                                const char* from, uint32_t from_len, OCOMS_PTRDIFF_TYPE from_extent, \
+                                char* to, uint32_t to_length, OCOMS_PTRDIFF_TYPE to_extent, \
+                                OCOMS_PTRDIFF_TYPE *advance)             \
 {                                                                       \
     uint32_t i;                                                         \
                                                                         \
@@ -115,8 +115,8 @@ copy_##TYPENAME##_heterogeneous(service_convertor_t *pConvertor, uint32_t count,
             to += to_extent;                                            \
             from += from_extent;                                        \
         }                                                               \
-    } else if ((CCS_PTRDIFF_TYPE)(sizeof(TYPE1) + sizeof(TYPE2)) == to_extent &&   \
-               (CCS_PTRDIFF_TYPE)(sizeof(TYPE1) + sizeof(TYPE2)) == from_extent) { \
+    } else if ((OCOMS_PTRDIFF_TYPE)(sizeof(TYPE1) + sizeof(TYPE2)) == to_extent &&   \
+               (OCOMS_PTRDIFF_TYPE)(sizeof(TYPE1) + sizeof(TYPE2)) == from_extent) { \
         /* source and destination are contigous */                      \
         MEMCPY( to, from, count * (sizeof(TYPE1) + sizeof(TYPE2)) );    \
     } else {                                                            \
@@ -134,8 +134,8 @@ copy_##TYPENAME##_heterogeneous(service_convertor_t *pConvertor, uint32_t count,
 
 static inline void
 datatype_check(char *type, size_t local_size, size_t remote_size, uint32_t *count,
-               const char* from, size_t from_len, CCS_PTRDIFF_TYPE from_extent,
-               char* to, size_t to_len, CCS_PTRDIFF_TYPE to_extent)
+               const char* from, size_t from_len, OCOMS_PTRDIFF_TYPE from_extent,
+               char* to, size_t to_len, OCOMS_PTRDIFF_TYPE to_extent)
 {
     /* make sure the remote buffer is large enough to hold the data */
     if( (remote_size * *count) > from_len ) {
@@ -161,9 +161,9 @@ datatype_check(char *type, size_t local_size, size_t remote_size, uint32_t *coun
     }
 static int32_t
 copy_cxx_bool_heterogeneous(service_convertor_t *pConvertor, uint32_t count,
-                            const char* from, uint32_t from_len, CCS_PTRDIFF_TYPE from_extent,
-                            char* to, uint32_t to_length, CCS_PTRDIFF_TYPE to_extent,
-                            CCS_PTRDIFF_TYPE *advance)
+                            const char* from, uint32_t from_len, OCOMS_PTRDIFF_TYPE from_extent,
+                            char* to, uint32_t to_length, OCOMS_PTRDIFF_TYPE to_extent,
+                            OCOMS_PTRDIFF_TYPE *advance)
 {
     uint32_t i;
 
@@ -284,27 +284,27 @@ COPY_TYPE_HETEROGENEOUS( float16, long double )
 COPY_TYPE_HETEROGENEOUS (wchar, wchar_t)
 
 /* table of predefined copy functions - one for each MPI type */
-conversion_fct_t service_datatype_heterogeneous_copy_functions[CCS_DATATYPE_MAX_PREDEFINED] = {
-   NULL,                                                     /* CCS_DATATYPE_LOOP        */
-   NULL,                                                     /* CCS_DATATYPE_END_LOOP    */
-   NULL,                                                     /* CCS_DATATYPE_LB          */
-   NULL,                                                     /* CCS_DATATYPE_UB          */
-   (conversion_fct_t) copy_int1_heterogeneous,               /* CCS_DATATYPE_INT1        */
-   (conversion_fct_t) copy_int2_heterogeneous,               /* CCS_DATATYPE_INT2        */
-   (conversion_fct_t) copy_int4_heterogeneous,               /* CCS_DATATYPE_INT4        */
-   (conversion_fct_t) copy_int8_heterogeneous,               /* CCS_DATATYPE_INT8        */
-   (conversion_fct_t) copy_int16_heterogeneous,              /* CCS_DATATYPE_INT16       */
-   (conversion_fct_t) copy_int1_heterogeneous,               /* CCS_DATATYPE_UINT1       */
-   (conversion_fct_t) copy_int2_heterogeneous,               /* CCS_DATATYPE_UINT2       */
-   (conversion_fct_t) copy_int4_heterogeneous,               /* CCS_DATATYPE_UINT4       */
-   (conversion_fct_t) copy_int8_heterogeneous,               /* CCS_DATATYPE_UINT8       */
-   (conversion_fct_t) copy_int16_heterogeneous,              /* CCS_DATATYPE_UINT16      */
-   (conversion_fct_t) copy_float2_heterogeneous,             /* CCS_DATATYPE_FLOAT2      */
-   (conversion_fct_t) copy_float4_heterogeneous,             /* CCS_DATATYPE_FLOAT4      */
-   (conversion_fct_t) copy_float8_heterogeneous,             /* CCS_DATATYPE_FLOAT8      */
-   (conversion_fct_t) copy_float12_heterogeneous,            /* CCS_DATATYPE_FLOAT12     */
-   (conversion_fct_t) copy_float16_heterogeneous,            /* CCS_DATATYPE_FLOAT16     */
-   (conversion_fct_t) copy_cxx_bool_heterogeneous,           /* CCS_DATATYPE_BOOL        */
-   (conversion_fct_t) copy_wchar_heterogeneous,              /* CCS_DATATYPE_WCHAR       */
-   NULL,                                                     /* CCS_DATATYPE_UNAVAILABLE */
+conversion_fct_t service_datatype_heterogeneous_copy_functions[OCOMS_DATATYPE_MAX_PREDEFINED] = {
+   NULL,                                                     /* OCOMS_DATATYPE_LOOP        */
+   NULL,                                                     /* OCOMS_DATATYPE_END_LOOP    */
+   NULL,                                                     /* OCOMS_DATATYPE_LB          */
+   NULL,                                                     /* OCOMS_DATATYPE_UB          */
+   (conversion_fct_t) copy_int1_heterogeneous,               /* OCOMS_DATATYPE_INT1        */
+   (conversion_fct_t) copy_int2_heterogeneous,               /* OCOMS_DATATYPE_INT2        */
+   (conversion_fct_t) copy_int4_heterogeneous,               /* OCOMS_DATATYPE_INT4        */
+   (conversion_fct_t) copy_int8_heterogeneous,               /* OCOMS_DATATYPE_INT8        */
+   (conversion_fct_t) copy_int16_heterogeneous,              /* OCOMS_DATATYPE_INT16       */
+   (conversion_fct_t) copy_int1_heterogeneous,               /* OCOMS_DATATYPE_UINT1       */
+   (conversion_fct_t) copy_int2_heterogeneous,               /* OCOMS_DATATYPE_UINT2       */
+   (conversion_fct_t) copy_int4_heterogeneous,               /* OCOMS_DATATYPE_UINT4       */
+   (conversion_fct_t) copy_int8_heterogeneous,               /* OCOMS_DATATYPE_UINT8       */
+   (conversion_fct_t) copy_int16_heterogeneous,              /* OCOMS_DATATYPE_UINT16      */
+   (conversion_fct_t) copy_float2_heterogeneous,             /* OCOMS_DATATYPE_FLOAT2      */
+   (conversion_fct_t) copy_float4_heterogeneous,             /* OCOMS_DATATYPE_FLOAT4      */
+   (conversion_fct_t) copy_float8_heterogeneous,             /* OCOMS_DATATYPE_FLOAT8      */
+   (conversion_fct_t) copy_float12_heterogeneous,            /* OCOMS_DATATYPE_FLOAT12     */
+   (conversion_fct_t) copy_float16_heterogeneous,            /* OCOMS_DATATYPE_FLOAT16     */
+   (conversion_fct_t) copy_cxx_bool_heterogeneous,           /* OCOMS_DATATYPE_BOOL        */
+   (conversion_fct_t) copy_wchar_heterogeneous,              /* OCOMS_DATATYPE_WCHAR       */
+   NULL,                                                     /* OCOMS_DATATYPE_UNAVAILABLE */
 };

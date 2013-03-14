@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <limits.h>
 
@@ -57,7 +57,7 @@ int service_bitmap_set_max_size (service_bitmap_t *bm, int max_size)
     int actual_size;
 
     if (NULL == bm) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 
     /*
@@ -70,7 +70,7 @@ int service_bitmap_set_max_size (service_bitmap_t *bm, int max_size)
 
     bm->max_size = actual_size;
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -85,7 +85,7 @@ service_bitmap_init(service_bitmap_t *bm, int size)
      * By default, the max size is INT_MAX, set in the constructor.
      */
     if ((size <= 0) || (NULL == bm) || (size > bm->max_size)) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     
     actual_size = size / SIZE_OF_CHAR;
@@ -93,7 +93,7 @@ service_bitmap_init(service_bitmap_t *bm, int size)
     bm->array_size = actual_size;
     bm->bitmap = (unsigned char *) malloc(actual_size);
     if (NULL == bm->bitmap) {
-        return CCS_ERR_OUT_OF_RESOURCE;
+        return OCOMS_ERR_OUT_OF_RESOURCE;
     }
 
     /*
@@ -101,7 +101,7 @@ service_bitmap_init(service_bitmap_t *bm, int size)
      */
 
     service_bitmap_clear_all_bits(bm);
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -112,7 +112,7 @@ service_bitmap_set_bit(service_bitmap_t *bm, int bit)
     size_t new_size_large;
     
     if ((bit < 0) || (NULL == bm) || (bit > bm->max_size)) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     
     index = bit / SIZE_OF_CHAR; 
@@ -133,7 +133,7 @@ service_bitmap_set_bit(service_bitmap_t *bm, int bit)
         new_size = (int) new_size_large;
 
         /*
-         * No further tests against max_size (or CCS_FORTRAN_HANDLE_MAX) are
+         * No further tests against max_size (or OCOMS_FORTRAN_HANDLE_MAX) are
          * necessary, since we validated above, that the bit already is contained!
          */
         
@@ -142,7 +142,7 @@ service_bitmap_set_bit(service_bitmap_t *bm, int bit)
         
         bm->bitmap = (unsigned char *) realloc(bm->bitmap, (int) new_size);
         if (NULL == bm->bitmap) {
-            return CCS_ERR_OUT_OF_RESOURCE;
+            return OCOMS_ERR_OUT_OF_RESOURCE;
         }
         
         /* zero out the new elements */
@@ -155,7 +155,7 @@ service_bitmap_set_bit(service_bitmap_t *bm, int bit)
     /* Now set the bit */
     bm->bitmap[index] |= (1 << offset);
     
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -165,18 +165,18 @@ service_bitmap_clear_bit(service_bitmap_t *bm, int bit)
     int index, offset;
     
     if ((bit < 0) || NULL == bm || (bit >= (bm->array_size * SIZE_OF_CHAR))) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     
     index = bit / SIZE_OF_CHAR; 
     offset = bit % SIZE_OF_CHAR;
     
     if (index >= bm->array_size) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     
     bm->bitmap[index] &= ~(1 << offset);
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -208,11 +208,11 @@ int
 service_bitmap_clear_all_bits(service_bitmap_t *bm)
 {
     if (NULL == bm) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     
     memset(bm->bitmap, 0, bm->array_size);
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -220,12 +220,12 @@ int
 service_bitmap_set_all_bits(service_bitmap_t *bm)
 {
     if (NULL == bm) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     
     memset(bm->bitmap, 0xff, bm->array_size);
     
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -237,7 +237,7 @@ service_bitmap_find_and_set_first_unset_bit(service_bitmap_t *bm, int *position)
     unsigned char all_ones = 0xff;
     
     if (NULL == bm) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     
     /* Neglect all which don't have an unset bit */
@@ -264,5 +264,5 @@ service_bitmap_find_and_set_first_unset_bit(service_bitmap_t *bm, int *position)
     bm->bitmap[i] |= (bm->bitmap[i] + 1);
     
     (*position) += i * SIZE_OF_CHAR;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }

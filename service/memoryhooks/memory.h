@@ -35,10 +35,10 @@
  * and that entire stack).
  */
 
-#ifndef CCS_MEMORY_MEMORY_H
+#ifndef OCOMS_MEMORY_MEMORY_H
 #define OPAl_MEMORY_MEMORY_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "memory_internal.h"
 
 BEGIN_C_DECLS
@@ -55,9 +55,9 @@ BEGIN_C_DECLS
  * so not calling this function does not prevent the memory hooks from
  * becoming active.
  *
- * @retval CCS_SUCCESS Initialization completed successfully
+ * @retval OCOMS_SUCCESS Initialization completed successfully
  */
-CCS_DECLSPEC int service_mem_hooks_init(void);
+OCOMS_DECLSPEC int service_mem_hooks_init(void);
 
 
 /**
@@ -73,9 +73,9 @@ CCS_DECLSPEC int service_mem_hooks_init(void);
  * receive a callback once the calling thread has exited
  * service_mem_hooks_finalize().
  *
- * @retval CCS_SUCCESS Shutdown completed successfully
+ * @retval OCOMS_SUCCESS Shutdown completed successfully
  */
-CCS_DECLSPEC int service_mem_hooks_finalize(void);
+OCOMS_DECLSPEC int service_mem_hooks_finalize(void);
 
 
 /**
@@ -86,15 +86,15 @@ CCS_DECLSPEC int service_mem_hooks_finalize(void);
  * support is provided or a bit-wise OR of the available return values
  * if support is provided.
  *
- * @retval CCS_MEMORY_FREE_SUPPORT   Memory hooks subsytem can trigger
+ * @retval OCOMS_MEMORY_FREE_SUPPORT   Memory hooks subsytem can trigger
  *                                    callback events when memory is going 
  *                                    to be released by the process, either
  *                                    by the user calling an allocator
  *                                    function or munmap.  Implies
- *                                    CCS_MEMORY_MUNMAP_SUPPORT.
- * @retval CCS_MEMORY_MUNMAP_SUPPORT Subsystem can trigger callback events
+ *                                    OCOMS_MEMORY_MUNMAP_SUPPORT.
+ * @retval OCOMS_MEMORY_MUNMAP_SUPPORT Subsystem can trigger callback events
  *                                    by the user calling munmap directly.
- * @retval CCS_MEMORY_CHUNK_SUPPORT  Memory hooks subsystem will only 
+ * @retval OCOMS_MEMORY_CHUNK_SUPPORT  Memory hooks subsystem will only 
  *                                    trigger callback events when the
  *                                    process is giving memory back to the
  *                                    operating system, not at ever call
@@ -102,7 +102,7 @@ CCS_DECLSPEC int service_mem_hooks_finalize(void);
  *
  * \note This function must be called after service_mem_hooks_init().
  */
-CCS_DECLSPEC int service_mem_hooks_support_level(void);
+OCOMS_DECLSPEC int service_mem_hooks_support_level(void);
 
 
 /**
@@ -135,13 +135,13 @@ typedef void (service_mem_hooks_callback_fn_t)(void *buf, size_t length,
  * @param cbdata  A pointer-length field to be passed to func when it is
  *                invoked.
  *
- * @retval CCS_SUCCESS The registration completed successfully.
- * @retval CCS_EXISTS  The function is already registered and will not
+ * @retval OCOMS_SUCCESS The registration completed successfully.
+ * @retval OCOMS_EXISTS  The function is already registered and will not
  *                      be registered again.
- * @retval CCS_ERR_NOT_SUPPORTED There are no hooks available for 
+ * @retval OCOMS_ERR_NOT_SUPPORTED There are no hooks available for 
  *                      receiving callbacks when memory is to be released
  */
-CCS_DECLSPEC int service_mem_hooks_register_release(service_mem_hooks_callback_fn_t *func, 
+OCOMS_DECLSPEC int service_mem_hooks_register_release(service_mem_hooks_callback_fn_t *func, 
                                                   void *cbdata);
 
 /**
@@ -151,12 +151,12 @@ CCS_DECLSPEC int service_mem_hooks_register_release(service_mem_hooks_callback_f
  *
  * @param func   Function pointer to registered callback to remove
  *
- * @retval CCS_SUCCESS The function was successfully deregistered
- * @retval CCS_ERR_NOT_FOUND The function was not previously registered
+ * @retval OCOMS_SUCCESS The function was successfully deregistered
+ * @retval OCOMS_ERR_NOT_FOUND The function was not previously registered
  */
-CCS_DECLSPEC int service_mem_hooks_unregister_release(service_mem_hooks_callback_fn_t *func);
+OCOMS_DECLSPEC int service_mem_hooks_unregister_release(service_mem_hooks_callback_fn_t *func);
 
 
 END_C_DECLS
 
-#endif /* CCS_MEMORY_MEMORY_H */
+#endif /* OCOMS_MEMORY_MEMORY_H */

@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdio.h>
 #ifdef HAVE_STRING_H
@@ -142,19 +142,19 @@ static int qsort_callback(const void *a, const void *b);
 int service_cmd_line_create(service_cmd_line_t *cmd,
                          service_cmd_line_init_t *table)
 {
-    int i, ret = CCS_SUCCESS;
+    int i, ret = OCOMS_SUCCESS;
 
     /* Check bozo case */
 
     if (NULL == cmd) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     OBJ_CONSTRUCT(cmd, service_cmd_line_t);
 
     /* Ensure we got a table */
 
     if (NULL == table) {
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /* Loop through the table */
@@ -172,7 +172,7 @@ int service_cmd_line_create(service_cmd_line_t *cmd,
         /* Nope -- it's an entry.  Process it. */
 
         ret = make_opt(cmd, &table[i]);
-        if (CCS_SUCCESS != ret) {
+        if (OCOMS_SUCCESS != ret) {
             return ret;
         }
     }
@@ -190,7 +190,7 @@ int service_cmd_line_make_opt_mca(service_cmd_line_t *cmd,
     if ('\0' == entry.ocl_cmd_short_name &&
         NULL == entry.ocl_cmd_single_dash_name &&
         NULL == entry.ocl_cmd_long_name) {
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     return make_opt(cmd, &entry);
@@ -217,7 +217,7 @@ int service_cmd_line_make_opt(service_cmd_line_t *cmd, char short_name,
     e.ocl_num_params = num_params;
 
     e.ocl_variable_dest = NULL;
-    e.ocl_variable_type = CCS_CMD_LINE_TYPE_NULL;
+    e.ocl_variable_type = OCOMS_CMD_LINE_TYPE_NULL;
 
     e.ocl_description = desc;
 
@@ -245,7 +245,7 @@ int service_cmd_line_make_opt3(service_cmd_line_t *cmd, char short_name,
     e.ocl_num_params = num_params;
 
     e.ocl_variable_dest = NULL;
-    e.ocl_variable_type = CCS_CMD_LINE_TYPE_NULL;
+    e.ocl_variable_type = OCOMS_CMD_LINE_TYPE_NULL;
 
     e.ocl_description = desc;
 
@@ -273,7 +273,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
     /* Bozo check */
 
     if (0 == argc || NULL == argv) {
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /* Thread serialization */
@@ -348,7 +348,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                                    &(cmd->lcl_argv[i + 1]),
                                    &shortsc, &shortsv, 
                                    &num_args_used, ignore_unknown);
-                if (CCS_SUCCESS == ret) {
+                if (OCOMS_SUCCESS == ret) {
                     option = find_option(cmd, shortsv[0] + 1);
 
                     if (NULL != option) {
@@ -390,7 +390,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                 param = OBJ_NEW(service_cmd_line_param_t);
                 if (NULL == param) {
                     service_mutex_unlock(&cmd->lcl_mutex);
-                    return CCS_ERR_OUT_OF_RESOURCE;
+                    return OCOMS_ERR_OUT_OF_RESOURCE;
                 }
                 param->clp_arg = cmd->lcl_argv[i];
                 param->clp_option = option;
@@ -488,10 +488,10 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
 
     /* All done */
     if(has_unknowns && !ignore_unknown) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -810,7 +810,7 @@ char *service_cmd_line_get_param(service_cmd_line_t *cmd, const char *opt, int i
  */
 int service_cmd_line_get_argc(service_cmd_line_t *cmd)
 {
-    return (NULL != cmd) ? cmd->lcl_argc : CCS_ERROR;
+    return (NULL != cmd) ? cmd->lcl_argc : OCOMS_ERROR;
 }
 
 
@@ -835,9 +835,9 @@ int service_cmd_line_get_tail(service_cmd_line_t *cmd, int *tailc, char ***tailv
         *tailc = cmd->lcl_tail_argc;
         *tailv = service_argv_copy(cmd->lcl_tail_argv);
         service_mutex_unlock(&cmd->lcl_mutex);
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     } else {
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
 }
 
@@ -854,7 +854,7 @@ static void option_constructor(service_cmd_line_option_t *o)
     o->clo_num_params = 0;
     o->clo_description = NULL;
 
-    o->clo_type = CCS_CMD_LINE_TYPE_NULL;
+    o->clo_type = OCOMS_CMD_LINE_TYPE_NULL;
     o->clo_mca_param_env_var = NULL;
     o->clo_variable_dest = NULL;
     o->clo_variable_set = false;
@@ -952,20 +952,20 @@ static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
     /* Bozo checks */
 
     if (NULL == cmd) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     } else if ('\0' == e->ocl_cmd_short_name && 
                NULL == e->ocl_cmd_single_dash_name && 
                NULL == e->ocl_cmd_long_name) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     } else if (e->ocl_num_params < 0) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
 
     /* Allocate and fill an option item */
 
     option = OBJ_NEW(service_cmd_line_option_t);
     if (NULL == option) {
-        return CCS_ERR_OUT_OF_RESOURCE;
+        return OCOMS_ERR_OUT_OF_RESOURCE;
     }
 
     option->clo_short_name = e->ocl_cmd_short_name;
@@ -984,7 +984,7 @@ static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
     option->clo_variable_dest = e->ocl_variable_dest;
     if (NULL != e->ocl_mca_type_name) {
         option->clo_mca_param_env_var = 
-            ccs_mca_base_param_environ_variable(e->ocl_mca_type_name,
+            ocoms_mca_base_param_environ_variable(e->ocl_mca_type_name,
                                             e->ocl_mca_component_name,
                                             e->ocl_mca_param_name);
     }
@@ -997,7 +997,7 @@ static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
 
     /* All done */
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -1057,7 +1057,7 @@ static int split_shorts(service_cmd_line_t *cmd, char *token, char **args,
 
     len = (int)strlen(token);
     if (0 == len) {
-        return CCS_ERR_BAD_PARAM;
+        return OCOMS_ERR_BAD_PARAM;
     }
     fake_token[0] = '-';
     fake_token[2] = '\0';
@@ -1070,7 +1070,7 @@ static int split_shorts(service_cmd_line_t *cmd, char *token, char **args,
 
         if (NULL == option) {
             if (!ignore_unknown) {
-                return CCS_ERR_BAD_PARAM;
+                return OCOMS_ERR_BAD_PARAM;
             } else {
                 service_argv_append(output_argc, output_argv, fake_token);
             }
@@ -1098,7 +1098,7 @@ static int split_shorts(service_cmd_line_t *cmd, char *token, char **args,
 
     /* All done */
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -1150,12 +1150,12 @@ static void set_dest(service_cmd_line_option_t *option, char *sval)
     
     if (NULL != option->clo_mca_param_env_var) {
         switch(option->clo_type) {
-        case CCS_CMD_LINE_TYPE_STRING:
-        case CCS_CMD_LINE_TYPE_INT:
-        case CCS_CMD_LINE_TYPE_SIZE_T:
+        case OCOMS_CMD_LINE_TYPE_STRING:
+        case OCOMS_CMD_LINE_TYPE_INT:
+        case OCOMS_CMD_LINE_TYPE_SIZE_T:
             asprintf(&str, "%s=%s", option->clo_mca_param_env_var, sval);
             break;
-        case CCS_CMD_LINE_TYPE_BOOL:
+        case OCOMS_CMD_LINE_TYPE_BOOL:
             asprintf(&str, "%s=1", option->clo_mca_param_env_var);
             break;
         default:
@@ -1170,16 +1170,16 @@ static void set_dest(service_cmd_line_option_t *option, char *sval)
 
     if (NULL != option->clo_variable_dest) {
         switch(option->clo_type) {
-        case CCS_CMD_LINE_TYPE_STRING:
+        case OCOMS_CMD_LINE_TYPE_STRING:
             *((char**) option->clo_variable_dest) = strdup(sval);
             break;
-        case CCS_CMD_LINE_TYPE_INT:
+        case OCOMS_CMD_LINE_TYPE_INT:
             *((int*) option->clo_variable_dest) = ival;
             break;
-        case CCS_CMD_LINE_TYPE_SIZE_T:
+        case OCOMS_CMD_LINE_TYPE_SIZE_T:
             *((size_t*) option->clo_variable_dest) = lval;
             break;
-        case CCS_CMD_LINE_TYPE_BOOL:
+        case OCOMS_CMD_LINE_TYPE_BOOL:
             *((bool*) option->clo_variable_dest) = 1;
             break;
         default:

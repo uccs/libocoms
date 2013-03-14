@@ -17,7 +17,7 @@
  */
 
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #ifdef HAVE_STDIO_H
 #include <stdio.h>
 #endif /* HAVE_STDIO_H */
@@ -36,9 +36,9 @@
 #include "service/util/crc.h"
 
 
-#if (CCS_ALIGNMENT_LONG == 8)
+#if (OCOMS_ALIGNMENT_LONG == 8)
 #define _WORD_MASK_ 0x7
-#elif (CCS_ALIGNMENT_LONG == 4)
+#elif (OCOMS_ALIGNMENT_LONG == 4)
 #define _WORD_MASK_ 0x3
 #else
 #define _WORD_MASK 0xFFFF

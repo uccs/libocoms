@@ -25,7 +25,7 @@
  * libraries to output devices.  It is meant to fully replace all
  * forms of printf() (and friends).  Output streams are opened via the
  * service_output_open() function call, and then sent output via
- * service_output_verbose(), CCS_OUTPUT(), and service_output().  Streams are
+ * service_output_verbose(), OCOMS_OUTPUT(), and service_output().  Streams are
  * closed with service_output_close().
  *
  * Streams can multiplex output to several kinds of outputs (one of
@@ -47,7 +47,7 @@
  * details on what happens in these cases.
  *
  * service_output_open() returns an integer handle that is used in
- * successive calls to CCS_OUTPUT() and service_output() to send output to
+ * successive calls to OCOMS_OUTPUT() and service_output() to send output to
  * the stream.
  *
  * The default "verbose" stream is opened after invoking
@@ -60,10 +60,10 @@
  * will be serialized in an unspecified order.
  */
 
-#ifndef CCS_OUTPUT_H_
-#define CCS_OUTPUT_H_
+#ifndef OCOMS_OUTPUT_H_
+#define OCOMS_OUTPUT_H_
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #ifdef HAVE_STDARG_H
 #include <stdarg.h>
@@ -97,7 +97,7 @@ struct service_output_stream_t {
      * Verbose levels are a convenience mechanisms, and are only
      * consulted when output is sent to a stream through the
      * service_output_verbose() function.  Verbose levels are ignored in
-     * CCS_OUTPUT() and service_output().
+     * OCOMS_OUTPUT() and service_output().
      *
      * Valid verbose levels typically start at 0 (meaning "minimal
      * information").  Higher verbosity levels generally indicate that
@@ -240,7 +240,7 @@ struct service_output_stream_t {
      * By definition, the default verbose stream has a handle ID of 0,
      * and has a verbose level of 0.
      */
-    CCS_DECLSPEC bool service_output_init(void);
+    OCOMS_DECLSPEC bool service_output_init(void);
     
     /**
      * Shut down the output stream system.
@@ -248,7 +248,7 @@ struct service_output_stream_t {
      * Shut down the output stream system, including the default verbose
      * stream.
      */
-    CCS_DECLSPEC void service_output_finalize(void);
+    OCOMS_DECLSPEC void service_output_finalize(void);
 
     /**
      * Opens an output stream.
@@ -258,7 +258,7 @@ struct service_output_stream_t {
      *
      * This function opens an output stream and returns an integer
      * handle.  The caller is responsible for maintaining the handle and
-     * using it in successive calls to CCS_OUTPUT(), service_output(),
+     * using it in successive calls to OCOMS_OUTPUT(), service_output(),
      * service_output_switch(), and service_output_close().
      *
      * If lds is NULL, the default descriptions will be used, meaning
@@ -272,7 +272,7 @@ struct service_output_stream_t {
      * when open_open() / service_output() is directed to send output to a
      * file but the process session directory does not yet exist.
      */
-    CCS_DECLSPEC int service_output_open(service_output_stream_t *lds);
+    OCOMS_DECLSPEC int service_output_open(service_output_stream_t *lds);
 
     /**
      * Re-opens / redirects an output stream.
@@ -286,7 +286,7 @@ struct service_output_stream_t {
      * passed is invalid, this call is effectively the same as opening a
      * new stream with a specific stream handle.
      */
-    CCS_DECLSPEC int service_output_reopen(int output_id, service_output_stream_t *lds);
+    OCOMS_DECLSPEC int service_output_reopen(int output_id, service_output_stream_t *lds);
     
     /**
      * Enables and disables output streams.
@@ -302,10 +302,10 @@ struct service_output_stream_t {
      * enable value to false, and later resumed by passing an enable
      * value of true.  This does not close the stream -- it simply tells
      * the service_output subsystem to intercept and discard any output sent
-     * to the stream via CCS_OUTPUT() or service_output() until the output
+     * to the stream via OCOMS_OUTPUT() or service_output() until the output
      * is re-enabled.
      */
-    CCS_DECLSPEC bool service_output_switch(int output_id, bool enable);
+    OCOMS_DECLSPEC bool service_output_switch(int output_id, bool enable);
 
     /**
      * \internal
@@ -316,7 +316,7 @@ struct service_output_stream_t {
      * typically only invoked after a restart (i.e., in a new process)
      * where output streams need to be re-initialized.
      */
-    CCS_DECLSPEC void service_output_reopen_all(void);
+    OCOMS_DECLSPEC void service_output_reopen_all(void);
 
     /**
      * Close an output stream.
@@ -328,7 +328,7 @@ struct service_output_stream_t {
      * re-used; it is possible that after a stream is closed, if another
      * stream is opened, it will get the same handle value.
      */
-    CCS_DECLSPEC void service_output_close(int output_id);
+    OCOMS_DECLSPEC void service_output_close(int output_id);
 
     /**
      * Main function to send output to a stream.
@@ -355,7 +355,7 @@ struct service_output_stream_t {
      * created, service_output() will automatically create the file and
      * writing to it.
      */
-    CCS_DECLSPEC void service_output(int output_id, const char *format, ...) __service_attribute_format__(__printf__, 2, 3);
+    OCOMS_DECLSPEC void service_output(int output_id, const char *format, ...) __service_attribute_format__(__printf__, 2, 3);
     
     /**
      * Send output to a stream only if the passed verbosity level is
@@ -385,13 +385,13 @@ struct service_output_stream_t {
      *
      * @see service_output_set_verbosity()
      */
-    CCS_DECLSPEC void service_output_verbose(int verbose_level, int output_id, 
+    OCOMS_DECLSPEC void service_output_verbose(int verbose_level, int output_id, 
                                            const char *format, ...) __service_attribute_format__(__printf__, 3, 4);
 
    /**
     * Same as service_output_verbose(), but takes a va_list form of varargs.
     */
-    CCS_DECLSPEC void service_output_vverbose(int verbose_level, int output_id, 
+    OCOMS_DECLSPEC void service_output_vverbose(int verbose_level, int output_id, 
                                             const char *format, va_list ap) __service_attribute_format__(__printf__, 3, 0);
 
     /**    
@@ -408,13 +408,13 @@ struct service_output_stream_t {
      * level is not high enough, NULL is returned.  The caller is
      * responsible for free()'ing the returned string.
      */
-    CCS_DECLSPEC char *service_output_string(int verbose_level, int output_id, 
+    OCOMS_DECLSPEC char *service_output_string(int verbose_level, int output_id, 
                                            const char *format, ...) __service_attribute_format__(__printf__, 3, 4);
 
    /**
     * Same as service_output_string, but accepts a va_list form of varargs.
     */
-    CCS_DECLSPEC char *service_output_vstring(int verbose_level, int output_id, 
+    OCOMS_DECLSPEC char *service_output_vstring(int verbose_level, int output_id, 
                                             const char *format, va_list ap) __service_attribute_format__(__printf__, 3, 0);
 
     /**
@@ -426,7 +426,7 @@ struct service_output_stream_t {
      * This function sets the verbosity level on a given stream.  It
      * will be used for all future invocations of service_output_verbose().
      */
-    CCS_DECLSPEC void service_output_set_verbosity(int output_id, int level);
+    OCOMS_DECLSPEC void service_output_set_verbosity(int output_id, int level);
 
     /**
      * Get the verbosity level for a stream
@@ -434,7 +434,7 @@ struct service_output_stream_t {
      * @param output_id Stream id returned from service_output_open()
      * @returns Verbosity of stream
      */
-    CCS_DECLSPEC int service_output_get_verbosity(int output_id);
+    OCOMS_DECLSPEC int service_output_get_verbosity(int output_id);
 
     /**
      * Set characteristics for output files.
@@ -476,12 +476,12 @@ struct service_output_stream_t {
      * this function affects both new streams \em and any stream that
      * was previously opened but had not yet output anything.
      */
-    CCS_DECLSPEC void service_output_set_output_file_info(const char *dir,
+    OCOMS_DECLSPEC void service_output_set_output_file_info(const char *dir,
                                                         const char *prefix,
                                                         char **olddir,
                                                         char **oldprefix);
     
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     /**
      * Main macro for use in sending debugging output to output streams;
      * will be "compiled out" when OPAL is configured without
@@ -489,7 +489,7 @@ struct service_output_stream_t {
      *
      * @see service_output()
      */
-#define CCS_OUTPUT(a) service_output a
+#define OCOMS_OUTPUT(a) service_output a
     
     /** 
      * Macro for use in sending debugging output to the output
@@ -498,7 +498,7 @@ struct service_output_stream_t {
      *
      * @see service_output_verbose()
      */
-#define CCS_OUTPUT_VERBOSE(a) service_output_verbose a
+#define OCOMS_OUTPUT_VERBOSE(a) service_output_verbose a
 #else
     /**
      * Main macro for use in sending debugging output to output streams;
@@ -507,7 +507,7 @@ struct service_output_stream_t {
      *
      * @see service_output()
      */
-#define CCS_OUTPUT(a)
+#define OCOMS_OUTPUT(a)
     
     /** 
      * Macro for use in sending debugging output to the output
@@ -516,7 +516,7 @@ struct service_output_stream_t {
      *
      * @see service_output_verbose()
      */
-#define CCS_OUTPUT_VERBOSE(a)
+#define OCOMS_OUTPUT_VERBOSE(a)
 #endif
 
 /**
@@ -527,9 +527,9 @@ struct service_output_stream_t {
  * The intended usage is to invoke the constructor and then enable
  * the output fields that you want.
  */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_output_stream_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_output_stream_t);
 
 END_C_DECLS
 
-#endif /* CCS_OUTPUT_H_ */
+#endif /* OCOMS_OUTPUT_H_ */
 

@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/util/service_free_list.h"
 #include "service/primitives/align.h"
@@ -63,7 +63,7 @@ static void service_free_list_destruct(service_free_list_t* fl)
     service_list_item_t *item;
     service_free_list_memory_t *fl_mem;
 
-#if 0 && CCS_ENABLE_DEBUG
+#if 0 && OCOMS_ENABLE_DEBUG
     if(service_list_get_size(&fl->super) != fl->fl_num_allocated) {
         service_output(0, "service_free_list: %d allocated %d returned: %s:%d\n",
             fl->fl_num_allocated, service_list_get_size(&fl->super),
@@ -106,12 +106,12 @@ int service_free_list_init_ex(service_free_list_t *flist,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
     allocator_handle_t handle,
-    ccs_progress_fn_t ccs_progress
+    ocoms_progress_fn_t ocoms_progress
     )
 {
     /* alignment must be more than zero and power of two */
     if(alignment <= 1 || (alignment & (alignment - 1)))
-        return CCS_ERROR;
+        return OCOMS_ERROR;
 
     if(elem_size > flist->fl_frag_size)
         flist->fl_frag_size = elem_size;
@@ -130,7 +130,7 @@ int service_free_list_init_ex(service_free_list_t *flist,
     flist->alloc_handle = handle;
     flist->alloc    = alloc;
     flist->free     = free;
-    flist->fl_condition.ccs_progress_fn = ccs_progress;
+    flist->fl_condition.ocoms_progress_fn = ocoms_progress;
     /* Sanity check: runtime functions alloc/free must be
      * either both given or not.
      */
@@ -139,7 +139,7 @@ int service_free_list_init_ex(service_free_list_t *flist,
 
     if(num_elements_to_alloc)
         return service_free_list_grow(flist, num_elements_to_alloc);
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 /* this will replace service_free_list_init_ex */
@@ -157,15 +157,15 @@ int service_free_list_init_ex_new(service_free_list_t *flist,
     service_free_list_alloc_fn_t alloc,
     service_free_list_free_fn_t free,
     allocator_handle_t handle,
-    ccs_progress_fn_t ccs_progress
+    ocoms_progress_fn_t ocoms_progress
     )
 {
     /* alignment must be more than zero and power of two */
     if (frag_alignment <= 1 || (frag_alignment & (frag_alignment - 1)))
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     if (0 < payload_buffer_size) {
         if (payload_buffer_alignment <= 1 || (payload_buffer_alignment & (payload_buffer_alignment - 1)))
-            return CCS_ERROR;
+            return OCOMS_ERROR;
     }
 
     if (frag_size > flist->fl_frag_size)
@@ -184,7 +184,7 @@ int service_free_list_init_ex_new(service_free_list_t *flist,
     flist->alloc_handle = handle;
     flist->alloc    = alloc;
     flist->free     = free;
-    flist->fl_condition.ccs_progress_fn = ccs_progress;
+    flist->fl_condition.ocoms_progress_fn = ocoms_progress;
     /* Sanity check: runtime functions alloc/free must be
      * either both given or not.
      */
@@ -193,7 +193,7 @@ int service_free_list_init_ex_new(service_free_list_t *flist,
 
     if (num_elements_to_alloc)
         return service_free_list_grow(flist, num_elements_to_alloc);
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
 {
@@ -207,11 +207,11 @@ int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
             num_elements = flist->fl_max_to_alloc - flist->fl_num_allocated;
 
     if(num_elements == 0)
-        return CCS_ERR_TEMP_OUT_OF_RESOURCE;
+        return OCOMS_ERR_TEMP_OUT_OF_RESOURCE;
 
     head_size = (NULL == flist->alloc) ? flist->fl_frag_size:
         flist->fl_frag_class->cls_sizeof;
-    head_size = CCS_ALIGN(head_size, flist->fl_frag_alignment, size_t);
+    head_size = OCOMS_ALIGN(head_size, flist->fl_frag_alignment, size_t);
 
     /* calculate head allocation size */
     alloc_size = num_elements * head_size + sizeof(service_free_list_memory_t) +
@@ -220,11 +220,11 @@ int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
     alloc_ptr = (service_free_list_memory_t*)malloc(alloc_size);
 
     if(NULL == alloc_ptr)
-        return CCS_ERR_TEMP_OUT_OF_RESOURCE;
+        return OCOMS_ERR_TEMP_OUT_OF_RESOURCE;
 
     /* allocate the rest from the runtime */
     if(flist->alloc != NULL) {
-        elem_size = CCS_ALIGN(flist->fl_payload_buffer_size, 
+        elem_size = OCOMS_ALIGN(flist->fl_payload_buffer_size, 
                 flist->fl_payload_buffer_alignment, size_t);
         if(elem_size != 0) {
             runtime_alloc_ptr = (unsigned char *) flist->alloc(flist->alloc_handle.allocator_context,
@@ -232,7 +232,7 @@ int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
                    flist->alloc_handle.flags, &reg);
             if(NULL == runtime_alloc_ptr) {
                 free(alloc_ptr);
-                return CCS_ERR_TEMP_OUT_OF_RESOURCE;
+                return OCOMS_ERR_TEMP_OUT_OF_RESOURCE;
             }
         }
     }
@@ -246,7 +246,7 @@ int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
     alloc_ptr->ptr = runtime_alloc_ptr;
 
     ptr = (unsigned char*)alloc_ptr + sizeof(service_free_list_memory_t);
-    ptr = CCS_ALIGN_PTR(ptr, flist->fl_frag_alignment, unsigned char*);
+    ptr = OCOMS_ALIGN_PTR(ptr, flist->fl_frag_alignment, unsigned char*);
 
     for(i=0; i<num_elements; i++) {
         service_free_list_item_t* item = (service_free_list_item_t*)ptr;
@@ -266,7 +266,7 @@ int service_free_list_grow(service_free_list_t* flist, size_t num_elements)
         
     }
     flist->fl_num_allocated += num_elements;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 /**
@@ -280,16 +280,16 @@ int
 service_free_list_resize(service_free_list_t* flist, size_t size)
 {
     ssize_t inc_num;
-    int ret = CCS_SUCCESS;
+    int ret = OCOMS_SUCCESS;
 
     if (flist->fl_num_allocated > size) {
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
     SERVICE_THREAD_LOCK(&((flist)->fl_lock));
     inc_num = (ssize_t)size - (ssize_t)flist->fl_num_allocated;
     while( inc_num > 0 ) {
         ret = service_free_list_grow(flist, flist->fl_num_per_alloc);
-        if( CCS_SUCCESS != ret ) break;
+        if( OCOMS_SUCCESS != ret ) break;
         inc_num = (ssize_t)size - (ssize_t)flist->fl_num_allocated;
     }
     SERVICE_THREAD_UNLOCK(&((flist)->fl_lock));

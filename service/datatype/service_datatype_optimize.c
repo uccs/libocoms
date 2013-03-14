@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 #ifdef HAVE_ALLOCA_H
@@ -33,8 +33,8 @@
 #define SET_EMPTY_ELEMENT( ELEM )                 \
     do {                                          \
         ddt_elem_desc_t* _elem = (ELEM);          \
-        _elem->common.flags = CCS_DATATYPE_FLAG_BASIC;      \
-        _elem->common.type  = CCS_DATATYPE_LOOP; \
+        _elem->common.flags = OCOMS_DATATYPE_FLAG_BASIC;      \
+        _elem->common.type  = OCOMS_DATATYPE_LOOP; \
         _elem->count        = 0;                  \
         _elem->disp         = 0;                  \
         _elem->extent       = 0;                  \
@@ -53,10 +53,10 @@ static inline int SAVE_OPTIMIZED_ELEMENT( dt_elem_desc_t* pElemDesc,
 static inline int ADD_ELEMENT( dt_elem_desc_t* pElemDesc __service_attribute_unused__,
                                ddt_elem_desc_t* opt_elem,
                                uint16_t type, uint32_t count,
-                               CCS_PTRDIFF_TYPE disp, int32_t extent )
+                               OCOMS_PTRDIFF_TYPE disp, int32_t extent )
 {
     if( 0 == opt_elem->count ) {
-        opt_elem->common.flags = CCS_DATATYPE_FLAG_BASIC;
+        opt_elem->common.flags = OCOMS_DATATYPE_FLAG_BASIC;
         opt_elem->common.type  = type;
         opt_elem->count        = count;
         opt_elem->disp         = disp;
@@ -73,37 +73,37 @@ service_datatype_optimize_short( service_datatype_t* pData,
 {
     dt_elem_desc_t* pElemDesc;
     ddt_elem_desc_t opt_elem;
-    CCS_PTRDIFF_TYPE last_disp = 0;
+    OCOMS_PTRDIFF_TYPE last_disp = 0;
     dt_stack_t* pStack;            /* pointer to the position on the stack */
     int32_t pos_desc = 0;          /* actual position in the description of the derived datatype */
-    int32_t stack_pos = 0, last_type = CCS_DATATYPE_UINT1;
-    int32_t type = CCS_DATATYPE_LOOP, nbElems = 0, changes = 0;
+    int32_t stack_pos = 0, last_type = OCOMS_DATATYPE_UINT1;
+    int32_t type = OCOMS_DATATYPE_LOOP, nbElems = 0, changes = 0;
     int32_t optimized = 0, continuity;
     uint16_t last_flags = 0xFFFF;  /* keep all for the first datatype */
-    CCS_PTRDIFF_TYPE total_disp = 0, last_extent = 1;
+    OCOMS_PTRDIFF_TYPE total_disp = 0, last_extent = 1;
 	int32_t last_length = 0;
     uint32_t i;
 
-    pStack = (dt_stack_t*)alloca( sizeof(dt_stack_t) * (pData->btypes[CCS_DATATYPE_LOOP]+2) );
+    pStack = (dt_stack_t*)alloca( sizeof(dt_stack_t) * (pData->btypes[OCOMS_DATATYPE_LOOP]+2) );
     SAVE_STACK( pStack, -1, 0, count, 0 );
 
-    pTypeDesc->length = 2 * pData->desc.used + 1 /* for the fake CCS_DATATYPE_END_LOOP at the end */;
+    pTypeDesc->length = 2 * pData->desc.used + 1 /* for the fake OCOMS_DATATYPE_END_LOOP at the end */;
     pTypeDesc->desc = pElemDesc = (dt_elem_desc_t*)malloc( sizeof(dt_elem_desc_t) * pTypeDesc->length );
     pTypeDesc->used = 0;
 
     SET_EMPTY_ELEMENT( &opt_elem );
-    assert( CCS_DATATYPE_END_LOOP == pData->desc.desc[pData->desc.used].elem.common.type );
-    opt_elem.common.type = CCS_DATATYPE_LOOP;
+    assert( OCOMS_DATATYPE_END_LOOP == pData->desc.desc[pData->desc.used].elem.common.type );
+    opt_elem.common.type = OCOMS_DATATYPE_LOOP;
     opt_elem.common.flags = 0xFFFF;  /* keep all for the first datatype */
     opt_elem.count = 0;
     opt_elem.disp = pData->desc.desc[pData->desc.used].end_loop.first_elem_disp;
     opt_elem.extent = 0;
 
     while( stack_pos >= 0 ) {
-        if( CCS_DATATYPE_END_LOOP == pData->desc.desc[pos_desc].elem.common.type ) { /* end of the current loop */
+        if( OCOMS_DATATYPE_END_LOOP == pData->desc.desc[pos_desc].elem.common.type ) { /* end of the current loop */
             ddt_endloop_desc_t* end_loop = &(pData->desc.desc[pos_desc].end_loop);
             if( last_length != 0 ) {
-                CREATE_ELEM( pElemDesc, last_type, CCS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
+                CREATE_ELEM( pElemDesc, last_type, OCOMS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
                 pElemDesc++; nbElems++;
                 last_disp += last_length;
                 last_length = 0;
@@ -120,21 +120,21 @@ service_datatype_optimize_short( service_datatype_t* pData,
             pos_desc++;
             continue;
         }
-        if( CCS_DATATYPE_LOOP == pData->desc.desc[pos_desc].elem.common.type ) {
+        if( OCOMS_DATATYPE_LOOP == pData->desc.desc[pos_desc].elem.common.type ) {
             ddt_loop_desc_t* loop = (ddt_loop_desc_t*)&(pData->desc.desc[pos_desc]);
             ddt_endloop_desc_t* end_loop = (ddt_endloop_desc_t*)&(pData->desc.desc[pos_desc + loop->items]);
             int index = GET_FIRST_NON_LOOP( &(pData->desc.desc[pos_desc]) );
-            CCS_PTRDIFF_TYPE loop_disp = pData->desc.desc[pos_desc + index].elem.disp;
+            OCOMS_PTRDIFF_TYPE loop_disp = pData->desc.desc[pos_desc + index].elem.disp;
 
-            continuity = ((last_disp + last_length * (CCS_PTRDIFF_TYPE)service_datatype_basicDatatypes[last_type]->size)
+            continuity = ((last_disp + last_length * (OCOMS_PTRDIFF_TYPE)service_datatype_basicDatatypes[last_type]->size)
                               == (total_disp + loop_disp));
-            if( loop->common.flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
+            if( loop->common.flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
                 /* the loop is contiguous or composed by contiguous elements with a gap */
-                if( loop->extent == (CCS_PTRDIFF_TYPE)end_loop->size ) {
+                if( loop->extent == (OCOMS_PTRDIFF_TYPE)end_loop->size ) {
                     /* the whole loop is contiguous */
                     if( !continuity ) {
                         if( 0 != last_length ) {
-                            CREATE_ELEM( pElemDesc, last_type, CCS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
+                            CREATE_ELEM( pElemDesc, last_type, OCOMS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
                             pElemDesc++; nbElems++;
                             last_length = 0;
                         }
@@ -142,7 +142,7 @@ service_datatype_optimize_short( service_datatype_t* pData,
                     }
                     last_length = (last_length * service_datatype_basicDatatypes[last_type]->size
                                    + loop->loops * end_loop->size);
-                    last_type   = CCS_DATATYPE_UINT1;
+                    last_type   = OCOMS_DATATYPE_UINT1;
                     last_extent = 1;
                     optimized++;
                 } else {
@@ -152,22 +152,22 @@ service_datatype_optimize_short( service_datatype_t* pData,
                         if( continuity ) {
                             last_length *= service_datatype_basicDatatypes[last_type]->size;
                             last_length += end_loop->size;
-                            last_type    = CCS_DATATYPE_UINT1;
+                            last_type    = OCOMS_DATATYPE_UINT1;
                             last_extent  = 1;
                             counter--;
                         }
-                        CREATE_ELEM( pElemDesc, last_type, CCS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
+                        CREATE_ELEM( pElemDesc, last_type, OCOMS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
                         pElemDesc++; nbElems++;
                         last_disp += last_length;
                         last_length = 0;
-                        last_type = CCS_DATATYPE_LOOP;
+                        last_type = OCOMS_DATATYPE_LOOP;
                     }
                     /* we have a gap in the begining or the end of the loop but the whole
                      * loop can be merged in just one memcpy.
                      */
                     CREATE_LOOP_START( pElemDesc, counter, 2, loop->extent, loop->common.flags );
                     pElemDesc++; nbElems++;
-                    CREATE_ELEM( pElemDesc, CCS_DATATYPE_UINT1, CCS_DATATYPE_FLAG_BASIC, end_loop->size, loop_disp, 1);
+                    CREATE_ELEM( pElemDesc, OCOMS_DATATYPE_UINT1, OCOMS_DATATYPE_FLAG_BASIC, end_loop->size, loop_disp, 1);
                     pElemDesc++; nbElems++;
                     CREATE_LOOP_END( pElemDesc, 2, end_loop->first_elem_disp, end_loop->size,
                                      end_loop->common.flags );
@@ -179,23 +179,23 @@ service_datatype_optimize_short( service_datatype_t* pData,
             } else {
                 ddt_elem_desc_t* elem = (ddt_elem_desc_t*)&(pData->desc.desc[pos_desc+1]);
                 if( last_length != 0 ) {
-                    CREATE_ELEM( pElemDesc, last_type, CCS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
+                    CREATE_ELEM( pElemDesc, last_type, OCOMS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
                     pElemDesc++; nbElems++;
                     last_disp  += last_length;
                     last_length = 0;
-                    last_type   = CCS_DATATYPE_LOOP;
+                    last_type   = OCOMS_DATATYPE_LOOP;
                 }
                 if( 2 == loop->items ) { /* small loop */
                     if( (1 == elem->count)
-                        && (elem->extent == (CCS_PTRDIFF_TYPE)service_datatype_basicDatatypes[elem->common.type]->size) ) {
-                        CREATE_ELEM( pElemDesc, elem->common.type, elem->common.flags & ~CCS_DATATYPE_FLAG_CONTIGUOUS,
+                        && (elem->extent == (OCOMS_PTRDIFF_TYPE)service_datatype_basicDatatypes[elem->common.type]->size) ) {
+                        CREATE_ELEM( pElemDesc, elem->common.type, elem->common.flags & ~OCOMS_DATATYPE_FLAG_CONTIGUOUS,
                                      loop->loops, elem->disp, loop->extent );
                         pElemDesc++; nbElems++;
                         pos_desc += loop->items + 1;
                         changes++; optimized++;
                         goto complete_loop;
                     } else if( loop->loops < 3 ) {
-                        CCS_PTRDIFF_TYPE elem_displ = elem->disp;
+                        OCOMS_PTRDIFF_TYPE elem_displ = elem->disp;
                         for( i = 0; i < loop->loops; i++ ) {
                             CREATE_ELEM( pElemDesc, elem->common.type, elem->common.flags,
                                          elem->count, elem_displ, elem->extent );
@@ -209,7 +209,7 @@ service_datatype_optimize_short( service_datatype_t* pData,
                 }
                 CREATE_LOOP_START( pElemDesc, loop->loops, loop->items, loop->extent, loop->common.flags );
                 pElemDesc++; nbElems++;
-                PUSH_STACK( pStack, stack_pos, nbElems, CCS_DATATYPE_LOOP, loop->loops, total_disp );
+                PUSH_STACK( pStack, stack_pos, nbElems, OCOMS_DATATYPE_LOOP, loop->loops, total_disp );
                 pos_desc++;
                 DDT_DUMP_STACK( pStack, stack_pos, pData->desc.desc, "advance loops" );
             }
@@ -217,13 +217,13 @@ service_datatype_optimize_short( service_datatype_t* pData,
             total_disp = pStack->disp;  /* update the displacement */
             continue;
         }
-        while( pData->desc.desc[pos_desc].elem.common.flags & CCS_DATATYPE_FLAG_DATA ) {  /* keep doing it until we reach a non datatype element */
+        while( pData->desc.desc[pos_desc].elem.common.flags & OCOMS_DATATYPE_FLAG_DATA ) {  /* keep doing it until we reach a non datatype element */
             /* now here we have a basic datatype */
             type = pData->desc.desc[pos_desc].elem.common.type;
-            continuity = ((last_disp + last_length * (CCS_PTRDIFF_TYPE)service_datatype_basicDatatypes[last_type]->size)
+            continuity = ((last_disp + last_length * (OCOMS_PTRDIFF_TYPE)service_datatype_basicDatatypes[last_type]->size)
                           == (total_disp + pData->desc.desc[pos_desc].elem.disp));
 
-            if( (pData->desc.desc[pos_desc].elem.common.flags & CCS_DATATYPE_FLAG_CONTIGUOUS) && continuity &&
+            if( (pData->desc.desc[pos_desc].elem.common.flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS) && continuity &&
                 (pData->desc.desc[pos_desc].elem.extent == (int32_t)service_datatype_basicDatatypes[type]->size) ) {
                 if( type == last_type ) {
                     last_length += pData->desc.desc[pos_desc].elem.count;
@@ -236,7 +236,7 @@ service_datatype_optimize_short( service_datatype_t* pData,
                     } else {
                         last_length = last_length * service_datatype_basicDatatypes[last_type]->size +
                             pData->desc.desc[pos_desc].elem.count * service_datatype_basicDatatypes[type]->size;
-                        last_type = CCS_DATATYPE_UINT1;
+                        last_type = OCOMS_DATATYPE_UINT1;
                         last_extent = 1;
                         optimized++;
                     }
@@ -244,7 +244,7 @@ service_datatype_optimize_short( service_datatype_t* pData,
                 last_flags &= pData->desc.desc[pos_desc].elem.common.flags;
             } else {
                 if( last_length != 0 ) {
-                    CREATE_ELEM( pElemDesc, last_type, CCS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
+                    CREATE_ELEM( pElemDesc, last_type, OCOMS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
                     pElemDesc++; nbElems++;
                 }
                 last_disp = total_disp + pData->desc.desc[pos_desc].elem.disp;
@@ -257,21 +257,21 @@ service_datatype_optimize_short( service_datatype_t* pData,
     }
 
     if( last_length != 0 ) {
-        CREATE_ELEM( pElemDesc, last_type, CCS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
+        CREATE_ELEM( pElemDesc, last_type, OCOMS_DATATYPE_FLAG_BASIC, last_length, last_disp, last_extent );
         pElemDesc++; nbElems++;
     }
     /* cleanup the stack */
     pTypeDesc->used = nbElems - 1;  /* except the last fake END_LOOP */
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 int32_t service_datatype_commit( service_datatype_t * pData )
 {
     ddt_endloop_desc_t* pLast = &(pData->desc.desc[pData->desc.used].end_loop);
-    CCS_PTRDIFF_TYPE first_elem_disp = 0;
+    OCOMS_PTRDIFF_TYPE first_elem_disp = 0;
 
-    if( pData->flags & CCS_DATATYPE_FLAG_COMMITED ) return CCS_SUCCESS;
-    pData->flags |= CCS_DATATYPE_FLAG_COMMITED;
+    if( pData->flags & OCOMS_DATATYPE_FLAG_COMMITED ) return OCOMS_SUCCESS;
+    pData->flags |= OCOMS_DATATYPE_FLAG_COMMITED;
 
     /* We have to compute the displacement of the first non loop item in the
      * description.
@@ -281,14 +281,14 @@ int32_t service_datatype_commit( service_datatype_t * pData )
         dt_elem_desc_t* pElem = pData->desc.desc;
 
         index = GET_FIRST_NON_LOOP( pElem );
-        assert( pElem[index].elem.common.flags & CCS_DATATYPE_FLAG_DATA );
+        assert( pElem[index].elem.common.flags & OCOMS_DATATYPE_FLAG_DATA );
         first_elem_disp = pElem[index].elem.disp;
     }
 
     /* let's add a fake element at the end just to avoid useless comparaisons
      * in pack/unpack functions.
      */
-    pLast->common.type     = CCS_DATATYPE_END_LOOP;
+    pLast->common.type     = OCOMS_DATATYPE_END_LOOP;
     pLast->common.flags    = 0;
     pLast->items           = pData->desc.used;
     pLast->first_elem_disp = first_elem_disp;
@@ -299,11 +299,11 @@ int32_t service_datatype_commit( service_datatype_t * pData )
         pData->opt_desc.length = 0;
         pData->opt_desc.desc   = NULL;
         pData->opt_desc.used   = 0;
-        return CCS_SUCCESS;
+        return OCOMS_SUCCESS;
     }
 
     /* If the data is contiguous is useless to generate an optimized version. */
-    /*if( pData->size == (pData->true_ub - pData->true_lb) ) return CCS_SUCCESS; */
+    /*if( pData->size == (pData->true_ub - pData->true_lb) ) return OCOMS_SUCCESS; */
 
     (void)service_datatype_optimize_short( pData, 1, &(pData->opt_desc) );
     if( 0 != pData->opt_desc.used ) {
@@ -311,11 +311,11 @@ int32_t service_datatype_commit( service_datatype_t * pData )
          * in pack/unpack functions.
          */
         pLast = &(pData->opt_desc.desc[pData->opt_desc.used].end_loop);
-        pLast->common.type     = CCS_DATATYPE_END_LOOP;
+        pLast->common.type     = OCOMS_DATATYPE_END_LOOP;
         pLast->common.flags    = 0;
         pLast->items           = pData->opt_desc.used;
         pLast->first_elem_disp = first_elem_disp;
         pLast->size            = pData->size;
     }
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }

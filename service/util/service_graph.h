@@ -27,7 +27,7 @@
 #ifndef SERVICE_GRAPH_H
 #define SERVICE_GRAPH_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include "service/util/service_object.h"
@@ -41,16 +41,16 @@ BEGIN_C_DECLS
 #define DISTANCE_INFINITY 0x7fffffff
 
     /* A class for vertex */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_graph_vertex_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_graph_vertex_t);
 
     /* A class for an edge (a connection between two verices) */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_graph_edge_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_graph_edge_t);
 
     /* A class for an adjacency list  */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_adjacency_list_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_adjacency_list_t);
 
     /* A class for graph */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_graph_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_graph_t);
 
   /**
    * Function pointer for coping a vertex data from one vertex to
@@ -195,7 +195,7 @@ typedef struct vertex_distance_from_t vertex_distance_from_t;
  * @param graph The graph that the vertex will be added to.
  * @param vertex The vertex we want to add.
  */
-CCS_DECLSPEC void service_graph_add_vertex(service_graph_t *graph, service_graph_vertex_t *vertex);
+OCOMS_DECLSPEC void service_graph_add_vertex(service_graph_t *graph, service_graph_vertex_t *vertex);
 
 /**
  * This graph API remove a vertex from graph. The most common
@@ -205,7 +205,7 @@ CCS_DECLSPEC void service_graph_add_vertex(service_graph_t *graph, service_graph
  * @param graph The graph that the vertex will be remove from.
  * @param vertex The vertex we want to remove.
  */
-CCS_DECLSPEC void service_graph_remove_vertex(service_graph_t *graph, service_graph_vertex_t *vertex);
+OCOMS_DECLSPEC void service_graph_remove_vertex(service_graph_t *graph, service_graph_vertex_t *vertex);
 
 /**
  * This graph API adds an edge (connection between two
@@ -218,7 +218,7 @@ CCS_DECLSPEC void service_graph_remove_vertex(service_graph_t *graph, service_gr
  * @return int Success or error. this API can return an error if
  *         one of the vertices is not in the graph.
  */
-CCS_DECLSPEC int service_graph_add_edge(service_graph_t *graph, service_graph_edge_t *edge); 
+OCOMS_DECLSPEC int service_graph_add_edge(service_graph_t *graph, service_graph_edge_t *edge); 
 
 /**
  * This graph API removes an edge (a connection between two
@@ -231,7 +231,7 @@ CCS_DECLSPEC int service_graph_add_edge(service_graph_t *graph, service_graph_ed
  * @param graph The graph that this edge will be remove from.
  * @param edge the edge that we want to remove.
  */
-CCS_DECLSPEC void service_graph_remove_edge (service_graph_t *graph, service_graph_edge_t *edge);
+OCOMS_DECLSPEC void service_graph_remove_edge (service_graph_t *graph, service_graph_edge_t *edge);
 
 /**
  * This graph API tell us if two vertices are adjacent
@@ -244,7 +244,7 @@ CCS_DECLSPEC void service_graph_remove_edge (service_graph_t *graph, service_gra
  *         vertices or infinity if the vertices are not
  *         connected.
  */
-CCS_DECLSPEC uint32_t service_graph_adjacent(service_graph_t *graph, service_graph_vertex_t *vertex1, service_graph_vertex_t *vertex2);
+OCOMS_DECLSPEC uint32_t service_graph_adjacent(service_graph_t *graph, service_graph_vertex_t *vertex1, service_graph_vertex_t *vertex2);
 
 /**
  * This Graph API returns the order of the graph (number of
@@ -254,7 +254,7 @@ CCS_DECLSPEC uint32_t service_graph_adjacent(service_graph_t *graph, service_gra
  * 
  * @return int
  */
-CCS_DECLSPEC int service_graph_get_order(service_graph_t *graph);
+OCOMS_DECLSPEC int service_graph_get_order(service_graph_t *graph);
 
 /**
  * This Graph API returns the size of the graph (number of
@@ -264,7 +264,7 @@ CCS_DECLSPEC int service_graph_get_order(service_graph_t *graph);
  * 
  * @return int
  */
-CCS_DECLSPEC int service_graph_get_size(service_graph_t *graph);
+OCOMS_DECLSPEC int service_graph_get_size(service_graph_t *graph);
 
 /**
  * This graph API finds a vertex in the graph according the
@@ -275,7 +275,7 @@ CCS_DECLSPEC int service_graph_get_size(service_graph_t *graph);
  * 
  * @return service_graph_vertex_t* The vertex founded or NULL.
  */
-CCS_DECLSPEC service_graph_vertex_t *service_graph_find_vertex(service_graph_t *graph, void *vertex_data);
+OCOMS_DECLSPEC service_graph_vertex_t *service_graph_find_vertex(service_graph_t *graph, void *vertex_data);
 
 
 /**
@@ -290,7 +290,7 @@ CCS_DECLSPEC service_graph_vertex_t *service_graph_find_vertex(service_graph_t *
  * @return int returning the graph order (the
  *                    number of vertices in the returned array)
  */
-CCS_DECLSPEC int service_graph_get_graph_vertices(service_graph_t *graph, service_pointer_array_t *vertices_list);
+OCOMS_DECLSPEC int service_graph_get_graph_vertices(service_graph_t *graph, service_pointer_array_t *vertices_list);
 
 /**
  * This graph API returns all the adjacent of a vertex and the
@@ -305,7 +305,7 @@ CCS_DECLSPEC int service_graph_get_graph_vertices(service_graph_t *graph, servic
  * 
  * @return int the number of adjacent in the list.
  */
-CCS_DECLSPEC int service_graph_get_adjacent_vertices(service_graph_t *graph, service_graph_vertex_t *vertex, service_value_array_t *adjacent);
+OCOMS_DECLSPEC int service_graph_get_adjacent_vertices(service_graph_t *graph, service_graph_vertex_t *vertex, service_value_array_t *adjacent);
 
 /**
  * This graph API duplicates a graph. Note that this API does
@@ -315,7 +315,7 @@ CCS_DECLSPEC int service_graph_get_adjacent_vertices(service_graph_t *graph, ser
  * @param dest The new created graph.
  * @param src The graph we want to duplicate.
  */
-CCS_DECLSPEC void service_graph_duplicate(service_graph_t **dest, service_graph_t *src);
+OCOMS_DECLSPEC void service_graph_duplicate(service_graph_t **dest, service_graph_t *src);
 
 /**
  * This graph API finds the shortest path between two vertices.
@@ -326,7 +326,7 @@ CCS_DECLSPEC void service_graph_duplicate(service_graph_t **dest, service_graph_
  * 
  * @return uint32_t the distance between the two vertices.
  */
-CCS_DECLSPEC uint32_t service_graph_spf(service_graph_t *graph, service_graph_vertex_t *vertex1, service_graph_vertex_t *vertex2);
+OCOMS_DECLSPEC uint32_t service_graph_spf(service_graph_t *graph, service_graph_vertex_t *vertex1, service_graph_vertex_t *vertex2);
 
 /**
  * This graph API returns the distance (weight) from a reference
@@ -340,13 +340,13 @@ CCS_DECLSPEC uint32_t service_graph_spf(service_graph_t *graph, service_graph_ve
  * 
  * @return uint32_t the size of the distance array
  */
-CCS_DECLSPEC uint32_t service_graph_dijkstra(service_graph_t *graph, service_graph_vertex_t *vertex, service_value_array_t *distance_array);
+OCOMS_DECLSPEC uint32_t service_graph_dijkstra(service_graph_t *graph, service_graph_vertex_t *vertex, service_value_array_t *distance_array);
 
 /**
  * This graph API prints a graph - mostly for debug uses.
  * @param graph
  */
-CCS_DECLSPEC void service_graph_print(service_graph_t *graph);
+OCOMS_DECLSPEC void service_graph_print(service_graph_t *graph);
 
 END_C_DECLS
 

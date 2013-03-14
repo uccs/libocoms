@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/util/service_list.h"
 #include "service/mca/base/base.h"
@@ -30,17 +30,17 @@ static void cpl_constructor(service_object_t *obj);
 
 
 /*
- * Class instance of the ccs_mca_base_component_list_item_t class
+ * Class instance of the ocoms_mca_base_component_list_item_t class
  */
-OBJ_CLASS_INSTANCE(ccs_mca_base_component_list_item_t, 
+OBJ_CLASS_INSTANCE(ocoms_mca_base_component_list_item_t, 
                    service_list_item_t, cl_constructor, NULL);
 
 
 /*
- * Class instance of the ccs_mca_base_component_priority_list_item_t class
+ * Class instance of the ocoms_mca_base_component_priority_list_item_t class
  */
-OBJ_CLASS_INSTANCE(ccs_mca_base_component_priority_list_item_t, 
-                   ccs_mca_base_component_list_item_t, cpl_constructor, NULL);
+OBJ_CLASS_INSTANCE(ocoms_mca_base_component_priority_list_item_t, 
+                   ocoms_mca_base_component_list_item_t, cpl_constructor, NULL);
 
 
 /*
@@ -48,7 +48,7 @@ OBJ_CLASS_INSTANCE(ccs_mca_base_component_priority_list_item_t,
  */
 static void cl_constructor(service_object_t *obj)
 {
-  ccs_mca_base_component_list_item_t *cli = (ccs_mca_base_component_list_item_t *) obj;
+  ocoms_mca_base_component_list_item_t *cli = (ocoms_mca_base_component_list_item_t *) obj;
   cli->cli_component = NULL;
 }
 
@@ -58,7 +58,7 @@ static void cl_constructor(service_object_t *obj)
  */
 static void cpl_constructor(service_object_t *obj)
 {
-  ccs_mca_base_component_priority_list_item_t *cpli = 
-    (ccs_mca_base_component_priority_list_item_t *) obj;
+  ocoms_mca_base_component_priority_list_item_t *cpli = 
+    (ocoms_mca_base_component_priority_list_item_t *) obj;
   cpli->cpli_priority = -1;
 }

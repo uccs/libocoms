@@ -16,11 +16,11 @@
  * $HEADER$
  */
 
-#ifndef CCS_SYS_ARCH_ATOMIC_H
-#define CCS_SYS_ARCH_ATOMIC_H 1
+#ifndef OCOMS_SYS_ARCH_ATOMIC_H
+#define OCOMS_SYS_ARCH_ATOMIC_H 1
 
 
-#if CCS_WANT_SMP_LOCKS
+#if OCOMS_WANT_SMP_LOCKS
 
 /* BWB - FIX ME! */
 #ifdef __linux__
@@ -50,12 +50,12 @@
  * Define constants for MIPS
  *
  *********************************************************************/
-#define CCS_HAVE_ATOMIC_MEM_BARRIER 1
+#define OCOMS_HAVE_ATOMIC_MEM_BARRIER 1
 
-#define CCS_HAVE_ATOMIC_CMPSET_32 1
+#define OCOMS_HAVE_ATOMIC_CMPSET_32 1
 
 #ifdef __mips64
-#define CCS_HAVE_ATOMIC_CMPSET_64 1
+#define OCOMS_HAVE_ATOMIC_CMPSET_64 1
 #endif
 
 /**********************************************************************
@@ -63,7 +63,7 @@
  * Memory Barriers
  *
  *********************************************************************/
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 static inline
 void service_atomic_mb(void)
@@ -92,7 +92,7 @@ void service_atomic_wmb(void)
  * Atomic math operations
  *
  *********************************************************************/
-#if CCS_GCC_INLINE_ASSEMBLY
+#if OCOMS_GCC_INLINE_ASSEMBLY
 
 static inline int service_atomic_cmpset_32(volatile int32_t *addr,
                                         int32_t oldval, int32_t newval)
@@ -148,7 +148,7 @@ static inline int service_atomic_cmpset_rel_32(volatile int32_t *addr,
     return service_atomic_cmpset_32(addr, oldval, newval);
 }
 
-#ifdef CCS_HAVE_ATOMIC_CMPSET_64
+#ifdef OCOMS_HAVE_ATOMIC_CMPSET_64
 static inline int service_atomic_cmpset_64(volatile int64_t *addr,
                                         int64_t oldval, int64_t newval)
 {
@@ -197,8 +197,8 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
     service_atomic_wmb();
     return service_atomic_cmpset_64(addr, oldval, newval);
 }
-#endif /* CCS_HAVE_ATOMIC_CMPSET_64 */
+#endif /* OCOMS_HAVE_ATOMIC_CMPSET_64 */
 
-#endif /* CCS_GCC_INLINE_ASSEMBLY */
+#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
-#endif /* ! CCS_SYS_ARCH_ATOMIC_H */
+#endif /* ! OCOMS_SYS_ARCH_ATOMIC_H */

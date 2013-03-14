@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "service/platform/service_constants.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_datatype_internal.h"
@@ -37,5 +37,5 @@ int32_t service_datatype_create_contiguous( int count, const service_datatype_t*
         service_datatype_add( pdt, oldType, count, 0, (oldType->ub - oldType->lb) );
     }
     *newType = pdt;
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }

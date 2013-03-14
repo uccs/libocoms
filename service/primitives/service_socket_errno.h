@@ -15,8 +15,8 @@
  * 
  * $HEADER$
  */
-#ifndef CCS_GET_SOCKET_ERROR_H
-#define CCS_GET_SOCKET_ERROR_H
+#ifndef OCOMS_GET_SOCKET_ERROR_H
+#define OCOMS_GET_SOCKET_ERROR_H
 
 /* In windows, sockets return differnt error codes than the linux counter parts. Although,
    one can find there are some similarities in the naming, there are definite differences.
@@ -127,7 +127,7 @@ static __inline int service_get_socket_errno(void) {
       case WSAEDQUOT: return EDQUOT;          
       case WSAESTALE: return ESTALE;          
       case WSAEREMOTE: return EREMOTE;         
-      default: printf("Feature not implemented: %d %s\n", __LINE__, __FILE__); return CCS_ERROR;
+      default: printf("Feature not implemented: %d %s\n", __LINE__, __FILE__); return OCOMS_ERROR;
     };                                
 }
 
@@ -135,4 +135,4 @@ static __inline int service_get_socket_errno(void) {
 #define service_socket_errno errno
 #endif
 
-#endif /* CCS_GET_ERROR_H */
+#endif /* OCOMS_GET_ERROR_H */

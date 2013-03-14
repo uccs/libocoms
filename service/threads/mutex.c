@@ -18,7 +18,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/threads/mutex.h"
 
@@ -26,7 +26,7 @@
  * If we have progress threads, always default to using threads.
  * Otherwise, wait and see if some upper layer wants to use threads.
  */
-bool ccs_uses_threads = false;
+bool ocoms_uses_threads = false;
 bool service_mutex_check_locks = false;
 
 
@@ -35,11 +35,11 @@ bool service_mutex_check_locks = false;
 static void service_mutex_construct(service_mutex_t *m)
 {
     InterlockedExchange(&m->m_lock, 0);
-#if !CCS_ENABLE_MULTI_THREADS && CCS_ENABLE_DEBUG
+#if !OCOMS_ENABLE_MULTI_THREADS && OCOMS_ENABLE_DEBUG
     m->m_lock_debug = 0;
     m->m_lock_file = NULL;
     m->m_lock_line = 0;
-#endif  /* !CCS_ENABLE_MULTI_THREADS && CCS_ENABLE_DEBUG */
+#endif  /* !OCOMS_ENABLE_MULTI_THREADS && OCOMS_ENABLE_DEBUG */
 }
 
 static void service_mutex_destruct(service_mutex_t *m)
@@ -50,9 +50,9 @@ static void service_mutex_destruct(service_mutex_t *m)
 
 static void service_mutex_construct(service_mutex_t *m)
 {
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
 
-#if CCS_ENABLE_DEBUG
+#if OCOMS_ENABLE_DEBUG
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
 
@@ -71,28 +71,28 @@ static void service_mutex_construct(service_mutex_t *m)
     /* Without debugging, choose the fastest available mutexes */
     pthread_mutex_init(&m->m_lock_pthread, NULL);
 
-#endif /* CCS_ENABLE_DEBUG */
+#endif /* OCOMS_ENABLE_DEBUG */
 
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
     mutex_init(&m->m_lock_solaris, USYNC_THREAD, NULL);
 #endif
 
-#if CCS_ENABLE_DEBUG && !CCS_ENABLE_MULTI_THREADS
+#if OCOMS_ENABLE_DEBUG && !OCOMS_ENABLE_MULTI_THREADS
     m->m_lock_debug = 0;
     m->m_lock_file = NULL;
     m->m_lock_line = 0;
 #endif
 
-#if CCS_HAVE_ATOMIC_SPINLOCKS
-    service_atomic_init( &m->m_lock_atomic, CCS_ATOMIC_UNLOCKED );
+#if OCOMS_HAVE_ATOMIC_SPINLOCKS
+    service_atomic_init( &m->m_lock_atomic, OCOMS_ATOMIC_UNLOCKED );
 #endif
 }
 
 static void service_mutex_destruct(service_mutex_t *m)
 {
-#if CCS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
     pthread_mutex_destroy(&m->m_lock_pthread);
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
     mutex_destroy(&m->m_lock_solaris);
 #endif
 }

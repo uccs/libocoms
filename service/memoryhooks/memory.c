@@ -16,7 +16,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #ifdef HAVE_SYS_TYPES_H
 #include <sys/types.h>
@@ -57,14 +57,14 @@ service_mem_hooks_init(void)
 {
     OBJ_CONSTRUCT(&release_cb_list, service_list_t);
 
-    service_atomic_init(&release_lock, CCS_ATOMIC_UNLOCKED);
+    service_atomic_init(&release_lock, OCOMS_ATOMIC_UNLOCKED);
 
     /* delay running callbacks until there is something in the
        registration */
     release_run_callbacks = false;
     service_atomic_mb();
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -90,7 +90,7 @@ service_mem_hooks_finalize(void)
 
     service_atomic_unlock(&release_lock);
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -147,10 +147,10 @@ service_mem_hooks_register_release(service_mem_hooks_callback_fn_t *func, void *
 {
     service_list_item_t *item;
     callback_list_item_t *cbitem, *new_cbitem;
-    int ret = CCS_SUCCESS;
+    int ret = OCOMS_SUCCESS;
 
-    if (0 == ((CCS_MEMORY_FREE_SUPPORT|CCS_MEMORY_MUNMAP_SUPPORT) & hooks_support)) {
-        return CCS_ERR_NOT_SUPPORTED;
+    if (0 == ((OCOMS_MEMORY_FREE_SUPPORT|OCOMS_MEMORY_MUNMAP_SUPPORT) & hooks_support)) {
+        return OCOMS_ERR_NOT_SUPPORTED;
     }
 
     /* pre-allocate a callback item on the assumption it won't be
@@ -158,7 +158,7 @@ service_mem_hooks_register_release(service_mem_hooks_callback_fn_t *func, void *
        call alloc / realloc */
     new_cbitem = OBJ_NEW(callback_list_item_t);
     if (NULL == new_cbitem) {
-        ret = CCS_ERR_OUT_OF_RESOURCE;
+        ret = OCOMS_ERR_OUT_OF_RESOURCE;
         goto done;
     }
 
@@ -176,7 +176,7 @@ service_mem_hooks_register_release(service_mem_hooks_callback_fn_t *func, void *
         cbitem = (callback_list_item_t*) item;
 
         if (cbitem->cbfunc == func) {
-            ret = CCS_EXISTS;
+            ret = OCOMS_EXISTS;
             goto done;
         }
     }
@@ -189,7 +189,7 @@ service_mem_hooks_register_release(service_mem_hooks_callback_fn_t *func, void *
  done:
     service_atomic_unlock(&release_lock);
 
-    if (CCS_EXISTS == ret && NULL != new_cbitem) {
+    if (OCOMS_EXISTS == ret && NULL != new_cbitem) {
         OBJ_RELEASE(new_cbitem);
     }
 
@@ -203,7 +203,7 @@ service_mem_hooks_unregister_release(service_mem_hooks_callback_fn_t* func)
     service_list_item_t *item;
     service_list_item_t *found_item = NULL;
     callback_list_item_t *cbitem;
-    int ret = CCS_ERR_NOT_FOUND;
+    int ret = OCOMS_ERR_NOT_FOUND;
 
     service_atomic_lock(&release_lock);
 
@@ -216,7 +216,7 @@ service_mem_hooks_unregister_release(service_mem_hooks_callback_fn_t* func)
         if (cbitem->cbfunc == func) {
             service_list_remove_item(&release_cb_list, item);
             found_item = item;
-            ret = CCS_SUCCESS;
+            ret = OCOMS_SUCCESS;
             break;
         }
     }

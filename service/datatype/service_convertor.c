@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stddef.h>
 #include <stdio.h>
@@ -38,7 +38,7 @@
 #include "service/datatype/service_datatype_checksum.h"
 #include "service/datatype/service_datatype_prototypes.h"
 #include "service/datatype/service_convertor_internal.h"
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
 #include "service/datatype/service_datatype_cuda.h"
 #define MEMCPY_CUDA( DST, SRC, BLENGTH, CONVERTOR ) \
     CONVERTOR->cbmemcpy( (DST), (SRC), (BLENGTH) )
@@ -53,8 +53,8 @@ static void service_convertor_construct( service_convertor_t* convertor )
     convertor->stack_size     = DT_STATIC_STACK_SIZE;
     convertor->partial_length = 0;
     convertor->remoteArch     = service_local_arch;
-    convertor->flags          = CCS_DATATYPE_FLAG_NO_GAPS | CONVERTOR_COMPLETED;
-#if CCS_CUDA_SUPPORT
+    convertor->flags          = OCOMS_DATATYPE_FLAG_NO_GAPS | CONVERTOR_COMPLETED;
+#if OCOMS_CUDA_SUPPORT
     convertor->cbmemcpy       = &memcpy;
 #endif
 }
@@ -69,8 +69,8 @@ OBJ_CLASS_INSTANCE(service_convertor_t, service_object_t, service_convertor_cons
 
 static service_convertor_master_t* service_convertor_master_list = NULL;
 
-extern conversion_fct_t service_datatype_heterogeneous_copy_functions[CCS_DATATYPE_MAX_PREDEFINED];
-extern conversion_fct_t service_datatype_copy_functions[CCS_DATATYPE_MAX_PREDEFINED];
+extern conversion_fct_t service_datatype_heterogeneous_copy_functions[OCOMS_DATATYPE_MAX_PREDEFINED];
+extern conversion_fct_t service_datatype_copy_functions[OCOMS_DATATYPE_MAX_PREDEFINED];
 
 void service_convertor_destroy_masters( void )
 {
@@ -121,7 +121,7 @@ service_convertor_master_t* service_convertor_find_or_create_master( uint32_t re
      * consts we have to manually cast it before using it for writing purposes.
      */
     remote_sizes = (size_t*)master->remote_sizes;
-    memcpy(remote_sizes, service_datatype_local_sizes, sizeof(size_t) * CCS_DATATYPE_MAX_PREDEFINED);
+    memcpy(remote_sizes, service_datatype_local_sizes, sizeof(size_t) * OCOMS_DATATYPE_MAX_PREDEFINED);
     /**
      * If the local and remote architecture are the same there is no need
      * to check for the remote data sizes. They will always be the same as
@@ -135,11 +135,11 @@ service_convertor_master_t* service_convertor_find_or_create_master( uint32_t re
 
     /* Find out the remote bool size */
     if( service_arch_checkmask( &master->remote_arch, SERVICE_ARCH_BOOLIS8 ) ) {
-        remote_sizes[CCS_DATATYPE_BOOL] = 1;
+        remote_sizes[OCOMS_DATATYPE_BOOL] = 1;
     } else if( service_arch_checkmask( &master->remote_arch, SERVICE_ARCH_BOOLIS16 ) ) {
-        remote_sizes[CCS_DATATYPE_BOOL] = 2;
+        remote_sizes[OCOMS_DATATYPE_BOOL] = 2;
     } else if( service_arch_checkmask( &master->remote_arch, SERVICE_ARCH_BOOLIS32 ) ) {
-        remote_sizes[CCS_DATATYPE_BOOL] = 4;
+        remote_sizes[OCOMS_DATATYPE_BOOL] = 4;
     } else {
         service_output( 0, "Unknown sizeof(bool) for the remote architecture\n" );
     }
@@ -150,7 +150,7 @@ service_convertor_master_t* service_convertor_find_or_create_master( uint32_t re
      * 2 architectures don't have the same endianess all data with a length
      * over 2 bytes (with the exception of logicals) have to be byte-swapped.
      */
-    for( i = CCS_DATATYPE_FIRST_TYPE; i < CCS_DATATYPE_MAX_PREDEFINED; i++ ) {
+    for( i = OCOMS_DATATYPE_FIRST_TYPE; i < OCOMS_DATATYPE_MAX_PREDEFINED; i++ ) {
         if( remote_sizes[i] != service_datatype_local_sizes[i] )
             master->hetero_mask |= (((uint32_t)1) << i);
     }
@@ -158,11 +158,11 @@ service_convertor_master_t* service_convertor_find_or_create_master( uint32_t re
         service_arch_checkmask( &service_local_arch, SERVICE_ARCH_ISBIGENDIAN ) ) {
         uint32_t hetero_mask = 0;
 
-        for( i = CCS_DATATYPE_FIRST_TYPE; i < CCS_DATATYPE_MAX_PREDEFINED; i++ ) {
+        for( i = OCOMS_DATATYPE_FIRST_TYPE; i < OCOMS_DATATYPE_MAX_PREDEFINED; i++ ) {
             if( remote_sizes[i] > 1 )
                 hetero_mask |= (((uint32_t)1) << i);
         }
-        hetero_mask &= ~(((uint32_t)1) << CCS_DATATYPE_BOOL);
+        hetero_mask &= ~(((uint32_t)1) << OCOMS_DATATYPE_BOOL);
         master->hetero_mask |= hetero_mask;
     }
     master->pFunctions = (conversion_fct_t*)malloc( sizeof(service_datatype_heterogeneous_copy_functions) );
@@ -170,7 +170,7 @@ service_convertor_master_t* service_convertor_find_or_create_master( uint32_t re
      * Usually the heterogeneous functions are slower than the copy ones. Let's
      * try to minimize the usage of the heterogeneous versions.
      */
-    for( i = CCS_DATATYPE_FIRST_TYPE; i < CCS_DATATYPE_MAX_PREDEFINED; i++ ) {
+    for( i = OCOMS_DATATYPE_FIRST_TYPE; i < OCOMS_DATATYPE_MAX_PREDEFINED; i++ ) {
         if( master->hetero_mask & (((uint32_t)1) << i) )
             master->pFunctions[i] = service_datatype_heterogeneous_copy_functions[i];
         else
@@ -197,10 +197,10 @@ service_convertor_t* service_convertor_create( int32_t remote_arch, int32_t mode
     return convertor;
 }
 
-#define CCS_CONVERTOR_SET_STATUS_BEFORE_PACK_UNPACK( CONVERTOR, IOV, OUT, MAX_DATA ) \
+#define OCOMS_CONVERTOR_SET_STATUS_BEFORE_PACK_UNPACK( CONVERTOR, IOV, OUT, MAX_DATA ) \
     do {                                                                \
         /* protect against over packing data */                         \
-        if( CCS_UNLIKELY((CONVERTOR)->flags & CONVERTOR_COMPLETED) ) { \
+        if( OCOMS_UNLIKELY((CONVERTOR)->flags & CONVERTOR_COMPLETED) ) { \
             (IOV)[0].iov_len = 0;                                       \
             *(OUT) = 0;                                                 \
             *(MAX_DATA) = 0;                                            \
@@ -222,9 +222,9 @@ int32_t service_convertor_pack( service_convertor_t* pConv,
                              struct iovec* iov, uint32_t* out_size,
                              size_t* max_data )
 {
-    CCS_CONVERTOR_SET_STATUS_BEFORE_PACK_UNPACK( pConv, iov, out_size, max_data );
+    OCOMS_CONVERTOR_SET_STATUS_BEFORE_PACK_UNPACK( pConv, iov, out_size, max_data );
 
-    if( CCS_LIKELY(pConv->flags & CONVERTOR_NO_OP) ) {
+    if( OCOMS_LIKELY(pConv->flags & CONVERTOR_NO_OP) ) {
         /**
          * We are doing conversion on a contiguous datatype on a homogeneous
          * environment. The convertor contain minimal informations, we only
@@ -241,10 +241,10 @@ int32_t service_convertor_pack( service_convertor_t* pConv,
             if( iov[i].iov_len >= pending_length ) {
                 goto complete_contiguous_data_pack;
             }
-            if( CCS_LIKELY(NULL == iov[i].iov_base) )
+            if( OCOMS_LIKELY(NULL == iov[i].iov_base) )
                 iov[i].iov_base = (IOVBASE_TYPE *) base_pointer;
             else
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
                 MEMCPY_CUDA( iov[i].iov_base, base_pointer, iov[i].iov_len, pConv );
 #else
                 MEMCPY( iov[i].iov_base, base_pointer, iov[i].iov_len );
@@ -258,10 +258,10 @@ int32_t service_convertor_pack( service_convertor_t* pConv,
 
 complete_contiguous_data_pack:
         iov[i].iov_len = pending_length;
-        if( CCS_LIKELY(NULL == iov[i].iov_base) )
+        if( OCOMS_LIKELY(NULL == iov[i].iov_base) )
             iov[i].iov_base = (IOVBASE_TYPE *) base_pointer;
         else
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
             MEMCPY_CUDA( iov[i].iov_base, base_pointer, iov[i].iov_len, pConv );
 #else
             MEMCPY( iov[i].iov_base, base_pointer, iov[i].iov_len );
@@ -280,9 +280,9 @@ int32_t service_convertor_unpack( service_convertor_t* pConv,
                                struct iovec* iov, uint32_t* out_size,
                                size_t* max_data )
 {
-    CCS_CONVERTOR_SET_STATUS_BEFORE_PACK_UNPACK( pConv, iov, out_size, max_data );
+    OCOMS_CONVERTOR_SET_STATUS_BEFORE_PACK_UNPACK( pConv, iov, out_size, max_data );
 
-    if( CCS_LIKELY(pConv->flags & CONVERTOR_NO_OP) ) {
+    if( OCOMS_LIKELY(pConv->flags & CONVERTOR_NO_OP) ) {
         /**
          * We are doing conversion on a contiguous datatype on a homogeneous
          * environment. The convertor contain minimal informations, we only
@@ -299,7 +299,7 @@ int32_t service_convertor_unpack( service_convertor_t* pConv,
             if( iov[i].iov_len >= pending_length ) {
                 goto complete_contiguous_data_unpack;
             }
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
             MEMCPY_CUDA( base_pointer, iov[i].iov_base, iov[i].iov_len, pConv );
 #else
             MEMCPY( base_pointer, iov[i].iov_base, iov[i].iov_len );
@@ -313,7 +313,7 @@ int32_t service_convertor_unpack( service_convertor_t* pConv,
 
 complete_contiguous_data_unpack:
         iov[i].iov_len = pending_length;
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
         MEMCPY_CUDA( base_pointer, iov[i].iov_base, iov[i].iov_len, pConv );
 #else
         MEMCPY( base_pointer, iov[i].iov_base, iov[i].iov_len );
@@ -334,7 +334,7 @@ static inline int service_convertor_create_stack_with_pos_contig( service_conver
     const service_datatype_t* pData = pConvertor->pDesc;
     dt_elem_desc_t* pElems;
     uint32_t count;
-    CCS_PTRDIFF_TYPE extent;
+    OCOMS_PTRDIFF_TYPE extent;
 
     pStack = pConvertor->pStack;
     /**
@@ -346,7 +346,7 @@ static inline int service_convertor_create_stack_with_pos_contig( service_conver
     count = (uint32_t)(starting_point / pData->size);
     extent = pData->ub - pData->lb;
 
-    pStack[0].type     = CCS_DATATYPE_LOOP;  /* the first one is always the loop */
+    pStack[0].type     = OCOMS_DATATYPE_LOOP;  /* the first one is always the loop */
     pStack[0].count    = pConvertor->count - count;
     pStack[0].index    = -1;
     pStack[0].disp     = count * extent;
@@ -357,12 +357,12 @@ static inline int service_convertor_create_stack_with_pos_contig( service_conver
      * We save the current displacement starting from the begining
      * of this data.
      */
-    if( CCS_LIKELY(0 == count) ) {
+    if( OCOMS_LIKELY(0 == count) ) {
         pStack[1].type     = pElems->elem.common.type;
         pStack[1].count    = pElems->elem.count;
         pStack[1].disp     = pElems->elem.disp;
     } else {
-        pStack[1].type  = CCS_DATATYPE_UINT1;
+        pStack[1].type  = OCOMS_DATATYPE_UINT1;
         pStack[1].count = pData->size - count;
         pStack[1].disp  = pData->true_lb + count;
     }
@@ -371,7 +371,7 @@ static inline int service_convertor_create_stack_with_pos_contig( service_conver
     pConvertor->bConverted = starting_point;
     pConvertor->stack_pos = 1;
     assert( 0 == pConvertor->partial_length );
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 static inline
@@ -392,7 +392,7 @@ int service_convertor_create_stack_at_begining( service_convertor_t* convertor,
     convertor->bConverted     = 0;
     /**
      * Fill the first position on the stack. This one correspond to the
-     * last fake CCS_DATATYPE_END_LOOP that we add to the data representation and
+     * last fake OCOMS_DATATYPE_END_LOOP that we add to the data representation and
      * allow us to move quickly inside the datatype when we have a count.
      */
     pStack[0].index = -1;
@@ -401,12 +401,12 @@ int service_convertor_create_stack_at_begining( service_convertor_t* convertor,
 
     pStack[1].index = 0;
     pStack[1].disp = 0;
-    if( pElems[0].elem.common.type == CCS_DATATYPE_LOOP ) {
+    if( pElems[0].elem.common.type == OCOMS_DATATYPE_LOOP ) {
         pStack[1].count = pElems[0].loop.loops;
     } else {
         pStack[1].count = pElems[0].elem.count;
     }
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -423,7 +423,7 @@ int32_t service_convertor_set_position_nocheck( service_convertor_t* convertor,
         rc = service_convertor_create_stack_at_begining( convertor, service_datatype_local_sizes );
         if( 0 == (*position) ) return rc;
     }
-    if( CCS_LIKELY(convertor->flags & CCS_DATATYPE_FLAG_CONTIGUOUS) ) {
+    if( OCOMS_LIKELY(convertor->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS) ) {
         rc = service_convertor_create_stack_with_pos_contig( convertor, (*position),
                                                           service_datatype_local_sizes );
     } else {
@@ -437,17 +437,17 @@ int32_t service_convertor_set_position_nocheck( service_convertor_t* convertor,
 /**
  * Compute the remote size.
  */
-#if CCS_ENABLE_HETEROGENEOUS_SUPPORT
-#define CCS_CONVERTOR_COMPUTE_REMOTE_SIZE(convertor, datatype, bdt_mask) \
+#if OCOMS_ENABLE_HETEROGENEOUS_SUPPORT
+#define OCOMS_CONVERTOR_COMPUTE_REMOTE_SIZE(convertor, datatype, bdt_mask) \
 {                                                                         \
-    if( CCS_UNLIKELY(0 != (bdt_mask)) ) {                                \
+    if( OCOMS_UNLIKELY(0 != (bdt_mask)) ) {                                \
         service_convertor_master_t* master;                                  \
         int i;                                                            \
         uint32_t mask = datatype->bdt_used;                               \
         convertor->flags ^= CONVERTOR_HOMOGENEOUS;                        \
         master = convertor->master;                                       \
         convertor->remote_size = 0;                                       \
-        for( i = CCS_DATATYPE_FIRST_TYPE; mask && (i < CCS_DATATYPE_MAX_PREDEFINED); i++ ) { \
+        for( i = OCOMS_DATATYPE_FIRST_TYPE; mask && (i < OCOMS_DATATYPE_MAX_PREDEFINED); i++ ) { \
             if( mask & ((uint32_t)1 << i) ) {                             \
                 convertor->remote_size += (datatype->btypes[i] *          \
                                            master->remote_sizes[i]);      \
@@ -459,9 +459,9 @@ int32_t service_convertor_set_position_nocheck( service_convertor_t* convertor,
     }                                                                     \
 }
 #else
-#define CCS_CONVERTOR_COMPUTE_REMOTE_SIZE(convertor, datatype, bdt_mask) \
+#define OCOMS_CONVERTOR_COMPUTE_REMOTE_SIZE(convertor, datatype, bdt_mask) \
     assert(0 == (bdt_mask))
-#endif  /* CCS_ENABLE_HETEROGENEOUS_SUPPORT */
+#endif  /* OCOMS_ENABLE_HETEROGENEOUS_SUPPORT */
 
 /**
  * This macro will initialize a convertor based on a previously created
@@ -470,7 +470,7 @@ int32_t service_convertor_set_position_nocheck( service_convertor_t* convertor,
  * here that the convertor is clean, either never initialized or already
  * cleaned.
  */
-#define CCS_CONVERTOR_PREPARE( convertor, datatype, count, pUserBuf )  \
+#define OCOMS_CONVERTOR_PREPARE( convertor, datatype, count, pUserBuf )  \
     {                                                                   \
         uint32_t bdt_mask;                                              \
                                                                         \
@@ -478,10 +478,10 @@ int32_t service_convertor_set_position_nocheck( service_convertor_t* convertor,
          * completed. With this flag set the pack and unpack functions  \
          * will not do anything.                                        \
          */                                                             \
-        if( CCS_UNLIKELY((0 == count) || (0 == datatype->size)) ) {    \
-            convertor->flags |= CCS_DATATYPE_FLAG_NO_GAPS | CONVERTOR_COMPLETED;  \
+        if( OCOMS_UNLIKELY((0 == count) || (0 == datatype->size)) ) {    \
+            convertor->flags |= OCOMS_DATATYPE_FLAG_NO_GAPS | CONVERTOR_COMPLETED;  \
             convertor->local_size = convertor->remote_size = 0;         \
-            return CCS_SUCCESS;                                        \
+            return OCOMS_SUCCESS;                                        \
         }                                                               \
         /* Compute the local in advance */                              \
         convertor->local_size = count * datatype->size;                 \
@@ -498,30 +498,30 @@ int32_t service_convertor_set_position_nocheck( service_convertor_t* convertor,
         convertor->use_desc = &(datatype->opt_desc);                    \
                                                                         \
         convertor->remote_size = convertor->local_size;                 \
-        if( CCS_LIKELY(convertor->remoteArch == service_local_arch) ) {   \
-            if( (convertor->flags & (CONVERTOR_WITH_CHECKSUM | CCS_DATATYPE_FLAG_NO_GAPS)) == CCS_DATATYPE_FLAG_NO_GAPS ) { \
-                return CCS_SUCCESS;                                    \
+        if( OCOMS_LIKELY(convertor->remoteArch == service_local_arch) ) {   \
+            if( (convertor->flags & (CONVERTOR_WITH_CHECKSUM | OCOMS_DATATYPE_FLAG_NO_GAPS)) == OCOMS_DATATYPE_FLAG_NO_GAPS ) { \
+                return OCOMS_SUCCESS;                                    \
             }                                                           \
-            if( ((convertor->flags & (CONVERTOR_WITH_CHECKSUM | CCS_DATATYPE_FLAG_CONTIGUOUS)) \
-                 == CCS_DATATYPE_FLAG_CONTIGUOUS) && (1 == count) ) {             \
-                return CCS_SUCCESS;                                    \
+            if( ((convertor->flags & (CONVERTOR_WITH_CHECKSUM | OCOMS_DATATYPE_FLAG_CONTIGUOUS)) \
+                 == OCOMS_DATATYPE_FLAG_CONTIGUOUS) && (1 == count) ) {             \
+                return OCOMS_SUCCESS;                                    \
             }                                                           \
         }                                                               \
                                                                         \
         bdt_mask = datatype->bdt_used & convertor->master->hetero_mask; \
-        CCS_CONVERTOR_COMPUTE_REMOTE_SIZE( convertor, datatype,        \
+        OCOMS_CONVERTOR_COMPUTE_REMOTE_SIZE( convertor, datatype,        \
                                             bdt_mask );                 \
         assert( NULL != convertor->use_desc->desc );                    \
         /* For predefined datatypes (contiguous) do nothing more */     \
         /* if checksum is enabled then always continue */               \
-        if( ((convertor->flags & (CONVERTOR_WITH_CHECKSUM | CCS_DATATYPE_FLAG_NO_GAPS)) \
-             == CCS_DATATYPE_FLAG_NO_GAPS) &&                                     \
+        if( ((convertor->flags & (CONVERTOR_WITH_CHECKSUM | OCOMS_DATATYPE_FLAG_NO_GAPS)) \
+             == OCOMS_DATATYPE_FLAG_NO_GAPS) &&                                     \
             (convertor->flags & (CONVERTOR_SEND | CONVERTOR_HOMOGENEOUS)) ) { \
-            return CCS_SUCCESS;                                        \
+            return OCOMS_SUCCESS;                                        \
         }                                                               \
         convertor->flags &= ~CONVERTOR_NO_OP;                           \
         {                                                               \
-            uint32_t required_stack_length = datatype->btypes[CCS_DATATYPE_LOOP] + 1; \
+            uint32_t required_stack_length = datatype->btypes[OCOMS_DATATYPE_LOOP] + 1; \
                                                                         \
             if( required_stack_length > convertor->stack_size ) {       \
                 convertor->stack_size = required_stack_length;          \
@@ -544,36 +544,36 @@ int32_t service_convertor_prepare_for_recv( service_convertor_t* convertor,
     /* Here I should check that the data is not overlapping */
 
     convertor->flags |= CONVERTOR_RECV;
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
     mca_cuda_convertor_init(convertor, pUserBuf);
 #endif
 
-    CCS_CONVERTOR_PREPARE( convertor, datatype, count, pUserBuf );
+    OCOMS_CONVERTOR_PREPARE( convertor, datatype, count, pUserBuf );
 
     if( convertor->flags & CONVERTOR_WITH_CHECKSUM ) {
-#if CCS_ENABLE_HETEROGENEOUS_SUPPORT
+#if OCOMS_ENABLE_HETEROGENEOUS_SUPPORT
         if( !(convertor->flags & CONVERTOR_HOMOGENEOUS) ) {
             convertor->fAdvance = service_unpack_general_checksum;
         } else
 #endif
-        if( convertor->pDesc->flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
+        if( convertor->pDesc->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
             convertor->fAdvance = service_unpack_homogeneous_contig_checksum;
         } else {
             convertor->fAdvance = service_generic_simple_unpack_checksum;
         }
     } else {
-#if CCS_ENABLE_HETEROGENEOUS_SUPPORT
+#if OCOMS_ENABLE_HETEROGENEOUS_SUPPORT
         if( !(convertor->flags & CONVERTOR_HOMOGENEOUS) ) {
             convertor->fAdvance = service_unpack_general;
         } else
 #endif
-        if( convertor->pDesc->flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
+        if( convertor->pDesc->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
             convertor->fAdvance = service_unpack_homogeneous_contig;
         } else {
             convertor->fAdvance = service_generic_simple_unpack;
         }
     }
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -583,15 +583,15 @@ int32_t service_convertor_prepare_for_send( service_convertor_t* convertor,
                                          const void* pUserBuf )
 {
     convertor->flags |= CONVERTOR_SEND;
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
     mca_cuda_convertor_init(convertor, pUserBuf);
 #endif
 
-    CCS_CONVERTOR_PREPARE( convertor, datatype, count, pUserBuf );
+    OCOMS_CONVERTOR_PREPARE( convertor, datatype, count, pUserBuf );
 
     if( convertor->flags & CONVERTOR_WITH_CHECKSUM ) {
-        if( datatype->flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
-            if( ((datatype->ub - datatype->lb) == (CCS_PTRDIFF_TYPE)datatype->size)
+        if( datatype->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
+            if( ((datatype->ub - datatype->lb) == (OCOMS_PTRDIFF_TYPE)datatype->size)
                 || (1 >= convertor->count) )
                 convertor->fAdvance = service_pack_homogeneous_contig_checksum;
             else
@@ -600,8 +600,8 @@ int32_t service_convertor_prepare_for_send( service_convertor_t* convertor,
             convertor->fAdvance = service_generic_simple_pack_checksum;
         }
     } else {
-        if( datatype->flags & CCS_DATATYPE_FLAG_CONTIGUOUS ) {
-            if( ((datatype->ub - datatype->lb) == (CCS_PTRDIFF_TYPE)datatype->size)
+        if( datatype->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) {
+            if( ((datatype->ub - datatype->lb) == (OCOMS_PTRDIFF_TYPE)datatype->size)
                 || (1 >= convertor->count) )
                 convertor->fAdvance = service_pack_homogeneous_contig;
             else
@@ -610,7 +610,7 @@ int32_t service_convertor_prepare_for_send( service_convertor_t* convertor,
             convertor->fAdvance = service_generic_simple_pack;
         }
     }
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 /*
@@ -638,7 +638,7 @@ int service_convertor_clone( const service_convertor_t* source,
     destination->local_size        = source->local_size;
     destination->remote_size       = source->remote_size;
     /* create the stack */
-    if( CCS_UNLIKELY(source->stack_size > DT_STATIC_STACK_SIZE) ) {
+    if( OCOMS_UNLIKELY(source->stack_size > DT_STATIC_STACK_SIZE) ) {
         destination->pStack = (dt_stack_t*)malloc(sizeof(dt_stack_t) * source->stack_size );
     } else {
         destination->pStack = destination->static_stack;
@@ -646,7 +646,7 @@ int service_convertor_clone( const service_convertor_t* source,
     destination->stack_size = source->stack_size;
 
     /* initialize the stack */
-    if( CCS_LIKELY(0 == copy_stack) ) {
+    if( OCOMS_LIKELY(0 == copy_stack) ) {
         destination->bConverted = -1;
         destination->stack_pos  = -1;
     } else {
@@ -654,10 +654,10 @@ int service_convertor_clone( const service_convertor_t* source,
         destination->bConverted = source->bConverted;
         destination->stack_pos  = source->stack_pos;
     }
-#if CCS_CUDA_SUPPORT
+#if OCOMS_CUDA_SUPPORT
     destination->cbmemcpy   = source->cbmemcpy;
 #endif
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 

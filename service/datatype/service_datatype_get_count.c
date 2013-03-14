@@ -11,7 +11,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 #include "service/datatype/service_datatype.h"
 #include "service/datatype/service_convertor.h"
 #include "service/datatype/service_datatype_internal.h"
@@ -41,15 +41,15 @@ int32_t service_datatype_get_element_count( const service_datatype_t* datatype, 
      */
     assert( (uint32_t)iSize <= datatype->size );
     DUMP( "dt_count_elements( %p, %d )\n", (void*)datatype, iSize );
-    pStack = (dt_stack_t*)alloca( sizeof(dt_stack_t) * (datatype->btypes[CCS_DATATYPE_LOOP] + 2) );
+    pStack = (dt_stack_t*)alloca( sizeof(dt_stack_t) * (datatype->btypes[OCOMS_DATATYPE_LOOP] + 2) );
     pStack->count    = 1;
     pStack->index    = -1;
     pStack->disp     = 0;
     pElems           = datatype->desc.desc;
     pos_desc         = 0;
 
-    while( 1 ) {  /* loop forever the exit condition is on the last CCS_DATATYPE_END_LOOP */
-        if( CCS_DATATYPE_END_LOOP == pElems[pos_desc].elem.common.type ) { /* end of the current loop */
+    while( 1 ) {  /* loop forever the exit condition is on the last OCOMS_DATATYPE_END_LOOP */
+        if( OCOMS_DATATYPE_END_LOOP == pElems[pos_desc].elem.common.type ) { /* end of the current loop */
             if( --(pStack->count) == 0 ) { /* end of loop */
                 stack_pos--; pStack--;
                 if( stack_pos == -1 ) return nbElems;  /* completed */
@@ -57,15 +57,15 @@ int32_t service_datatype_get_element_count( const service_datatype_t* datatype, 
             pos_desc = pStack->index + 1;
             continue;
         }
-        if( CCS_DATATYPE_LOOP == pElems[pos_desc].elem.common.type ) {
+        if( OCOMS_DATATYPE_LOOP == pElems[pos_desc].elem.common.type ) {
             ddt_loop_desc_t* loop = &(pElems[pos_desc].loop);
             do {
-                PUSH_STACK( pStack, stack_pos, pos_desc, CCS_DATATYPE_LOOP, loop->loops, 0 );
+                PUSH_STACK( pStack, stack_pos, pos_desc, OCOMS_DATATYPE_LOOP, loop->loops, 0 );
                 pos_desc++;
-            } while( CCS_DATATYPE_LOOP == pElems[pos_desc].elem.common.type ); /* let's start another loop */
+            } while( OCOMS_DATATYPE_LOOP == pElems[pos_desc].elem.common.type ); /* let's start another loop */
             DDT_DUMP_STACK( pStack, stack_pos, pElems, "advance loops" );
         }
-        while( pElems[pos_desc].elem.common.flags & CCS_DATATYPE_FLAG_DATA ) {
+        while( pElems[pos_desc].elem.common.flags & OCOMS_DATATYPE_FLAG_DATA ) {
             /* now here we have a basic datatype */
             const service_datatype_t* basic_type = BASIC_DDT_FROM_ELEM(pElems[pos_desc]);
             local_size = pElems[pos_desc].elem.count * basic_type->size;
@@ -93,7 +93,7 @@ int32_t service_datatype_set_element_count( const service_datatype_t* datatype, 
     /**
      * Handle all complete multiple of the datatype.
      */
-    for( pos_desc = 4; pos_desc < CCS_DATATYPE_MAX_PREDEFINED; pos_desc++ ) {
+    for( pos_desc = 4; pos_desc < OCOMS_DATATYPE_MAX_PREDEFINED; pos_desc++ ) {
         local_length += datatype->btypes[pos_desc];
     }
     pos_desc = count / local_length;
@@ -104,15 +104,15 @@ int32_t service_datatype_set_element_count( const service_datatype_t* datatype, 
     }
 
     DUMP( "dt_set_element_count( %p, %d )\n", (void*)datatype, count );
-    pStack = (dt_stack_t*)alloca( sizeof(dt_stack_t) * (datatype->btypes[CCS_DATATYPE_LOOP] + 2) );
+    pStack = (dt_stack_t*)alloca( sizeof(dt_stack_t) * (datatype->btypes[OCOMS_DATATYPE_LOOP] + 2) );
     pStack->count    = 1;
     pStack->index    = -1;
     pStack->disp     = 0;
     pElems           = datatype->desc.desc;
     pos_desc         = 0;
 
-    while( 1 ) {  /* loop forever the exit condition is on the last CCS_DATATYPE_END_LOOP */
-        if( CCS_DATATYPE_END_LOOP == pElems[pos_desc].elem.common.type ) { /* end of the current loop */
+    while( 1 ) {  /* loop forever the exit condition is on the last OCOMS_DATATYPE_END_LOOP */
+        if( OCOMS_DATATYPE_END_LOOP == pElems[pos_desc].elem.common.type ) { /* end of the current loop */
             if( --(pStack->count) == 0 ) { /* end of loop */
                 stack_pos--; pStack--;
                 if( stack_pos == -1 ) return 0;
@@ -120,15 +120,15 @@ int32_t service_datatype_set_element_count( const service_datatype_t* datatype, 
             pos_desc = pStack->index + 1;
             continue;
         }
-        if( CCS_DATATYPE_LOOP == pElems[pos_desc].elem.common.type ) {
+        if( OCOMS_DATATYPE_LOOP == pElems[pos_desc].elem.common.type ) {
             ddt_loop_desc_t* loop = &(pElems[pos_desc].loop);
             do {
-                PUSH_STACK( pStack, stack_pos, pos_desc, CCS_DATATYPE_LOOP, loop->loops, 0 );
+                PUSH_STACK( pStack, stack_pos, pos_desc, OCOMS_DATATYPE_LOOP, loop->loops, 0 );
                 pos_desc++;
-            } while( CCS_DATATYPE_LOOP == pElems[pos_desc].elem.common.type ); /* let's start another loop */
+            } while( OCOMS_DATATYPE_LOOP == pElems[pos_desc].elem.common.type ); /* let's start another loop */
             DDT_DUMP_STACK( pStack, stack_pos, pElems, "advance loops" );
         }
-        while( pElems[pos_desc].elem.common.flags & CCS_DATATYPE_FLAG_DATA ) {
+        while( pElems[pos_desc].elem.common.flags & OCOMS_DATATYPE_FLAG_DATA ) {
             /* now here we have a basic datatype */
             const service_datatype_t* basic_type = BASIC_DDT_FROM_ELEM(pElems[pos_desc]);
             local_length = pElems[pos_desc].elem.count;

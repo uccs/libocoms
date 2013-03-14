@@ -32,7 +32,7 @@
 #ifndef SERVICE_POINTER_ARRAY_H
 #define SERVICE_POINTER_ARRAY_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/threads/mutex.h"
 #include "service/util/service_object.h"
@@ -70,7 +70,7 @@ typedef struct service_pointer_array_t service_pointer_array_t;
 /**
  * Class declaration
  */
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_pointer_array_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_pointer_array_t);
 
 /**
  * Initialize the pointer array with an initial size of initial_allocation.
@@ -83,10 +83,10 @@ CCS_DECLSPEC OBJ_CLASS_DECLARATION(service_pointer_array_t);
  * @param max_size The maximum size of the array (IN)
  * @param block_size The size for all subsequent grows of the array (IN).
  *
- * @return CCS_SUCCESS if all initializations were succesfull. Otherwise,
+ * @return OCOMS_SUCCESS if all initializations were succesfull. Otherwise,
  *  the error indicate what went wrong in the function.
  */
-CCS_DECLSPEC int service_pointer_array_init( service_pointer_array_t* array,
+OCOMS_DECLSPEC int service_pointer_array_init( service_pointer_array_t* array,
                                            int initial_allocation,
                                            int max_size, int block_size );
 
@@ -99,7 +99,7 @@ CCS_DECLSPEC int service_pointer_array_init( service_pointer_array_t* array,
  * @return Index of inserted array element.  Return value of
  *  (-1) indicates an error.
  */
-CCS_DECLSPEC int service_pointer_array_add(service_pointer_array_t *array, void *ptr);
+OCOMS_DECLSPEC int service_pointer_array_add(service_pointer_array_t *array, void *ptr);
 
 /**
  * Set the value of an element in array
@@ -110,7 +110,7 @@ CCS_DECLSPEC int service_pointer_array_add(service_pointer_array_t *array, void 
  *
  * @return Error code.  (-1) indicates an error.
  */
-CCS_DECLSPEC int service_pointer_array_set_item(service_pointer_array_t *array, 
+OCOMS_DECLSPEC int service_pointer_array_set_item(service_pointer_array_t *array, 
                                 int index, void *value);
 
 /**
@@ -162,7 +162,7 @@ static inline int service_pointer_array_get_size(service_pointer_array_t *array)
  * Simple function to set the size of the array in order to
  * hide the member field from external users.
  */
-CCS_DECLSPEC int service_pointer_array_set_size(service_pointer_array_t *array, int size);
+OCOMS_DECLSPEC int service_pointer_array_set_size(service_pointer_array_t *array, int size);
 
 /**
  * Test whether a certain element is already in use. If not yet
@@ -178,7 +178,7 @@ CCS_DECLSPEC int service_pointer_array_set_size(service_pointer_array_t *array, 
  * In contrary to array_set, this function does not allow to overwrite 
  * a value, unless the previous value is NULL ( equiv. to free ).
  */
-CCS_DECLSPEC bool service_pointer_array_test_and_set_item (service_pointer_array_t *table, 
+OCOMS_DECLSPEC bool service_pointer_array_test_and_set_item (service_pointer_array_t *table, 
                                           int index,
                                           void *value);
 

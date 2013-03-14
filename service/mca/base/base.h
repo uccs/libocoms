@@ -20,7 +20,7 @@
 #ifndef MCA_BASE_H
 #define MCA_BASE_H
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/util/service_object.h"
 #include "service/util/service_list.h"
@@ -37,32 +37,32 @@ BEGIN_C_DECLS
 /*
  * Structure for making plain lists of components
  */
-struct ccs_mca_base_component_list_item_t {
+struct ocoms_mca_base_component_list_item_t {
     service_list_item_t super;
-    const ccs_mca_base_component_t *cli_component;
+    const ocoms_mca_base_component_t *cli_component;
 };
-typedef struct ccs_mca_base_component_list_item_t ccs_mca_base_component_list_item_t;
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(ccs_mca_base_component_list_item_t);
+typedef struct ocoms_mca_base_component_list_item_t ocoms_mca_base_component_list_item_t;
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_mca_base_component_list_item_t);
 
 /*
  * Structure for making priority lists of components
  */
-struct ccs_mca_base_component_priority_list_item_t {
-    ccs_mca_base_component_list_item_t super;
+struct ocoms_mca_base_component_priority_list_item_t {
+    ocoms_mca_base_component_list_item_t super;
     int cpli_priority;
 };
-typedef struct ccs_mca_base_component_priority_list_item_t 
-    ccs_mca_base_component_priority_list_item_t;
+typedef struct ocoms_mca_base_component_priority_list_item_t 
+    ocoms_mca_base_component_priority_list_item_t;
 
-CCS_DECLSPEC OBJ_CLASS_DECLARATION(ccs_mca_base_component_priority_list_item_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_mca_base_component_priority_list_item_t);
 
 
 /*
  * Public variables
  */
-CCS_DECLSPEC extern int ccs_mca_base_param_component_path;
-CCS_DECLSPEC extern char *ccs_mca_base_system_default_path;
-CCS_DECLSPEC extern char *ccs_mca_base_user_default_path;
+OCOMS_DECLSPEC extern int ocoms_mca_base_param_component_path;
+OCOMS_DECLSPEC extern char *ocoms_mca_base_system_default_path;
+OCOMS_DECLSPEC extern char *ocoms_mca_base_user_default_path;
 
 /*
  * Public functions
@@ -71,8 +71,8 @@ CCS_DECLSPEC extern char *ccs_mca_base_user_default_path;
 /**
  * First function called in the MCA.
  *
- * @return CCS_SUCCESS Upon success
- * @return CCS_ERROR Upon failure
+ * @return OCOMS_SUCCESS Upon success
+ * @return OCOMS_ERROR Upon failure
  * 
  * This function starts up the entire MCA.  It initializes a bunch
  * of built-in MCA parameters, and initialized the MCA component
@@ -82,13 +82,13 @@ CCS_DECLSPEC extern char *ccs_mca_base_user_default_path;
  * invoked during ompi_mpi_init() and specifically invoked in the
  * special case of the laminfo command.
  */
-CCS_DECLSPEC int ccs_mca_base_open(ccs_mca_service_install_dirs_t install_dirs);
+OCOMS_DECLSPEC int ocoms_mca_base_open(ocoms_mca_service_install_dirs_t install_dirs);
 
 /**
  * Last function called in the MCA
  *
- * @return CCS_SUCCESS Upon success
- * @return CCS_ERROR Upon failure
+ * @return OCOMS_SUCCESS Upon success
+ * @return OCOMS_ERROR Upon failure
  *
  * This function closes down the entire MCA.  It clears all MCA
  * parameters and closes down the MCA component respository.  
@@ -97,16 +97,16 @@ CCS_DECLSPEC int ccs_mca_base_open(ccs_mca_service_install_dirs_t install_dirs);
  * during ompi_mpi_finalize() and specifically invoked during the
  * special case of the laminfo command.
  */
-CCS_DECLSPEC int ccs_mca_base_close(void);
+OCOMS_DECLSPEC int ocoms_mca_base_close(void);
 
 /**
  * A generic select function
  *
  */
-CCS_DECLSPEC int ccs_mca_base_select(const char *type_name, int output_id,
+OCOMS_DECLSPEC int ocoms_mca_base_select(const char *type_name, int output_id,
                                   service_list_t *components_available,
-                                  ccs_mca_base_module_t **best_module,
-                                  ccs_mca_base_component_t **best_component);
+                                  ocoms_mca_base_module_t **best_module,
+                                  ocoms_mca_base_component_t **best_component);
 
 /**
  * A function for component query functions to discover if they have
@@ -116,53 +116,53 @@ CCS_DECLSPEC int ccs_mca_base_select(const char *type_name, int output_id,
  *            available for selection.
  *
  */
-CCS_DECLSPEC int ccs_mca_base_is_component_required(service_list_t *components_available,
-                                                 ccs_mca_base_component_t *component,
+OCOMS_DECLSPEC int ocoms_mca_base_is_component_required(service_list_t *components_available,
+                                                 ocoms_mca_base_component_t *component,
                                                  bool exclusive,
                                                  bool *is_required);
 
-/* ccs_mca_base_cmd_line.c */
+/* ocoms_mca_base_cmd_line.c */
 
-CCS_DECLSPEC int ccs_mca_base_cmd_line_setup(service_cmd_line_t *cmd);
-CCS_DECLSPEC int ccs_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
+OCOMS_DECLSPEC int ocoms_mca_base_cmd_line_setup(service_cmd_line_t *cmd);
+OCOMS_DECLSPEC int ocoms_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
                                                  char ***app_env,
                                                  char ***global_env);
 
-/* ccs_mca_base_component_compare.c */
+/* ocoms_mca_base_component_compare.c */
 
-CCS_DECLSPEC int ccs_mca_base_component_compare_priority(ccs_mca_base_component_priority_list_item_t *a,
-                                                      ccs_mca_base_component_priority_list_item_t *b);
-CCS_DECLSPEC int ccs_mca_base_component_compare(const ccs_mca_base_component_t *a,
-                                             const ccs_mca_base_component_t *b);
-CCS_DECLSPEC int ccs_mca_base_component_compatible(const ccs_mca_base_component_t *a,
-                                                const ccs_mca_base_component_t *b);
-CCS_DECLSPEC char * ccs_mca_base_component_to_string(const ccs_mca_base_component_t *a);
+OCOMS_DECLSPEC int ocoms_mca_base_component_compare_priority(ocoms_mca_base_component_priority_list_item_t *a,
+                                                      ocoms_mca_base_component_priority_list_item_t *b);
+OCOMS_DECLSPEC int ocoms_mca_base_component_compare(const ocoms_mca_base_component_t *a,
+                                             const ocoms_mca_base_component_t *b);
+OCOMS_DECLSPEC int ocoms_mca_base_component_compatible(const ocoms_mca_base_component_t *a,
+                                                const ocoms_mca_base_component_t *b);
+OCOMS_DECLSPEC char * ocoms_mca_base_component_to_string(const ocoms_mca_base_component_t *a);
 
-/* ccs_mca_base_component_find.c */
+/* ocoms_mca_base_component_find.c */
 
-CCS_DECLSPEC int ccs_mca_base_component_find(const char *directory, const char *type,
-                                          const ccs_mca_base_component_t *static_components[],
+OCOMS_DECLSPEC int ocoms_mca_base_component_find(const char *directory, const char *type,
+                                          const ocoms_mca_base_component_t *static_components[],
                                           char **requested_component_names,
                                           bool include_mode,
                                           service_list_t *found_components,
                                           bool open_dso_components);
 
-/* Safely release some memory allocated by ccs_mca_base_component_find()
+/* Safely release some memory allocated by ocoms_mca_base_component_find()
    (i.e., is safe to call even if you never called
-   ccs_mca_base_component_find()). */
-CCS_DECLSPEC int ccs_mca_base_component_find_finalize(void);
+   ocoms_mca_base_component_find()). */
+OCOMS_DECLSPEC int ocoms_mca_base_component_find_finalize(void);
 
-/* ccs_mca_base_components_open.c */
+/* ocoms_mca_base_components_open.c */
 
-CCS_DECLSPEC int ccs_mca_base_components_open(const char *type_name, int output_id,
-                                           const ccs_mca_base_component_t **static_components,
+OCOMS_DECLSPEC int ocoms_mca_base_components_open(const char *type_name, int output_id,
+                                           const ocoms_mca_base_component_t **static_components,
                                            service_list_t *components_available,
                                            bool open_dso_components);
 
-/* ccs_mca_base_components_close.c */
+/* ocoms_mca_base_components_close.c */
 
-CCS_DECLSPEC int ccs_mca_base_components_close(int output_id, service_list_t *components_available, 
-                                            const ccs_mca_base_component_t *skip);
+OCOMS_DECLSPEC int ocoms_mca_base_components_close(int output_id, service_list_t *components_available, 
+                                            const ocoms_mca_base_component_t *skip);
 
 END_C_DECLS
 

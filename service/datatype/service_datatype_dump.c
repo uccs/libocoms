@@ -19,7 +19,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -39,9 +39,9 @@ int service_datatype_contain_basic_datatypes( const service_datatype_t* pData, c
     int32_t index = 0;
     uint64_t mask = 1;
 
-    if( pData->flags & CCS_DATATYPE_FLAG_USER_LB ) index += snprintf( ptr, length - index, "lb " );
-    if( pData->flags & CCS_DATATYPE_FLAG_USER_UB ) index += snprintf( ptr + index, length - index, "ub " );
-    for( i = 0; i < CCS_DATATYPE_MAX_PREDEFINED; i++ ) {
+    if( pData->flags & OCOMS_DATATYPE_FLAG_USER_LB ) index += snprintf( ptr, length - index, "lb " );
+    if( pData->flags & OCOMS_DATATYPE_FLAG_USER_UB ) index += snprintf( ptr + index, length - index, "ub " );
+    for( i = 0; i < OCOMS_DATATYPE_MAX_PREDEFINED; i++ ) {
         if( pData->bdt_used & mask )
             index += snprintf( ptr + index, length - index, "%s ", service_datatype_basicDatatypes[i]->name );
         mask <<= 1;
@@ -55,15 +55,15 @@ int service_datatype_dump_data_flags( unsigned short usflags, char* ptr, size_t 
     int index = 0;
     if( length < 22 ) return 0;
     index = snprintf( ptr, 22, "-----------[---][---]" );  /* set everything to - */
-    if( usflags & CCS_DATATYPE_FLAG_COMMITED )   ptr[1]  = 'c';
-    if( usflags & CCS_DATATYPE_FLAG_CONTIGUOUS ) ptr[2]  = 'C';
-    if( usflags & CCS_DATATYPE_FLAG_OVERLAP )    ptr[3]  = 'o';
-    if( usflags & CCS_DATATYPE_FLAG_USER_LB )    ptr[4]  = 'l';
-    if( usflags & CCS_DATATYPE_FLAG_USER_UB )    ptr[5]  = 'u';
-    if( usflags & CCS_DATATYPE_FLAG_PREDEFINED ) ptr[6]  = 'P';
-    if( !(usflags & CCS_DATATYPE_FLAG_NO_GAPS) ) ptr[7]  = 'G';
-    if( usflags & CCS_DATATYPE_FLAG_DATA )       ptr[8]  = 'D';
-    if( (usflags & CCS_DATATYPE_FLAG_BASIC) == CCS_DATATYPE_FLAG_BASIC ) ptr[9]  = 'B';
+    if( usflags & OCOMS_DATATYPE_FLAG_COMMITED )   ptr[1]  = 'c';
+    if( usflags & OCOMS_DATATYPE_FLAG_CONTIGUOUS ) ptr[2]  = 'C';
+    if( usflags & OCOMS_DATATYPE_FLAG_OVERLAP )    ptr[3]  = 'o';
+    if( usflags & OCOMS_DATATYPE_FLAG_USER_LB )    ptr[4]  = 'l';
+    if( usflags & OCOMS_DATATYPE_FLAG_USER_UB )    ptr[5]  = 'u';
+    if( usflags & OCOMS_DATATYPE_FLAG_PREDEFINED ) ptr[6]  = 'P';
+    if( !(usflags & OCOMS_DATATYPE_FLAG_NO_GAPS) ) ptr[7]  = 'G';
+    if( usflags & OCOMS_DATATYPE_FLAG_DATA )       ptr[8]  = 'D';
+    if( (usflags & OCOMS_DATATYPE_FLAG_BASIC) == OCOMS_DATATYPE_FLAG_BASIC ) ptr[9]  = 'B';
     /* We know nothing about the upper level language! This is part of _ompi_dump_data_flags */
     /* ... */
     return index;
@@ -80,11 +80,11 @@ int service_datatype_dump_data_desc( dt_elem_desc_t* pDesc, int nbElems, char* p
         if( length <= (size_t)index ) break;
         index += snprintf( ptr + index, length - index, "%15s ", service_datatype_basicDatatypes[pDesc->elem.common.type]->name );
         if( length <= (size_t)index ) break;
-        if( CCS_DATATYPE_LOOP == pDesc->elem.common.type )
+        if( OCOMS_DATATYPE_LOOP == pDesc->elem.common.type )
             index += snprintf( ptr + index, length - index, "%d times the next %d elements extent %d\n",
                                (int)pDesc->loop.loops, (int)pDesc->loop.items,
                                (int)pDesc->loop.extent );
-        else if( CCS_DATATYPE_END_LOOP == pDesc->elem.common.type )
+        else if( OCOMS_DATATYPE_END_LOOP == pDesc->elem.common.type )
             index += snprintf( ptr + index, length - index, "prev %d elements first elem displacement %ld size of data %d\n",
                            (int)pDesc->end_loop.items, (long)pDesc->end_loop.first_elem_disp,
                            (int)pDesc->end_loop.size );
@@ -115,13 +115,13 @@ void service_datatype_dump( const service_datatype_t* pData )
                      (void*)pData, pData->name, (long)pData->size, (int)pData->align, pData->id, (int)pData->desc.length, (int)pData->desc.used,
                      (long)pData->true_lb, (long)pData->true_ub, (long)(pData->true_ub - pData->true_lb),
                      (long)pData->lb, (long)pData->ub, (long)(pData->ub - pData->lb),
-                     (int)pData->nbElems, (int)pData->btypes[CCS_DATATYPE_LOOP], (int)pData->flags );
+                     (int)pData->nbElems, (int)pData->btypes[OCOMS_DATATYPE_LOOP], (int)pData->flags );
     /* dump the flags */
-    if( pData->flags == CCS_DATATYPE_FLAG_PREDEFINED )
+    if( pData->flags == OCOMS_DATATYPE_FLAG_PREDEFINED )
         index += snprintf( buffer + index, length - index, "predefined " );
     else {
-        if( pData->flags & CCS_DATATYPE_FLAG_COMMITED ) index += snprintf( buffer + index, length - index, "commited " );
-        if( pData->flags & CCS_DATATYPE_FLAG_CONTIGUOUS) index += snprintf( buffer + index, length - index, "contiguous " );
+        if( pData->flags & OCOMS_DATATYPE_FLAG_COMMITED ) index += snprintf( buffer + index, length - index, "commited " );
+        if( pData->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS) index += snprintf( buffer + index, length - index, "contiguous " );
     }
     index += snprintf( buffer + index, length - index, ")" );
     index += service_datatype_dump_data_flags( pData->flags, buffer + index, length - index );
@@ -132,7 +132,7 @@ void service_datatype_dump( const service_datatype_t* pData )
     }
     if( (pData->opt_desc.desc != pData->desc.desc) && (NULL != pData->opt_desc.desc) ) {
         /* If the data is already committed print everything including the last
-         * fake CCS_DATATYPE_END_LOOP entry.
+         * fake OCOMS_DATATYPE_END_LOOP entry.
          */
         index += service_datatype_dump_data_desc( pData->desc.desc, pData->desc.used + 1, buffer + index, length - index );
         index += snprintf( buffer + index, length - index, "Optimized description \n" );

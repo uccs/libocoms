@@ -17,7 +17,7 @@
  * $HEADER$
  */
 
-#include "service/platform/ccs_config.h"
+#include "service/platform/ocoms_config.h"
 
 #include "service/threads/threads.h"
 #include "service/platform/service_constants.h"
@@ -39,9 +39,9 @@ static void service_thread_construct(service_thread_t *t)
     t->t_run = 0;
 #ifdef __WINDOWS__
     t->t_handle = (HANDLE)NULL;
-#elif CCS_HAVE_POSIX_THREADS
+#elif OCOMS_HAVE_POSIX_THREADS
     t->t_handle = (pthread_t) -1;
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
     t->t_handle = (thread_t) -1;
 #endif
 }
@@ -57,9 +57,9 @@ int service_thread_start(service_thread_t *t)
 {
     DWORD tid;
 
-    if (CCS_ENABLE_DEBUG) {
+    if (OCOMS_ENABLE_DEBUG) {
         if (NULL == t->t_run || t->t_handle != (HANDLE) -1L) {
-            return CCS_ERR_BAD_PARAM;
+            return OCOMS_ERR_BAD_PARAM;
         }
     }
 
@@ -71,10 +71,10 @@ int service_thread_start(service_thread_t *t)
                                &tid);
 
     if (t->t_handle == NULL) {
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -83,17 +83,17 @@ int service_thread_join(service_thread_t *t, void **thr_return)
     DWORD rc;
 
     if (WaitForSingleObject(t->t_handle, INFINITE) != WAIT_OBJECT_0) {
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
     if (!GetExitCodeThread(t->t_handle, &rc)) {
-        return CCS_ERROR;
+        return OCOMS_ERROR;
     }
 
     if( NULL != thr_return ) {
         *thr_return = (void *)((intptr_t)rc);
     }
 
-    return CCS_SUCCESS;
+    return OCOMS_SUCCESS;
 }
 
 
@@ -117,7 +117,7 @@ void service_thread_kill(service_thread_t *t, int sig)
 {
 }
 
-#elif CCS_HAVE_POSIX_THREADS
+#elif OCOMS_HAVE_POSIX_THREADS
 
 /************************************************************************
  * POSIX threads
@@ -127,15 +127,15 @@ int service_thread_start(service_thread_t *t)
 {
     int rc;
 
-    if (CCS_ENABLE_DEBUG) {
+    if (OCOMS_ENABLE_DEBUG) {
         if (NULL == t->t_run || t->t_handle != (pthread_t) -1) {
-            return CCS_ERR_BAD_PARAM;
+            return OCOMS_ERR_BAD_PARAM;
         }
     }
 
     rc = pthread_create(&t->t_handle, NULL, (void*(*)(void*)) t->t_run, t);
 
-    return (rc == 0) ? CCS_SUCCESS : CCS_ERROR;
+    return (rc == 0) ? OCOMS_SUCCESS : OCOMS_ERROR;
 }
 
 
@@ -143,7 +143,7 @@ int service_thread_join(service_thread_t *t, void **thr_return)
 {
     int rc = pthread_join(t->t_handle, thr_return);
     t->t_handle = (pthread_t) -1;
-    return (rc == 0) ? CCS_SUCCESS : CCS_ERROR;
+    return (rc == 0) ? OCOMS_SUCCESS : OCOMS_ERROR;
 }
 
 
@@ -166,7 +166,7 @@ void service_thread_kill(service_thread_t *t, int sig)
 }
 
 
-#elif CCS_HAVE_SOLARIS_THREADS
+#elif OCOMS_HAVE_SOLARIS_THREADS
 
 /************************************************************************
  * Solaris threads
@@ -176,16 +176,16 @@ int service_thread_start(service_thread_t *t)
 {
     int rc;
 
-    if (CCS_ENABLE_DEBUG) {
+    if (OCOMS_ENABLE_DEBUG) {
         if (NULL == t->t_run || t->t_handle != (thread_t) -1) {
-            return CCS_ERR_BAD_PARAM;
+            return OCOMS_ERR_BAD_PARAM;
         }
     }
 
     rc = thr_create(NULL, 0, (void*(*)(void*)) t->t_run, t, NULL,
                     &t->t_handle);
 
-    return (rc == 0) ? CCS_SUCCESS : CCS_ERROR;
+    return (rc == 0) ? OCOMS_SUCCESS : OCOMS_ERROR;
 }
 
 
@@ -193,7 +193,7 @@ int service_thread_join(service_thread_t *t, void **thr_return)
 {
     int rc = thr_join(t->t_handle, NULL, thr_return);
     t->t_handle = (thread_t) -1;
-    return (rc == 0) ? CCS_SUCCESS : CCS_ERROR;
+    return (rc == 0) ? OCOMS_SUCCESS : OCOMS_ERROR;
 }
 
 
@@ -224,13 +224,13 @@ void service_thread_kill(service_thread_t *t, int sig)
 
 int service_thread_start(service_thread_t *t)
 {
-    return CCS_ERROR;
+    return OCOMS_ERROR;
 }
 
 
 int service_thread_join(service_thread_t *t, void **thr_return)
 {
-    return CCS_ERROR;
+    return OCOMS_ERROR;
 }
 
 
