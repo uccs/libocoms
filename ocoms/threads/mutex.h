@@ -22,8 +22,8 @@
  * $HEADER$
  */
 
-#ifndef  SERVICE_MUTEX_H
-#define  SERVICE_MUTEX_H 1
+#ifndef  OCOMS_MUTEX_H
+#define  OCOMS_MUTEX_H 1
 
 #include "ocoms/platform/ocoms_config.h"
 
@@ -50,13 +50,13 @@ BEGIN_C_DECLS
 OCOMS_DECLSPEC extern bool ocoms_uses_threads;
 
 #if OCOMS_ENABLE_DEBUG
-OCOMS_DECLSPEC extern bool service_mutex_check_locks;
+OCOMS_DECLSPEC extern bool ocoms_mutex_check_locks;
 #endif
 
 /**
  * Opaque mutex object
  */
-typedef struct service_mutex_t service_mutex_t;
+typedef struct ocoms_mutex_t ocoms_mutex_t;
 
 
 /**
@@ -65,7 +65,7 @@ typedef struct service_mutex_t service_mutex_t;
  * @param mutex         Address of the mutex.
  * @return              0 if the mutex was acquired, 1 otherwise.
  */
-static inline int service_mutex_trylock(service_mutex_t *mutex);
+static inline int ocoms_mutex_trylock(ocoms_mutex_t *mutex);
 
 
 /**
@@ -73,7 +73,7 @@ static inline int service_mutex_trylock(service_mutex_t *mutex);
  *
  * @param mutex         Address of the mutex.
  */
-static inline void service_mutex_lock(service_mutex_t *mutex);
+static inline void ocoms_mutex_lock(ocoms_mutex_t *mutex);
 
 
 /**
@@ -81,7 +81,7 @@ static inline void service_mutex_lock(service_mutex_t *mutex);
  *
  * @param mutex         Address of the mutex.
  */
-static inline void service_mutex_unlock(service_mutex_t *mutex);
+static inline void ocoms_mutex_unlock(ocoms_mutex_t *mutex);
 
 
 /**
@@ -90,7 +90,7 @@ static inline void service_mutex_unlock(service_mutex_t *mutex);
  * @param mutex         Address of the mutex.
  * @return              0 if the mutex was acquired, 1 otherwise.
  */
-static inline int service_mutex_atomic_trylock(service_mutex_t *mutex);
+static inline int ocoms_mutex_atomic_trylock(ocoms_mutex_t *mutex);
 
 
 /**
@@ -98,7 +98,7 @@ static inline int service_mutex_atomic_trylock(service_mutex_t *mutex);
  *
  * @param mutex         Address of the mutex.
  */
-static inline void service_mutex_atomic_lock(service_mutex_t *mutex);
+static inline void ocoms_mutex_atomic_lock(ocoms_mutex_t *mutex);
 
 
 /**
@@ -106,7 +106,7 @@ static inline void service_mutex_atomic_lock(service_mutex_t *mutex);
  *
  * @param mutex         Address of the mutex.
  */
-static inline void service_mutex_atomic_unlock(service_mutex_t *mutex);
+static inline void ocoms_mutex_atomic_unlock(ocoms_mutex_t *mutex);
 
 END_C_DECLS
 
@@ -188,7 +188,7 @@ static inline bool ocoms_set_using_threads(bool have)
  * Lock a mutex if ocoms_using_threads() says that multiple threads may
  * be active in the process.
  *
- * @param mutex Pointer to a service_mutex_t to lock.
+ * @param mutex Pointer to a ocoms_mutex_t to lock.
  *
  * If there is a possibility that multiple threads are running in the
  * process (as determined by ocoms_using_threads()), this function will
@@ -199,18 +199,18 @@ static inline bool ocoms_set_using_threads(bool have)
  */
 
 #if OCOMS_ENABLE_MULTI_THREADS
-#define SERVICE_THREAD_LOCK(mutex)                 \
+#define OCOMS_THREAD_LOCK(mutex)                 \
     do {                                        \
         if (ocoms_using_threads()) {             \
-            service_mutex_lock(mutex);             \
+            ocoms_mutex_lock(mutex);             \
         }                                       \
     } while (0)
 #elif OCOMS_ENABLE_DEBUG
-#define SERVICE_THREAD_LOCK(mutex)                                         \
+#define OCOMS_THREAD_LOCK(mutex)                                         \
     do {                                                                \
         (mutex)->m_lock_debug++;                                        \
-        if (service_mutex_check_locks && 1 != (mutex)->m_lock_debug) {     \
-            service_output(0, "Warning -- mutex already locked at %s:%d,"  \
+        if (ocoms_mutex_check_locks && 1 != (mutex)->m_lock_debug) {     \
+            ocoms_output(0, "Warning -- mutex already locked at %s:%d,"  \
                         " now at %s:%d",                                \
                         (mutex)->m_lock_file,                           \
                         (mutex)->m_lock_line,                           \
@@ -220,7 +220,7 @@ static inline bool ocoms_set_using_threads(bool have)
         (mutex)->m_lock_line = __LINE__;                                \
     } while (0)
 #else
-#define SERVICE_THREAD_LOCK(mutex)
+#define OCOMS_THREAD_LOCK(mutex)
 #endif
 
 
@@ -228,7 +228,7 @@ static inline bool ocoms_set_using_threads(bool have)
  * Try to lock a mutex if ocoms_using_threads() says that multiple
  * threads may be active in the process.
  *
- * @param mutex Pointer to a service_mutex_t to trylock
+ * @param mutex Pointer to a ocoms_mutex_t to trylock
  *
  * If there is a possibility that multiple threads are running in the
  * process (as determined by ocoms_using_threads()), this function will
@@ -240,10 +240,10 @@ static inline bool ocoms_set_using_threads(bool have)
  * Returns 0 if mutex was locked, non-zero otherwise.
  */
 #if OCOMS_ENABLE_MULTI_THREADS
-#define SERVICE_THREAD_TRYLOCK(mutex) (ocoms_using_threads() ? service_mutex_trylock(mutex) : 0)
+#define OCOMS_THREAD_TRYLOCK(mutex) (ocoms_using_threads() ? ocoms_mutex_trylock(mutex) : 0)
 #elif OCOMS_ENABLE_DEBUG
 static inline int
-service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
+ocoms_thread_debug_trylock(ocoms_mutex_t *mutex, const char *file, int line)
 {
     int ret = -1;
 
@@ -253,8 +253,8 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
         (mutex)->m_lock_line = line;
         ret = 0;
     } else {
-        if (service_mutex_check_locks) {
-            service_output(0, "Warning -- during trylock, mutex already locked at %s:%d "
+        if (ocoms_mutex_check_locks) {
+            ocoms_output(0, "Warning -- during trylock, mutex already locked at %s:%d "
                         "now at %s:%d",  
                         file, line,
                         (mutex)->m_lock_file,
@@ -264,9 +264,9 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
 
     return ret;
 }
-#define SERVICE_THREAD_TRYLOCK(mutex) service_thread_debug_trylock(mutex, __FILE__, __LINE__)
+#define OCOMS_THREAD_TRYLOCK(mutex) ocoms_thread_debug_trylock(mutex, __FILE__, __LINE__)
 #else
-#define SERVICE_THREAD_TRYLOCK(mutex) 0
+#define OCOMS_THREAD_TRYLOCK(mutex) 0
 #endif
 
 
@@ -274,7 +274,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
  * Unlock a mutex if ocoms_using_threads() says that multiple threads
  * may be active in the process.
  *
- * @param mutex Pointer to a service_mutex_t to unlock.
+ * @param mutex Pointer to a ocoms_mutex_t to unlock.
  *
  * If there is a possibility that multiple threads are running in the
  * process (as determined by ocoms_using_threads()), this function will
@@ -284,21 +284,21 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
  * process, return immediately without modifying the mutex.
  */
 #if OCOMS_ENABLE_MULTI_THREADS
-#define SERVICE_THREAD_UNLOCK(mutex)               \
+#define OCOMS_THREAD_UNLOCK(mutex)               \
     do {                                        \
         if (ocoms_using_threads()) {             \
-            service_mutex_unlock(mutex);           \
+            ocoms_mutex_unlock(mutex);           \
         }                                       \
     } while (0)
 #elif OCOMS_ENABLE_DEBUG
-#define SERVICE_THREAD_UNLOCK(mutex)                                       \
+#define OCOMS_THREAD_UNLOCK(mutex)                                       \
     do {                                                                \
         (mutex)->m_lock_debug--;                                        \
-        if (service_mutex_check_locks && 0 > (mutex)->m_lock_debug) {      \
-            service_output(0, "Warning -- mutex was double locked from %s:%d", \
+        if (ocoms_mutex_check_locks && 0 > (mutex)->m_lock_debug) {      \
+            ocoms_output(0, "Warning -- mutex was double locked from %s:%d", \
                         __FILE__, __LINE__);                            \
-        } else if (service_mutex_check_locks && 0 > (mutex)->m_lock_debug) { \
-            service_output(0, "Warning -- mutex not locked from %s:%d",    \
+        } else if (ocoms_mutex_check_locks && 0 > (mutex)->m_lock_debug) { \
+            ocoms_output(0, "Warning -- mutex not locked from %s:%d",    \
                         __FILE__, __LINE__);                            \
         } else {                                                        \
             (mutex)->m_lock_file = NULL;                                \
@@ -306,7 +306,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
         }                                                               \
     } while (0)
 #else
-#define SERVICE_THREAD_UNLOCK(mutex)
+#define OCOMS_THREAD_UNLOCK(mutex)
 #endif
 
 
@@ -314,7 +314,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
  * Lock a mutex if ocoms_using_threads() says that multiple threads may
  * be active in the process for the duration of the specified action.
  *
- * @param mutex    Pointer to a service_mutex_t to lock.
+ * @param mutex    Pointer to a ocoms_mutex_t to lock.
  * @param action   A scope over which the lock is held.
  *
  * If there is a possibility that multiple threads are running in the
@@ -327,21 +327,21 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
  */
 
 #if OCOMS_ENABLE_MULTI_THREADS
-#define SERVICE_THREAD_SCOPED_LOCK(mutex, action)  \
+#define OCOMS_THREAD_SCOPED_LOCK(mutex, action)  \
     do {                                        \
         if(ocoms_using_threads()) {              \
-            service_mutex_lock(mutex);             \
+            ocoms_mutex_lock(mutex);             \
             (action);                           \
-            service_mutex_unlock(mutex);           \
+            ocoms_mutex_unlock(mutex);           \
         } else {                                \
             (action);                           \
         }                                       \
     } while (0)
 #elif OCOMS_ENABLE_DEBUG
-#define SERVICE_THREAD_SCOPED_LOCK(mutex, action)                          \
+#define OCOMS_THREAD_SCOPED_LOCK(mutex, action)                          \
     do {                                                                \
         if (0 != (mutex)->m_lock_debug) {                               \
-            service_output(0, "scoped_lock: Warning -- mutex already "     \
+            ocoms_output(0, "scoped_lock: Warning -- mutex already "     \
                         "locked at %s:%d, now at %s:%d",                \
                         __FILE__, __LINE__,                             \
                         (mutex)->m_lock_file,                           \
@@ -352,7 +352,7 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
         (mutex)->m_lock_debug++;                                        \
     } while (0)
 #else
-#define SERVICE_THREAD_SCOPED_LOCK(mutex, action) (action)
+#define OCOMS_THREAD_SCOPED_LOCK(mutex, action) (action)
 #endif
 
 /**
@@ -361,24 +361,24 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
  */
 
 #if OCOMS_ENABLE_MULTI_THREADS
-#define SERVICE_THREAD_ADD32(x,y) \
-   (ocoms_using_threads() ? service_atomic_add_32(x,y) : (*x += y))
+#define OCOMS_THREAD_ADD32(x,y) \
+   (ocoms_using_threads() ? ocoms_atomic_add_32(x,y) : (*x += y))
 #else
-#define SERVICE_THREAD_ADD32(x,y) (*x += y)
+#define OCOMS_THREAD_ADD32(x,y) (*x += y)
 #endif
 
 #if OCOMS_ENABLE_MULTI_THREADS
-#define SERVICE_THREAD_ADD64(x,y) \
-    (ocoms_using_threads() ? service_atomic_add_64(x,y) : (*x += y))
+#define OCOMS_THREAD_ADD64(x,y) \
+    (ocoms_using_threads() ? ocoms_atomic_add_64(x,y) : (*x += y))
 #else
-#define SERVICE_THREAD_ADD64(x,y) (*x += y)
+#define OCOMS_THREAD_ADD64(x,y) (*x += y)
 #endif
 
 #if OCOMS_ENABLE_MULTI_THREADS
-#define SERVICE_THREAD_ADD_SIZE_T(x,y) \
-    (ocoms_using_threads() ? service_atomic_add_size_t(x,y) : (*x += y))
+#define OCOMS_THREAD_ADD_SIZE_T(x,y) \
+    (ocoms_using_threads() ? ocoms_atomic_add_size_t(x,y) : (*x += y))
 #else
-#define SERVICE_THREAD_ADD_SIZE_T(x,y) (*x += y)
+#define OCOMS_THREAD_ADD_SIZE_T(x,y) (*x += y)
 #endif
 
 #define OCOMS_CMPSET(x, y, z) ((*(x) == (y)) ? ((*(x) = (z)), 1) : 0)
@@ -386,15 +386,15 @@ service_thread_debug_trylock(service_mutex_t *mutex, const char *file, int line)
 #if OCOMS_ENABLE_MULTI_THREADS
 # if OCOMS_HAVE_ATOMIC_CMPSET_32
 #  define OCOMS_ATOMIC_CMPSET_32(x, y, z) \
-    (ocoms_using_threads() ? service_atomic_cmpset_32(x, y, z) : OCOMS_CMPSET(x, y, z))
+    (ocoms_using_threads() ? ocoms_atomic_cmpset_32(x, y, z) : OCOMS_CMPSET(x, y, z))
 # endif
 # if OCOMS_HAVE_ATOMIC_CMPSET_64
 #  define OCOMS_ATOMIC_CMPSET_64(x, y, z) \
-    (ocoms_using_threads() ? service_atomic_cmpset_64(x, y, z) : OCOMS_CMPSET(x, y, z))
+    (ocoms_using_threads() ? ocoms_atomic_cmpset_64(x, y, z) : OCOMS_CMPSET(x, y, z))
 # endif
 # if OCOMS_HAVE_ATOMIC_CMPSET_32 || OCOMS_HAVE_ATOMIC_CMPSET_64
 #  define OCOMS_ATOMIC_CMPSET(x, y, z) \
-    (ocoms_using_threads() ? service_atomic_cmpset(x, y, z) : OCOMS_CMPSET(x, y, z))
+    (ocoms_using_threads() ? ocoms_atomic_cmpset(x, y, z) : OCOMS_CMPSET(x, y, z))
 # endif
 #else
 # if OCOMS_HAVE_ATOMIC_CMPSET_32

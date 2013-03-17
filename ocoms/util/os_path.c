@@ -32,7 +32,7 @@
 
 static const char *path_sep = OCOMS_PATH_SEP;
 
-char *service_os_path(bool relative, ...)
+char *ocoms_os_path(bool relative, ...)
 {
     va_list ap;
     char *element, *path;
@@ -106,5 +106,5 @@ char *service_os_path(bool relative, ...)
     }
 
     va_end(ap);
-    return service_make_filename_os_friendly(path);
+    return ocoms_make_filename_os_friendly(path);
 }

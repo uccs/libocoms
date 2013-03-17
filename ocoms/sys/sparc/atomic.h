@@ -27,14 +27,14 @@
 #endif
 
 #ifdef OCOMS_GENERATE_ASM_FILE
-struct service_atomic_lock_t {
+struct ocoms_atomic_lock_t {
     union {
         volatile int lock;         /**< The lock address (an integer) */
         volatile unsigned char sparc_lock; /**< The lock address on sparc */
         char padding[sizeof(int)]; /**< Array for optional padding */
     } u;
 };
-typedef struct service_atomic_lock_t service_atomic_lock_t;
+typedef struct ocoms_atomic_lock_t ocoms_atomic_lock_t;
 #endif
 
 /**********************************************************************
@@ -60,19 +60,19 @@ typedef struct service_atomic_lock_t service_atomic_lock_t;
  *********************************************************************/
 #if OCOMS_GCC_INLINE_ASSEMBLY
 
-static inline void service_atomic_mb(void)
+static inline void ocoms_atomic_mb(void)
 {
     MB();
 }
 
 
-static inline void service_atomic_rmb(void)
+static inline void ocoms_atomic_rmb(void)
 {
     MB();
 }
 
 
-static inline void service_atomic_wmb(void)
+static inline void ocoms_atomic_wmb(void)
 {
     MB();
 }
@@ -91,13 +91,13 @@ static inline void service_atomic_wmb(void)
    attempt to leave it as OCOMS_LOCKED whenever possible */
 
 
-static inline void service_atomic_init(service_atomic_lock_t* lock, int value)
+static inline void ocoms_atomic_init(ocoms_atomic_lock_t* lock, int value)
 {
     lock->u.sparc_lock = (unsigned char) value;
 }
 
 
-static inline int service_atomic_trylock(service_atomic_lock_t *lock)
+static inline int ocoms_atomic_trylock(ocoms_atomic_lock_t *lock)
 {
     unsigned char result;
 
@@ -114,7 +114,7 @@ static inline int service_atomic_trylock(service_atomic_lock_t *lock)
 }
 
 
-static inline void service_atomic_lock(service_atomic_lock_t *lock)
+static inline void ocoms_atomic_lock(ocoms_atomic_lock_t *lock)
 {
     /* From page 264 of The SPARC Architecture Manual, Version 8 */
     __asm__ __volatile__ (
@@ -137,7 +137,7 @@ static inline void service_atomic_lock(service_atomic_lock_t *lock)
 }
 
 
-static inline void service_atomic_unlock(service_atomic_lock_t *lock)
+static inline void ocoms_atomic_unlock(ocoms_atomic_lock_t *lock)
 {
     /* 0 out that byte in memory */
     __asm__ __volatile__ ("\t"

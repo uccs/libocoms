@@ -23,7 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/util/argv.h"
 #include "ocoms/util/output.h"
 #if 0
@@ -33,10 +33,10 @@
 #include "ocoms/mca/mca.h"
 #include "ocoms/mca/base/base.h"
 #include "ocoms/mca/base/mca_base_component_repository.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 struct component_name_t {
-  service_list_item_t super;
+  ocoms_list_item_t super;
 
   char mn_name[MCA_BASE_MAX_COMPONENT_NAME_LEN];
 };
@@ -66,7 +66,7 @@ static const char negate = '^';
 static int parse_requested(int mca_param, bool *include_mode,
                            char ***requested_component_names);
 static int open_components(const char *type_name, int output_id, 
-                           service_list_t *src, service_list_t *dest);
+                           ocoms_list_t *src, ocoms_list_t *dest);
 
 /**
  * Function for finding and opening either all MCA components, or the
@@ -74,12 +74,12 @@ static int open_components(const char *type_name, int output_id,
  */
 int ocoms_mca_base_components_open(const char *type_name, int output_id,
                              const ocoms_mca_base_component_t **static_components,
-                             service_list_t *components_available,
+                             ocoms_list_t *components_available,
                              bool open_dso_components)
 {
     int ret, param;
-    service_list_item_t *item;
-    service_list_t components_found;
+    ocoms_list_item_t *item;
+    ocoms_list_t components_found;
     char **requested_component_names;
     int param_verbose = -1;
     int param_type = -1;
@@ -87,7 +87,7 @@ int ocoms_mca_base_components_open(const char *type_name, int output_id,
     char *str;
     bool include_mode;
 #if (OCOMS_ENABLE_FT == 1) && (OCOMS_ENABLE_FT_CR == 1)
-    service_list_item_t *next;
+    ocoms_list_item_t *next;
     uint32_t open_only_flags = MCA_BASE_METADATA_PARAM_NONE;
     const ocoms_mca_base_component_t *component;
 #endif
@@ -115,9 +115,9 @@ int ocoms_mca_base_components_open(const char *type_name, int output_id,
     free(str);
     ocoms_mca_base_param_lookup_int(param_verbose, &verbose_level);
     if (output_id != 0) {
-        service_output_set_verbosity(output_id, verbose_level);
+        ocoms_output_set_verbosity(output_id, verbose_level);
     }
-    service_output_verbose(10, output_id, 
+    ocoms_output_verbose(10, output_id, 
                         "mca: base: components_open: Looking for %s components",
                         type_name);
 
@@ -166,7 +166,7 @@ int ocoms_mca_base_components_open(const char *type_name, int output_id,
 #if (OCOMS_ENABLE_FT == 1) && (OCOMS_ENABLE_FT_CR == 1)
     if( !(MCA_BASE_METADATA_PARAM_NONE & open_only_flags) ) {
         if( MCA_BASE_METADATA_PARAM_CHECKPOINT & open_only_flags) {
-            service_output_verbose(10, output_id,
+            ocoms_output_verbose(10, output_id,
                                 "mca: base: components_open: "
                                 "including only %s components that are checkpoint enabled", type_name);
         }
@@ -175,15 +175,15 @@ int ocoms_mca_base_components_open(const char *type_name, int output_id,
          * Check all the components to make sure they adhere to the user
          * expressed requirements.
          */
-        for(item  = service_list_get_first(&components_found);
-            item != service_list_get_end(&components_found);
+        for(item  = ocoms_list_get_first(&components_found);
+            item != ocoms_list_get_end(&components_found);
             item  = next ) {
             ocoms_mca_base_open_only_dummy_component_t *dummy;
             ocoms_mca_base_component_list_item_t *cli = (ocoms_mca_base_component_list_item_t *) item;
             dummy = (ocoms_mca_base_open_only_dummy_component_t*) cli->cli_component;
             component = cli->cli_component;
       
-            next = service_list_get_next(item);
+            next = ocoms_list_get_next(item);
       
             /*
              * If the user asked for a checkpoint enabled run
@@ -191,19 +191,19 @@ int ocoms_mca_base_components_open(const char *type_name, int output_id,
              */
             if( MCA_BASE_METADATA_PARAM_CHECKPOINT & open_only_flags) {
                 if( MCA_BASE_METADATA_PARAM_CHECKPOINT & dummy->data.param_field) {
-                    service_output_verbose(10, output_id,
+                    ocoms_output_verbose(10, output_id,
                                         "mca: base: components_open: "
                                         "(%s) Component %s is Checkpointable",
                                         type_name,
                                         dummy->version.mca_component_name);
                 }
                 else {
-                    service_output_verbose(10, output_id,
+                    ocoms_output_verbose(10, output_id,
                                         "mca: base: components_open: "
                                         "(%s) Component %s is *NOT* Checkpointable - Disabled",
                                         type_name,
                                         dummy->version.mca_component_name);
-                    service_list_remove_item(&components_found, item);
+                    ocoms_list_remove_item(&components_found, item);
                     /* Make sure to release the component since we are not
                      * opening it */
                     ocoms_mca_base_component_repository_release(component);
@@ -218,26 +218,26 @@ int ocoms_mca_base_components_open(const char *type_name, int output_id,
                           &components_found, components_available);
 
     /* Free resources */
-    for (item = service_list_remove_first(&components_found); NULL != item;
-         item = service_list_remove_first(&components_found)) {
+    for (item = ocoms_list_remove_first(&components_found); NULL != item;
+         item = ocoms_list_remove_first(&components_found)) {
         OBJ_RELEASE(item);
     }
     OBJ_DESTRUCT(&components_found);
 
     if (NULL != requested_component_names) {
-        service_argv_free(requested_component_names);
+        ocoms_argv_free(requested_component_names);
     }
 
     /* All done */
     return ret;
 }
 
-int ocoms_mca_base_is_component_required(service_list_t *components_available,
+int ocoms_mca_base_is_component_required(ocoms_list_t *components_available,
                                    ocoms_mca_base_component_t *component,
                                    bool exclusive,
                                    bool *is_required)
 {
-    service_list_item_t *item = NULL;
+    ocoms_list_item_t *item = NULL;
     ocoms_mca_base_component_list_item_t *cli = NULL;
     ocoms_mca_base_component_t *comp = NULL;
 
@@ -254,8 +254,8 @@ int ocoms_mca_base_is_component_required(service_list_t *components_available,
      */
     if( exclusive ) {
         /* Must be the -only- component in the list */
-        if( 1 == service_list_get_size(components_available) ) {
-            item  = service_list_get_first(components_available);
+        if( 1 == ocoms_list_get_size(components_available) ) {
+            item  = ocoms_list_get_first(components_available);
             cli   = (ocoms_mca_base_component_list_item_t *) item;
             comp  = (ocoms_mca_base_component_t *) cli->cli_component;
 
@@ -269,9 +269,9 @@ int ocoms_mca_base_is_component_required(service_list_t *components_available,
     }
     else {
         /* Must be one of the components in the list */
-        for (item  = service_list_get_first(components_available);
-             item != service_list_get_end(components_available);
-             item  = service_list_get_next(item) ) {
+        for (item  = ocoms_list_get_first(components_available);
+             item != ocoms_list_get_end(components_available);
+             item  = ocoms_list_get_next(item) ) {
             cli  = (ocoms_mca_base_component_list_item_t *) item;
             comp = (ocoms_mca_base_component_t *) cli->cli_component;
 
@@ -333,7 +333,7 @@ static int parse_requested(int mca_param, bool *include_mode,
 
   /* Split up the value into individual component names */
 
-  *requested_component_names = service_argv_split(requested, ',');
+  *requested_component_names = ocoms_argv_split(requested, ',');
 
   /* All done */
 
@@ -350,10 +350,10 @@ static int parse_requested(int mca_param, bool *include_mode,
  * If it opens, add it to the components_available list.
  */
 static int open_components(const char *type_name, int output_id, 
-                           service_list_t *src, service_list_t *dest)
+                           ocoms_list_t *src, ocoms_list_t *dest)
 {
     int ret;
-    service_list_item_t *item;
+    ocoms_list_item_t *item;
     const ocoms_mca_base_component_t *component;
     ocoms_mca_base_component_list_item_t *cli;
     bool called_open;
@@ -361,28 +361,28 @@ static int open_components(const char *type_name, int output_id,
     
     /* Announce */
     
-    service_output_verbose(10, output_id,
+    ocoms_output_verbose(10, output_id,
                         "mca: base: components_open: opening %s components",
                         type_name);
     
     /* Traverse the list of found components */
     
-    OBJ_CONSTRUCT(dest, service_list_t);
-    for (item = service_list_get_first(src);
-         service_list_get_end(src) != item;
-         item = service_list_get_next(item)) {
+    OBJ_CONSTRUCT(dest, ocoms_list_t);
+    for (item = ocoms_list_get_first(src);
+         ocoms_list_get_end(src) != item;
+         item = ocoms_list_get_next(item)) {
         cli = (ocoms_mca_base_component_list_item_t *) item;
         component = cli->cli_component;
         
         registered = opened = called_open = false;
-        service_output_verbose(10, output_id, 
+        ocoms_output_verbose(10, output_id, 
                             "mca: base: components_open: found loaded component %s",
                             component->mca_component_name);
 
         /* Call the component's MCA parameter registration function */
         if (NULL == component->mca_register_component_params) {
             registered = true;
-            service_output_verbose(10, output_id, 
+            ocoms_output_verbose(10, output_id, 
                                 "mca: base: components_open: "
                                 "component %s has no register function",
                                 component->mca_component_name);
@@ -390,7 +390,7 @@ static int open_components(const char *type_name, int output_id,
             ret = component->mca_register_component_params();
             if (MCA_SUCCESS == ret) {
                 registered = true;
-                service_output_verbose(10, output_id, 
+                ocoms_output_verbose(10, output_id, 
                                     "mca: base: components_open: "
                                     "component %s register function successful",
                                     component->mca_component_name);
@@ -407,12 +407,12 @@ static int open_components(const char *type_name, int output_id,
                    expected. */
                 
                 if (show_errors) {
-                    service_output(0, "mca: base: components_open: "
+                    ocoms_output(0, "mca: base: components_open: "
                                 "component %s / %s register function failed",
                                 component->mca_type_name,
                                 component->mca_component_name);
                 }
-                service_output_verbose(10, output_id, 
+                ocoms_output_verbose(10, output_id, 
                                     "mca: base: components_open: "
                                     "component %s register function failed",
                                     component->mca_component_name);
@@ -421,7 +421,7 @@ static int open_components(const char *type_name, int output_id,
 
         if (NULL == component->mca_open_component) {
             opened = true; 
-            service_output_verbose(10, output_id, 
+            ocoms_output_verbose(10, output_id, 
                                 "mca: base: components_open: "
                                 "component %s has no open function",
                                 component->mca_component_name);
@@ -430,7 +430,7 @@ static int open_components(const char *type_name, int output_id,
             ret = component->mca_open_component();
             if (MCA_SUCCESS == ret) {
                 opened = true;
-                service_output_verbose(10, output_id, 
+                ocoms_output_verbose(10, output_id, 
                                     "mca: base: components_open: "
                                     "component %s open function successful",
                                     component->mca_component_name);
@@ -447,12 +447,12 @@ static int open_components(const char *type_name, int output_id,
                    expected. */
                 
                 if (show_errors) {
-                    service_output(0, "mca: base: components_open: "
+                    ocoms_output(0, "mca: base: components_open: "
                                 "component %s / %s open function failed",
                                 component->mca_type_name,
                                 component->mca_component_name);
                 }
-                service_output_verbose(10, output_id, 
+                ocoms_output_verbose(10, output_id, 
                                     "mca: base: components_open: "
                                     "component %s open function failed",
                                     component->mca_component_name);
@@ -467,14 +467,14 @@ static int open_components(const char *type_name, int output_id,
                 if (NULL != component->mca_close_component) {
                     component->mca_close_component();
                 }
-                service_output_verbose(10, output_id, 
+                ocoms_output_verbose(10, output_id, 
                                     "mca: base: components_open: component %s closed",
                                     component->mca_component_name);
                 called_open = false;
             }
             name = strdup(component->mca_component_name);
             ocoms_mca_base_component_repository_release(component);
-            service_output_verbose(10, output_id, 
+            ocoms_output_verbose(10, output_id, 
                                 "mca: base: components_open: component %s unloaded", 
                                 name);
             free(name);
@@ -498,7 +498,7 @@ static int open_components(const char *type_name, int output_id,
                 return OCOMS_ERR_OUT_OF_RESOURCE;
             }
             cli->cli_component = component;
-            service_list_append(dest, (service_list_item_t *) cli);
+            ocoms_list_append(dest, (ocoms_list_item_t *) cli);
         }
     }
     

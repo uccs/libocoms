@@ -18,21 +18,21 @@
 #
 
 headers = \
-	service_config_top.h \
-	service_config_bottom.h \
-	service_stdint.h \
-	service_portable_platform.h \
-	service_constants.h
+	ocoms_config_top.h \
+	ocoms_config_bottom.h \
+	ocoms_stdint.h \
+	ocoms_portable_platform.h \
+	ocoms_constants.h
 
 nodist_headers = ocoms_config.h
 
 #include ocoms/Makefile.am
 
-EXTRA_DIST = CMakeLists.txt $(headers)
+#EXTRA_DIST = CMakeLists.txt $(headers)
 
 if WANT_INSTALL_HEADERS 
-servicedir = $(includedir)/ocoms
-nobase_dist_service_HEADERS = $(headers)
-nobase_nodist_service_HEADERS = $(nodist_headers)
+ocomsdir = $(includedir)/ocoms
+nobase_dist_ocoms_HEADERS = $(headers)
+nobase_nodist_ocoms_HEADERS = $(nodist_headers)
 endif
 

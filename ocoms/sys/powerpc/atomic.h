@@ -70,21 +70,21 @@
 #if OCOMS_GCC_INLINE_ASSEMBLY
 
 static inline
-void service_atomic_mb(void)
+void ocoms_atomic_mb(void)
 {
     MB();
 }
 
 
 static inline
-void service_atomic_rmb(void)
+void ocoms_atomic_rmb(void)
 {
     RMB();
 }
 
 
 static inline
-void service_atomic_wmb(void)
+void ocoms_atomic_wmb(void)
 {
     WMB();
 }
@@ -100,14 +100,14 @@ void service_atomic_wmb(void)
 #undef OCOMS_HAVE_INLINE_ATOMIC_MEM_BARRIER
 #define OCOMS_HAVE_INLINE_ATOMIC_MEM_BARRIER 0
 
-#pragma mc_func service_atomic_mb { "7c0004ac" }          /* sync  */
-#pragma reg_killed_by service_atomic_mb                   /* none */
+#pragma mc_func ocoms_atomic_mb { "7c0004ac" }          /* sync  */
+#pragma reg_killed_by ocoms_atomic_mb                   /* none */
 
-#pragma mc_func service_atomic_rmb { "7c2004ac" }         /* lwsync  */
-#pragma reg_killed_by service_atomic_rmb                  /* none */
+#pragma mc_func ocoms_atomic_rmb { "7c2004ac" }         /* lwsync  */
+#pragma reg_killed_by ocoms_atomic_rmb                  /* none */
 
-#pragma mc_func service_atomic_wmb { "7c0006ac" }         /* eieio */
-#pragma reg_killed_by service_atomic_wmb                  /* none */
+#pragma mc_func ocoms_atomic_wmb { "7c0006ac" }         /* eieio */
+#pragma reg_killed_by ocoms_atomic_wmb                  /* none */
 
 #endif
 
@@ -118,7 +118,7 @@ void service_atomic_wmb(void)
  *********************************************************************/
 #if OCOMS_GCC_INLINE_ASSEMBLY
 
-static inline int service_atomic_cmpset_32(volatile int32_t *addr,
+static inline int ocoms_atomic_cmpset_32(volatile int32_t *addr,
                                         int32_t oldval, int32_t newval)
 {
    int32_t ret;
@@ -142,23 +142,23 @@ static inline int service_atomic_cmpset_32(volatile int32_t *addr,
    atomic_?mb can be inlined).  Instead, we "inline" them by hand in
    the assembly, meaning there is one function call overhead instead
    of two */
-static inline int service_atomic_cmpset_acq_32(volatile int32_t *addr,
+static inline int ocoms_atomic_cmpset_acq_32(volatile int32_t *addr,
                                             int32_t oldval, int32_t newval)
 {
     int rc;
 
-    rc = service_atomic_cmpset_32(addr, oldval, newval);
-    service_atomic_rmb();
+    rc = ocoms_atomic_cmpset_32(addr, oldval, newval);
+    ocoms_atomic_rmb();
 
     return rc;
 }
 
 
-static inline int service_atomic_cmpset_rel_32(volatile int32_t *addr,
+static inline int ocoms_atomic_cmpset_rel_32(volatile int32_t *addr,
                                             int32_t oldval, int32_t newval)
 {
-    service_atomic_wmb();
-    return service_atomic_cmpset_32(addr, oldval, newval);
+    ocoms_atomic_wmb();
+    return ocoms_atomic_cmpset_32(addr, oldval, newval);
 }
 
 #endif /* OCOMS_GCC_INLINE_ASSEMBLY */
@@ -167,7 +167,7 @@ static inline int service_atomic_cmpset_rel_32(volatile int32_t *addr,
 #if (OCOMS_ASSEMBLY_ARCH == OCOMS_POWERPC64)
 
 #if  OCOMS_GCC_INLINE_ASSEMBLY
-static inline int service_atomic_cmpset_64(volatile int64_t *addr,
+static inline int ocoms_atomic_cmpset_64(volatile int64_t *addr,
                                         int64_t oldval, int64_t newval)
 {
    int64_t ret;
@@ -191,23 +191,23 @@ static inline int service_atomic_cmpset_64(volatile int64_t *addr,
    atomic_?mb can be inlined).  Instead, we "inline" them by hand in
    the assembly, meaning there is one function call overhead instead
    of two */
-static inline int service_atomic_cmpset_acq_64(volatile int64_t *addr,
+static inline int ocoms_atomic_cmpset_acq_64(volatile int64_t *addr,
                                             int64_t oldval, int64_t newval)
 {
     int rc;
 
-    rc = service_atomic_cmpset_64(addr, oldval, newval);
-    service_atomic_rmb();
+    rc = ocoms_atomic_cmpset_64(addr, oldval, newval);
+    ocoms_atomic_rmb();
 
     return rc;
 }
 
 
-static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
+static inline int ocoms_atomic_cmpset_rel_64(volatile int64_t *addr,
                                             int64_t oldval, int64_t newval)
 {
-    service_atomic_wmb();
-    return service_atomic_cmpset_64(addr, oldval, newval);
+    ocoms_atomic_wmb();
+    return ocoms_atomic_cmpset_64(addr, oldval, newval);
 }
 
 #endif /* OCOMS_GCC_INLINE_ASSEMBLY */
@@ -221,7 +221,7 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
 
 #if  OCOMS_GCC_INLINE_ASSEMBLY
 
-static inline int service_atomic_cmpset_64(volatile int64_t *addr,
+static inline int ocoms_atomic_cmpset_64(volatile int64_t *addr,
                                         int64_t oldval, int64_t newval)
 {
     int ret;
@@ -262,23 +262,23 @@ static inline int service_atomic_cmpset_64(volatile int64_t *addr,
    atomic_?mb can be inlined).  Instead, we "inline" them by hand in
    the assembly, meaning there is one function call overhead instead
    of two */
-static inline int service_atomic_cmpset_acq_64(volatile int64_t *addr,
+static inline int ocoms_atomic_cmpset_acq_64(volatile int64_t *addr,
                                             int64_t oldval, int64_t newval)
 {
     int rc;
 
-    rc = service_atomic_cmpset_64(addr, oldval, newval);
-    service_atomic_rmb();
+    rc = ocoms_atomic_cmpset_64(addr, oldval, newval);
+    ocoms_atomic_rmb();
 
     return rc;
 }
 
 
-static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
+static inline int ocoms_atomic_cmpset_rel_64(volatile int64_t *addr,
                                             int64_t oldval, int64_t newval)
 {
-    service_atomic_wmb();
-    return service_atomic_cmpset_64(addr, oldval, newval);
+    ocoms_atomic_wmb();
+    return ocoms_atomic_cmpset_64(addr, oldval, newval);
 }
 
 #endif /* OCOMS_GCC_INLINE_ASSEMBLY */
@@ -288,7 +288,7 @@ static inline int service_atomic_cmpset_rel_64(volatile int64_t *addr,
 
 #if OCOMS_GCC_INLINE_ASSEMBLY
 
-static inline int32_t service_atomic_add_32(volatile int32_t* v, int inc)
+static inline int32_t ocoms_atomic_add_32(volatile int32_t* v, int inc)
 {
    int32_t t;
 
@@ -305,7 +305,7 @@ static inline int32_t service_atomic_add_32(volatile int32_t* v, int inc)
 }
 
 
-static inline int32_t service_atomic_sub_32(volatile int32_t* v, int dec)
+static inline int32_t ocoms_atomic_sub_32(volatile int32_t* v, int dec)
 {
    int32_t t;
 

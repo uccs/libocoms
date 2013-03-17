@@ -21,7 +21,7 @@
 
 headers += \
 	primitives/align.h \
-	primitives/service_socket_errno.h \
+	primitives/ocoms_socket_errno.h \
 	primitives/types.h \
 	primitives/prefetch.h \
 	primitives/hash_string.h

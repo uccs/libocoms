@@ -60,12 +60,12 @@ libservice_la_SOURCES += $(headers)
 
 #if WANT_INSTALL_HEADERS
 #servicedir = $(includedir)/ocoms/$(subdir)
-#nobase_service_HEADERS = $(headers)
+#nobase_ocoms_HEADERS = $(headers)
 #
 ## This is somewhat of a hack -- libltdl is installed by libtoolize,
 ## and us installing the header here is slightly less kludgey than
 ## hacking their Makefile.am.
-#nobase_service_HEADERS += libltdl/ltdl.h
+#nobase_ocoms_HEADERS += libltdl/ltdl.h
 #endif
 
 include memoryhooks/Makefile.am

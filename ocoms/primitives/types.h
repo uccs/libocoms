@@ -61,9 +61,9 @@ typedef union {
  */
 
 #if defined(__APPLE__) || defined(__WINDOWS__)
-typedef char* service_iov_base_ptr_t;
+typedef char* ocoms_iov_base_ptr_t;
 #else
-typedef void* service_iov_base_ptr_t;
+typedef void* ocoms_iov_base_ptr_t;
 #endif
 
 /*
@@ -71,16 +71,16 @@ typedef void* service_iov_base_ptr_t;
  */
 
 #if defined(HAVE_SOCKLEN_T)
-typedef socklen_t service_socklen_t;
+typedef socklen_t ocoms_socklen_t;
 #else
-typedef int service_socklen_t;
+typedef int ocoms_socklen_t;
 #endif
 
 
 /*
  * Convert a 64 bit value to network byte order.
  */
-static inline uint64_t hton64(uint64_t val) __service_attribute_const__;
+static inline uint64_t hton64(uint64_t val) __ocoms_attribute_const__;
 static inline uint64_t hton64(uint64_t val)
 {
 #ifdef HAVE_UNIX_BYTESWAP
@@ -104,7 +104,7 @@ static inline uint64_t hton64(uint64_t val)
  * Convert a 64 bit value from network to host byte order.
  */
 
-static inline uint64_t ntoh64(uint64_t val) __service_attribute_const__;
+static inline uint64_t ntoh64(uint64_t val) __ocoms_attribute_const__;
 static inline uint64_t ntoh64(uint64_t val)
 {
 #ifdef HAVE_UNIX_BYTESWAP
@@ -128,26 +128,26 @@ static inline uint64_t ntoh64(uint64_t val)
 /**
  * Convert between a local representation of pointer and a 64 bits value.
  */
-static inline uint64_t service_ptr_ptol( void* ptr ) __service_attribute_const__;
-static inline uint64_t service_ptr_ptol( void* ptr )
+static inline uint64_t ocoms_ptr_ptol( void* ptr ) __ocoms_attribute_const__;
+static inline uint64_t ocoms_ptr_ptol( void* ptr )
 {
     return (uint64_t)(uintptr_t) ptr;
 }
 
-static inline void* service_ptr_ltop( uint64_t value ) __service_attribute_const__;
-static inline void* service_ptr_ltop( uint64_t value )
+static inline void* ocoms_ptr_ltop( uint64_t value ) __ocoms_attribute_const__;
+static inline void* ocoms_ptr_ltop( uint64_t value )
 {
 #if SIZEOF_VOID_P == 4 && OCOMS_ENABLE_DEBUG
     if (value > ((1ULL << 32) - 1ULL)) {
-        service_output(0, "Warning: truncating value in service_ptr_ltop");
+        ocoms_output(0, "Warning: truncating value in ocoms_ptr_ltop");
     }
 #endif
     return (void*)(uintptr_t) value;
 }
 
 #if defined(WORDS_BIGENDIAN) || !defined(HAVE_UNIX_BYTESWAP)
-static inline uint16_t service_swap_bytes2(uint16_t val) __service_attribute_const__;
-static inline uint16_t service_swap_bytes2(uint16_t val) 
+static inline uint16_t ocoms_swap_bytes2(uint16_t val) __ocoms_attribute_const__;
+static inline uint16_t ocoms_swap_bytes2(uint16_t val) 
 {
     union { uint16_t bigval;
             uint8_t  arrayval[2];
@@ -160,8 +160,8 @@ static inline uint16_t service_swap_bytes2(uint16_t val)
     return r.bigval;
 }
 
-static inline uint32_t service_swap_bytes4(uint32_t val) __service_attribute_const__;
-static inline uint32_t service_swap_bytes4(uint32_t val)
+static inline uint32_t ocoms_swap_bytes4(uint32_t val) __ocoms_attribute_const__;
+static inline uint32_t ocoms_swap_bytes4(uint32_t val)
 {
     union { uint32_t bigval;
             uint8_t  arrayval[4];
@@ -176,8 +176,8 @@ static inline uint32_t service_swap_bytes4(uint32_t val)
     return r.bigval;
 }
 
-static inline uint64_t service_swap_bytes8(uint64_t val) __service_attribute_const__;
-static inline uint64_t service_swap_bytes8(uint64_t val)
+static inline uint64_t ocoms_swap_bytes8(uint64_t val) __ocoms_attribute_const__;
+static inline uint64_t ocoms_swap_bytes8(uint64_t val)
 {
     union { uint64_t bigval;
             uint8_t  arrayval[8];
@@ -197,9 +197,9 @@ static inline uint64_t service_swap_bytes8(uint64_t val)
 }
 
 #else
-#define service_swap_bytes2 htons
-#define service_swap_bytes4 htonl
-#define service_swap_bytes8 hton64
+#define ocoms_swap_bytes2 htons
+#define ocoms_swap_bytes4 htonl
+#define ocoms_swap_bytes8 hton64
 #endif /* WORDS_BIGENDIAN || !HAVE_UNIX_BYTESWAP */
 
 #endif /* OCOMS_TYPES_H */

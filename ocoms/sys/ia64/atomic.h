@@ -44,19 +44,19 @@
  *********************************************************************/
 #if OCOMS_GCC_INLINE_ASSEMBLY
 
-static inline void service_atomic_mb(void)
+static inline void ocoms_atomic_mb(void)
 {
     MB();
 }
 
 
-static inline void service_atomic_rmb(void)
+static inline void ocoms_atomic_rmb(void)
 {
     MB();
 }
 
 
-static inline void service_atomic_wmb(void)
+static inline void ocoms_atomic_wmb(void)
 {
     MB();
 }
@@ -78,7 +78,7 @@ static inline void service_atomic_wmb(void)
    ia64_intri_res;                           \
 })
 
-static inline int service_atomic_cmpset_acq_32( volatile int32_t *addr,
+static inline int ocoms_atomic_cmpset_acq_32( volatile int32_t *addr,
                                              int32_t oldval, int32_t newval)
 {
     int64_t ret;
@@ -91,7 +91,7 @@ static inline int service_atomic_cmpset_acq_32( volatile int32_t *addr,
 }
 
 
-static inline int service_atomic_cmpset_rel_32( volatile int32_t *addr,
+static inline int ocoms_atomic_cmpset_rel_32( volatile int32_t *addr,
                                              int32_t oldval, int32_t newval)
 {
     int64_t ret;
@@ -106,11 +106,11 @@ static inline int service_atomic_cmpset_rel_32( volatile int32_t *addr,
 #endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
 
-#define service_atomic_cmpset_32 service_atomic_cmpset_acq_32
+#define ocoms_atomic_cmpset_32 ocoms_atomic_cmpset_acq_32
 
 #if OCOMS_GCC_INLINE_ASSEMBLY
 
-static inline int service_atomic_cmpset_acq_64( volatile int64_t *addr,
+static inline int ocoms_atomic_cmpset_acq_64( volatile int64_t *addr,
                                              int64_t oldval, int64_t newval)
 {
     int64_t ret;
@@ -123,7 +123,7 @@ static inline int service_atomic_cmpset_acq_64( volatile int64_t *addr,
 }
 
 
-static inline int service_atomic_cmpset_rel_64( volatile int64_t *addr,
+static inline int ocoms_atomic_cmpset_rel_64( volatile int64_t *addr,
                                              int64_t oldval, int64_t newval)
 {
     int64_t ret;
@@ -137,6 +137,6 @@ static inline int service_atomic_cmpset_rel_64( volatile int64_t *addr,
 
 #endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
-#define service_atomic_cmpset_64 service_atomic_cmpset_acq_64
+#define ocoms_atomic_cmpset_64 ocoms_atomic_cmpset_acq_64
 
 #endif /* ! OCOMS_SYS_ARCH_ATOMIC_H */

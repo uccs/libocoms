@@ -27,7 +27,7 @@
 #endif  /* HAVE_STRING_H */
 
 #include "ocoms/util/argv.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 #define ARGSIZE 128
 
@@ -35,21 +35,21 @@
 /*
  * Append a string to the end of a new or existing argv array.
  */
-int service_argv_append(int *argc, char ***argv, const char *arg)
+int ocoms_argv_append(int *argc, char ***argv, const char *arg)
 {
     int rc;
     
     /* add the new element */
-    if (OCOMS_SUCCESS != (rc = service_argv_append_nosize(argv, arg))) {
+    if (OCOMS_SUCCESS != (rc = ocoms_argv_append_nosize(argv, arg))) {
         return rc;
     }
     
-    *argc = service_argv_count(*argv);
+    *argc = ocoms_argv_count(*argv);
     
     return OCOMS_SUCCESS;
 }
 
-int service_argv_append_nosize(char ***argv, const char *arg)
+int ocoms_argv_append_nosize(char ***argv, const char *arg)
 {
     int argc;
     
@@ -68,7 +68,7 @@ int service_argv_append_nosize(char ***argv, const char *arg)
   /* Extend existing argv. */
   else {
         /* count how many entries currently exist */
-        argc = service_argv_count(*argv);
+        argc = ocoms_argv_count(*argv);
         
         *argv = (char**) realloc(*argv, (argc + 2) * sizeof(char *));
         if (NULL == *argv) {
@@ -89,7 +89,7 @@ int service_argv_append_nosize(char ***argv, const char *arg)
     return OCOMS_SUCCESS;
 }
 
-int service_argv_prepend_nosize(char ***argv, const char *arg)
+int ocoms_argv_prepend_nosize(char ***argv, const char *arg)
 {
     int argc;
     int i;
@@ -105,7 +105,7 @@ int service_argv_prepend_nosize(char ***argv, const char *arg)
         (*argv)[1] = NULL;
     } else {
         /* count how many entries currently exist */
-        argc = service_argv_count(*argv);
+        argc = ocoms_argv_count(*argv);
         
         *argv = (char**) realloc(*argv, (argc + 2) * sizeof(char *));
         if (NULL == *argv) {
@@ -123,7 +123,7 @@ int service_argv_prepend_nosize(char ***argv, const char *arg)
     return OCOMS_SUCCESS;
 }
 
-int service_argv_append_unique_nosize(char ***argv, const char *arg, bool overwrite)
+int ocoms_argv_append_unique_nosize(char ***argv, const char *arg, bool overwrite)
 {
     int i;
     
@@ -131,7 +131,7 @@ int service_argv_append_unique_nosize(char ***argv, const char *arg, bool overwr
      * so just go ahead and append
      */
     if (NULL == *argv) {
-        return service_argv_append_nosize(argv, arg);
+        return ocoms_argv_append_nosize(argv, arg);
     }
     
     /* see if this arg is already present in the array */
@@ -147,13 +147,13 @@ int service_argv_append_unique_nosize(char ***argv, const char *arg, bool overwr
     }
 
     /* we get here if the arg is not in the array - so add it */
-    return service_argv_append_nosize(argv, arg);
+    return ocoms_argv_append_nosize(argv, arg);
 }
 
 /*
  * Free a NULL-terminated argv array.
  */
-void service_argv_free(char **argv)
+void ocoms_argv_free(char **argv)
 {
   char **p;
 
@@ -171,7 +171,7 @@ void service_argv_free(char **argv)
 /*
  * Split a string into a NULL-terminated argv array.
  */
-static char **service_argv_split_inter(const char *src_string, int delimiter,
+static char **ocoms_argv_split_inter(const char *src_string, int delimiter,
         int include_empty)
 {
   char arg[ARGSIZE];
@@ -195,7 +195,7 @@ static char **service_argv_split_inter(const char *src_string, int delimiter,
     if (src_string == p) {
       if (include_empty) {
         arg[0] = '\0';
-        if (OCOMS_SUCCESS != service_argv_append(&argc, &argv, arg))
+        if (OCOMS_SUCCESS != ocoms_argv_append(&argc, &argv, arg))
           return NULL;
       }
     }
@@ -203,7 +203,7 @@ static char **service_argv_split_inter(const char *src_string, int delimiter,
     /* tail argument, add straight from the original string */
 
     else if ('\0' == *p) {
-      if (OCOMS_SUCCESS != service_argv_append(&argc, &argv, src_string))
+      if (OCOMS_SUCCESS != ocoms_argv_append(&argc, &argv, src_string))
 	return NULL;
       src_string = p;
       continue;
@@ -219,7 +219,7 @@ static char **service_argv_split_inter(const char *src_string, int delimiter,
       strncpy(argtemp, src_string, arglen);
       argtemp[arglen] = '\0';
 
-      if (OCOMS_SUCCESS != service_argv_append(&argc, &argv, argtemp)) {
+      if (OCOMS_SUCCESS != ocoms_argv_append(&argc, &argv, argtemp)) {
 	free(argtemp);
 	return NULL;
       }
@@ -233,7 +233,7 @@ static char **service_argv_split_inter(const char *src_string, int delimiter,
       strncpy(arg, src_string, arglen);
       arg[arglen] = '\0';
 
-      if (OCOMS_SUCCESS != service_argv_append(&argc, &argv, arg))
+      if (OCOMS_SUCCESS != ocoms_argv_append(&argc, &argv, arg))
 	return NULL;
     }
 
@@ -245,20 +245,20 @@ static char **service_argv_split_inter(const char *src_string, int delimiter,
   return argv;
 }
 
-char **service_argv_split(const char *src_string, int delimiter)
+char **ocoms_argv_split(const char *src_string, int delimiter)
 {
-    return service_argv_split_inter(src_string, delimiter, 0);
+    return ocoms_argv_split_inter(src_string, delimiter, 0);
 }
 
-char **service_argv_split_with_empty(const char *src_string, int delimiter)
+char **ocoms_argv_split_with_empty(const char *src_string, int delimiter)
 {
-    return service_argv_split_inter(src_string, delimiter, 1);
+    return ocoms_argv_split_inter(src_string, delimiter, 1);
 }
 
 /*
  * Return the length of a NULL-terminated argv array.
  */
-int service_argv_count(char **argv)
+int ocoms_argv_count(char **argv)
 {
   char **p;
   int i;
@@ -277,7 +277,7 @@ int service_argv_count(char **argv)
  * Join all the elements of an argv array into a single
  * newly-allocated string.
  */
-char *service_argv_join(char **argv, int delimiter)
+char *ocoms_argv_join(char **argv, int delimiter)
 {
   char **p;
   char *pp;
@@ -333,7 +333,7 @@ char *service_argv_join(char **argv, int delimiter)
  * Join all the elements of an argv array from within a
  * specified range into a single newly-allocated string.
  */
-char *service_argv_join_range(char **argv, size_t start, size_t end, int delimiter)
+char *ocoms_argv_join_range(char **argv, size_t start, size_t end, int delimiter)
 {
     char **p;
     char *pp;
@@ -343,7 +343,7 @@ char *service_argv_join_range(char **argv, size_t start, size_t end, int delimit
     
     /* Bozo case */
     
-    if (NULL == argv || NULL == argv[0] || (int)start > service_argv_count(argv)) {
+    if (NULL == argv || NULL == argv[0] || (int)start > ocoms_argv_count(argv)) {
         return strdup("");
     }
     
@@ -388,7 +388,7 @@ char *service_argv_join_range(char **argv, size_t start, size_t end, int delimit
 /*
  * Return the number of bytes consumed by an argv array.
  */
-size_t service_argv_len(char **argv)
+size_t ocoms_argv_len(char **argv)
 {
   char **p;
   size_t length;
@@ -409,7 +409,7 @@ size_t service_argv_len(char **argv)
 /*
  * Copy a NULL-terminated argv array.
  */
-char **service_argv_copy(char **argv)
+char **ocoms_argv_copy(char **argv)
 {
   char **dupv = NULL;
   int dupc = 0;
@@ -423,8 +423,8 @@ char **service_argv_copy(char **argv)
   dupv[0] = NULL;
 
   while (NULL != *argv) {
-    if (OCOMS_SUCCESS != service_argv_append(&dupc, &dupv, *argv)) {
-      service_argv_free(dupv);
+    if (OCOMS_SUCCESS != ocoms_argv_append(&dupc, &dupv, *argv)) {
+      ocoms_argv_free(dupv);
       return NULL;
     }
 
@@ -437,7 +437,7 @@ char **service_argv_copy(char **argv)
 }
 
 
-int service_argv_delete(int *argc, char ***argv, int start, int num_to_delete)
+int ocoms_argv_delete(int *argc, char ***argv, int start, int num_to_delete)
 {
     int i;
     int count;
@@ -448,7 +448,7 @@ int service_argv_delete(int *argc, char ***argv, int start, int num_to_delete)
     if (NULL == argv || NULL == *argv || 0 == num_to_delete) {
         return OCOMS_SUCCESS;
     }
-    count = service_argv_count(*argv);
+    count = ocoms_argv_count(*argv);
     if (start > count) {
         return OCOMS_SUCCESS;
     } else if (start < 0 || num_to_delete < 0) {
@@ -490,7 +490,7 @@ int service_argv_delete(int *argc, char ***argv, int start, int num_to_delete)
 }
 
 
-int service_argv_insert(char ***target, int start, char **source)
+int ocoms_argv_insert(char ***target, int start, char **source)
 {
     int i, source_count, target_count;
     int suffix_count;
@@ -505,11 +505,11 @@ int service_argv_insert(char ***target, int start, char **source)
 
     /* Easy case: appending to the end */
 
-    target_count = service_argv_count(*target);
-    source_count = service_argv_count(source);
+    target_count = ocoms_argv_count(*target);
+    source_count = ocoms_argv_count(source);
     if (start > target_count) {
         for (i = 0; i < source_count; ++i) {
-            service_argv_append(&target_count, target, source[i]);
+            ocoms_argv_append(&target_count, target, source[i]);
         }
     }
 

@@ -18,8 +18,8 @@
  * $HEADER$
  */
 
-#ifndef SERVICE_THREAD_H
-#define SERVICE_THREAD_H 1
+#ifndef OCOMS_THREAD_H
+#define OCOMS_THREAD_H 1
 
 #include "ocoms/platform/ocoms_config.h"
 
@@ -29,7 +29,7 @@
 #include <thread.h>
 #endif
 
-#include "ocoms/util/service_object.h"
+#include "ocoms/util/ocoms_object.h"
 #if OCOMS_ENABLE_DEBUG
 #include "ocoms/util/output.h"
 #endif
@@ -39,13 +39,13 @@
 
 BEGIN_C_DECLS
 
-typedef void *(*service_thread_fn_t) (service_object_t *);
+typedef void *(*ocoms_thread_fn_t) (ocoms_object_t *);
 
-#define SERVICE_THREAD_CANCELLED   ((void*)1);
+#define OCOMS_THREAD_CANCELLED   ((void*)1);
 
-struct service_thread_t {
-    service_object_t super;
-    service_thread_fn_t t_run;
+struct ocoms_thread_t {
+    ocoms_object_t super;
+    ocoms_thread_fn_t t_run;
     void* t_arg;
 #ifdef __WINDOWS__
     HANDLE t_handle;
@@ -56,28 +56,28 @@ struct service_thread_t {
 #endif
 };
 
-typedef struct service_thread_t service_thread_t;
+typedef struct ocoms_thread_t ocoms_thread_t;
 
 #if OCOMS_ENABLE_DEBUG
-OCOMS_DECLSPEC extern bool service_debug_threads;
+OCOMS_DECLSPEC extern bool ocoms_debug_threads;
 #endif
 
 
-OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_thread_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_thread_t);
 
 #if OCOMS_ENABLE_DEBUG
 #define OCOMS_ACQUIRE_THREAD(lck, cnd, act)               \
     do {                                                 \
-        SERVICE_THREAD_LOCK((lck));                         \
-        if (service_debug_threads) {                        \
-            service_output(0, "Waiting for thread %s:%d",   \
+        OCOMS_THREAD_LOCK((lck));                         \
+        if (ocoms_debug_threads) {                        \
+            ocoms_output(0, "Waiting for thread %s:%d",   \
                         __FILE__, __LINE__);             \
         }                                                \
         while (*(act)) {                                 \
-            service_condition_wait((cnd), (lck));           \
+            ocoms_condition_wait((cnd), (lck));           \
         }                                                \
-        if (service_debug_threads) {                        \
-            service_output(0, "Thread obtained %s:%d",      \
+        if (ocoms_debug_threads) {                        \
+            ocoms_output(0, "Thread obtained %s:%d",      \
                         __FILE__, __LINE__);             \
         }                                                \
         *(act) = true;                                   \
@@ -85,9 +85,9 @@ OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_thread_t);
 #else
 #define OCOMS_ACQUIRE_THREAD(lck, cnd, act)               \
     do {                                                 \
-        SERVICE_THREAD_LOCK((lck));                         \
+        OCOMS_THREAD_LOCK((lck));                         \
         while (*(act)) {                                 \
-            service_condition_wait((cnd), (lck));           \
+            ocoms_condition_wait((cnd), (lck));           \
         }                                                \
         *(act) = true;                                   \
     } while(0);
@@ -97,20 +97,20 @@ OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_thread_t);
 #if OCOMS_ENABLE_DEBUG
 #define OCOMS_RELEASE_THREAD(lck, cnd, act)              \
     do {                                                \
-        if (service_debug_threads) {                       \
-            service_output(0, "Releasing thread %s:%d",    \
+        if (ocoms_debug_threads) {                       \
+            ocoms_output(0, "Releasing thread %s:%d",    \
                         __FILE__, __LINE__);            \
         }                                               \
         *(act) = false;                                 \
-        service_condition_broadcast((cnd));                \
-        SERVICE_THREAD_UNLOCK((lck));                      \
+        ocoms_condition_broadcast((cnd));                \
+        OCOMS_THREAD_UNLOCK((lck));                      \
     } while(0);
 #else
 #define OCOMS_RELEASE_THREAD(lck, cnd, act)              \
     do {                                                \
         *(act) = false;                                 \
-        service_condition_broadcast((cnd));                \
-        SERVICE_THREAD_UNLOCK((lck));                      \
+        ocoms_condition_broadcast((cnd));                \
+        OCOMS_THREAD_UNLOCK((lck));                      \
     } while(0);
 #endif
 
@@ -118,16 +118,16 @@ OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_thread_t);
 #define OCOMS_WAKEUP_THREAD(cnd, act)        \
     do {                                    \
         *(act) = false;                     \
-        service_condition_broadcast((cnd));    \
+        ocoms_condition_broadcast((cnd));    \
     } while(0);
 
 
-OCOMS_DECLSPEC int  service_thread_start(service_thread_t *);
-OCOMS_DECLSPEC int  service_thread_join(service_thread_t *, void **thread_return);
-OCOMS_DECLSPEC bool service_thread_self_compare(service_thread_t*);
-OCOMS_DECLSPEC service_thread_t *service_thread_get_self(void);
-OCOMS_DECLSPEC void service_thread_kill(service_thread_t *, int sig);
+OCOMS_DECLSPEC int  ocoms_thread_start(ocoms_thread_t *);
+OCOMS_DECLSPEC int  ocoms_thread_join(ocoms_thread_t *, void **thread_return);
+OCOMS_DECLSPEC bool ocoms_thread_self_compare(ocoms_thread_t*);
+OCOMS_DECLSPEC ocoms_thread_t *ocoms_thread_get_self(void);
+OCOMS_DECLSPEC void ocoms_thread_kill(ocoms_thread_t *, int sig);
 
 END_C_DECLS
 
-#endif /* SERVICE_THREAD_H */
+#endif /* OCOMS_THREAD_H */

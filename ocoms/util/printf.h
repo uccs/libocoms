@@ -51,7 +51,7 @@ BEGIN_C_DECLS
  *
  * THIS IS A PORTABILITY FEATURE: USE snprintf() in CODE.
  */
-OCOMS_DECLSPEC int  service_snprintf(char *str, size_t size, const char *fmt, ...) __service_attribute_format__(__printf__, 3, 4);
+OCOMS_DECLSPEC int  ocoms_snprintf(char *str, size_t size, const char *fmt, ...) __ocoms_attribute_format__(__printf__, 3, 4);
 
 
 /**
@@ -76,7 +76,7 @@ OCOMS_DECLSPEC int  service_snprintf(char *str, size_t size, const char *fmt, ..
  *
  * THIS IS A PORTABILITY FEATURE: USE vsnprintf() in CODE.
  */
-OCOMS_DECLSPEC int  service_vsnprintf(char *str, size_t size, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 3, 0);
+OCOMS_DECLSPEC int  ocoms_vsnprintf(char *str, size_t size, const char *fmt, va_list ap) __ocoms_attribute_format__(__printf__, 3, 0);
 
 /**
  * Allocates and writes to a string under the control of a format
@@ -97,7 +97,7 @@ OCOMS_DECLSPEC int  service_vsnprintf(char *str, size_t size, const char *fmt, v
  *
  * THIS IS A PORTABILITY FEATURE: USE asprintf() in CODE.
  */
-OCOMS_DECLSPEC int  service_asprintf(char **ptr, const char *fmt, ...) __service_attribute_format__(__printf__, 2, 3);
+OCOMS_DECLSPEC int  ocoms_asprintf(char **ptr, const char *fmt, ...) __ocoms_attribute_format__(__printf__, 2, 3);
 
 
 /**
@@ -121,7 +121,7 @@ OCOMS_DECLSPEC int  service_asprintf(char **ptr, const char *fmt, ...) __service
  *
  * THIS IS A PORTABILITY FEATURE: USE vasprintf() in CODE.
  */
-OCOMS_DECLSPEC int  service_vasprintf(char **ptr, const char *fmt, va_list ap) __service_attribute_format__(__printf__, 2, 0);
+OCOMS_DECLSPEC int  ocoms_vasprintf(char **ptr, const char *fmt, va_list ap) __ocoms_attribute_format__(__printf__, 2, 0);
 
 
 END_C_DECLS

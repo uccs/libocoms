@@ -69,15 +69,15 @@
 #include <ifaddrs.h>
 #endif
 
-#define DISABLE_SERVICE_IF_UTIL 1
+#define DISABLE_OCOMS_IF_UTIL 1
 
-#if defined(DISABLE_SERVICE_IF_UTIL) && !DISABLE_SERVICE_IF_UTIL
+#if defined(DISABLE_OCOMS_IF_UTIL) && !DISABLE_OCOMS_IF_UTIL
 
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/util/if.h"
 #include "ocoms/util/output.h"
 #include "ocoms/util/argv.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 
 #ifdef HAVE_STRUCT_SOCKADDR_IN
@@ -91,7 +91,7 @@
  *  as a dotted decimal formatted string.
  */
 
-int service_ifnametoaddr(const char* if_name, struct sockaddr* addr, int length)
+int ocoms_ifnametoaddr(const char* if_name, struct sockaddr* addr, int length)
 {
     ocoms_sysif_t* intf;
 
@@ -99,9 +99,9 @@ int service_ifnametoaddr(const char* if_name, struct sockaddr* addr, int length)
         return OCOMS_ERROR;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (strcmp(intf->if_name, if_name) == 0) {
             memcpy(addr, &intf->if_addr, length);
             return OCOMS_SUCCESS;
@@ -113,10 +113,10 @@ int service_ifnametoaddr(const char* if_name, struct sockaddr* addr, int length)
 
 /*
  *  Look for interface by name and returns its 
- *  corresponding service_list index.
+ *  corresponding ocoms_list index.
  */
 
-int service_ifnametoindex(const char* if_name)
+int ocoms_ifnametoindex(const char* if_name)
 {
     ocoms_sysif_t* intf;
 
@@ -124,9 +124,9 @@ int service_ifnametoindex(const char* if_name)
         return -1;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (strcmp(intf->if_name, if_name) == 0) {
             return intf->if_index;
         }
@@ -140,7 +140,7 @@ int service_ifnametoindex(const char* if_name)
  *  corresponding kernel index.
  */
 
-int16_t service_ifnametokindex(const char* if_name)
+int16_t ocoms_ifnametokindex(const char* if_name)
 {
     ocoms_sysif_t* intf;
 
@@ -148,9 +148,9 @@ int16_t service_ifnametokindex(const char* if_name)
         return -1;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (strcmp(intf->if_name, if_name) == 0) {
             return intf->if_kernel_index;
         }
@@ -160,11 +160,11 @@ int16_t service_ifnametokindex(const char* if_name)
 
 
 /*
- *  Look for interface by service_list index and returns its 
+ *  Look for interface by ocoms_list index and returns its 
  *  corresponding kernel index.
  */
 
-int service_ifindextokindex(int if_index)
+int ocoms_ifindextokindex(int if_index)
 {
     ocoms_sysif_t* intf;
 
@@ -172,9 +172,9 @@ int service_ifindextokindex(int if_index)
         return -1;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (if_index == intf->if_index) {
             return intf->if_kernel_index;
         }
@@ -188,7 +188,7 @@ int service_ifindextokindex(int if_index)
  *  or hostname) and lookup corresponding interface.
  */
 
-int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
+int ocoms_ifaddrtoname(const char* if_addr, char* if_name, int length)
 {
     ocoms_sysif_t* intf;
 #if OCOMS_WANT_IPV6
@@ -229,9 +229,9 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
     }
 
     for (r = res; r != NULL; r = r->ai_next) {
-        for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-            intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-            intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+        for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+            intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+            intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
             
             if (AF_INET == r->ai_family) {
                 struct sockaddr_in ipv4;
@@ -267,9 +267,9 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
         memcpy(&inaddr, h->h_addr, sizeof(inaddr));
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (((struct sockaddr_in*) &intf->if_addr)->sin_addr.s_addr == inaddr) {
             strncpy(if_name, intf->if_name, length);
             return OCOMS_SUCCESS;
@@ -283,22 +283,22 @@ int service_ifaddrtoname(const char* if_addr, char* if_name, int length)
  *  Return the number of discovered interface.
  */
 
-int service_ifcount(void)
+int ocoms_ifcount(void)
 {
     if (OCOMS_SUCCESS != ocoms_sysif_base_open()) {
         return 0;
     }
 
-    return service_list_get_size(&ocoms_sysif_list);
+    return ocoms_list_get_size(&ocoms_sysif_list);
 }
 
 
 /*
- *  Return the service_list interface index for the first
+ *  Return the ocoms_list interface index for the first
  *  interface in our list.
  */
 
-int service_ifbegin(void)
+int ocoms_ifbegin(void)
 {
     ocoms_sysif_t *intf;
 
@@ -306,7 +306,7 @@ int service_ifbegin(void)
         return -1;
     }
 
-    intf = (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
+    intf = (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
     if (NULL != intf)
         return intf->if_index;
     return (-1);
@@ -319,7 +319,7 @@ int service_ifbegin(void)
  *  (if it exists).
  */
 
-int service_ifnext(int if_index)
+int ocoms_ifnext(int if_index)
 {
     ocoms_sysif_t *intf;
 
@@ -327,13 +327,13 @@ int service_ifnext(int if_index)
         return -1;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             do {
-                ocoms_sysif_t* if_next = (ocoms_sysif_t*)service_list_get_next(intf);
-                ocoms_sysif_t* if_end =  (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
+                ocoms_sysif_t* if_next = (ocoms_sysif_t*)ocoms_list_get_next(intf);
+                ocoms_sysif_t* if_end =  (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
                 if (if_next == if_end) {
                     return -1;
                 }
@@ -347,11 +347,11 @@ int service_ifnext(int if_index)
 
 
 /* 
- *  Lookup the interface by service_list index and return the 
+ *  Lookup the interface by ocoms_list index and return the 
  *  primary address assigned to the interface.
  */
 
-int service_ifindextoaddr(int if_index, struct sockaddr* if_addr, unsigned int length)
+int ocoms_ifindextoaddr(int if_index, struct sockaddr* if_addr, unsigned int length)
 {
     ocoms_sysif_t* intf;
 
@@ -359,9 +359,9 @@ int service_ifindextoaddr(int if_index, struct sockaddr* if_addr, unsigned int l
         return OCOMS_ERROR;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             memcpy(if_addr, &intf->if_addr, MIN(length, sizeof (intf->if_addr)));
             return OCOMS_SUCCESS;
@@ -372,11 +372,11 @@ int service_ifindextoaddr(int if_index, struct sockaddr* if_addr, unsigned int l
 
 
 /* 
- *  Lookup the interface by service_list index and return the 
+ *  Lookup the interface by ocoms_list index and return the 
  *  network mask assigned to the interface.
  */
 
-int service_ifindextomask(int if_index, uint32_t* if_mask, int length)
+int ocoms_ifindextomask(int if_index, uint32_t* if_mask, int length)
 {
     ocoms_sysif_t* intf;
 
@@ -384,9 +384,9 @@ int service_ifindextomask(int if_index, uint32_t* if_mask, int length)
         return OCOMS_ERROR;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             memcpy(if_mask, &intf->if_mask, length);
             return OCOMS_SUCCESS;
@@ -396,13 +396,13 @@ int service_ifindextomask(int if_index, uint32_t* if_mask, int length)
 }
 
 /* 
- *  Lookup the interface by service_list index and return the 
+ *  Lookup the interface by ocoms_list index and return the 
  *  flags assigned to the interface.
  *
  *  Bug: Make return type portable (compatible with Windows)
  */
 
-int service_ifindextoflags(int if_index, uint32_t* if_flags)
+int ocoms_ifindextoflags(int if_index, uint32_t* if_flags)
 {
     ocoms_sysif_t* intf;
 
@@ -410,9 +410,9 @@ int service_ifindextoflags(int if_index, uint32_t* if_flags)
         return OCOMS_ERROR;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             memcpy(if_flags, &intf->if_flags, sizeof(uint32_t));
             return OCOMS_SUCCESS;
@@ -424,11 +424,11 @@ int service_ifindextoflags(int if_index, uint32_t* if_flags)
 
 
 /* 
- *  Lookup the interface by service_list index and return
+ *  Lookup the interface by ocoms_list index and return
  *  the associated name.
  */
 
-int service_ifindextoname(int if_index, char* if_name, int length)
+int ocoms_ifindextoname(int if_index, char* if_name, int length)
 {
     ocoms_sysif_t *intf;
 
@@ -436,9 +436,9 @@ int service_ifindextoname(int if_index, char* if_name, int length)
         return OCOMS_ERROR;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             strncpy(if_name, intf->if_name, length);
             return OCOMS_SUCCESS;
@@ -453,7 +453,7 @@ int service_ifindextoname(int if_index, char* if_name, int length)
  *  the associated name.
  */
 
-int service_ifkindextoname(int if_kindex, char* if_name, int length)
+int ocoms_ifkindextoname(int if_kindex, char* if_name, int length)
 {
     ocoms_sysif_t *intf;
 
@@ -461,9 +461,9 @@ int service_ifkindextoname(int if_kindex, char* if_name, int length)
         return OCOMS_ERROR;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (intf->if_kernel_index == if_kindex) {
             strncpy(if_name, intf->if_name, length);
             return OCOMS_SUCCESS;
@@ -475,7 +475,7 @@ int service_ifkindextoname(int if_kindex, char* if_name, int length)
 
 #define ADDRLEN 100
 bool
-service_ifislocal(const char *hostname)
+ocoms_ifislocal(const char *hostname)
 {
     int ret;
 #if OCOMS_WANT_IPV6
@@ -485,7 +485,7 @@ service_ifislocal(const char *hostname)
     char addrname[ADDRLEN + 1];
 #endif
 
-    ret = service_ifaddrtoname(hostname, addrname, ADDRLEN);
+    ret = ocoms_ifaddrtoname(hostname, addrname, ADDRLEN);
 
     return (OCOMS_SUCCESS == ret) ? true : false;
 }
@@ -497,18 +497,18 @@ static uint32_t parse_dots(char *addr)
     uint32_t net;
     int i;
 
-    tuple = service_argv_split(addr, '.');
+    tuple = ocoms_argv_split(addr, '.');
     /* now assemble the address */
     for (i=0; NULL != tuple[i]; i++) {
         n[i] = strtoul(tuple[i], NULL, 10);
     }
-    net = SERVICE_IF_ASSEMBLE_NETWORK(n[0], n[1], n[2], n[3]);
-    service_argv_free(tuple);
+    net = OCOMS_IF_ASSEMBLE_NETWORK(n[0], n[1], n[2], n[3]);
+    ocoms_argv_free(tuple);
     return net;
 }
 
 int
-service_iftupletoaddr(char *inaddr, uint32_t *net, uint32_t *mask)
+ocoms_iftupletoaddr(char *inaddr, uint32_t *net, uint32_t *mask)
 {
     char *addr;
     char **tuple;
@@ -543,15 +543,15 @@ service_iftupletoaddr(char *inaddr, uint32_t *net, uint32_t *mask)
                 } else if (8 == pval) {
                     *mask = 0xFF000000;
                 } else {
-                    service_output(0, "service_iftupletoaddr: unknown mask");
+                    ocoms_output(0, "ocoms_iftupletoaddr: unknown mask");
                     free(addr);
                     return OCOMS_ERROR;
                 }
             }
         } else {
             /* use the number of dots to determine it */
-            tuple = service_argv_split(addr, '.');
-            pval = service_argv_count(tuple);
+            tuple = ocoms_argv_split(addr, '.');
+            pval = ocoms_argv_count(tuple);
             /* if we have three dots, then we have four
              * fields since it is a full address, so the
              * default netmask is fine
@@ -564,12 +564,12 @@ service_iftupletoaddr(char *inaddr, uint32_t *net, uint32_t *mask)
                 } else if (1 == pval) {  /* no dots */
                     *mask = 0xFF000000;
                 } else {
-                    service_output(0, "service_iftupletoaddr: unknown mask");
+                    ocoms_output(0, "ocoms_iftupletoaddr: unknown mask");
                     free(addr);
                     return OCOMS_ERROR;
                 }
             }
-            service_argv_free(tuple);
+            ocoms_argv_free(tuple);
         }
         free(addr);
     }
@@ -597,7 +597,7 @@ service_iftupletoaddr(char *inaddr, uint32_t *net, uint32_t *mask)
  *  Determine if the specified interface is loopback
  */
 
-bool service_ifisloopback(int if_index)
+bool ocoms_ifisloopback(int if_index)
 {
     ocoms_sysif_t* intf;
     
@@ -605,9 +605,9 @@ bool service_ifisloopback(int if_index)
         return OCOMS_ERROR;
     }
 
-    for (intf =  (ocoms_sysif_t*)service_list_get_first(&ocoms_sysif_list);
-        intf != (ocoms_sysif_t*)service_list_get_end(&ocoms_sysif_list);
-        intf =  (ocoms_sysif_t*)service_list_get_next(intf)) {
+    for (intf =  (ocoms_sysif_t*)ocoms_list_get_first(&ocoms_sysif_list);
+        intf != (ocoms_sysif_t*)ocoms_list_get_end(&ocoms_sysif_list);
+        intf =  (ocoms_sysif_t*)ocoms_list_get_next(intf)) {
         if (intf->if_index == if_index) {
             if ((intf->if_flags & IFF_LOOPBACK) != 0) {
                 return true;
@@ -624,91 +624,91 @@ bool service_ifisloopback(int if_index)
    ethernet devices.  Just make everything a no-op error call */
 
 int
-service_ifnametoaddr(const char* if_name, 
+ocoms_ifnametoaddr(const char* if_name, 
                   struct sockaddr* if_addr, int size)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifaddrtoname(const char* if_addr, 
+ocoms_ifaddrtoname(const char* if_addr, 
                   char* if_name, int size)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifnametoindex(const char* if_name)
+ocoms_ifnametoindex(const char* if_name)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int16_t
-service_ifnametokindex(const char* if_name)
+ocoms_ifnametokindex(const char* if_name)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifindextokindex(int if_index)
+ocoms_ifindextokindex(int if_index)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifcount(void)
+ocoms_ifcount(void)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifbegin(void)
+ocoms_ifbegin(void)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifnext(int if_index)
+ocoms_ifnext(int if_index)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifindextoname(int if_index, char* if_name, int length)
+ocoms_ifindextoname(int if_index, char* if_name, int length)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifkindextoname(int kif_index, char* if_name, int length)
+ocoms_ifkindextoname(int kif_index, char* if_name, int length)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifindextoaddr(int if_index, struct sockaddr* if_addr, unsigned int length)
+ocoms_ifindextoaddr(int if_index, struct sockaddr* if_addr, unsigned int length)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 int
-service_ifindextomask(int if_index, uint32_t* if_addr, int length)
+ocoms_ifindextomask(int if_index, uint32_t* if_addr, int length)
 {
     return OCOMS_ERR_NOT_SUPPORTED;
 }
 
 bool
-service_ifislocal(const char *hostname)
+ocoms_ifislocal(const char *hostname)
 {
     return false;
 }
 
 int
-service_iftupletoaddr(char *inaddr, uint32_t *net, uint32_t *mask)
+ocoms_iftupletoaddr(char *inaddr, uint32_t *net, uint32_t *mask)
 {
     return 0;
 }
 
 #endif /* HAVE_STRUCT_SOCKADDR_IN */
-#endif /* DISABLE_SERVICE_IF_UTIL  */
+#endif /* DISABLE_OCOMS_IF_UTIL  */
 

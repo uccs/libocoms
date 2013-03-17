@@ -17,13 +17,13 @@
 #include <errno.h>
 
 #include "ocoms/util/fd.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 
 /*
  * Simple loop over reading from a fd
  */
-int service_fd_read(int fd, int len, void *buffer)
+int ocoms_fd_read(int fd, int len, void *buffer)
 {
     int rc;
     char *b = buffer;
@@ -48,7 +48,7 @@ int service_fd_read(int fd, int len, void *buffer)
 /*
  * Simple loop over writing to an fd
  */
-int service_fd_write(int fd, int len, const void *buffer)
+int ocoms_fd_write(int fd, int len, const void *buffer)
 {
     int rc;
     const char *b = buffer;

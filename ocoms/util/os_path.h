@@ -19,7 +19,7 @@
 /** @file:
  * Creates an operating system-acceptable path name.
  *
- * The service_os_path() function takes a variable number of string arguments and
+ * The ocoms_os_path() function takes a variable number of string arguments and
  * concatenates them into a path name using the path separator character appropriate
  * to the local operating system. NOTE: the string returned by this function has been
  * malloc'd - thus, the user is responsible for free'ing the memory used by
@@ -38,8 +38,8 @@
  *
  */
 
-#ifndef SERVICE_OS_PATH_H
-#define SERVICE_OS_PATH_H
+#ifndef OCOMS_OS_PATH_H
+#define OCOMS_OS_PATH_H
 
 #include "ocoms/platform/ocoms_config.h"
 
@@ -63,7 +63,7 @@ BEGIN_C_DECLS
  * appropriate to the local operating system. The path_name string has been malloc'd
  * and therefore the user is responsible for free'ing the field.
 */
-OCOMS_DECLSPEC char *service_os_path(bool relative, ...) __service_attribute_malloc__ __service_attribute_sentinel__ __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC char *ocoms_os_path(bool relative, ...) __ocoms_attribute_malloc__ __ocoms_attribute_sentinel__ __ocoms_attribute_warn_unused_result__;
 
 /**
  * Convert the path to be OS friendly. On UNIX this function will
@@ -72,7 +72,7 @@ OCOMS_DECLSPEC char *service_os_path(bool relative, ...) __service_attribute_mal
  * path (if the configure was runned under Cygwin).
  */
 #if defined(__WINDOWS__)
-static inline char* service_make_filename_os_friendly( char* filename )
+static inline char* ocoms_make_filename_os_friendly( char* filename )
 {
     char* p = filename;
     size_t length;
@@ -94,9 +94,9 @@ static inline char* service_make_filename_os_friendly( char* filename )
     return filename;
 }
 #else
-#define service_make_filename_os_friendly(PATH)   (PATH)
+#define ocoms_make_filename_os_friendly(PATH)   (PATH)
 #endif  /* defined(__WINDOWS__) */
 
 END_C_DECLS
 
-#endif /* SERVICE_OS_PATH_H */
+#endif /* OCOMS_OS_PATH_H */

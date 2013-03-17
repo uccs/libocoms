@@ -24,9 +24,9 @@
  * The OPAL output stream facility is used to send output from the OPAL
  * libraries to output devices.  It is meant to fully replace all
  * forms of printf() (and friends).  Output streams are opened via the
- * service_output_open() function call, and then sent output via
- * service_output_verbose(), OCOMS_OUTPUT(), and service_output().  Streams are
- * closed with service_output_close().
+ * ocoms_output_open() function call, and then sent output via
+ * ocoms_output_verbose(), OCOMS_OUTPUT(), and ocoms_output().  Streams are
+ * closed with ocoms_output_close().
  *
  * Streams can multiplex output to several kinds of outputs (one of
  * each):
@@ -36,23 +36,23 @@
  * - standard error
  * - file
  *
- * Which outputs to use are specified during service_output_open().
+ * Which outputs to use are specified during ocoms_output_open().
  *
  * WARNING: When using "file" as an output destination, be aware that
  * the file may not exist until the session directory for the process
  * exists.  This is at least part of the way through MPI_INIT (for
  * example).  Most MCA components and internals of Open MPI won't be
  * affected by this, but some RTE / startup aspects of Open MPI will
- * not be able to write to a file for output.  See service_output() for
+ * not be able to write to a file for output.  See ocoms_output() for
  * details on what happens in these cases.
  *
- * service_output_open() returns an integer handle that is used in
- * successive calls to OCOMS_OUTPUT() and service_output() to send output to
+ * ocoms_output_open() returns an integer handle that is used in
+ * successive calls to OCOMS_OUTPUT() and ocoms_output() to send output to
  * the stream.
  *
  * The default "verbose" stream is opened after invoking
- * service_output_init() (and closed after invoking
- * service_output_finalize()).  This stream outputs to stderr only, and
+ * ocoms_output_init() (and closed after invoking
+ * ocoms_output_finalize()).  This stream outputs to stderr only, and
  * has a stream handle ID of 0.
  *
  * It is erroneous to have one thread close a stream and have another
@@ -69,35 +69,35 @@
 #include <stdarg.h>
 #endif
 
-#include "ocoms/util/service_object.h"
+#include "ocoms/util/ocoms_object.h"
 
 BEGIN_C_DECLS
 
 /**
- * \class service_output_stream_t 
+ * \class ocoms_output_stream_t 
  *
  * Structure used to request the opening of a OPAL output stream.  A
- * pointer to this structure is passed to service_output_open() to tell
- * the service_output subsystem where to send output for a given stream.
+ * pointer to this structure is passed to ocoms_output_open() to tell
+ * the ocoms_output subsystem where to send output for a given stream.
  * It is valid to specify multiple destinations of output for a stream
  * -- output streams can be multiplexed to multiple different
- * destinations through the service_output facility.
+ * destinations through the ocoms_output facility.
  *
  * Note that all strings in this struct are cached on the stream by
  * value; there is no need to keep them allocated after the return
- * from service_output_open().
+ * from ocoms_output_open().
  */
-struct service_output_stream_t {
+struct ocoms_output_stream_t {
     /** Class parent */
-    service_object_t super;
+    ocoms_object_t super;
 
     /**
      * Indicate the starting verbosity level of the stream.
      *
      * Verbose levels are a convenience mechanisms, and are only
      * consulted when output is sent to a stream through the
-     * service_output_verbose() function.  Verbose levels are ignored in
-     * OCOMS_OUTPUT() and service_output().
+     * ocoms_output_verbose() function.  Verbose levels are ignored in
+     * OCOMS_OUTPUT() and ocoms_output().
      *
      * Valid verbose levels typically start at 0 (meaning "minimal
      * information").  Higher verbosity levels generally indicate that
@@ -106,7 +106,7 @@ struct service_output_stream_t {
     int lds_verbose_level;
     
     /**
-     * When service_output_stream_t::lds_want_syslog is true, this field is
+     * When ocoms_output_stream_t::lds_want_syslog is true, this field is
      * examined to see what priority output from the stream should be
      * sent to the syslog.
      *
@@ -116,7 +116,7 @@ struct service_output_stream_t {
      */
     int lds_syslog_priority;
     /**
-     * When service_output_stream_t::lds_want_syslog is true, this field is
+     * When ocoms_output_stream_t::lds_want_syslog is true, this field is
      * examined to see what ident value should be passed to openlog(3).
      * 
      * If a NULL value is given, the string "opal" is used.
@@ -133,7 +133,7 @@ struct service_output_stream_t {
      * When this field is non-NULL, it is prefixed to all lines of
      * output on the stream.  When this field is NULL, no prefix is
      * added to each line of output in the stream. The prefix is copied
-     * to an internal structure in the call to service_output_open()!
+     * to an internal structure in the call to ocoms_output_open()!
      */
     char *lds_prefix;
     
@@ -143,7 +143,7 @@ struct service_output_stream_t {
      * When this field is non-NULL, it is appended to all lines of
      * output on the stream.  When this field is NULL, no suffix is
      * added to each line of output in the stream. The suffix is copied
-     * to an internal structure in the call to service_output_open()!
+     * to an internal structure in the call to ocoms_output_open()!
      */
     char *lds_suffix;
 
@@ -196,7 +196,7 @@ struct service_output_stream_t {
      */
     bool lds_want_file;
     /**
-     * When service_output_stream_t::lds_want_file is true, this field
+     * When ocoms_output_stream_t::lds_want_file is true, this field
      * indicates whether to append the file (if it exists) or overwrite
      * it.
      *
@@ -204,16 +204,16 @@ struct service_output_stream_t {
      */
     bool lds_want_file_append;
     /**
-     * When service_output_stream_t::lds_want_file is true, this field
+     * When ocoms_output_stream_t::lds_want_file is true, this field
      * indicates the string suffix to add to the filename.
      *
      * The output file will be in the directory and begin with the
-     * prefix set by service_output_set_output_file_info() (e.g.,
+     * prefix set by ocoms_output_set_output_file_info() (e.g.,
      * "$dir/$prefix$suffix").  If this field is NULL and
      * lds_want_file is true, then the suffix "output.txt" is used.
      *
      * Note that it is possible that the output directory may not
-     * exist when service_output_open() is invoked.  See service_output()
+     * exist when ocoms_output_open() is invoked.  See ocoms_output()
      * for details on what happens in this situation.
      */
     char *lds_file_suffix;
@@ -223,7 +223,7 @@ struct service_output_stream_t {
     /**
      * Convenience typedef
      */    
-    typedef struct service_output_stream_t service_output_stream_t;
+    typedef struct ocoms_output_stream_t ocoms_output_stream_t;
 
     /**
      * Initializes the output stream system and opens a default
@@ -234,13 +234,13 @@ struct service_output_stream_t {
      *
      * This should be the first function invoked in the output
      * subsystem.  After this call, the default "verbose" stream is open
-     * and can be written to via calls to service_output_verbose() and
-     * service_output_error().
+     * and can be written to via calls to ocoms_output_verbose() and
+     * ocoms_output_error().
      *
      * By definition, the default verbose stream has a handle ID of 0,
      * and has a verbose level of 0.
      */
-    OCOMS_DECLSPEC bool service_output_init(void);
+    OCOMS_DECLSPEC bool ocoms_output_init(void);
     
     /**
      * Shut down the output stream system.
@@ -248,18 +248,18 @@ struct service_output_stream_t {
      * Shut down the output stream system, including the default verbose
      * stream.
      */
-    OCOMS_DECLSPEC void service_output_finalize(void);
+    OCOMS_DECLSPEC void ocoms_output_finalize(void);
 
     /**
      * Opens an output stream.
      *
-     * @param lds A pointer to service_output_stream_t describing what the
+     * @param lds A pointer to ocoms_output_stream_t describing what the
      * characteristics of the output stream should be.
      *
      * This function opens an output stream and returns an integer
      * handle.  The caller is responsible for maintaining the handle and
-     * using it in successive calls to OCOMS_OUTPUT(), service_output(),
-     * service_output_switch(), and service_output_close().
+     * using it in successive calls to OCOMS_OUTPUT(), ocoms_output(),
+     * ocoms_output_switch(), and ocoms_output_close().
      *
      * If lds is NULL, the default descriptions will be used, meaning
      * that output will only be sent to stderr.
@@ -268,17 +268,17 @@ struct service_output_stream_t {
      * simultaneously; their execution will be serialized in an
      * unspecified manner.
      *
-     * Be sure to see service_output() for a description of what happens
-     * when open_open() / service_output() is directed to send output to a
+     * Be sure to see ocoms_output() for a description of what happens
+     * when open_open() / ocoms_output() is directed to send output to a
      * file but the process session directory does not yet exist.
      */
-    OCOMS_DECLSPEC int service_output_open(service_output_stream_t *lds);
+    OCOMS_DECLSPEC int ocoms_output_open(ocoms_output_stream_t *lds);
 
     /**
      * Re-opens / redirects an output stream.
      *
      * @param output_id Stream handle to reopen
-     * @param lds A pointer to service_output_stream_t describing what the
+     * @param lds A pointer to ocoms_output_stream_t describing what the
      * characteristics of the reopened output stream should be.
      *
      * This function redirects an existing stream into a new [set of]
@@ -286,7 +286,7 @@ struct service_output_stream_t {
      * passed is invalid, this call is effectively the same as opening a
      * new stream with a specific stream handle.
      */
-    OCOMS_DECLSPEC int service_output_reopen(int output_id, service_output_stream_t *lds);
+    OCOMS_DECLSPEC int ocoms_output_reopen(int output_id, ocoms_output_stream_t *lds);
     
     /**
      * Enables and disables output streams.
@@ -301,11 +301,11 @@ struct service_output_stream_t {
      * The output of a stream can be temporarily disabled by passing an
      * enable value to false, and later resumed by passing an enable
      * value of true.  This does not close the stream -- it simply tells
-     * the service_output subsystem to intercept and discard any output sent
-     * to the stream via OCOMS_OUTPUT() or service_output() until the output
+     * the ocoms_output subsystem to intercept and discard any output sent
+     * to the stream via OCOMS_OUTPUT() or ocoms_output() until the output
      * is re-enabled.
      */
-    OCOMS_DECLSPEC bool service_output_switch(int output_id, bool enable);
+    OCOMS_DECLSPEC bool ocoms_output_switch(int output_id, bool enable);
 
     /**
      * \internal
@@ -316,7 +316,7 @@ struct service_output_stream_t {
      * typically only invoked after a restart (i.e., in a new process)
      * where output streams need to be re-initialized.
      */
-    OCOMS_DECLSPEC void service_output_reopen_all(void);
+    OCOMS_DECLSPEC void ocoms_output_reopen_all(void);
 
     /**
      * Close an output stream.
@@ -328,19 +328,19 @@ struct service_output_stream_t {
      * re-used; it is possible that after a stream is closed, if another
      * stream is opened, it will get the same handle value.
      */
-    OCOMS_DECLSPEC void service_output_close(int output_id);
+    OCOMS_DECLSPEC void ocoms_output_close(int output_id);
 
     /**
      * Main function to send output to a stream.
      *
-     * @param output_id Stream id returned from service_output_open().
+     * @param output_id Stream id returned from ocoms_output_open().
      * @param format printf-style format string.
      * @param varargs printf-style varargs list to fill the string
      * specified by the format parameter.
      *
      * This is the main function to send output to custom streams (note
      * that output to the default "verbose" stream is handled through
-     * service_output_verbose() and service_output_error()).
+     * ocoms_output_verbose() and ocoms_output_error()).
      *
      * It is never necessary to send a trailing "\n" in the strings to
      * this function; some streams requires newlines, others do not --
@@ -350,18 +350,18 @@ struct service_output_stream_t {
      *
      * Note that for output streams that are directed to files, the
      * files are stored under the process' session directory.  If the
-     * session directory does not exist when service_output() is invoked,
+     * session directory does not exist when ocoms_output() is invoked,
      * the output will be discarded!  Once the session directory is
-     * created, service_output() will automatically create the file and
+     * created, ocoms_output() will automatically create the file and
      * writing to it.
      */
-    OCOMS_DECLSPEC void service_output(int output_id, const char *format, ...) __service_attribute_format__(__printf__, 2, 3);
+    OCOMS_DECLSPEC void ocoms_output(int output_id, const char *format, ...) __ocoms_attribute_format__(__printf__, 2, 3);
     
     /**
      * Send output to a stream only if the passed verbosity level is
      * high enough.
      *
-     * @param output_id Stream id returned from service_output_open().
+     * @param output_id Stream id returned from ocoms_output_open().
      * @param level Target verbosity level.
      * @param format printf-style format string.
      * @param varargs printf-style varargs list to fill the string
@@ -380,61 +380,61 @@ struct service_output_stream_t {
      * This function is really a convenience wrapper around checking the
      * current verbosity level set on the stream, and if the passed
      * level is less than or equal to the stream's verbosity level, this
-     * function will effectively invoke service_output to send the output to
+     * function will effectively invoke ocoms_output to send the output to
      * the stream.
      *
-     * @see service_output_set_verbosity()
+     * @see ocoms_output_set_verbosity()
      */
-    OCOMS_DECLSPEC void service_output_verbose(int verbose_level, int output_id, 
-                                           const char *format, ...) __service_attribute_format__(__printf__, 3, 4);
+    OCOMS_DECLSPEC void ocoms_output_verbose(int verbose_level, int output_id, 
+                                           const char *format, ...) __ocoms_attribute_format__(__printf__, 3, 4);
 
    /**
-    * Same as service_output_verbose(), but takes a va_list form of varargs.
+    * Same as ocoms_output_verbose(), but takes a va_list form of varargs.
     */
-    OCOMS_DECLSPEC void service_output_vverbose(int verbose_level, int output_id, 
-                                            const char *format, va_list ap) __service_attribute_format__(__printf__, 3, 0);
+    OCOMS_DECLSPEC void ocoms_output_vverbose(int verbose_level, int output_id, 
+                                            const char *format, va_list ap) __ocoms_attribute_format__(__printf__, 3, 0);
 
     /**    
      * Send output to a string if the verbosity level is high enough.
      *
-     * @param output_id Stream id returned from service_output_open().
+     * @param output_id Stream id returned from ocoms_output_open().
      * @param level Target verbosity level.
      * @param format printf-style format string.
      * @param varargs printf-style varargs list to fill the string
      * specified by the format parameter.
      *
-     * Exactly the same as service_output_verbose(), except the output it
+     * Exactly the same as ocoms_output_verbose(), except the output it
      * sent to a string instead of to the stream.  If the verbose
      * level is not high enough, NULL is returned.  The caller is
      * responsible for free()'ing the returned string.
      */
-    OCOMS_DECLSPEC char *service_output_string(int verbose_level, int output_id, 
-                                           const char *format, ...) __service_attribute_format__(__printf__, 3, 4);
+    OCOMS_DECLSPEC char *ocoms_output_string(int verbose_level, int output_id, 
+                                           const char *format, ...) __ocoms_attribute_format__(__printf__, 3, 4);
 
    /**
-    * Same as service_output_string, but accepts a va_list form of varargs.
+    * Same as ocoms_output_string, but accepts a va_list form of varargs.
     */
-    OCOMS_DECLSPEC char *service_output_vstring(int verbose_level, int output_id, 
-                                            const char *format, va_list ap) __service_attribute_format__(__printf__, 3, 0);
+    OCOMS_DECLSPEC char *ocoms_output_vstring(int verbose_level, int output_id, 
+                                            const char *format, va_list ap) __ocoms_attribute_format__(__printf__, 3, 0);
 
     /**
      * Set the verbosity level for a stream.
      *
-     * @param output_id Stream id returned from service_output_open().
+     * @param output_id Stream id returned from ocoms_output_open().
      * @param level New verbosity level
      *
      * This function sets the verbosity level on a given stream.  It
-     * will be used for all future invocations of service_output_verbose().
+     * will be used for all future invocations of ocoms_output_verbose().
      */
-    OCOMS_DECLSPEC void service_output_set_verbosity(int output_id, int level);
+    OCOMS_DECLSPEC void ocoms_output_set_verbosity(int output_id, int level);
 
     /**
      * Get the verbosity level for a stream
      *
-     * @param output_id Stream id returned from service_output_open()
+     * @param output_id Stream id returned from ocoms_output_open()
      * @returns Verbosity of stream
      */
-    OCOMS_DECLSPEC int service_output_get_verbosity(int output_id);
+    OCOMS_DECLSPEC int ocoms_output_get_verbosity(int output_id);
 
     /**
      * Set characteristics for output files.
@@ -447,7 +447,7 @@ struct service_output_stream_t {
      *
      * This function controls the final filename used for all new
      * output streams that request output files.  Specifically, when
-     * service_output_stream_t::lds_want_file is true, the output
+     * ocoms_output_stream_t::lds_want_file is true, the output
      * filename will be of the form $dir/$prefix$suffix.
      *
      * The default value for the output directory is whatever is
@@ -459,7 +459,7 @@ struct service_output_stream_t {
      * If dir or prefix are NULL, new values are not set.  The strings
      * represented by dir and prefix are copied into internal storage;
      * it is safe to pass string constants or free() these values
-     * after service_output_set_output_file_info() returns.
+     * after ocoms_output_set_output_file_info() returns.
      *
      * If olddir or oldprefix are not NULL, copies of the old
      * directory and prefix (respectively) are returned in these
@@ -471,12 +471,12 @@ struct service_output_stream_t {
      * Note that this function only affects the creation of \em new
      * streams -- streams that have already started writing to output
      * files are not affected (i.e., their output files are not moved
-     * to the new directory).  More specifically, the service_output
+     * to the new directory).  More specifically, the ocoms_output
      * system only opens/creates output files lazily -- so calling
      * this function affects both new streams \em and any stream that
      * was previously opened but had not yet output anything.
      */
-    OCOMS_DECLSPEC void service_output_set_output_file_info(const char *dir,
+    OCOMS_DECLSPEC void ocoms_output_set_output_file_info(const char *dir,
                                                         const char *prefix,
                                                         char **olddir,
                                                         char **oldprefix);
@@ -487,25 +487,25 @@ struct service_output_stream_t {
      * will be "compiled out" when OPAL is configured without
      * --enable-debug.
      *
-     * @see service_output()
+     * @see ocoms_output()
      */
-#define OCOMS_OUTPUT(a) service_output a
+#define OCOMS_OUTPUT(a) ocoms_output a
     
     /** 
      * Macro for use in sending debugging output to the output
      * streams.  Will be "compiled out" when OPAL is configured
      * without --enable-debug.
      *
-     * @see service_output_verbose()
+     * @see ocoms_output_verbose()
      */
-#define OCOMS_OUTPUT_VERBOSE(a) service_output_verbose a
+#define OCOMS_OUTPUT_VERBOSE(a) ocoms_output_verbose a
 #else
     /**
      * Main macro for use in sending debugging output to output streams;
      * will be "compiled out" when OPAL is configured without
      * --enable-debug.
      *
-     * @see service_output()
+     * @see ocoms_output()
      */
 #define OCOMS_OUTPUT(a)
     
@@ -514,7 +514,7 @@ struct service_output_stream_t {
      * streams.  Will be "compiled out" when OPAL is configured
      * without --enable-debug.
      *
-     * @see service_output_verbose()
+     * @see ocoms_output_verbose()
      */
 #define OCOMS_OUTPUT_VERBOSE(a)
 #endif
@@ -527,7 +527,7 @@ struct service_output_stream_t {
  * The intended usage is to invoke the constructor and then enable
  * the output fields that you want.
  */
-OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_output_stream_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_output_stream_t);
 
 END_C_DECLS
 

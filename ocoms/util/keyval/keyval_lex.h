@@ -17,8 +17,8 @@
  * $HEADER$
  */
 
-#ifndef SERVICE_UTIL_KEYVAL_LEX_H_
-#define SERVICE_UTIL_KEYVAL_LEX_H_
+#ifndef OCOMS_UTIL_KEYVAL_LEX_H_
+#define OCOMS_UTIL_KEYVAL_LEX_H_
 
 #include "ocoms/platform/ocoms_config.h"
 
@@ -34,13 +34,13 @@
 
 #include <stdio.h>
 
-int service_util_keyval_yylex(void);
-int service_util_keyval_init_buffer(FILE *file);
+int ocoms_util_keyval_yylex(void);
+int ocoms_util_keyval_init_buffer(FILE *file);
 
-extern FILE *service_util_keyval_yyin;
-extern bool service_util_keyval_parse_done;
-extern char *service_util_keyval_yytext;
-extern int service_util_keyval_yynewlines;
+extern FILE *ocoms_util_keyval_yyin;
+extern bool ocoms_util_keyval_parse_done;
+extern char *ocoms_util_keyval_yytext;
+extern int ocoms_util_keyval_yynewlines;
 
 /*
  * Make lex-generated files not issue compiler warnings
@@ -53,15 +53,15 @@ extern int service_util_keyval_yynewlines;
 #define YY_SKIP_YYWRAP 1
 
 enum {
-    SERVICE_UTIL_KEYVAL_PARSE_DONE,
-    SERVICE_UTIL_KEYVAL_PARSE_ERROR,
+    OCOMS_UTIL_KEYVAL_PARSE_DONE,
+    OCOMS_UTIL_KEYVAL_PARSE_ERROR,
 
-    SERVICE_UTIL_KEYVAL_PARSE_NEWLINE,
-    SERVICE_UTIL_KEYVAL_PARSE_EQUAL,
-    SERVICE_UTIL_KEYVAL_PARSE_SINGLE_WORD,
-    SERVICE_UTIL_KEYVAL_PARSE_VALUE,
+    OCOMS_UTIL_KEYVAL_PARSE_NEWLINE,
+    OCOMS_UTIL_KEYVAL_PARSE_EQUAL,
+    OCOMS_UTIL_KEYVAL_PARSE_SINGLE_WORD,
+    OCOMS_UTIL_KEYVAL_PARSE_VALUE,
 
-    SERVICE_UTIL_KEYVAL_PARSE_MAX
+    OCOMS_UTIL_KEYVAL_PARSE_MAX
 };
 
 #endif

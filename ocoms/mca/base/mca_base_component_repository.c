@@ -38,11 +38,11 @@
   #endif
 #endif
 
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/mca/mca.h"
 #include "ocoms/mca/base/base.h"
 #include "ocoms/mca/base/mca_base_component_repository.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 #if OCOMS_WANT_LIBLTDL
 
@@ -50,28 +50,28 @@
  * Private types
  */
 struct repository_item_t {
-  service_list_item_t super;
+  ocoms_list_item_t super;
 
   char ri_type[MCA_BASE_MAX_TYPE_NAME_LEN + 1];
   lt_dlhandle ri_dlhandle;
   const ocoms_mca_base_component_t *ri_component_struct;
-  service_list_t ri_dependencies;
+  ocoms_list_t ri_dependencies;
 };
 typedef struct repository_item_t repository_item_t;
-static void ri_constructor(service_object_t *obj);
-static void ri_destructor(service_object_t *obj);
-static OBJ_CLASS_INSTANCE(repository_item_t, service_list_item_t, 
+static void ri_constructor(ocoms_object_t *obj);
+static void ri_destructor(ocoms_object_t *obj);
+static OBJ_CLASS_INSTANCE(repository_item_t, ocoms_list_item_t, 
                           ri_constructor, ri_destructor);
 
 struct dependency_item_t {
-  service_list_item_t super;
+  ocoms_list_item_t super;
 
   repository_item_t *di_repository_entry;
 };
 typedef struct dependency_item_t dependency_item_t;
-static void di_constructor(service_object_t *obj);
-static void di_destructor(service_object_t *obj);
-static OBJ_CLASS_INSTANCE(dependency_item_t, service_list_item_t, 
+static void di_constructor(ocoms_object_t *obj);
+static void di_destructor(ocoms_object_t *obj);
+static OBJ_CLASS_INSTANCE(dependency_item_t, ocoms_list_item_t, 
                           di_constructor, di_destructor);
 
 #endif /* OCOMS_WANT_LIBLTDL */
@@ -85,7 +85,7 @@ static bool initialized = false;
 
 #if OCOMS_WANT_LIBLTDL
 
-static service_list_t repository;
+static ocoms_list_t repository;
 
 
 /*
@@ -130,7 +130,7 @@ int ocoms_mca_base_component_repository_init(void)
     }
 #endif
 
-    OBJ_CONSTRUCT(&repository, service_list_t);
+    OBJ_CONSTRUCT(&repository, ocoms_list_t);
 #endif
     initialized = true;
   }
@@ -169,7 +169,7 @@ int ocoms_mca_base_component_repository_retain(char *type,
 
   /* Append the new item to the repository */
 
-  service_list_append(&repository, (service_list_item_t *) ri);
+  ocoms_list_append(&repository, (ocoms_list_item_t *) ri);
 
   /* All done */
 
@@ -254,7 +254,7 @@ void ocoms_mca_base_component_repository_release(const ocoms_mca_base_component_
 void ocoms_mca_base_component_repository_finalize(void)
 {
 #if OCOMS_WANT_LIBLTDL
-  service_list_item_t *item;
+  ocoms_list_item_t *item;
   repository_item_t *ri;
 #endif
 
@@ -275,13 +275,13 @@ void ocoms_mca_base_component_repository_finalize(void)
        technically an error). */
 
     do {
-      for (item = service_list_get_first(&repository);
-           service_list_get_end(&repository) != item; ) {
+      for (item = ocoms_list_get_first(&repository);
+           ocoms_list_get_end(&repository) != item; ) {
         ri = (repository_item_t *) item;
-        item = service_list_get_next(item);
+        item = ocoms_list_get_next(item);
         OBJ_RELEASE(ri);
       }
-    } while (service_list_get_size(&repository) > 0);
+    } while (ocoms_list_get_size(&repository) > 0);
 
 #if OCOMS_HAVE_LTDL_ADVISE
     if (lt_dladvise_destroy(&ocoms_mca_dladvise)) {
@@ -302,12 +302,12 @@ void ocoms_mca_base_component_repository_finalize(void)
 
 static repository_item_t *find_component(const char *type, const char *name)
 {
-  service_list_item_t *item;
+  ocoms_list_item_t *item;
   repository_item_t *ri;
 
-  for (item = service_list_get_first(&repository);
-       service_list_get_end(&repository) != item;
-       item = service_list_get_next(item)) {
+  for (item = ocoms_list_get_first(&repository);
+       ocoms_list_get_end(&repository) != item;
+       item = ocoms_list_get_next(item)) {
     ri = (repository_item_t *) item;
     if (0 == strcmp(ri->ri_type, type) && 
         0 == strcmp(ri->ri_component_struct->mca_component_name, name)) {
@@ -344,7 +344,7 @@ static int link_items(repository_item_t *src, repository_item_t *depend)
 
   /* Add it to the dependency list on the source repository entry */
 
-  service_list_append(&src->ri_dependencies, (service_list_item_t *) di);
+  ocoms_list_append(&src->ri_dependencies, (ocoms_list_item_t *) di);
 
   /* Increment the refcount in the dependency */
 
@@ -359,7 +359,7 @@ static int link_items(repository_item_t *src, repository_item_t *depend)
 /*
  * Basic sentinel values, and construct the inner list
  */
-static void ri_constructor(service_object_t *obj)
+static void ri_constructor(ocoms_object_t *obj)
 {
   repository_item_t *ri = (repository_item_t *) obj;
 
@@ -367,18 +367,18 @@ static void ri_constructor(service_object_t *obj)
   ri->ri_dlhandle = NULL;
   ri->ri_component_struct = NULL;
 
-  OBJ_CONSTRUCT(&ri->ri_dependencies, service_list_t);
+  OBJ_CONSTRUCT(&ri->ri_dependencies, ocoms_list_t);
 }
 
 
 /*
  * Close a component 
  */
-static void ri_destructor(service_object_t *obj)
+static void ri_destructor(ocoms_object_t *obj)
 {
   repository_item_t *ri = (repository_item_t *) obj;
   dependency_item_t *di;
-  service_list_item_t *item;
+  ocoms_list_item_t *item;
 
   /* Close the component (and potentially unload it from memory */
   lt_dlclose(ri->ri_dlhandle);
@@ -391,21 +391,21 @@ static void ri_destructor(service_object_t *obj)
   /* Now go release/close (at a minimum: decrement the refcount) any
      dependencies of this component */
 
-  for (item = service_list_remove_first(&ri->ri_dependencies);
+  for (item = ocoms_list_remove_first(&ri->ri_dependencies);
        NULL != item; 
-       item = service_list_remove_first(&ri->ri_dependencies)) {
+       item = ocoms_list_remove_first(&ri->ri_dependencies)) {
     di = (dependency_item_t *) item;
     OBJ_RELEASE(di);
   }
   OBJ_DESTRUCT(&ri->ri_dependencies);
-  service_list_remove_item(&repository, (service_list_item_t *) ri);
+  ocoms_list_remove_item(&repository, (ocoms_list_item_t *) ri);
 }
 
 
 /*
  * Basic sentinel values
  */
-static void di_constructor(service_object_t *obj)
+static void di_constructor(ocoms_object_t *obj)
 {
   dependency_item_t *di = (dependency_item_t *) obj;
 
@@ -417,7 +417,7 @@ static void di_constructor(service_object_t *obj)
  * When a dependency item is released, go release the repository entry
  * that it points to
  */
-static void di_destructor(service_object_t *obj)
+static void di_destructor(ocoms_object_t *obj)
 {
   dependency_item_t *di = (dependency_item_t *) obj;
 

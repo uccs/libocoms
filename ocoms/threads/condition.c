@@ -21,7 +21,7 @@
 #include "ocoms/threads/condition.h"
 
 
-static void service_condition_construct(service_condition_t *c)
+static void ocoms_condition_construct(ocoms_condition_t *c)
 {
     c->c_waiting = 0;
     c->c_signaled = 0;
@@ -33,7 +33,7 @@ static void service_condition_construct(service_condition_t *c)
 }
 
 
-static void service_condition_destruct(service_condition_t *c)
+static void ocoms_condition_destruct(ocoms_condition_t *c)
 {
 #if OCOMS_HAVE_POSIX_THREADS
     pthread_cond_destroy(&c->c_cond);
@@ -43,7 +43,7 @@ static void service_condition_destruct(service_condition_t *c)
     }
 }
 
-OBJ_CLASS_INSTANCE(service_condition_t,
-                   service_object_t,
-                   service_condition_construct,
-                   service_condition_destruct);
+OBJ_CLASS_INSTANCE(ocoms_condition_t,
+                   ocoms_object_t,
+                   ocoms_condition_construct,
+                   ocoms_condition_destruct);

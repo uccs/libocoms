@@ -32,13 +32,13 @@
  */
 
 #include "ocoms/platform/ocoms_config.h"
-#include "ocoms/util/service_object.h"
+#include "ocoms/util/ocoms_object.h"
 #include "ocoms/sys/atomic.h"
 
 BEGIN_C_DECLS
 
-struct service_mutex_t {
-    service_object_t super;
+struct ocoms_mutex_t {
+    ocoms_object_t super;
     volatile LONG m_lock;
 
 #if OCOMS_ENABLE_DEBUG
@@ -48,16 +48,16 @@ struct service_mutex_t {
 #endif
 };
 
-OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_mutex_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_mutex_t);
 
 
-static inline int service_mutex_trylock(service_mutex_t *m)
+static inline int ocoms_mutex_trylock(ocoms_mutex_t *m)
 {
 	return (0 == InterlockedExchange(&m->m_lock, 1) ? 1 : 0);
 }
 
 
-static inline void service_mutex_lock(service_mutex_t *m)
+static inline void ocoms_mutex_lock(ocoms_mutex_t *m)
 {
     while (InterlockedExchange(&m->m_lock, 1)) {
         while (m->m_lock == 1) {
@@ -67,27 +67,27 @@ static inline void service_mutex_lock(service_mutex_t *m)
 }
 
 
-static inline void service_mutex_unlock(service_mutex_t *m)
+static inline void ocoms_mutex_unlock(ocoms_mutex_t *m)
 {
     InterlockedExchange(&m->m_lock, 0);
 }
 
 
-static inline int service_mutex_atomic_trylock(service_mutex_t *m)
+static inline int ocoms_mutex_atomic_trylock(ocoms_mutex_t *m)
 {
-    return service_mutex_trylock(m);
+    return ocoms_mutex_trylock(m);
 }
 
 
-static inline void service_mutex_atomic_lock(service_mutex_t *m)
+static inline void ocoms_mutex_atomic_lock(ocoms_mutex_t *m)
 {
-   service_mutex_lock(m);
+   ocoms_mutex_lock(m);
 }
 
 
-static inline void service_mutex_atomic_unlock(service_mutex_t *m)
+static inline void ocoms_mutex_atomic_unlock(ocoms_mutex_t *m)
 {
-    service_mutex_unlock(m);
+    ocoms_mutex_unlock(m);
 }
 
 END_C_DECLS

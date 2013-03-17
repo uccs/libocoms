@@ -27,12 +27,12 @@
  * Otherwise, wait and see if some upper layer wants to use threads.
  */
 bool ocoms_uses_threads = false;
-bool service_mutex_check_locks = false;
+bool ocoms_mutex_check_locks = false;
 
 
 #ifdef __WINDOWS__
 
-static void service_mutex_construct(service_mutex_t *m)
+static void ocoms_mutex_construct(ocoms_mutex_t *m)
 {
     InterlockedExchange(&m->m_lock, 0);
 #if !OCOMS_ENABLE_MULTI_THREADS && OCOMS_ENABLE_DEBUG
@@ -42,13 +42,13 @@ static void service_mutex_construct(service_mutex_t *m)
 #endif  /* !OCOMS_ENABLE_MULTI_THREADS && OCOMS_ENABLE_DEBUG */
 }
 
-static void service_mutex_destruct(service_mutex_t *m)
+static void ocoms_mutex_destruct(ocoms_mutex_t *m)
 {
 }
 
 #else
 
-static void service_mutex_construct(service_mutex_t *m)
+static void ocoms_mutex_construct(ocoms_mutex_t *m)
 {
 #if OCOMS_HAVE_POSIX_THREADS
 
@@ -84,11 +84,11 @@ static void service_mutex_construct(service_mutex_t *m)
 #endif
 
 #if OCOMS_HAVE_ATOMIC_SPINLOCKS
-    service_atomic_init( &m->m_lock_atomic, OCOMS_ATOMIC_UNLOCKED );
+    ocoms_atomic_init( &m->m_lock_atomic, OCOMS_ATOMIC_UNLOCKED );
 #endif
 }
 
-static void service_mutex_destruct(service_mutex_t *m)
+static void ocoms_mutex_destruct(ocoms_mutex_t *m)
 {
 #if OCOMS_HAVE_POSIX_THREADS
     pthread_mutex_destroy(&m->m_lock_pthread);
@@ -99,7 +99,7 @@ static void service_mutex_destruct(service_mutex_t *m)
 
 #endif /* __WINDOWS__ */
 
-OBJ_CLASS_INSTANCE(service_mutex_t,
-                   service_object_t,
-                   service_mutex_construct,
-                   service_mutex_destruct);
+OBJ_CLASS_INSTANCE(ocoms_mutex_t,
+                   ocoms_object_t,
+                   ocoms_mutex_construct,
+                   ocoms_mutex_destruct);

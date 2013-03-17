@@ -71,7 +71,7 @@ static int guess_strlen(const char *fmt, va_list ap)
                     len += (int)strlen(sarg);
                 } else {
 #if OCOMS_ENABLE_DEBUG
-                    service_output(0, "OPAL DEBUG WARNING: Got a NULL argument to service_vasprintf!\n");
+                    ocoms_output(0, "OPAL DEBUG WARNING: Got a NULL argument to ocoms_vasprintf!\n");
 #endif
                     len += 5;
                 }
@@ -185,20 +185,20 @@ static int guess_strlen(const char *fmt, va_list ap)
 }
 
 
-int service_asprintf(char **ptr, const char *fmt, ...)
+int ocoms_asprintf(char **ptr, const char *fmt, ...)
 {
     int length;
     va_list ap;
 
     va_start(ap, fmt);
-    length = service_vasprintf(ptr, fmt, ap);
+    length = ocoms_vasprintf(ptr, fmt, ap);
     va_end(ap);
 
     return length;
 }
 
 
-int service_vasprintf(char **ptr, const char *fmt, va_list ap)
+int ocoms_vasprintf(char **ptr, const char *fmt, va_list ap)
 {
     int length;
     va_list ap2;
@@ -206,9 +206,9 @@ int service_vasprintf(char **ptr, const char *fmt, va_list ap)
     /* va_list might have pointer to internal state and using
        it twice is a bad idea.  So make a copy for the second
        use.  Copy order taken from Autoconf docs. */
-#if SERVICE_HAVE_VA_COPY
+#if OCOMS_HAVE_VA_COPY
     va_copy(ap2, ap);
-#elif SERVICE_HAVE_UNDERSCORE_VA_COPY
+#elif OCOMS_HAVE_UNDERSCORE_VA_COPY
     __va_copy(ap2, ap);
 #else
     memcpy (&ap2, &ap, sizeof(va_list));
@@ -227,9 +227,9 @@ int service_vasprintf(char **ptr, const char *fmt, va_list ap)
 
     /* fill the buffer */
     length = vsprintf(*ptr, fmt, ap2);
-#if SERVICE_HAVE_VA_COPY || SERVICE_HAVE_UNDERSCORE_VA_COPY
+#if OCOMS_HAVE_VA_COPY || OCOMS_HAVE_UNDERSCORE_VA_COPY
     va_end(ap2);
-#endif  /* SERVICE_HAVE_VA_COPY || SERVICE_HAVE_UNDERSCORE_VA_COPY */
+#endif  /* OCOMS_HAVE_VA_COPY || OCOMS_HAVE_UNDERSCORE_VA_COPY */
 
     /* realloc */
     *ptr = (char*) realloc(*ptr, (size_t) length + 1);
@@ -242,25 +242,25 @@ int service_vasprintf(char **ptr, const char *fmt, va_list ap)
 }
 
 
-int service_snprintf(char *str, size_t size, const char *fmt, ...)
+int ocoms_snprintf(char *str, size_t size, const char *fmt, ...)
 {
     int length;
     va_list ap;
 
     va_start(ap, fmt);
-    length = service_vsnprintf(str, size, fmt, ap);
+    length = ocoms_vsnprintf(str, size, fmt, ap);
     va_end(ap);
 
     return length;
 }
 
 
-int service_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
+int ocoms_vsnprintf(char *str, size_t size, const char *fmt, va_list ap)
 {
     int length;
     char *buf;
 
-    length = service_vasprintf(&buf, fmt, ap);
+    length = ocoms_vasprintf(&buf, fmt, ap);
     if (length < 0) {
         return length;
     }
@@ -292,23 +292,23 @@ int main(int argc, char *argv[])
     int length;
 
     puts("test for NULL buffer in snprintf:");
-    length = service_snprintf(NULL, 0, "this is a string %d", 1004);
+    length = ocoms_snprintf(NULL, 0, "this is a string %d", 1004);
     printf("length = %d\n", length);
 
     puts("test of snprintf to an undersize buffer:");
-    length = service_snprintf(a, sizeof(a), "this is a string %d", 1004);
+    length = ocoms_snprintf(a, sizeof(a), "this is a string %d", 1004);
     printf("string = %s\n", a);
     printf("length = %d\n", length);
     printf("strlen = %d\n", (int) strlen(a));
 
     puts("test of snprintf to an oversize buffer:");
-    length = service_snprintf(b, sizeof(b), "this is a string %d", 1004);
+    length = ocoms_snprintf(b, sizeof(b), "this is a string %d", 1004);
     printf("string = %s\n", b);
     printf("length = %d\n", length);
     printf("strlen = %d\n", (int) strlen(b));
 
     puts("test of asprintf:");
-    length = service_asprintf(&s, "this is a string %d", 1004);
+    length = ocoms_asprintf(&s, "this is a string %d", 1004);
     printf("string = %s\n", s);
     printf("length = %d\n", length);
     printf("strlen = %d\n", (int) strlen(s));

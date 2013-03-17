@@ -21,7 +21,7 @@
 #include "ocoms/mca/mca.h"
 
 #include "ocoms/mca/base/base.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 #include "ocoms/mca/base/mca_base_component_repository.h"
 #if 0
 #include "ocoms/util/output.h"
@@ -50,7 +50,7 @@ int ocoms_mca_base_close(void)
     ocoms_mca_base_component_find_finalize();
 
     /* Close opal output stream 0 */
-    service_output_close(0);
+    ocoms_output_close(0);
   }
   ocoms_mca_base_opened = false;
 

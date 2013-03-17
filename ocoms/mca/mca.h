@@ -334,13 +334,13 @@ typedef struct ocoms_mca_base_component_data_2_0_0_t ocoms_mca_base_component_da
 #define MCA_BASE_VERSION_RELEASE 0
 #define MCA_BASE_VERSION_2_0_0 MCA_BASE_VERSION_MAJOR, MCA_BASE_VERSION_MINOR, MCA_BASE_VERSION_RELEASE
 
-typedef struct ocoms_mca_service_install_dirs_t {
+typedef struct ocoms_mca_ocoms_install_dirs_t {
     char* sysconfdir;
     char* pkgdatadir;
     char* pkglibdir;
-} ocoms_mca_service_install_dirs_t;
+} ocoms_mca_ocoms_install_dirs_t;
 
-OCOMS_DECLSPEC extern ocoms_mca_service_install_dirs_t service_install_dirs;
+OCOMS_DECLSPEC extern ocoms_mca_ocoms_install_dirs_t ocoms_install_dirs;
 
 /**
  * MCA return codes.

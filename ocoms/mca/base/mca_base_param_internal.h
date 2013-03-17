@@ -35,8 +35,8 @@
 
 #include "ocoms/platform/ocoms_config.h"
 
-#include "ocoms/util/service_object.h"
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_object.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/mca/base/mca_base_param.h"
 
 BEGIN_C_DECLS
@@ -62,7 +62,7 @@ typedef union {
  */
 struct ocoms_mca_base_param_t {
     /** Allow this to be an OPAL OBJ */
-    service_object_t mbp_super;
+    ocoms_object_t mbp_super;
 
     /** Enum indicating the type of the parameter (integer or string) */
     ocoms_mca_base_param_type_t mbp_type;
@@ -77,13 +77,13 @@ struct ocoms_mca_base_param_t {
     char *mbp_full_name;
 
     /** List of synonym names for this parameter.  This *must* be a
-        pointer (vs. a plain service_list_t) because we copy this whole
+        pointer (vs. a plain ocoms_list_t) because we copy this whole
         struct into a new param for permanent storage
         (ocoms_vale_array_append_item()), and the internal pointers in
-        the service_list_t will be invalid when that happens.  Hence, we
-        simply keep a pointer to an external service_list_t.  Synonyms
+        the ocoms_list_t will be invalid when that happens.  Hence, we
+        simply keep a pointer to an external ocoms_list_t.  Synonyms
         are uncommon enough that this is not a big performance hit. */
-    service_list_t *mbp_synonyms;
+    ocoms_list_t *mbp_synonyms;
     
     /** Whether this is internal (not meant to be seen / modified by
         users) or not */
@@ -141,7 +141,7 @@ OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_mca_base_param_t);
  */
 struct ocoms_mca_base_param_file_value_t {
     /** Allow this to be an OPAL OBJ */
-    service_list_item_t super;
+    ocoms_list_item_t super;
     
     /** Parameter name */
     char *mbpfv_param;
@@ -168,7 +168,7 @@ OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_mca_base_param_file_value_t);
  *
  * Global list of params and values read in from MCA parameter files
  */
-OCOMS_DECLSPEC extern service_list_t ocoms_mca_base_param_file_values;
+OCOMS_DECLSPEC extern ocoms_list_t ocoms_mca_base_param_file_values;
 
 /**
  * \internal

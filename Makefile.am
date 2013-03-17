@@ -32,22 +32,22 @@ nobase_dist_libservice_la_HEADERS = \
 							ocoms/util/keyval_parse.h \
 							ocoms/util/output.h \
 							ocoms/util/printf.h \
-							ocoms/util/service_bitmap.h \
-							ocoms/util/service_free_list.h \
-							ocoms/util/service_hash_table.h \
-							ocoms/util/service_object.h \
-							ocoms/util/service_rb_tree.h \
+							ocoms/util/ocoms_bitmap.h \
+							ocoms/util/ocoms_free_list.h \
+							ocoms/util/ocoms_hash_table.h \
+							ocoms/util/ocoms_object.h \
+							ocoms/util/ocoms_rb_tree.h \
 							ocoms/util/argv.h \
 							ocoms/util/crc.h \
 							ocoms/util/if.h \
 							ocoms/util/os_path.h \
 							ocoms/util/path.h \
-							ocoms/util/service_atomic_lifo.h \
-							ocoms/util/service_environ.h \
-							ocoms/util/service_graph.h \
-							ocoms/util/service_list.h \
-							ocoms/util/service_pointer_array.h \
-							ocoms/util/service_value_array.h \
+							ocoms/util/ocoms_atomic_lifo.h \
+							ocoms/util/ocoms_environ.h \
+							ocoms/util/ocoms_graph.h \
+							ocoms/util/ocoms_list.h \
+							ocoms/util/ocoms_pointer_array.h \
+							ocoms/util/ocoms_value_array.h \
 							ocoms/mca/mca.h \
 							ocoms/mca/base/base.h \
 							ocoms/mca/base/mca_base_component_repository.h \
@@ -84,15 +84,15 @@ nobase_dist_libservice_la_HEADERS = \
 							ocoms/memoryhooks/memory.h \
 							ocoms/memoryhooks/memory_internal.h \
 							ocoms/platform/ocoms_config.h \
-							ocoms/platform/service_config_top.h \
-							ocoms/platform/service_portable_platform.h \
-							ocoms/platform/service_config_bottom.h \
-							ocoms/platform/service_constants.h \
-							ocoms/platform/service_stdint.h \
+							ocoms/platform/ocoms_config_top.h \
+							ocoms/platform/ocoms_portable_platform.h \
+							ocoms/platform/ocoms_config_bottom.h \
+							ocoms/platform/ocoms_constants.h \
+							ocoms/platform/ocoms_stdint.h \
 							ocoms/primitives/align.h \
 							ocoms/primitives/prefetch.h \
 							ocoms/primitives/hash_string.h \
-							ocoms/primitives/service_socket_errno.h \
+							ocoms/primitives/ocoms_socket_errno.h \
 							ocoms/primitives/types.h
 
 

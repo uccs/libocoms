@@ -49,7 +49,7 @@
  * "foo":
  *
  * \code
- * service_cmd_line_make_opt3(cmd, 'a', NULL, 'add', 1, "Add a user");
+ * ocoms_cmd_line_make_opt3(cmd, 'a', NULL, 'add', 1, "Add a user");
  * \endcode
  *
  * In this case, the following command lines are exactly equivalent:
@@ -68,10 +68,10 @@
  * \endverbatim
  *
  * The caller to this interface creates a command line handle
- * (service_cmd_line_t) with OBJ_NEW() and then uses it to register the
- * desired parameters via service_cmd_line_make_opt3() (or the deprecated
- * service_cmd_line_make_opt()).  Once all the parameters have been
- * registered, the user invokes service_cmd_line_parse() with the command
+ * (ocoms_cmd_line_t) with OBJ_NEW() and then uses it to register the
+ * desired parameters via ocoms_cmd_line_make_opt3() (or the deprecated
+ * ocoms_cmd_line_make_opt()).  Once all the parameters have been
+ * registered, the user invokes ocoms_cmd_line_parse() with the command
  * line handle and the argv/argc pair to be parsed (typically the
  * arguments from main()).  The parser will examine the argv and find
  * registered options and parameters.  It will stop parsing when it
@@ -81,30 +81,30 @@
  * used to determine which options were selected, what parameters were
  * passed to them, etc.:
  *
- * - service_cmd_line_get_usage_msg() returns a string suitable for "help"
+ * - ocoms_cmd_line_get_usage_msg() returns a string suitable for "help"
  *   kinds of messages.
- * - service_cmd_line_is_taken() returns a true or false indicating
+ * - ocoms_cmd_line_is_taken() returns a true or false indicating
  *   whether a given command line option was found on the command
  *   line.
- * - service_cmd_line_get_argc() returns the number of tokens parsed on
+ * - ocoms_cmd_line_get_argc() returns the number of tokens parsed on
  *   the handle.
- * - service_cmd_line_get_argv() returns any particular string from the
+ * - ocoms_cmd_line_get_argv() returns any particular string from the
  *   original argv.
- * - service_cmd_line_get_ninsts() returns the number of times a
+ * - ocoms_cmd_line_get_ninsts() returns the number of times a
  *   particular option was found on a command line.
- * - service_cmd_line_get_param() returns the Nth parameter in the Mth
+ * - ocoms_cmd_line_get_param() returns the Nth parameter in the Mth
  *   instance of a given parameter.
- * - service_cmd_line_get_tail() returns an array of tokens not parsed
+ * - ocoms_cmd_line_get_tail() returns an array of tokens not parsed
  *   (i.e., if the parser ran into "--" or an unrecognized token).
  *
  * Note that a shortcut to creating a large number of options exists
- * -- one can make a table of service_cmd_line_init_t instances and the
- * table to service_cmd_line_create().  This creates an service_cmd_line_t
+ * -- one can make a table of ocoms_cmd_line_init_t instances and the
+ * table to ocoms_cmd_line_create().  This creates an ocoms_cmd_line_t
  * handle that is pre-seeded with all the options from the table
- * without the need to repeatedly invoke service_cmd_line_make_opt3() (or
- * equivalent).  This service_cmd_line_t instance is just like any other;
+ * without the need to repeatedly invoke ocoms_cmd_line_make_opt3() (or
+ * equivalent).  This ocoms_cmd_line_t instance is just like any other;
  * it is still possible to add more options via
- * service_cmd_line_make_opt3(), etc.
+ * ocoms_cmd_line_make_opt3(), etc.
  */
 
 #ifndef OCOMS_CMD_LINE_H
@@ -112,8 +112,8 @@
 
 #include "ocoms/platform/ocoms_config.h"
 
-#include "ocoms/util/service_object.h"
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_object.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/threads/mutex.h"
 
 BEGIN_C_DECLS
@@ -122,23 +122,23 @@ BEGIN_C_DECLS
      *
      * Main top-level handle.  This interface should not be used by users!
      */
-    struct service_cmd_line_t {
+    struct ocoms_cmd_line_t {
         /** Make this an OBJ handle */
-        service_object_t super;
+        ocoms_object_t super;
         
         /** Thread safety */
-        service_mutex_t lcl_mutex;
+        ocoms_mutex_t lcl_mutex;
         
-        /** List of service_cmd_line_option_t's (defined internally) */
-        service_list_t lcl_options;
+        /** List of ocoms_cmd_line_option_t's (defined internally) */
+        ocoms_list_t lcl_options;
         
-        /** Duplicate of argc from service_cmd_line_parse() */
+        /** Duplicate of argc from ocoms_cmd_line_parse() */
         int lcl_argc;
-        /** Duplicate of argv from service_cmd_line_parse() */
+        /** Duplicate of argv from ocoms_cmd_line_parse() */
         char **lcl_argv;
         
-        /** Parsed output; list of service_cmd_line_param_t's (defined internally) */
-        service_list_t lcl_params;
+        /** Parsed output; list of ocoms_cmd_line_param_t's (defined internally) */
+        ocoms_list_t lcl_params;
         
         /** List of tail (unprocessed) arguments */
         int lcl_tail_argc;
@@ -150,12 +150,12 @@ BEGIN_C_DECLS
      *
      * Convenience typedef
      */
-    typedef struct service_cmd_line_t service_cmd_line_t;
+    typedef struct ocoms_cmd_line_t ocoms_cmd_line_t;
 
     /**
      * Data types supported by the parser
      */
-    enum service_cmd_line_type_t {
+    enum ocoms_cmd_line_type_t {
         OCOMS_CMD_LINE_TYPE_NULL,
         OCOMS_CMD_LINE_TYPE_STRING,
         OCOMS_CMD_LINE_TYPE_INT,
@@ -169,13 +169,13 @@ BEGIN_C_DECLS
      *
      * Convenience typedef
      */
-    typedef enum service_cmd_line_type_t service_cmd_line_type_t;
+    typedef enum ocoms_cmd_line_type_t ocoms_cmd_line_type_t;
 
     /**
      * Datatype used to construct a command line handle; see
-     * service_cmd_line_create().
+     * ocoms_cmd_line_create().
      */
-    struct service_cmd_line_init_t {
+    struct ocoms_cmd_line_init_t {
         /** If want to set an MCA parameter, set its type name here.
             WARNING: This MCA tuple (type, component, param) will
             eventually be replaced with a single name! */
@@ -206,10 +206,10 @@ BEGIN_C_DECLS
         void *ocl_variable_dest;
         /** If an ocl_variable_dest is given, its datatype must be
             supplied as well. */
-        service_cmd_line_type_t ocl_variable_type;
+        ocoms_cmd_line_type_t ocl_variable_type;
 
         /** Description of the command line option, to be used with
-            service_cmd_line_get_usage_msg(). */
+            ocoms_cmd_line_get_usage_msg(). */
         const char *ocl_description;
     };
     /**
@@ -217,38 +217,38 @@ BEGIN_C_DECLS
      *
      * Convenience typedef
      */
-    typedef struct service_cmd_line_init_t service_cmd_line_init_t;
+    typedef struct ocoms_cmd_line_init_t ocoms_cmd_line_init_t;
     
     /**
      * Top-level command line handle.
      *
      * This handle is used for accessing all command line functionality
-     * (i.e., all service_cmd_line*() functions).  Multiple handles can be
+     * (i.e., all ocoms_cmd_line*() functions).  Multiple handles can be
      * created and simultaneously processed; each handle is independant
      * from others.
      *
-     * The service_cmd_line_t handles are [simplisticly] thread safe;
+     * The ocoms_cmd_line_t handles are [simplisticly] thread safe;
      * processing is guaranteed to be mutually exclusive if multiple
      * threads invoke functions on the same handle at the same time --
      * access will be serialized in an unspecified order.
      *
      * Once finished, handles should be released with OBJ_RELEASE().  The
-     * destructor for service_cmd_line_t handles will free all memory
+     * destructor for ocoms_cmd_line_t handles will free all memory
      * associated with the handle.
      */
-    OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_cmd_line_t);
+    OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_cmd_line_t);
 
     /**
      * Make a command line handle from a table of initializers.
      *
      * @param cmd OPAL command line handle.
-     * @param table Table of service_cmd_line_init_t instances for all
+     * @param table Table of ocoms_cmd_line_init_t instances for all
      * the options to be included in the resulting command line
      * handler.
      *
      * @retval OCOMS_SUCCESS Upon success.
      *
-     * This function takes a table of service_cmd_line_init_t instances
+     * This function takes a table of ocoms_cmd_line_init_t instances
      * to pre-seed an OPAL command line handle.  The last instance in
      * the table must have '\0' for the short name and NULL for the
      * single-dash and long names.  The handle is expected to have
@@ -258,7 +258,7 @@ BEGIN_C_DECLS
      * sample using this syntax:
      *
      * \code
-     * service_cmd_line_init_t cmd_line_init[] = {
+     * ocoms_cmd_line_init_t cmd_line_init[] = {
      *    { NULL, NULL, NULL, 'h', NULL, "help", 0, 
      *      &orterun_globals.help, OCOMS_CMD_LINE_TYPE_BOOL,
      *      "This help message" },
@@ -272,8 +272,8 @@ BEGIN_C_DECLS
      * };
      * \endcode
      */
-    OCOMS_DECLSPEC int service_cmd_line_create(service_cmd_line_t *cmd,
-                                           service_cmd_line_init_t *table);
+    OCOMS_DECLSPEC int ocoms_cmd_line_create(ocoms_cmd_line_t *cmd,
+                                           ocoms_cmd_line_init_t *table);
 
     /**
      * Create a command line option.
@@ -284,8 +284,8 @@ BEGIN_C_DECLS
      * @retval OCOMS_SUCCESS Upon success.
      *
      */
-    OCOMS_DECLSPEC int service_cmd_line_make_opt_mca(service_cmd_line_t *cmd,
-                                                 service_cmd_line_init_t entry);
+    OCOMS_DECLSPEC int ocoms_cmd_line_make_opt_mca(ocoms_cmd_line_t *cmd,
+                                                 ocoms_cmd_line_init_t entry);
 
     /**
      * \deprecated
@@ -293,15 +293,15 @@ BEGIN_C_DECLS
      * Create a command line option.
      *
      * This function is an older [deprecated] form of
-     * service_cmd_line_make_opt3().  It is exactly equivalent to
-     * service_cmd_line_make_opt3(cmd, short_name, NULL, long_name,
+     * ocoms_cmd_line_make_opt3().  It is exactly equivalent to
+     * ocoms_cmd_line_make_opt3(cmd, short_name, NULL, long_name,
      * num_params, desc).
      */
-    OCOMS_DECLSPEC int service_cmd_line_make_opt(service_cmd_line_t *cmd,
+    OCOMS_DECLSPEC int ocoms_cmd_line_make_opt(ocoms_cmd_line_t *cmd,
                                              char short_name, 
                                              const char *long_name,
                                              int num_params, 
-                                             const char *desc) __service_attribute_deprecated__;
+                                             const char *desc) __ocoms_attribute_deprecated__;
 
     /**
      * Create a command line option.
@@ -328,10 +328,10 @@ BEGIN_C_DECLS
      * must be greater than or equal to 0.
      *
      * Finally, desc is a short string description of this option.  It is
-     * used to generate the output from service_cmd_line_get_usage_msg().
+     * used to generate the output from ocoms_cmd_line_get_usage_msg().
      *
      */
-    OCOMS_DECLSPEC int service_cmd_line_make_opt3(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC int ocoms_cmd_line_make_opt3(ocoms_cmd_line_t *cmd, 
                                               char short_name, 
                                               const char *sd_name,
                                               const char *long_name, 
@@ -374,7 +374,7 @@ BEGIN_C_DECLS
      * Upon any of these conditions, any remaining tokens will be placed
      * in the "tail" (and therefore not examined by the parser),
      * regardless of the value of ignore_unknown.  The set of tail
-     * tokens is available from the service_cmd_line_get_tail() function.
+     * tokens is available from the ocoms_cmd_line_get_tail() function.
      *
      * Note that "--" is ignored if it is found in the middle an expected
      * number of arguments.  For example, if "--foo" is expected to have 3
@@ -389,7 +389,7 @@ BEGIN_C_DECLS
      * Invoking this function multiple times on different sets of argv
      * tokens is safe, but will erase any previous parsing results.
      */
-    OCOMS_DECLSPEC int service_cmd_line_parse(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, 
                                           bool ignore_unknown,
                                           int argc, char **argv);
 
@@ -403,7 +403,7 @@ BEGIN_C_DECLS
      * Returns a formatted string suitable for printing that lists the
      * expected usage message and a short description of each option on
      * the OPAL command line handle.  Options that passed a NULL
-     * description to service_cmd_line_make_opt() will not be included in the
+     * description to ocoms_cmd_line_make_opt() will not be included in the
      * display (to allow for undocumented options).
      *
      * This function is typically only invoked internally by the
@@ -414,7 +414,7 @@ BEGIN_C_DECLS
      *
      * The returned string must be freed by the caller.
      */
-    OCOMS_DECLSPEC char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
+    OCOMS_DECLSPEC char *ocoms_cmd_line_get_usage_msg(ocoms_cmd_line_t *cmd) __ocoms_attribute_malloc__ __ocoms_attribute_warn_unused_result__;
 
     /**
      * Test if a given option was taken on the parsed command line.
@@ -423,20 +423,20 @@ BEGIN_C_DECLS
      * @param opt Short or long name of the option to check for.
      *
      * @retval true If the command line option was found during
-     * service_cmd_line_parse().
+     * ocoms_cmd_line_parse().
      *
      * @retval false If the command line option was not found during
-     * service_cmd_line_parse(), or service_cmd_line_parse() was not invoked on
+     * ocoms_cmd_line_parse(), or ocoms_cmd_line_parse() was not invoked on
      * this handle.
      *
-     * This function should only be called after service_cmd_line_parse().  
+     * This function should only be called after ocoms_cmd_line_parse().  
      *
      * The function will return true if the option matching opt was found
      * (either by its short or long name) during token parsing.
      * Otherwise, it will return false.
      */
-    OCOMS_DECLSPEC bool service_cmd_line_is_taken(service_cmd_line_t *cmd, 
-                                              const char *opt) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
+    OCOMS_DECLSPEC bool ocoms_cmd_line_is_taken(ocoms_cmd_line_t *cmd, 
+                                              const char *opt) __ocoms_attribute_nonnull__(1) __ocoms_attribute_nonnull__(2);
 
     /**
      * Return the number of arguments parsed on a OPAL command line handle.
@@ -446,10 +446,10 @@ BEGIN_C_DECLS
      * @retval OCOMS_ERROR If cmd is NULL.
      * @retval argc Number of arguments previously added to the handle.
      *
-     * Arguments are added to the handle via the service_cmd_line_parse()
+     * Arguments are added to the handle via the ocoms_cmd_line_parse()
      * function.
      */
-    OCOMS_DECLSPEC int service_cmd_line_get_argc(service_cmd_line_t *cmd) __service_attribute_unused__;
+    OCOMS_DECLSPEC int ocoms_cmd_line_get_argc(ocoms_cmd_line_t *cmd) __ocoms_attribute_unused__;
 
     /**
      * Return a string argument parsed on a OPAL command line handle.
@@ -463,12 +463,12 @@ BEGIN_C_DECLS
      *
      * This function returns a single token from the arguments parsed
      * on this handle.  Arguments are added bia the
-     * service_cmd_line_parse() function.
+     * ocoms_cmd_line_parse() function.
      *
      * What is returned is a pointer to the actual string that is on
      * the handle; it should not be modified or freed.
      */
-    OCOMS_DECLSPEC char *service_cmd_line_get_argv(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC char *ocoms_cmd_line_get_argv(ocoms_cmd_line_t *cmd, 
                                                int index);
 
     /**
@@ -478,21 +478,21 @@ BEGIN_C_DECLS
      * @param opt Short or long name of the option to check for.
      *
      * @retval num Number of instances (to include 0) of a given potion
-     * found during service_cmd_line_parse().
+     * found during ocoms_cmd_line_parse().
      *
      * @retval OCOMS_ERR If the command line option was not found during
-     * service_cmd_line_parse(), or service_cmd_line_parse() was not invoked on
+     * ocoms_cmd_line_parse(), or ocoms_cmd_line_parse() was not invoked on
      * this handle.
      *
-     * This function should only be called after service_cmd_line_parse().
+     * This function should only be called after ocoms_cmd_line_parse().
      *
      * The function will return the number of instances of a given option
      * (either by its short or long name) -- to include 0 -- or OCOMS_ERR if
      * either the option was not specified as part of the OPAL command line
-     * handle, or service_cmd_line_parse() was not invoked on this handle.
+     * handle, or ocoms_cmd_line_parse() was not invoked on this handle.
      */
-    OCOMS_DECLSPEC int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, 
-                                               const char *opt) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
+    OCOMS_DECLSPEC int ocoms_cmd_line_get_ninsts(ocoms_cmd_line_t *cmd, 
+                                               const char *opt) __ocoms_attribute_nonnull__(1) __ocoms_attribute_nonnull__(2);
 
     /**
      * Return a specific parameter for a specific instance of a option
@@ -506,7 +506,7 @@ BEGIN_C_DECLS
      * @retval param String of the parameter.
      * @retval NULL If any of the input values are invalid.
      *
-     * This function should only be called after service_cmd_line_parse().  
+     * This function should only be called after ocoms_cmd_line_parse().  
      *
      * This function returns the Nth parameter for the Ith instance of a
      * given option on the parsed command line (both N and I are
@@ -514,14 +514,14 @@ BEGIN_C_DECLS
      *
      * executable --foo bar1 bar2 --foo bar3 bar4
      *
-     * The call to service_cmd_line_get_param(cmd, "foo", 1, 1) would return
-     * "bar4".  service_cmd_line_get_param(cmd, "bar", 0, 0) would return
-     * NULL, as would service_cmd_line_get_param(cmd, "foo", 2, 2);
+     * The call to ocoms_cmd_line_get_param(cmd, "foo", 1, 1) would return
+     * "bar4".  ocoms_cmd_line_get_param(cmd, "bar", 0, 0) would return
+     * NULL, as would ocoms_cmd_line_get_param(cmd, "foo", 2, 2);
      *
      * The returned string should \em not be modified or freed by the
      * caller.
      */
-    OCOMS_DECLSPEC char *service_cmd_line_get_param(service_cmd_line_t *cmd, 
+    OCOMS_DECLSPEC char *ocoms_cmd_line_get_param(ocoms_cmd_line_t *cmd, 
                                                 const char *opt, 
                                                 int instance_num,
                                                 int param_num);
@@ -551,10 +551,10 @@ BEGIN_C_DECLS
      * length of the null-terminated tailv array (length including the
      * final NULL entry).  The output tailv parameter will be a copy
      * of the tail parameters, and must be freed (likely with a call
-     * to service_argv_free()) by the caller.
+     * to ocoms_argv_free()) by the caller.
      */
-    OCOMS_DECLSPEC int service_cmd_line_get_tail(service_cmd_line_t *cmd, int *tailc, 
-                                             char ***tailv) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
+    OCOMS_DECLSPEC int ocoms_cmd_line_get_tail(ocoms_cmd_line_t *cmd, int *tailc, 
+                                             char ***tailv) __ocoms_attribute_nonnull__(1) __ocoms_attribute_nonnull__(2);
 
 END_C_DECLS
 

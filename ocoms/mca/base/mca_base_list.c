@@ -18,22 +18,22 @@
 
 #include "ocoms/platform/ocoms_config.h"
 
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/mca/base/base.h"
 
 
 /* 
  * Local functions
  */
-static void cl_constructor(service_object_t *obj);
-static void cpl_constructor(service_object_t *obj);
+static void cl_constructor(ocoms_object_t *obj);
+static void cpl_constructor(ocoms_object_t *obj);
 
 
 /*
  * Class instance of the ocoms_mca_base_component_list_item_t class
  */
 OBJ_CLASS_INSTANCE(ocoms_mca_base_component_list_item_t, 
-                   service_list_item_t, cl_constructor, NULL);
+                   ocoms_list_item_t, cl_constructor, NULL);
 
 
 /*
@@ -46,7 +46,7 @@ OBJ_CLASS_INSTANCE(ocoms_mca_base_component_priority_list_item_t,
 /*
  * Just do basic sentinel intialization
  */
-static void cl_constructor(service_object_t *obj)
+static void cl_constructor(ocoms_object_t *obj)
 {
   ocoms_mca_base_component_list_item_t *cli = (ocoms_mca_base_component_list_item_t *) obj;
   cli->cli_component = NULL;
@@ -56,7 +56,7 @@ static void cl_constructor(service_object_t *obj)
 /*
  * Just do basic sentinel intialization
  */
-static void cpl_constructor(service_object_t *obj)
+static void cpl_constructor(ocoms_object_t *obj)
 {
   ocoms_mca_base_component_priority_list_item_t *cpli = 
     (ocoms_mca_base_component_priority_list_item_t *) obj;

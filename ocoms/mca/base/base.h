@@ -22,8 +22,8 @@
 
 #include "ocoms/platform/ocoms_config.h"
 
-#include "ocoms/util/service_object.h"
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_object.h"
+#include "ocoms/util/ocoms_list.h"
 
 /*
  * These units are large enough to warrant their own .h files
@@ -38,7 +38,7 @@ BEGIN_C_DECLS
  * Structure for making plain lists of components
  */
 struct ocoms_mca_base_component_list_item_t {
-    service_list_item_t super;
+    ocoms_list_item_t super;
     const ocoms_mca_base_component_t *cli_component;
 };
 typedef struct ocoms_mca_base_component_list_item_t ocoms_mca_base_component_list_item_t;
@@ -82,7 +82,7 @@ OCOMS_DECLSPEC extern char *ocoms_mca_base_user_default_path;
  * invoked during ompi_mpi_init() and specifically invoked in the
  * special case of the laminfo command.
  */
-OCOMS_DECLSPEC int ocoms_mca_base_open(ocoms_mca_service_install_dirs_t install_dirs);
+OCOMS_DECLSPEC int ocoms_mca_base_open(ocoms_mca_ocoms_install_dirs_t install_dirs);
 
 /**
  * Last function called in the MCA
@@ -104,7 +104,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_close(void);
  *
  */
 OCOMS_DECLSPEC int ocoms_mca_base_select(const char *type_name, int output_id,
-                                  service_list_t *components_available,
+                                  ocoms_list_t *components_available,
                                   ocoms_mca_base_module_t **best_module,
                                   ocoms_mca_base_component_t **best_component);
 
@@ -116,15 +116,15 @@ OCOMS_DECLSPEC int ocoms_mca_base_select(const char *type_name, int output_id,
  *            available for selection.
  *
  */
-OCOMS_DECLSPEC int ocoms_mca_base_is_component_required(service_list_t *components_available,
+OCOMS_DECLSPEC int ocoms_mca_base_is_component_required(ocoms_list_t *components_available,
                                                  ocoms_mca_base_component_t *component,
                                                  bool exclusive,
                                                  bool *is_required);
 
 /* ocoms_mca_base_cmd_line.c */
 
-OCOMS_DECLSPEC int ocoms_mca_base_cmd_line_setup(service_cmd_line_t *cmd);
-OCOMS_DECLSPEC int ocoms_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
+OCOMS_DECLSPEC int ocoms_mca_base_cmd_line_setup(ocoms_cmd_line_t *cmd);
+OCOMS_DECLSPEC int ocoms_mca_base_cmd_line_process_args(ocoms_cmd_line_t *cmd,
                                                  char ***app_env,
                                                  char ***global_env);
 
@@ -144,7 +144,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_component_find(const char *directory, const ch
                                           const ocoms_mca_base_component_t *static_components[],
                                           char **requested_component_names,
                                           bool include_mode,
-                                          service_list_t *found_components,
+                                          ocoms_list_t *found_components,
                                           bool open_dso_components);
 
 /* Safely release some memory allocated by ocoms_mca_base_component_find()
@@ -156,12 +156,12 @@ OCOMS_DECLSPEC int ocoms_mca_base_component_find_finalize(void);
 
 OCOMS_DECLSPEC int ocoms_mca_base_components_open(const char *type_name, int output_id,
                                            const ocoms_mca_base_component_t **static_components,
-                                           service_list_t *components_available,
+                                           ocoms_list_t *components_available,
                                            bool open_dso_components);
 
 /* ocoms_mca_base_components_close.c */
 
-OCOMS_DECLSPEC int ocoms_mca_base_components_close(int output_id, service_list_t *components_available, 
+OCOMS_DECLSPEC int ocoms_mca_base_components_close(int output_id, ocoms_list_t *components_available, 
                                             const ocoms_mca_base_component_t *skip);
 
 END_C_DECLS

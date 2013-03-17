@@ -33,18 +33,18 @@ util_headers = \
         cmd_line.h \
         fd.h \
         output.h \
-        service_atomic_lifo.h \
-        service_bitmap.h \
-        service_free_list.h \
-        service_list.h \
-        service_object.h \
-        service_pointer_array.h \
-        service_rb_tree.h \
-        service_graph.h \
-        service_environ.h \
-        service_value_array.h \
+        ocoms_atomic_lifo.h \
+        ocoms_bitmap.h \
+        ocoms_free_list.h \
+        ocoms_list.h \
+        ocoms_object.h \
+        ocoms_pointer_array.h \
+        ocoms_rb_tree.h \
+        ocoms_graph.h \
+        ocoms_environ.h \
+        ocoms_value_array.h \
         printf.h \
-        service_hash_table.h \
+        ocoms_hash_table.h \
         if.h \
         arch.h \
         crc.h \
@@ -58,18 +58,18 @@ libserviceutil_la_SOURCES = \
         cmd_line.c \
         fd.c \
         output.c \
-        service_atomic_lifo.c \
-        service_free_list.c \
-        service_list.c \
-        service_object.c \
-        service_pointer_array.c \
-        service_rb_tree.c \
-        service_graph.c \
-        service_environ.c \
-        service_value_array.c \
-        service_bitmap.c \
+        ocoms_atomic_lifo.c \
+        ocoms_free_list.c \
+        ocoms_list.c \
+        ocoms_object.c \
+        ocoms_pointer_array.c \
+        ocoms_rb_tree.c \
+        ocoms_graph.c \
+        ocoms_environ.c \
+        ocoms_value_array.c \
+        ocoms_bitmap.c \
         printf.c \
-        service_hash_table.c \
+        ocoms_hash_table.c \
         if.c \
         arch.c \
         crc.c \

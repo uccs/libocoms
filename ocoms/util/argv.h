@@ -66,7 +66,7 @@ BEGIN_C_DECLS
    * value into the argv array; there is no need to keep the original
    * string (i.e., the arg parameter) after invoking this function.
    */
-OCOMS_DECLSPEC  int service_argv_append(int *argc, char ***argv, const char *arg) __service_attribute_nonnull__(1) __service_attribute_nonnull__(3);
+OCOMS_DECLSPEC  int ocoms_argv_append(int *argc, char ***argv, const char *arg) __ocoms_attribute_nonnull__(1) __ocoms_attribute_nonnull__(3);
 
   /**
    * Append to an argv-style array, but ignore the size of the array.
@@ -77,13 +77,13 @@ OCOMS_DECLSPEC  int service_argv_append(int *argc, char ***argv, const char *arg
    * @retval OCOMS_SUCCESS On success
    * @retval OCOMS_ERROR On failure
    *
-   * This function is identical to the service_argv_append() function
+   * This function is identical to the ocoms_argv_append() function
    * except that it does not take a pointer to an argc (integer
    * representing the size of the array).  This is handy for
    * argv-style arrays that do not have integers that are actively
    * maintaing their sizes.
    */
-OCOMS_DECLSPEC  int service_argv_append_nosize(char ***argv, const char *arg);
+OCOMS_DECLSPEC  int ocoms_argv_append_nosize(char ***argv, const char *arg);
 
 /**
  * Insert the provided arg at the beginning of the array
@@ -94,7 +94,7 @@ OCOMS_DECLSPEC  int service_argv_append_nosize(char ***argv, const char *arg);
  * @retval OCOMS_SUCCESS On success
  * @retval OCOMS_ERROR On failure
  */
-OCOMS_DECLSPEC int service_argv_prepend_nosize(char ***argv, const char *arg);
+OCOMS_DECLSPEC int ocoms_argv_prepend_nosize(char ***argv, const char *arg);
 
 /**
  * Append to an argv-style array, but only if the provided argument
@@ -107,11 +107,11 @@ OCOMS_DECLSPEC int service_argv_prepend_nosize(char ***argv, const char *arg);
  * @retval OCOMS_SUCCESS On success
  * @retval OCOMS_ERROR On failure
  *
- * This function is identical to the service_argv_append_nosize() function
+ * This function is identical to the ocoms_argv_append_nosize() function
  * except that it only appends the provided argument if it does not already
  * exist in the provided array, or overwrites it if it is.
  */
-OCOMS_DECLSPEC  int service_argv_append_unique_nosize(char ***argv, const char *arg, bool overwrite);
+OCOMS_DECLSPEC  int ocoms_argv_append_unique_nosize(char ***argv, const char *arg, bool overwrite);
 
 /**
    * Free a NULL-terminated argv array.
@@ -126,7 +126,7 @@ OCOMS_DECLSPEC  int service_argv_append_unique_nosize(char ***argv, const char *
    * not safe to invoke this function with a non-NULL-terminated argv
    * array.
    */
-OCOMS_DECLSPEC  void service_argv_free(char **argv);
+OCOMS_DECLSPEC  void ocoms_argv_free(char **argv);
   
   /**
    * Split a string into a NULL-terminated argv array. Do not include empty 
@@ -143,7 +143,7 @@ OCOMS_DECLSPEC  void service_argv_free(char **argv);
    * argument (i.e., it can be freed after calling this function
    * without invalidating the output argv).
    */
-OCOMS_DECLSPEC  char **service_argv_split(const char *src_string, int delimiter) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC  char **ocoms_argv_split(const char *src_string, int delimiter) __ocoms_attribute_malloc__ __ocoms_attribute_warn_unused_result__;
 
   /**
    * Split a string into a NULL-terminated argv array. Include empty 
@@ -160,7 +160,7 @@ OCOMS_DECLSPEC  char **service_argv_split(const char *src_string, int delimiter)
    * argument (i.e., it can be freed after calling this function
    * without invalidating the output argv).
    */
-OCOMS_DECLSPEC  char **service_argv_split_with_empty(const char *src_string, int delimiter) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC  char **ocoms_argv_split_with_empty(const char *src_string, int delimiter) __ocoms_attribute_malloc__ __ocoms_attribute_warn_unused_result__;
 
   /**
    * Return the length of a NULL-terminated argv array.
@@ -172,7 +172,7 @@ OCOMS_DECLSPEC  char **service_argv_split_with_empty(const char *src_string, int
    *
    * The argv array must be NULL-terminated.
    */
-OCOMS_DECLSPEC  int service_argv_count(char **argv);
+OCOMS_DECLSPEC  int ocoms_argv_count(char **argv);
 
   /**
    * Join all the elements of an argv array into a single
@@ -190,9 +190,9 @@ OCOMS_DECLSPEC  int service_argv_count(char **argv);
    *
    * It is the callers responsibility to free the returned string.
    */
-OCOMS_DECLSPEC  char *service_argv_join(char **argv, int delimiter) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC  char *ocoms_argv_join(char **argv, int delimiter) __ocoms_attribute_malloc__ __ocoms_attribute_warn_unused_result__;
 
-OCOMS_DECLSPEC  char *service_argv_join_range(char **argv, size_t start, size_t end, int delimiter) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC  char *ocoms_argv_join_range(char **argv, size_t start, size_t end, int delimiter) __ocoms_attribute_malloc__ __ocoms_attribute_warn_unused_result__;
 
   /**
    * Return the number of bytes consumed by an argv array.
@@ -203,7 +203,7 @@ OCOMS_DECLSPEC  char *service_argv_join_range(char **argv, size_t start, size_t 
    * array.  This includes the number of bytes used by each of the
    * strings as well as the pointers used in the argv array.
    */
-OCOMS_DECLSPEC  size_t service_argv_len(char **argv);
+OCOMS_DECLSPEC  size_t ocoms_argv_len(char **argv);
 
   /**
    * Copy a NULL-terminated argv array.
@@ -217,7 +217,7 @@ OCOMS_DECLSPEC  size_t service_argv_len(char **argv);
    * Specifically, the output argv will be an array of the same length
    * as the input argv, and strcmp(argv_in[i], argv_out[i]) will be 0.
    */
-OCOMS_DECLSPEC  char **service_argv_copy(char **argv) __service_attribute_malloc__ __service_attribute_warn_unused_result__;
+OCOMS_DECLSPEC  char **ocoms_argv_copy(char **argv) __ocoms_attribute_malloc__ __ocoms_attribute_warn_unused_result__;
 
     /**
      * Delete one or more tokens from the middle of an argv.
@@ -244,7 +244,7 @@ OCOMS_DECLSPEC  char **service_argv_copy(char **argv) __service_attribute_malloc
      * free()ed (it is assumed that the argv "owns" the memory that
      * the pointer points to).
      */
-OCOMS_DECLSPEC  int service_argv_delete(int *argc, char ***argv, 
+OCOMS_DECLSPEC  int ocoms_argv_delete(int *argc, char ***argv, 
                                     int start, int num_to_delete);
 
     /**
@@ -260,7 +260,7 @@ OCOMS_DECLSPEC  int service_argv_delete(int *argc, char ***argv,
      * This function takes one arg and inserts it in the middle of
      * another.  The first token in source will be insertted at index
      * start in the target argv; all other tokens will follow it.
-     * Similar to service_argv_append(), the target may be realloc()'ed
+     * Similar to ocoms_argv_append(), the target may be realloc()'ed
      * to accomodate the new storage requirements.
      *
      * The source array is left unaffected -- its contents are copied
@@ -268,7 +268,7 @@ OCOMS_DECLSPEC  int service_argv_delete(int *argc, char ***argv,
      * source points to are strdup'ed into the new locations in
      * target).
      */
-OCOMS_DECLSPEC  int service_argv_insert(char ***target, int start, char **source);
+OCOMS_DECLSPEC  int ocoms_argv_insert(char ***target, int start, char **source);
 
 END_C_DECLS
 

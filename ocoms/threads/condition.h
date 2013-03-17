@@ -48,8 +48,8 @@ BEGIN_C_DECLS
 
 typedef int (*ocoms_progress_fn_t)(void);
 
-struct service_condition_t {
-    service_object_t super;
+struct ocoms_condition_t {
+    ocoms_object_t super;
     volatile int c_waiting;
     volatile int c_signaled;
 #if OCOMS_HAVE_POSIX_THREADS
@@ -60,19 +60,19 @@ struct service_condition_t {
     ocoms_progress_fn_t ocoms_progress_fn;
     char *name;
 };
-typedef struct service_condition_t service_condition_t;
+typedef struct ocoms_condition_t ocoms_condition_t;
 
-OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(service_condition_t);
+OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_condition_t);
 
 
-static inline int service_condition_wait(service_condition_t *c, service_mutex_t *m)
+static inline int ocoms_condition_wait(ocoms_condition_t *c, ocoms_mutex_t *m)
 {
     int rc = 0;
     c->c_waiting++;
 
 #if OCOMS_ENABLE_DEBUG && !OCOMS_ENABLE_MULTI_THREADS
-    if (service_mutex_check_locks && 0 == m->m_lock_debug) {                                         \
-        service_output(0, "Warning -- mutex not locked in condition_wait"); \
+    if (ocoms_mutex_check_locks && 0 == m->m_lock_debug) {                                         \
+        ocoms_output(0, "Warning -- mutex not locked in condition_wait"); \
     }                                                                   \
     m->m_lock_debug--;
 #endif
@@ -85,15 +85,15 @@ static inline int service_condition_wait(service_condition_t *c, service_mutex_t
 #else
         if (c->c_signaled) {
             c->c_waiting--;
-            service_mutex_unlock(m);
+            ocoms_mutex_unlock(m);
             c->ocoms_progress_fn();
-            service_mutex_lock(m);
+            ocoms_mutex_lock(m);
             return 0;
         }
         while (c->c_signaled == 0) {
-            service_mutex_unlock(m);
+            ocoms_mutex_unlock(m);
             c->ocoms_progress_fn();
-            service_mutex_lock(m);
+            ocoms_mutex_lock(m);
         }
 #endif
     } else {
@@ -111,8 +111,8 @@ static inline int service_condition_wait(service_condition_t *c, service_mutex_t
     return rc;
 }
 
-static inline int service_condition_timedwait(service_condition_t *c,
-                                           service_mutex_t *m,
+static inline int ocoms_condition_timedwait(ocoms_condition_t *c,
+                                           ocoms_mutex_t *m,
                                            const struct timespec *abstime)
 {
     struct timeval tv;
@@ -120,8 +120,8 @@ static inline int service_condition_timedwait(service_condition_t *c,
     int rc = 0;
 
 #if OCOMS_ENABLE_DEBUG && !OCOMS_ENABLE_MULTI_THREADS
-    if (service_mutex_check_locks && 0 == m->m_lock_debug) {                                         \
-        service_output(0, "Warning -- mutex not locked in condition_wait"); \
+    if (ocoms_mutex_check_locks && 0 == m->m_lock_debug) {                                         \
+        ocoms_output(0, "Warning -- mutex not locked in condition_wait"); \
     }                                                                   \
     m->m_lock_debug--;
 #endif
@@ -142,10 +142,10 @@ static inline int service_condition_timedwait(service_condition_t *c,
         gettimeofday(&tv,NULL);
         if (c->c_signaled == 0) {
             do {
-                service_mutex_unlock(m);
+                ocoms_mutex_unlock(m);
                 c->ocoms_progress_fn();
                 gettimeofday(&tv,NULL);
-                service_mutex_lock(m);
+                ocoms_mutex_lock(m);
                 } while (c->c_signaled == 0 &&  
                          (tv.tv_sec <= absolute.tv_sec ||
                           (tv.tv_sec == absolute.tv_sec && tv.tv_usec < absolute.tv_usec)));
@@ -174,7 +174,7 @@ static inline int service_condition_timedwait(service_condition_t *c,
     return rc;
 }
 
-static inline int service_condition_signal(service_condition_t *c)
+static inline int ocoms_condition_signal(ocoms_condition_t *c)
 {
     if (c->c_waiting) {
         c->c_signaled++;
@@ -191,7 +191,7 @@ static inline int service_condition_signal(service_condition_t *c)
     return 0;
 }
 
-static inline int service_condition_broadcast(service_condition_t *c)
+static inline int ocoms_condition_broadcast(ocoms_condition_t *c)
 {
     c->c_signaled = c->c_waiting;
 #if OCOMS_HAVE_POSIX_THREADS && OCOMS_ENABLE_MULTI_THREADS

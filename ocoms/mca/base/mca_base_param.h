@@ -58,7 +58,7 @@
 
 #include "ocoms/platform/ocoms_config.h"
 
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/mca/mca.h"
 
 
@@ -100,7 +100,7 @@ typedef enum {
  */
 struct ocoms_mca_base_param_info_t {
     /** So that we can be in a list */
-    service_list_item_t super;
+    ocoms_list_item_t super;
 
     /** Index of this parameter */
     int mbpp_index;
@@ -740,7 +740,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_param_find_string_name(const char *type,
      * Obtain a list of all the MCA parameters currently defined as
      * well as their types.  
      *
-     * @param info [out] An service_list_t of ocoms_mca_base_param_info_t
+     * @param info [out] An ocoms_list_t of ocoms_mca_base_param_info_t
      * instances.
      * @param internal [in] Whether to include the internal parameters
      * or not.
@@ -760,7 +760,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_param_find_string_name(const char *type,
      * ocoms_mca_base_param_dump_release() when finished with the returned
      * info list to release all associated memory.
      */
-    OCOMS_DECLSPEC int ocoms_mca_base_param_dump(service_list_t **info, bool internal);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_dump(ocoms_list_t **info, bool internal);
 
     /**
      * Obtain a list of all the MCA parameters currently defined as
@@ -787,7 +787,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_param_find_string_name(const char *type,
      * Release the memory associated with the info list returned from
      * ocoms_mca_base_param_dump().
      *
-     * @param info [in/out] An service_list_t previously returned from
+     * @param info [in/out] An ocoms_list_t previously returned from
      * ocoms_mca_base_param_dump().
      *
      * @retval OCOMS_SUCCESS Upon success.
@@ -800,7 +800,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_param_find_string_name(const char *type,
      * the caller is finished with the info list, invoke this
      * function and all memory associated with the list will be freed.
      */
-    OCOMS_DECLSPEC int ocoms_mca_base_param_dump_release(service_list_t *info);
+    OCOMS_DECLSPEC int ocoms_mca_base_param_dump_release(ocoms_list_t *info);
 
     /**
      * Shut down the MCA parameter system (normally only invoked by the
@@ -872,7 +872,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_param_find_string_name(const char *type,
                                                   const char *component_name,
                                                   const char *param_name, 
                                                   const char *mca_param_name,
-                                                  int default_value) /* __service_attribute_deprecated__ */;
+                                                  int default_value) /* __ocoms_attribute_deprecated__ */;
     
     /**
      * \deprecated
@@ -909,7 +909,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_param_find_string_name(const char *type,
                                                      const char *component_name,
                                                      const char *param_name, 
                                                      const char *mca_param_name,
-                                                     const char *default_value) /* __service_attribute_deprecated__ */;
+                                                     const char *default_value) /* __ocoms_attribute_deprecated__ */;
 
     /**
      * \deprecated
@@ -933,7 +933,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_param_find_string_name(const char *type,
      */
     OCOMS_DECLSPEC char *ocoms_mca_base_param_environ_variable(const char *type,
                                                         const char *comp,
-                                                        const char *param) /* __service_attribute_deprecated__ */;
+                                                        const char *param) /* __ocoms_attribute_deprecated__ */;
 
 END_C_DECLS
 

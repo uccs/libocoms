@@ -57,27 +57,27 @@ CHAR        [A-Za-z0-9_\-\.]
 
 %%
 
-{WHITE}*\n          { service_util_keyval_yynewlines++; return SERVICE_UTIL_KEYVAL_PARSE_NEWLINE; }
-#.*\n               { service_util_keyval_yynewlines++; return SERVICE_UTIL_KEYVAL_PARSE_NEWLINE; }
-"//".*\n            { service_util_keyval_yynewlines++; return SERVICE_UTIL_KEYVAL_PARSE_NEWLINE; }
+{WHITE}*\n          { service_util_keyval_yynewlines++; return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
+#.*\n               { service_util_keyval_yynewlines++; return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
+"//".*\n            { service_util_keyval_yynewlines++; return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
 
 "/*"                { BEGIN(comment);
-                      return SERVICE_UTIL_KEYVAL_PARSE_NEWLINE; }
+                      return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
 <comment>[^*\n]*       ; /* Eat up non '*'s */
 <comment>"*"+[^*/\n]*  ; /* Eat '*'s not followed by a '/' */
 <comment>\n         { service_util_keyval_yynewlines++;
-                      return SERVICE_UTIL_KEYVAL_PARSE_NEWLINE; } 
+                      return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; } 
 <comment>"*"+"/"    { BEGIN(INITIAL); /* Done with Block Comment */
-                      return SERVICE_UTIL_KEYVAL_PARSE_NEWLINE; }
+                      return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
 
-{WHITE}*"="{WHITE}* { BEGIN(VALUE); return SERVICE_UTIL_KEYVAL_PARSE_EQUAL; }
+{WHITE}*"="{WHITE}* { BEGIN(VALUE); return OCOMS_UTIL_KEYVAL_PARSE_EQUAL; }
 {WHITE}+            ; /* whitespace */
-{CHAR}+             { return SERVICE_UTIL_KEYVAL_PARSE_SINGLE_WORD; }
+{CHAR}+             { return OCOMS_UTIL_KEYVAL_PARSE_SINGLE_WORD; }
 
-<VALUE>{WHITE}*\n   { BEGIN(INITIAL); return SERVICE_UTIL_KEYVAL_PARSE_NEWLINE; }
-<VALUE>[^\n]*[^\t \n]/[\t ]*      { return SERVICE_UTIL_KEYVAL_PARSE_VALUE; }
+<VALUE>{WHITE}*\n   { BEGIN(INITIAL); return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
+<VALUE>[^\n]*[^\t \n]/[\t ]*      { return OCOMS_UTIL_KEYVAL_PARSE_VALUE; }
 
-.	            { return SERVICE_UTIL_KEYVAL_PARSE_ERROR; }
+.	            { return OCOMS_UTIL_KEYVAL_PARSE_ERROR; }
 
 %%
 

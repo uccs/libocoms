@@ -27,7 +27,7 @@
 #include "ocoms/util/ocoms_environ.h"
 #endif
 #include "ocoms/mca/base/base.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 
 /* 
@@ -45,17 +45,17 @@ static void add_to_env(char **params, char **values, char ***env);
 /*
  * Add -mca to the possible command line options list
  */
-int ocoms_mca_base_cmd_line_setup(service_cmd_line_t *cmd)
+int ocoms_mca_base_cmd_line_setup(ocoms_cmd_line_t *cmd)
 {
     int ret = OCOMS_SUCCESS;
 
-    ret = service_cmd_line_make_opt3(cmd, '\0', "mca", "mca", 2,
+    ret = ocoms_cmd_line_make_opt3(cmd, '\0', "mca", "mca", 2,
                                   "Pass context-specific MCA parameters; they are considered global if --gmca is not used and only one context is specified (arg0 is the parameter name; arg1 is the parameter value)");
     if (OCOMS_SUCCESS != ret) {
         return ret;
     }
 
-    ret = service_cmd_line_make_opt3(cmd, '\0', "gmca", "gmca", 2,
+    ret = ocoms_cmd_line_make_opt3(cmd, '\0', "gmca", "gmca", 2,
                                   "Pass global MCA parameters that are applicable to all contexts (arg0 is the parameter name; arg1 is the parameter value)");
 
     if (OCOMS_SUCCESS != ret) {
@@ -63,12 +63,12 @@ int ocoms_mca_base_cmd_line_setup(service_cmd_line_t *cmd)
     }
 
     {
-        service_cmd_line_init_t entry = 
+        ocoms_cmd_line_init_t entry = 
             {"mca", "base", "param_file_prefix", '\0', "am", NULL, 1,
              NULL, OCOMS_CMD_LINE_TYPE_STRING,
              "Aggregate MCA parameter set file list"
             };
-        ret = service_cmd_line_make_opt_mca(cmd, entry);
+        ret = ocoms_cmd_line_make_opt_mca(cmd, entry);
         if (OCOMS_SUCCESS != ret) {
             return ret;
         }
@@ -81,7 +81,7 @@ int ocoms_mca_base_cmd_line_setup(service_cmd_line_t *cmd)
 /*
  * Look for and handle any -mca options on the command line
  */
-int ocoms_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
+int ocoms_mca_base_cmd_line_process_args(ocoms_cmd_line_t *cmd,
                                    char ***context_env, char ***global_env)
 {
   int i, num_insts;
@@ -90,39 +90,39 @@ int ocoms_mca_base_cmd_line_process_args(service_cmd_line_t *cmd,
 
   /* If no relevant parameters were given, just return */
 
-  if (!service_cmd_line_is_taken(cmd, "mca") &&
-      !service_cmd_line_is_taken(cmd, "gmca")) {
+  if (!ocoms_cmd_line_is_taken(cmd, "mca") &&
+      !ocoms_cmd_line_is_taken(cmd, "gmca")) {
       return OCOMS_SUCCESS;
   }
 
   /* Handle app context-specific parameters */
 
-  num_insts = service_cmd_line_get_ninsts(cmd, "mca");
+  num_insts = ocoms_cmd_line_get_ninsts(cmd, "mca");
   params = values = NULL;
   for (i = 0; i < num_insts; ++i) {
-      process_arg(service_cmd_line_get_param(cmd, "mca", i, 0), 
-                  service_cmd_line_get_param(cmd, "mca", i, 1),
+      process_arg(ocoms_cmd_line_get_param(cmd, "mca", i, 0), 
+                  ocoms_cmd_line_get_param(cmd, "mca", i, 1),
                   &params, &values);
   }
   if (NULL != params) {
       add_to_env(params, values, context_env);
-      service_argv_free(params);
-      service_argv_free(values);
+      ocoms_argv_free(params);
+      ocoms_argv_free(values);
   }
 
   /* Handle global parameters */
 
-  num_insts = service_cmd_line_get_ninsts(cmd, "gmca");
+  num_insts = ocoms_cmd_line_get_ninsts(cmd, "gmca");
   params = values = NULL;
   for (i = 0; i < num_insts; ++i) {
-      process_arg(service_cmd_line_get_param(cmd, "gmca", i, 0), 
-                  service_cmd_line_get_param(cmd, "gmca", i, 1),
+      process_arg(ocoms_cmd_line_get_param(cmd, "gmca", i, 0), 
+                  ocoms_cmd_line_get_param(cmd, "gmca", i, 1),
                   &params, &values);
   }
   if (NULL != params) {
       add_to_env(params, values, global_env);
-      service_argv_free(params);
-      service_argv_free(values);
+      ocoms_argv_free(params);
+      ocoms_argv_free(values);
   }
 
   /* All done */
@@ -157,8 +157,8 @@ static int process_arg(const char *param, const char *value,
     /* If we didn't already have an value for the same param, save
        this one away */
   
-    service_argv_append_nosize(params, param);
-    service_argv_append_nosize(values, value);
+    ocoms_argv_append_nosize(params, param);
+    ocoms_argv_append_nosize(values, value);
 
     return OCOMS_SUCCESS;
 }
@@ -174,7 +174,7 @@ static void add_to_env(char **params, char **values, char ***env)
 
     for (i = 0; NULL != params && NULL != params[i]; ++i) {
         name = ocoms_mca_base_param_environ_variable(params[i], NULL, NULL);
-        service_setenv(name, values[i], true, env);
+        ocoms_setenv(name, values[i], true, env);
         free(name);
     }
 }

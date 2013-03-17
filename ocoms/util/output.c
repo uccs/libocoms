@@ -34,16 +34,16 @@
 #include <sys/param.h>
 #endif
 
-#include "ocoms/util/service_environ.h"
+#include "ocoms/util/ocoms_environ.h"
 #include "ocoms/util/output.h"
 #include "ocoms/threads/mutex.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 /*
  * Private data
  */
 static int verbose_stream = -1;
-static service_output_stream_t verbose;
+static ocoms_output_stream_t verbose;
 static char *output_dir = NULL;
 static char *output_prefix = NULL;
 
@@ -84,8 +84,8 @@ typedef struct {
 /*
  * Private functions
  */
-static void construct(service_object_t *stream);
-static int do_open(int output_id, service_output_stream_t * lds);
+static void construct(ocoms_object_t *stream);
+static int do_open(int output_id, ocoms_output_stream_t * lds);
 static int open_file(int i);
 static void free_descriptor(int output_id);
 static int make_string(char **no_newline_string, output_desc_t *ldi, 
@@ -108,16 +108,16 @@ static int default_stderr_fd = -1;
 static output_desc_t info[OCOMS_OUTPUT_MAX_STREAMS];
 static char *temp_str = 0;
 static size_t temp_str_len = 0;
-static service_mutex_t mutex;
+static ocoms_mutex_t mutex;
 static bool syslog_opened = false;
 
 
-OBJ_CLASS_INSTANCE(service_output_stream_t, service_object_t, construct, NULL);
+OBJ_CLASS_INSTANCE(ocoms_output_stream_t, ocoms_object_t, construct, NULL);
 
 /*
  * Setup the output stream infrastructure
  */
-bool service_output_init(void)
+bool ocoms_output_init(void)
 {
     int i;
     char hostname[32];
@@ -132,7 +132,7 @@ bool service_output_init(void)
         default_stderr_fd = atoi(str);
     }
 
-    OBJ_CONSTRUCT(&verbose, service_output_stream_t);
+    OBJ_CONSTRUCT(&verbose, ocoms_output_stream_t);
 #if defined(__WINDOWS__)
     {
         WSADATA wsaData;
@@ -157,16 +157,16 @@ bool service_output_init(void)
 
     /* Initialize the mutex that protects the output */
 
-    OBJ_CONSTRUCT(&mutex, service_mutex_t);
+    OBJ_CONSTRUCT(&mutex, ocoms_mutex_t);
     initialized = true;
 
     /* Set some defaults */
 
     asprintf(&output_prefix, "output-pid%d-", getpid());
-    output_dir = strdup(service_tmp_directory());
+    output_dir = strdup(ocoms_tmp_directory());
 
     /* Open the default verbose stream */
-    verbose_stream = service_output_open(&verbose);
+    verbose_stream = ocoms_output_open(&verbose);
     return true;
 }
 
@@ -174,7 +174,7 @@ bool service_output_init(void)
 /*
  * Open a stream
  */
-int service_output_open(service_output_stream_t * lds)
+int ocoms_output_open(ocoms_output_stream_t * lds)
 {
     return do_open(-1, lds);
 }
@@ -183,7 +183,7 @@ int service_output_open(service_output_stream_t * lds)
 /*
  * Reset the parameters on a stream
  */
-int service_output_reopen(int output_id, service_output_stream_t * lds)
+int ocoms_output_reopen(int output_id, ocoms_output_stream_t * lds)
 {
     return do_open(output_id, lds);
 }
@@ -192,14 +192,14 @@ int service_output_reopen(int output_id, service_output_stream_t * lds)
 /*
  * Enable and disable output streams
  */
-bool service_output_switch(int output_id, bool enable)
+bool ocoms_output_switch(int output_id, bool enable)
 {
     bool ret = false;
 
     /* Setup */
 
     if (!initialized) {
-        service_output_init();
+        ocoms_output_init();
     }
 
     if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS) {
@@ -214,7 +214,7 @@ bool service_output_switch(int output_id, bool enable)
 /*
  * Reopen all the streams; used during checkpoint/restart.
  */
-void service_output_reopen_all(void)
+void ocoms_output_reopen_all(void)
 {
     char *str;
     char hostname[32];
@@ -234,7 +234,7 @@ void service_output_reopen_all(void)
     asprintf(&verbose.lds_prefix, "[%s:%05d] ", hostname, getpid());
 #if 0
     int i;
-    service_output_stream_t lds;
+    ocoms_output_stream_t lds;
 
     for (i = 0; i < OCOMS_OUTPUT_MAX_STREAMS; ++i) {
 
@@ -245,7 +245,7 @@ void service_output_reopen_all(void)
         }
 
         /* 
-         * set this to zero to ensure that service_output_open will
+         * set this to zero to ensure that ocoms_output_open will
          * return this same index as the output stream id
          */
         info[i].ldi_used = false;
@@ -267,10 +267,10 @@ void service_output_reopen_all(void)
         lds.lds_file_suffix = info[i].ldi_file_suffix;
 
         /* 
-         * call service_output_open to open the stream. The return value
+         * call ocoms_output_open to open the stream. The return value
          * is guaranteed to be i.  So we can ignore it.
          */
-        service_output_open(&lds);
+        ocoms_output_open(&lds);
     }
 #endif
 }
@@ -279,7 +279,7 @@ void service_output_reopen_all(void)
 /*
  * Close a stream
  */
-void service_output_close(int output_id)
+void ocoms_output_close(int output_id)
 {
     int i;
 
@@ -292,7 +292,7 @@ void service_output_close(int output_id)
     /* If it's valid, used, enabled, and has an open file descriptor,
      * free the resources associated with the descriptor */
 
-    SERVICE_THREAD_LOCK(&mutex);
+    OCOMS_THREAD_LOCK(&mutex);
     if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_used && info[output_id].ldi_enabled) {
         free_descriptor(output_id);
@@ -323,14 +323,14 @@ void service_output_close(int output_id)
         temp_str = NULL;
         temp_str_len = 0;
     }
-    SERVICE_THREAD_UNLOCK(&mutex);
+    OCOMS_THREAD_UNLOCK(&mutex);
 }
 
 
 /*
  * Main function to send output to a stream
  */
-void service_output(int output_id, const char *format, ...)
+void ocoms_output(int output_id, const char *format, ...)
 {
     if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS) {
         va_list arglist;
@@ -344,7 +344,7 @@ void service_output(int output_id, const char *format, ...)
 /*
  * Send a message to a stream if the verbose level is high enough
  */
-void service_output_verbose(int level, int output_id, const char *format, ...)
+void ocoms_output_verbose(int level, int output_id, const char *format, ...)
 {
     if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_verbose_level >= level) {
@@ -359,7 +359,7 @@ void service_output_verbose(int level, int output_id, const char *format, ...)
 /*
  * Send a message to a stream if the verbose level is high enough
  */
-void service_output_vverbose(int level, int output_id, const char *format, 
+void ocoms_output_vverbose(int level, int output_id, const char *format, 
                           va_list arglist)
 {
     if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
@@ -372,7 +372,7 @@ void service_output_vverbose(int level, int output_id, const char *format,
 /*
  * Send a message to a string if the verbose level is high enough
  */
-char *service_output_string(int level, int output_id, const char *format, ...)
+char *ocoms_output_string(int level, int output_id, const char *format, ...)
 {
     int rc;
     char *ret = NULL;
@@ -395,7 +395,7 @@ char *service_output_string(int level, int output_id, const char *format, ...)
 /*
  * Send a message to a string if the verbose level is high enough
  */
-char *service_output_vstring(int level, int output_id, const char *format,  
+char *ocoms_output_vstring(int level, int output_id, const char *format,  
                           va_list arglist)
 {
     int rc;
@@ -416,7 +416,7 @@ char *service_output_vstring(int level, int output_id, const char *format,
 /*
  * Set the verbosity level of a stream
  */
-void service_output_set_verbosity(int output_id, int level)
+void ocoms_output_set_verbosity(int output_id, int level)
 {
     if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS) {
         info[output_id].ldi_verbose_level = level;
@@ -427,7 +427,7 @@ void service_output_set_verbosity(int output_id, int level)
 /*
  * Control where output flies will go
  */
-void service_output_set_output_file_info(const char *dir,
+void ocoms_output_set_output_file_info(const char *dir,
                                       const char *prefix,
                                       char **olddir,
                                       char **oldprefix)
@@ -453,11 +453,11 @@ void service_output_set_output_file_info(const char *dir,
 /*
  * Shut down the output stream system
  */
-void service_output_finalize(void)
+void ocoms_output_finalize(void)
 {
     if (initialized) {
         if (verbose_stream != -1) {
-            service_output_close(verbose_stream);
+            ocoms_output_close(verbose_stream);
         }
         free(verbose.lds_prefix);
         verbose_stream = -1;
@@ -477,9 +477,9 @@ void service_output_finalize(void)
 /*
  * Constructor
  */
-static void construct(service_object_t *obj)
+static void construct(ocoms_object_t *obj)
 {
-    service_output_stream_t *stream = (service_output_stream_t*) obj;
+    ocoms_output_stream_t *stream = (ocoms_output_stream_t*) obj;
 
     stream->lds_verbose_level = 0;
     stream->lds_syslog_priority = 0;
@@ -500,28 +500,28 @@ static void construct(service_object_t *obj)
  * back-end function so that we can do the thread locking properly
  * (especially upon reopen).
  */
-static int do_open(int output_id, service_output_stream_t * lds)
+static int do_open(int output_id, ocoms_output_stream_t * lds)
 {
     int i;
 
     /* Setup */
 
     if (!initialized) {
-        service_output_init();
+        ocoms_output_init();
     }
 
     /* If output_id == -1, find an available stream, or return
      * OCOMS_ERROR */
 
     if (-1 == output_id) {
-        SERVICE_THREAD_LOCK(&mutex);
+        OCOMS_THREAD_LOCK(&mutex);
         for (i = 0; i < OCOMS_OUTPUT_MAX_STREAMS; ++i) {
             if (!info[i].ldi_used) {
                 break;
             }
         }
         if (i >= OCOMS_OUTPUT_MAX_STREAMS) {
-            SERVICE_THREAD_UNLOCK(&mutex);
+            OCOMS_THREAD_UNLOCK(&mutex);
             return OCOMS_ERR_OUT_OF_RESOURCE;
         }
     }
@@ -545,7 +545,7 @@ static int do_open(int output_id, service_output_stream_t * lds)
 
     info[i].ldi_used = true;
     if (-1 == output_id) {
-        SERVICE_THREAD_UNLOCK(&mutex);
+        OCOMS_THREAD_UNLOCK(&mutex);
     }
     info[i].ldi_enabled = lds->lds_is_debugging ?
         (bool) OCOMS_ENABLE_DEBUG : true;
@@ -799,19 +799,19 @@ static int output(int output_id, const char *format, va_list arglist)
     /* Setup */
 
     if (!initialized) {
-        service_output_init();
+        ocoms_output_init();
     }
 
     /* If it's valid, used, and enabled, output */
 
     if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS &&
         info[output_id].ldi_used && info[output_id].ldi_enabled) {
-        SERVICE_THREAD_LOCK(&mutex);
+        OCOMS_THREAD_LOCK(&mutex);
         ldi = &info[output_id];
 
         /* Make the strings */
         if (OCOMS_SUCCESS != (rc = make_string(&str, ldi, format, arglist))) {
-            SERVICE_THREAD_UNLOCK(&mutex);
+            OCOMS_THREAD_UNLOCK(&mutex);
             return rc;
         }
 
@@ -844,7 +844,7 @@ static int output(int output_id, const char *format, va_list arglist)
         /* File output -- first check to see if the file opening was
          * delayed.  If so, try to open it.  If we failed to open it,
          * then just discard (there are big warnings in the
-         * service_output.h docs about this!). */
+         * ocoms_output.h docs about this!). */
 
         if (ldi->ldi_file) {
             if (ldi->ldi_fd == -1) {
@@ -855,7 +855,7 @@ static int output(int output_id, const char *format, va_list arglist)
                     char *out = buffer;
                     memset(buffer, 0, BUFSIZ);
                     snprintf(buffer, BUFSIZ - 1,
-                             "[WARNING: %d lines lost because the Open MPI process session directory did\n not exist when service_output() was invoked]\n",
+                             "[WARNING: %d lines lost because the Open MPI process session directory did\n not exist when ocoms_output() was invoked]\n",
                              ldi->ldi_file_num_lines_lost);
                    write(ldi->ldi_fd, buffer, (int)strlen(buffer));
                     ldi->ldi_file_num_lines_lost = 0;
@@ -868,14 +868,14 @@ static int output(int output_id, const char *format, va_list arglist)
                 write(ldi->ldi_fd, out, (int)strlen(out));
             }
         }
-        SERVICE_THREAD_UNLOCK(&mutex);
+        OCOMS_THREAD_UNLOCK(&mutex);
         free(str);
     }
 
     return rc;
 }
 
-int service_output_get_verbosity(int output_id)
+int ocoms_output_get_verbosity(int output_id)
 {
     if (output_id >= 0 && output_id < OCOMS_OUTPUT_MAX_STREAMS && info[output_id].ldi_used) {
         return info[output_id].ldi_verbose_level;

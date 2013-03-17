@@ -21,7 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/mca/mca.h"
 #include "ocoms/mca/base/base.h"
 #include "ocoms/mca/base/mca_base_param_internal.h"
@@ -37,21 +37,21 @@ int ocoms_mca_base_parse_paramfile(const char *paramfile)
 {
     file_being_read = (char*)paramfile;
     
-    return service_util_keyval_parse(paramfile, save_value);
+    return ocoms_util_keyval_parse(paramfile, save_value);
 }
 
 static void save_value(const char *name, const char *value)
 {
-    service_list_item_t *item;
+    ocoms_list_item_t *item;
     ocoms_mca_base_param_file_value_t *fv;
 
     /* First traverse through the list and ensure that we don't
        already have a param of this name.  If we do, just replace the
        value. */
 
-    for (item = service_list_get_first(&ocoms_mca_base_param_file_values);
-         service_list_get_end(&ocoms_mca_base_param_file_values) != item;
-         item = service_list_get_next(item)) {
+    for (item = ocoms_list_get_first(&ocoms_mca_base_param_file_values);
+         ocoms_list_get_end(&ocoms_mca_base_param_file_values) != item;
+         item = ocoms_list_get_next(item)) {
         fv = (ocoms_mca_base_param_file_value_t *) item;
         if (0 == strcmp(name, fv->mbpfv_param)) {
             if (NULL != fv->mbpfv_value ) {
@@ -78,6 +78,6 @@ static void save_value(const char *name, const char *value)
             fv->mbpfv_value = NULL;
         }
         fv->mbpfv_file = strdup(file_being_read);
-        service_list_append(&ocoms_mca_base_param_file_values, (service_list_item_t*) fv);
+        ocoms_list_append(&ocoms_mca_base_param_file_values, (ocoms_list_item_t*) fv);
     }
 }

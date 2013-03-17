@@ -17,8 +17,8 @@
 #
 
 
-AM_LFLAGS = -Pservice_util_keyval_yy
-LEX_OUTPUT_ROOT = lex.service_util_keyval_yy
+AM_LFLAGS = -Pocoms_util_keyval_yy
+LEX_OUTPUT_ROOT = lex.ocoms_util_keyval_yy
 
 noinst_LTLIBRARIES = libserviceutilkeyval.la
 

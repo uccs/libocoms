@@ -23,16 +23,16 @@
 #
 
 datatype_headers = \
-        service_convertor.h \
-        service_convertor_internal.h \
-        service_datatype_checksum.h \
-        service_datatype.h \
-        service_datatype_internal.h \
-        service_datatype_copy.h \
-        service_datatype_memcpy.h \
-        service_datatype_pack.h \
-        service_datatype_prototypes.h \
-        service_datatype_unpack.h
+        ocoms_convertor.h \
+        ocoms_convertor_internal.h \
+        ocoms_datatype_checksum.h \
+        ocoms_datatype.h \
+        ocoms_datatype_internal.h \
+        ocoms_datatype_copy.h \
+        ocoms_datatype_memcpy.h \
+        ocoms_datatype_pack.h \
+        ocoms_datatype_prototypes.h \
+        ocoms_datatype_unpack.h
 
 
 noinst_LTLIBRARIES = \
@@ -40,44 +40,44 @@ noinst_LTLIBRARIES = \
         libdatatype.la
 
 # these sources will be compiled with the special -D
-libdatatype_reliable_la_SOURCES = service_datatype_pack.c service_datatype_unpack.c
+libdatatype_reliable_la_SOURCES = ocoms_datatype_pack.c ocoms_datatype_unpack.c
 libdatatype_reliable_la_CFLAGS = -DCHECKSUM $(AM_CFLAGS)
 
 # these sources will be compiled with the normal CFLAGS only
 libdatatype_la_SOURCES = \
         $(datatype_headers) \
-        service_convertor.c \
-        service_convertor_raw.c \
-        service_copy_functions.c \
-        service_copy_functions_heterogeneous.c \
-        service_datatype_add.c \
-        service_datatype_clone.c \
-        service_datatype_copy.c \
-        service_datatype_create.c \
-        service_datatype_create_contiguous.c \
-        service_datatype_destroy.c \
-        service_datatype_dump.c \
-        service_datatype_fake_stack.c \
-        service_datatype_get_count.c \
-        service_datatype_module.c \
-        service_datatype_optimize.c \
-        service_datatype_pack.c \
-        service_datatype_position.c \
-        service_datatype_resize.c \
-        service_datatype_unpack.c
+        ocoms_convertor.c \
+        ocoms_convertor_raw.c \
+        ocoms_copy_functions.c \
+        ocoms_copy_functions_heterogeneous.c \
+        ocoms_datatype_add.c \
+        ocoms_datatype_clone.c \
+        ocoms_datatype_copy.c \
+        ocoms_datatype_create.c \
+        ocoms_datatype_create_contiguous.c \
+        ocoms_datatype_destroy.c \
+        ocoms_datatype_dump.c \
+        ocoms_datatype_fake_stack.c \
+        ocoms_datatype_get_count.c \
+        ocoms_datatype_module.c \
+        ocoms_datatype_optimize.c \
+        ocoms_datatype_pack.c \
+        ocoms_datatype_position.c \
+        ocoms_datatype_resize.c \
+        ocoms_datatype_unpack.c
 
 libdatatype_la_LIBADD = libdatatype_reliable.la
 
 # Conditionally install the header files
 #if WANT_INSTALL_HEADERS
 #servicedir = $(includedir)/ocoms/$(subdir)
-#service_HEADERS = $(headers)
+#ocoms_HEADERS = $(headers)
 #endif
 
 # If we have cuda support, modify file list and flags
 if OCOMS_cuda_support
-libdatatype_la_SOURCES += service_datatype_cuda.c
-datatype_headers += service_datatype_cuda.h
-AM_CPPFLAGS = $(service_datatype_CPPFLAGS)
-libdatatype_la_LIBADD += $(service_datatype_LIBS)
+libdatatype_la_SOURCES += ocoms_datatype_cuda.c
+datatype_headers += ocoms_datatype_cuda.h
+AM_CPPFLAGS = $(ocoms_datatype_CPPFLAGS)
+libdatatype_la_LIBADD += $(ocoms_datatype_LIBS)
 endif

@@ -163,7 +163,7 @@ AH_TOP([/* -*- c -*-
 ])
 
 AH_BOTTOM([
-#include "ocoms/platform/service_config_bottom.h"
+#include "ocoms/platform/ocoms_config_bottom.h"
 #endif /* OCOMS_CONFIG_H */
 ])
 

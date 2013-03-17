@@ -18,18 +18,18 @@
 
 #include "ocoms/platform/ocoms_config.h"
 
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/util/output.h"
 #include "ocoms/mca/mca.h"
 #include "ocoms/mca/base/base.h"
 #include "ocoms/mca/base/mca_base_component_repository.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 int ocoms_mca_base_components_close(int output_id, 
-                              service_list_t *components_available, 
+                              ocoms_list_t *components_available, 
                               const ocoms_mca_base_component_t *skip)
 {
-  service_list_item_t *item;
+  ocoms_list_item_t *item;
   ocoms_mca_base_component_priority_list_item_t *pcli, *skipped_pcli = NULL;
   const ocoms_mca_base_component_t *component;
 
@@ -38,9 +38,9 @@ int ocoms_mca_base_components_close(int output_id,
      components.  It's easier to simply remove the entire list and
      then simply re-add the skip entry when done. */
 
-  for (item = service_list_remove_first(components_available);
+  for (item = ocoms_list_remove_first(components_available);
        NULL != item; 
-       item = service_list_remove_first(components_available)) {
+       item = ocoms_list_remove_first(components_available)) {
     pcli = (ocoms_mca_base_component_priority_list_item_t *) item;
     component = pcli->super.cli_component;
 
@@ -51,14 +51,14 @@ int ocoms_mca_base_components_close(int output_id,
 
       if (NULL != component->mca_close_component) {
         component->mca_close_component();
-        service_output_verbose(10, output_id, 
+        ocoms_output_verbose(10, output_id, 
                             "mca: base: close: component %s closed",
                            component->mca_component_name);
       }
 
       /* Unload */
 
-      service_output_verbose(10, output_id, 
+      ocoms_output_verbose(10, output_id, 
                           "mca: base: close: unloading component %s",
                          component->mca_component_name);
       ocoms_mca_base_component_repository_release((ocoms_mca_base_component_t *) component);
@@ -72,7 +72,7 @@ int ocoms_mca_base_components_close(int output_id,
      list (see above comment) */
 
   if (NULL != skipped_pcli) {
-    service_list_append(components_available, (service_list_item_t *) skipped_pcli);
+    ocoms_list_append(components_available, (ocoms_list_item_t *) skipped_pcli);
   }
 
   /*
@@ -82,7 +82,7 @@ int ocoms_mca_base_components_close(int output_id,
    * unchoosen components, but will still be using the framework.
    */
   if (0 != output_id && NULL == skip) {
-      service_output_close (output_id);
+      ocoms_output_close (output_id);
   }
   /* All done */
   return OCOMS_SUCCESS;

@@ -51,12 +51,12 @@
 #include "ocoms/util/path.h"
 #include "ocoms/util/os_path.h"
 #include "ocoms/util/argv.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 static void path_env_load(char *path, int *pargc, char ***pargv);
 static char *list_env_get(char *var, char **list);
 
-bool service_path_is_absolute( const char *path )
+bool ocoms_path_is_absolute( const char *path )
 {
 #if defined(__WINDOWS__)
     /* On Windows an absolute path always start with [a-z]:\ or with \\ */
@@ -73,7 +73,7 @@ bool service_path_is_absolute( const char *path )
 /**
  *  Locates a file with certain permissions
  */
-char *service_path_find(char *fname, char **pathv, int mode, char **envv)
+char *ocoms_path_find(char *fname, char **pathv, int mode, char **envv)
 {
     char *fullpath;  
     char *delimit;  
@@ -82,8 +82,8 @@ char *service_path_find(char *fname, char **pathv, int mode, char **envv)
     int i;
 
     /* If absolute path is given, return it without searching. */
-    if( service_path_is_absolute(fname) ) {
-        return service_path_access(fname, "", mode);
+    if( ocoms_path_is_absolute(fname) ) {
+        return ocoms_path_access(fname, "", mode);
     }
 
     /* Initialize. */
@@ -108,7 +108,7 @@ char *service_path_find(char *fname, char **pathv, int mode, char **envv)
             }
             if (NULL != env) {
                 if (!delimit) {
-                    fullpath = service_path_access(fname, env, mode);
+                    fullpath = ocoms_path_access(fname, env, mode);
                 } else {
                     pfix = (char*) malloc(strlen(env) + strlen(delimit) + 1);
                     if (NULL == pfix) {
@@ -116,23 +116,23 @@ char *service_path_find(char *fname, char **pathv, int mode, char **envv)
                     }
                     strcpy(pfix, env);
                     strcat(pfix, delimit);
-                    fullpath = service_path_access(fname, pfix, mode);
+                    fullpath = ocoms_path_access(fname, pfix, mode);
                     free(pfix);
                 }
             }
         }
         else {
-            fullpath = service_path_access(fname, pathv[i], mode);
+            fullpath = ocoms_path_access(fname, pathv[i], mode);
         }
         i++;
     }
-    return service_make_filename_os_friendly(fullpath);
+    return ocoms_make_filename_os_friendly(fullpath);
 }
 
 /*
  * Locates a file with certain permissions from a list of search paths
  */
-char *service_path_findv(char *fname, int mode, char **envv, char *wrkdir)
+char *ocoms_path_findv(char *fname, int mode, char **envv, char *wrkdir)
 {
     char **dirv;     
     char *fullpath; 
@@ -169,13 +169,13 @@ char *service_path_findv(char *fname, int mode, char **envv, char *wrkdir)
        the wrkdir to the end of the path */
 
     if (!found_dot && NULL != wrkdir) {
-        service_argv_append(&dirc, &dirv, wrkdir);
+        ocoms_argv_append(&dirc, &dirv, wrkdir);
     }
 
     if(NULL == dirv)
         return NULL;
-    fullpath = service_path_find(fname, dirv, mode, envv);
-    service_argv_free(dirv);
+    fullpath = ocoms_path_find(fname, dirv, mode, envv);
+    ocoms_argv_free(dirv);
     return fullpath;
 }
 
@@ -193,16 +193,16 @@ char *service_path_findv(char *fname, int mode, char **envv, char *wrkdir)
  *      -Full pathname of located file Success
  *      -NULL Failure
  */
-char *service_path_access(char *fname, char *path, int mode)
+char *ocoms_path_access(char *fname, char *path, int mode)
 {
     char *fullpath = NULL;
     struct stat buf;
     
     /* Allocate space for the full pathname. */
     if (NULL == path) {
-        fullpath = service_os_path(false, fname, NULL);
+        fullpath = ocoms_os_path(false, fname, NULL);
     } else {
-        fullpath = service_os_path(false, path, fname, NULL);
+        fullpath = ocoms_os_path(false, path, fname, NULL);
     }
     if (NULL == fullpath)
         return NULL;
@@ -290,7 +290,7 @@ static void path_env_load(char *path, int *pargc, char ***pargv)
         if (p != path) {
             saved = *p;
             *p = '\0';
-            service_argv_append(pargc, pargv, path);
+            ocoms_argv_append(pargc, pargv, path);
             *p = saved;
             path = p;
         }
@@ -342,12 +342,12 @@ static char *list_env_get(char *var, char **list)
  * function will return NULL. Otherwise, an newly allocated string
  * will be returned.
  */
-char* service_find_absolute_path( char* app_name )
+char* ocoms_find_absolute_path( char* app_name )
 {
     char* abs_app_name;
     char cwd[OCOMS_PATH_MAX], *pcwd;
 
-    if( service_path_is_absolute(app_name) ) { /* already absolute path */
+    if( ocoms_path_is_absolute(app_name) ) { /* already absolute path */
         abs_app_name = app_name;
     } else if ( '.' == app_name[0] ||
                NULL != strchr(app_name, OCOMS_PATH_SEP[0])) {
@@ -357,10 +357,10 @@ char* service_find_absolute_path( char* app_name )
             /* too bad there is no way we can get the app absolute name */
             return NULL;
         }
-        abs_app_name = service_os_path( false, pcwd, app_name, NULL );
+        abs_app_name = ocoms_os_path( false, pcwd, app_name, NULL );
     } else {
         /* Otherwise try to search for the application in the PATH ... */
-        abs_app_name = service_path_findv( app_name, X_OK, NULL, NULL );
+        abs_app_name = ocoms_path_findv( app_name, X_OK, NULL, NULL );
     }
     
     if( NULL != abs_app_name ) {
@@ -440,7 +440,7 @@ char* service_find_absolute_path( char* app_name )
 #define MASK3      0xffffff
 #define MASK4    0xffffffff
 
-bool service_path_nfs(char *fname)
+bool ocoms_path_nfs(char *fname)
 {
 #if !defined(__WINDOWS__)
     int i;
@@ -453,7 +453,7 @@ bool service_path_nfs(char *fname)
     struct statfs buf;
 #endif
     /*
-     * Be sure to update the test (test/util/service_path_nfs.c) 
+     * Be sure to update the test (test/util/ocoms_path_nfs.c) 
      * while adding a new Network/Cluster Filesystem here
      */
     static struct fs_types_t {
@@ -486,7 +486,7 @@ again:
     if (-1 == rc) {
         char * last_sep;
 
-        OCOMS_OUTPUT_VERBOSE((10, 0, "service_path_nfs: stat(v)fs on file:%s failed errno:%d directory:%s\n",
+        OCOMS_OUTPUT_VERBOSE((10, 0, "ocoms_path_nfs: stat(v)fs on file:%s failed errno:%d directory:%s\n",
                              fname, errno, file));
 
         last_sep = strrchr(file, OCOMS_PATH_SEP[0]);
@@ -524,7 +524,7 @@ again:
     return false;
 
 found:
-    OCOMS_OUTPUT_VERBOSE((10, 0, "service_path_nfs: file:%s on fs:%s\n",
+    OCOMS_OUTPUT_VERBOSE((10, 0, "ocoms_path_nfs: file:%s on fs:%s\n",
                          fname, fs_types[i].f_fsname));
     free (file);
     return true;
@@ -538,7 +538,7 @@ found:
 
     
 int
-service_path_df(const char *path,
+ocoms_path_df(const char *path,
              uint64_t *out_avail)
 {
 #if !defined(__WINDOWS__)
@@ -568,7 +568,7 @@ service_path_df(const char *path,
     } while (-1 == rc && ESTALE == err && (--trials > 0));
 
     if (-1 == rc) {
-        OCOMS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs on "
+        OCOMS_OUTPUT_VERBOSE((10, 2, "ocoms_path_df: stat(v)fs on "
                              "path: %s failed with errno: %d (%s)\n",
                              path, err, strerror(err)));
         return OCOMS_ERROR;
@@ -578,7 +578,7 @@ service_path_df(const char *path,
                                /* sometimes buf.f_bavail is negative */
     *out_avail = buf.f_bsize * ((int)buf.f_bavail < 0 ? 0 : buf.f_bavail);
 
-    /*OCOMS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
+    /*OCOMS_OUTPUT_VERBOSE((10, 2, "ocoms_path_df: stat(v)fs states "
                          "path: %s has %"PRIu64 " B of free space.",
                          path, *out_avail));*/
 
@@ -592,7 +592,7 @@ service_path_df(const char *path,
 
         if (!GetDiskFreeSpaceA(NULL, &dwSectorsPerCluster,
             &dwBytesPerSector, &dwFreeClusters, &dwTotalClusters)) {
-            OCOMS_OUTPUT_VERBOSE((10, 2, "service_path_df: GetDiskFreeSpaceA on "
+            OCOMS_OUTPUT_VERBOSE((10, 2, "ocoms_path_df: GetDiskFreeSpaceA on "
                         "path: %s failed with errno: %d (%s)\n",
                         path, err, strerror(err)));
             return OCOMS_ERROR;
@@ -600,7 +600,7 @@ service_path_df(const char *path,
         *out_avail = dwFreeClusters * dwSectorsPerCluster * dwBytesPerSector;
     }
 
-    OCOMS_OUTPUT_VERBOSE((10, 2, "service_path_df: stat(v)fs states "
+    OCOMS_OUTPUT_VERBOSE((10, 2, "ocoms_path_df: stat(v)fs states "
                         "path: %s has %"PRIu64 " B of free space.",
                         path, *out_avail));
 

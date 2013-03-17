@@ -11,8 +11,8 @@
 
 /* @file */
 
-#ifndef SERVICE_UTIL_FD_H_
-#define SERVICE_UTIL_FD_H_
+#ifndef OCOMS_UTIL_FD_H_
+#define OCOMS_UTIL_FD_H_
 
 #include "ocoms/platform/ocoms_config.h"
 
@@ -32,7 +32,7 @@ BEGIN_C_DECLS
  * Loop over reading from the fd until len bytes are read or an error
  * occurs.  EAGAIN and EINTR are transparently handled.
  */
-OCOMS_DECLSPEC int service_fd_read(int fd, int len, void *buffer);
+OCOMS_DECLSPEC int ocoms_fd_read(int fd, int len, void *buffer);
 
 /**
  * Write a complete buffer to a file descriptor.
@@ -47,7 +47,7 @@ OCOMS_DECLSPEC int service_fd_read(int fd, int len, void *buffer);
  * Loop over writing to the fd until len bytes are written or an error
  * occurs.  EAGAIN and EINTR are transparently handled.
  */
-OCOMS_DECLSPEC int service_fd_write(int fd, int len, const void *buffer);
+OCOMS_DECLSPEC int ocoms_fd_write(int fd, int len, const void *buffer);
 
 END_C_DECLS
 

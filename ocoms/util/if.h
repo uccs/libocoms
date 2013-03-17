@@ -42,11 +42,11 @@
 
 BEGIN_C_DECLS
 
-#define SERVICE_IF_FORMAT_ADDR(n)                              \
+#define OCOMS_IF_FORMAT_ADDR(n)                              \
     (((n) >> 24) & 0x000000FF), (((n) >> 16) & 0x000000FF), \
     (((n) >> 8) & 0x000000FF), ((n) & 0x000000FF)
 
-#define SERVICE_IF_ASSEMBLE_NETWORK(n1, n2, n3, n4)    \
+#define OCOMS_IF_ASSEMBLE_NETWORK(n1, n2, n3, n4)    \
     (((n1) << 24) & 0xFF000000) |                   \
     (((n2) << 16) & 0x00FF0000) |                   \
     (((n3) <<  8) & 0x0000FF00) |                   \
@@ -59,7 +59,7 @@ BEGIN_C_DECLS
  *  @param if_addr (OUT)  Interface address buffer
  *  @param size    (IN)   Interface address buffer size
  */
-OCOMS_DECLSPEC int service_ifnametoaddr(const char* if_name, 
+OCOMS_DECLSPEC int ocoms_ifnametoaddr(const char* if_name, 
                                     struct sockaddr* if_addr,
                                     int size);
 
@@ -70,16 +70,16 @@ OCOMS_DECLSPEC int service_ifnametoaddr(const char* if_name,
  *  @param if_name (OUT)  Interface name buffer
  *  @param size    (IN)   Interface name buffer size
  */
-OCOMS_DECLSPEC int service_ifaddrtoname(const char* if_addr, 
+OCOMS_DECLSPEC int ocoms_ifaddrtoname(const char* if_addr, 
                                     char* if_name, int size);
 
 /**
- *  Lookup an interface by name and return its service_list index.
+ *  Lookup an interface by name and return its ocoms_list index.
  *  
  *  @param if_name (IN)  Interface name
- *  @return              Interface service_list index
+ *  @return              Interface ocoms_list index
  */
-OCOMS_DECLSPEC int service_ifnametoindex(const char* if_name);
+OCOMS_DECLSPEC int ocoms_ifnametoindex(const char* if_name);
 
 /**
  *  Lookup an interface by name and return its kernel index.
@@ -87,25 +87,25 @@ OCOMS_DECLSPEC int service_ifnametoindex(const char* if_name);
  *  @param if_name (IN)  Interface name
  *  @return              Interface kernel index
  */
-OCOMS_DECLSPEC int16_t service_ifnametokindex(const char* if_name);
+OCOMS_DECLSPEC int16_t ocoms_ifnametokindex(const char* if_name);
 
 /**
- *  Lookup an interface by service_list index and return its kernel index.
+ *  Lookup an interface by ocoms_list index and return its kernel index.
  *  
- *  @param if_name (IN)  Interface service_list index
+ *  @param if_name (IN)  Interface ocoms_list index
  *  @return              Interface kernel index
  */
-OCOMS_DECLSPEC int service_ifindextokindex(int if_index);
+OCOMS_DECLSPEC int ocoms_ifindextokindex(int if_index);
 
 /**
  *  Returns the number of available interfaces.
  */
-OCOMS_DECLSPEC int service_ifcount(void);
+OCOMS_DECLSPEC int ocoms_ifcount(void);
 
 /**
  *  Returns the index of the first available interface.
  */
-OCOMS_DECLSPEC int service_ifbegin(void); 
+OCOMS_DECLSPEC int ocoms_ifbegin(void); 
 
 /**
  *  Lookup the current position in the interface list by
@@ -114,7 +114,7 @@ OCOMS_DECLSPEC int service_ifbegin(void);
  *  @param if_index   Returns the next available index from the 
  *                    current position.
  */
-OCOMS_DECLSPEC int service_ifnext(int if_index);
+OCOMS_DECLSPEC int ocoms_ifnext(int if_index);
 
 /**
  *  Lookup an interface by index and return its name.
@@ -123,7 +123,7 @@ OCOMS_DECLSPEC int service_ifnext(int if_index);
  *  @param if_name (OUT)  Interface name buffer
  *  @param size (IN)      Interface name buffer size
  */
-OCOMS_DECLSPEC int service_ifindextoname(int if_index, char* if_name, int);
+OCOMS_DECLSPEC int ocoms_ifindextoname(int if_index, char* if_name, int);
 
 /**
  *  Lookup an interface by kernel index and return its name.
@@ -132,7 +132,7 @@ OCOMS_DECLSPEC int service_ifindextoname(int if_index, char* if_name, int);
  *  @param if_name (OUT)  Interface name buffer
  *  @param size (IN)      Interface name buffer size
  */
-OCOMS_DECLSPEC int service_ifkindextoname(int if_kindex, char* if_name, int);
+OCOMS_DECLSPEC int ocoms_ifkindextoname(int if_kindex, char* if_name, int);
 
 /**
  *  Lookup an interface by index and return its primary address.
@@ -141,7 +141,7 @@ OCOMS_DECLSPEC int service_ifkindextoname(int if_kindex, char* if_name, int);
  *  @param if_name (OUT)  Interface address buffer
  *  @param size (IN)      Interface address buffer size
  */
-OCOMS_DECLSPEC int service_ifindextoaddr(int if_index, struct sockaddr*,
+OCOMS_DECLSPEC int ocoms_ifindextoaddr(int if_index, struct sockaddr*,
                                      unsigned int);
 
 /**
@@ -152,7 +152,7 @@ OCOMS_DECLSPEC int service_ifindextoaddr(int if_index, struct sockaddr*,
  *  @param if_name (OUT)  Interface address buffer
  *  @param size (IN)      Interface address buffer size
  */
-OCOMS_DECLSPEC int service_ifindextomask(int if_index, uint32_t*, int);
+OCOMS_DECLSPEC int ocoms_ifindextomask(int if_index, uint32_t*, int);
 
 /**
  *  Lookup an interface by index and return its flags.
@@ -160,7 +160,7 @@ OCOMS_DECLSPEC int service_ifindextomask(int if_index, uint32_t*, int);
  *  @param if_index (IN)  Interface index
  *  @param if_flags (OUT) Interface flags
  */
-OCOMS_DECLSPEC int service_ifindextoflags(int if_index, uint32_t*);
+OCOMS_DECLSPEC int ocoms_ifindextoflags(int if_index, uint32_t*);
 
 /**
  * Determine if given hostname / IP address is a local address
@@ -168,7 +168,7 @@ OCOMS_DECLSPEC int service_ifindextoflags(int if_index, uint32_t*);
  * @param hostname (IN)    Hostname (or stringified IP address)
  * @return                 true if \c hostname is local, false otherwise
  */
-OCOMS_DECLSPEC bool service_ifislocal(const char *hostname);
+OCOMS_DECLSPEC bool ocoms_ifislocal(const char *hostname);
 
 /**
  * Convert a dot-delimited network tuple to an IP address
@@ -179,14 +179,14 @@ OCOMS_DECLSPEC bool service_ifislocal(const char *hostname);
  * @return OCOMS_SUCCESS if no problems encountered
  * @return OCOMS_ERROR if data could not be released
  */
-OCOMS_DECLSPEC int service_iftupletoaddr(char *addr, uint32_t *net, uint32_t *mask);
+OCOMS_DECLSPEC int ocoms_iftupletoaddr(char *addr, uint32_t *net, uint32_t *mask);
 
 /**
  * Determine if given interface is loopback
  *
  *  @param if_index (IN)  Interface index
  */
-OCOMS_DECLSPEC bool service_ifisloopback(int if_index);
+OCOMS_DECLSPEC bool ocoms_ifisloopback(int if_index);
 
 
 END_C_DECLS

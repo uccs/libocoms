@@ -18,8 +18,8 @@
 
 /** @file */
 
-#ifndef SERVICE_UTIL_KEYVAL_PARSE_H
-#define SERVICE_UTIL_KEYVAL_PARSE_H
+#ifndef OCOMS_UTIL_KEYVAL_PARSE_H
+#define OCOMS_UTIL_KEYVAL_PARSE_H
 
 #include "ocoms/platform/ocoms_config.h"
 
@@ -28,12 +28,12 @@ BEGIN_C_DECLS
 /**
  * Callback triggered for each key = value pair
  *
- * Callback triggered from service_util_keyval_parse for each key = value
+ * Callback triggered from ocoms_util_keyval_parse for each key = value
  * pair.  Both key and value will be pointers into static buffers.
  * The buffers must not be free()ed and contents may be overwritten
  * immediately after the callback returns.
  */
-typedef void (*service_keyval_parse_fn_t)(const char *key, const char *value);
+typedef void (*ocoms_keyval_parse_fn_t)(const char *key, const char *value);
 
 /**
  * Parse \c filename, made up of key = value pairs.
@@ -41,14 +41,14 @@ typedef void (*service_keyval_parse_fn_t)(const char *key, const char *value);
  * Parse \c filename, made up of key = value pairs.  For each line
  * that appears to contain a key = value pair, \c callback will be
  * called exactly once.  In a multithreaded context, calls to
- * service_util_keyval_parse() will serialize multiple calls.
+ * ocoms_util_keyval_parse() will serialize multiple calls.
  */
-OCOMS_DECLSPEC int service_util_keyval_parse(const char *filename, 
-                                         service_keyval_parse_fn_t callback);
+OCOMS_DECLSPEC int ocoms_util_keyval_parse(const char *filename, 
+                                         ocoms_keyval_parse_fn_t callback);
 
-OCOMS_DECLSPEC int service_util_keyval_parse_init(void);
+OCOMS_DECLSPEC int ocoms_util_keyval_parse_init(void);
 
-OCOMS_DECLSPEC int service_util_keyval_parse_finalize(void);
+OCOMS_DECLSPEC int ocoms_util_keyval_parse_finalize(void);
 
 END_C_DECLS
 

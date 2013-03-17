@@ -24,14 +24,14 @@
 #endif  /* HAVE_STRING_H */
 #include <ctype.h>
 
-#include "ocoms/util/service_object.h"
-#include "ocoms/util/service_list.h"
+#include "ocoms/util/ocoms_object.h"
+#include "ocoms/util/ocoms_list.h"
 #include "ocoms/threads/mutex.h"
 #include "ocoms/util/argv.h"
 #include "ocoms/util/cmd_line.h"
 #include "ocoms/util/output.h"
 #include "ocoms/mca/base/mca_base_param.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 
 /*
@@ -49,8 +49,8 @@
 /*
  * Description of a command line option
  */
-struct service_cmd_line_option_t {
-    service_list_item_t super;
+struct ocoms_cmd_line_option_t {
+    ocoms_list_item_t super;
 
     char clo_short_name;
     char *clo_single_dash_name;
@@ -59,24 +59,24 @@ struct service_cmd_line_option_t {
     int clo_num_params;
     char *clo_description;
 
-    service_cmd_line_type_t clo_type;
+    ocoms_cmd_line_type_t clo_type;
     char *clo_mca_param_env_var;
     void *clo_variable_dest;
     bool clo_variable_set;
 };
-typedef struct service_cmd_line_option_t service_cmd_line_option_t;
-static void option_constructor(service_cmd_line_option_t *cmd);
-static void option_destructor(service_cmd_line_option_t *cmd);
+typedef struct ocoms_cmd_line_option_t ocoms_cmd_line_option_t;
+static void option_constructor(ocoms_cmd_line_option_t *cmd);
+static void option_destructor(ocoms_cmd_line_option_t *cmd);
 
-OBJ_CLASS_INSTANCE(service_cmd_line_option_t,
-                   service_list_item_t,
+OBJ_CLASS_INSTANCE(ocoms_cmd_line_option_t,
+                   ocoms_list_item_t,
                    option_constructor, option_destructor);
 
 /*
  * An option that was used in the argv that was parsed
  */
-struct service_cmd_line_param_t {
-    service_list_item_t super;
+struct ocoms_cmd_line_param_t {
+    ocoms_list_item_t super;
 
     /* Note that clp_arg points to storage "owned" by someone else; it
        has the original option string by referene, not by value.
@@ -87,7 +87,7 @@ struct service_cmd_line_param_t {
     /* Pointer to the existing option.  This is also by reference; it
        should not be free()ed. */
 
-    service_cmd_line_option_t *clp_option;
+    ocoms_cmd_line_option_t *clp_option;
 
     /* This argv array is a list of all the parameters of this option.
        It is owned by this parameter, and should be freed when this
@@ -96,20 +96,20 @@ struct service_cmd_line_param_t {
     int clp_argc;
     char **clp_argv;
 };
-typedef struct service_cmd_line_param_t service_cmd_line_param_t;
-static void param_constructor(service_cmd_line_param_t *cmd);
-static void param_destructor(service_cmd_line_param_t *cmd);
-OBJ_CLASS_INSTANCE(service_cmd_line_param_t,
-                   service_list_item_t,
+typedef struct ocoms_cmd_line_param_t ocoms_cmd_line_param_t;
+static void param_constructor(ocoms_cmd_line_param_t *cmd);
+static void param_destructor(ocoms_cmd_line_param_t *cmd);
+OBJ_CLASS_INSTANCE(ocoms_cmd_line_param_t,
+                   ocoms_list_item_t,
                    param_constructor, param_destructor);
 
 /*
- * Instantiate the service_cmd_line_t class
+ * Instantiate the ocoms_cmd_line_t class
  */
-static void cmd_line_constructor(service_cmd_line_t *cmd);
-static void cmd_line_destructor(service_cmd_line_t *cmd);
-OBJ_CLASS_INSTANCE(service_cmd_line_t,
-                   service_object_t,
+static void cmd_line_constructor(ocoms_cmd_line_t *cmd);
+static void cmd_line_destructor(ocoms_cmd_line_t *cmd);
+OBJ_CLASS_INSTANCE(ocoms_cmd_line_t,
+                   ocoms_object_t,
                    cmd_line_constructor,
                    cmd_line_destructor);
 
@@ -123,24 +123,24 @@ static char special_empty_token[] = {
 /*
  * Private functions
  */
-static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e);
-static void free_parse_results(service_cmd_line_t *cmd);
-static int split_shorts(service_cmd_line_t *cmd,
+static int make_opt(ocoms_cmd_line_t *cmd, ocoms_cmd_line_init_t *e);
+static void free_parse_results(ocoms_cmd_line_t *cmd);
+static int split_shorts(ocoms_cmd_line_t *cmd,
                         char *token, char **args, 
                         int *output_argc, char ***output_argv, 
                         int *num_args_used, bool ignore_unknown);
-static service_cmd_line_option_t *find_option(service_cmd_line_t *cmd, 
-                                      const char *option_name) __service_attribute_nonnull__(1) __service_attribute_nonnull__(2);
-static void set_dest(service_cmd_line_option_t *option, char *sval);
-static void fill(const service_cmd_line_option_t *a, char result[3][BUFSIZ]);
+static ocoms_cmd_line_option_t *find_option(ocoms_cmd_line_t *cmd, 
+                                      const char *option_name) __ocoms_attribute_nonnull__(1) __ocoms_attribute_nonnull__(2);
+static void set_dest(ocoms_cmd_line_option_t *option, char *sval);
+static void fill(const ocoms_cmd_line_option_t *a, char result[3][BUFSIZ]);
 static int qsort_callback(const void *a, const void *b);
 
 
 /*
  * Create an entire command line handle from a table
  */
-int service_cmd_line_create(service_cmd_line_t *cmd,
-                         service_cmd_line_init_t *table)
+int ocoms_cmd_line_create(ocoms_cmd_line_t *cmd,
+                         ocoms_cmd_line_init_t *table)
 {
     int i, ret = OCOMS_SUCCESS;
 
@@ -149,7 +149,7 @@ int service_cmd_line_create(service_cmd_line_t *cmd,
     if (NULL == cmd) {
         return OCOMS_ERR_BAD_PARAM;
     }
-    OBJ_CONSTRUCT(cmd, service_cmd_line_t);
+    OBJ_CONSTRUCT(cmd, ocoms_cmd_line_t);
 
     /* Ensure we got a table */
 
@@ -183,8 +183,8 @@ int service_cmd_line_create(service_cmd_line_t *cmd,
 /*
  * Append a command line entry to the previously constructed command line
  */
-int service_cmd_line_make_opt_mca(service_cmd_line_t *cmd,
-                               service_cmd_line_init_t entry)
+int ocoms_cmd_line_make_opt_mca(ocoms_cmd_line_t *cmd,
+                               ocoms_cmd_line_init_t entry)
 {
     /* Ensure we got an entry */
     if ('\0' == entry.ocl_cmd_short_name &&
@@ -200,11 +200,11 @@ int service_cmd_line_make_opt_mca(service_cmd_line_t *cmd,
 /*
  * Create a command line option, --long-name and/or -s (short name).
  */
-int service_cmd_line_make_opt(service_cmd_line_t *cmd, char short_name, 
+int ocoms_cmd_line_make_opt(ocoms_cmd_line_t *cmd, char short_name, 
                           const char *long_name, int num_params, 
                           const char *desc)
 {
-    service_cmd_line_init_t e;
+    ocoms_cmd_line_init_t e;
 
     e.ocl_mca_type_name = NULL;
     e.ocl_mca_component_name = NULL;
@@ -228,11 +228,11 @@ int service_cmd_line_make_opt(service_cmd_line_t *cmd, char short_name,
 /*
  * Create a command line option, --long-name and/or -s (short name).
  */
-int service_cmd_line_make_opt3(service_cmd_line_t *cmd, char short_name, 
+int ocoms_cmd_line_make_opt3(ocoms_cmd_line_t *cmd, char short_name, 
                             const char *sd_name, const char *long_name, 
                             int num_params, const char *desc)
 {
-    service_cmd_line_init_t e;
+    ocoms_cmd_line_init_t e;
 
     e.ocl_mca_type_name = NULL;
     e.ocl_mca_component_name = NULL;
@@ -257,12 +257,12 @@ int service_cmd_line_make_opt3(service_cmd_line_t *cmd, char short_name,
  * Parse a command line according to a pre-built OPAL command line
  * handle.
  */
-int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
+int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
                         int argc, char **argv)
 {
     int i, j, orig, ret;
-    service_cmd_line_option_t *option;
-    service_cmd_line_param_t *param;
+    ocoms_cmd_line_option_t *option;
+    ocoms_cmd_line_param_t *param;
     bool is_unknown;
     bool is_option;
     bool has_unknowns;
@@ -278,7 +278,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
 
     /* Thread serialization */
 
-    service_mutex_lock(&cmd->lcl_mutex);
+    ocoms_mutex_lock(&cmd->lcl_mutex);
 
     /* Free any parsed results that are already on this handle */
 
@@ -287,7 +287,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
     /* Analyze each token */
 
     cmd->lcl_argc = argc;
-    cmd->lcl_argv = service_argv_copy(argv);
+    cmd->lcl_argv = ocoms_argv_copy(argv);
 
     /* Now traverse the easy-to-parse sequence of tokens.  Note that
        incrementing i must happen elsehwere; it can't be the third
@@ -307,7 +307,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
         if (0 == strcmp(cmd->lcl_argv[i], "--")) {
             ++i;
             while (i < cmd->lcl_argc) {
-                service_argv_append(&cmd->lcl_tail_argc, &cmd->lcl_tail_argv, 
+                ocoms_argv_append(&cmd->lcl_tail_argc, &cmd->lcl_tail_argv, 
                                  cmd->lcl_argv[i]);
                 ++i;
             }
@@ -352,15 +352,15 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                     option = find_option(cmd, shortsv[0] + 1);
 
                     if (NULL != option) {
-                        service_argv_delete(&cmd->lcl_argc,
+                        ocoms_argv_delete(&cmd->lcl_argc,
 			                 &cmd->lcl_argv, i,
                                          1 + num_args_used);
-                        service_argv_insert(&cmd->lcl_argv, i, shortsv);
-                        cmd->lcl_argc = service_argv_count(cmd->lcl_argv);
+                        ocoms_argv_insert(&cmd->lcl_argv, i, shortsv);
+                        cmd->lcl_argc = ocoms_argv_count(cmd->lcl_argv);
                     } else {
                         is_unknown = true;
                     }
-                    service_argv_free(shortsv);
+                    ocoms_argv_free(shortsv);
                 } else {
                     is_unknown = true;
                 }
@@ -387,9 +387,9 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                    (insertted by split_shorts()), then print an error
                    and return. */
 
-                param = OBJ_NEW(service_cmd_line_param_t);
+                param = OBJ_NEW(ocoms_cmd_line_param_t);
                 if (NULL == param) {
-                    service_mutex_unlock(&cmd->lcl_mutex);
+                    ocoms_mutex_unlock(&cmd->lcl_mutex);
                     return OCOMS_ERR_OUT_OF_RESOURCE;
                 }
                 param->clp_arg = cmd->lcl_argv[i];
@@ -404,7 +404,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                     /* If we run out of parameters, error */
 
                     if (i >= cmd->lcl_argc) {
-                        service_output(0, "Error: option \"%s\" did not have "
+                        ocoms_output(0, "Error: option \"%s\" did not have "
                                     "enough parameters (%d)",
                                     cmd->lcl_argv[orig],
                                     option->clo_num_params);
@@ -414,12 +414,12 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                     } else {
                         if (0 == strcmp(cmd->lcl_argv[i], 
                                         special_empty_token)) {
-                            service_output(0, "Error: option \"%s\" did not have "
+                            ocoms_output(0, "Error: option \"%s\" did not have "
                                         "enough parameters (%d)",
                                         cmd->lcl_argv[orig],
                                         option->clo_num_params);
                             if (NULL != param->clp_argv)
-                                service_argv_free(param->clp_argv);
+                                ocoms_argv_free(param->clp_argv);
                             OBJ_RELEASE(param);
                             i = cmd->lcl_argc;
                             break;
@@ -430,7 +430,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                         else {
                             /* Save in the argv on the param entry */
 
-                            service_argv_append(&param->clp_argc,
+                            ocoms_argv_append(&param->clp_argc,
                                              &param->clp_argv, 
                                              cmd->lcl_argv[i]);
 
@@ -454,10 +454,10 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
                 }
 
                 /* If we succeeded in all that, save the param to the
-                   list on the service_cmd_line_t handle */
+                   list on the ocoms_cmd_line_t handle */
 
                 if (NULL != param) {
-                    service_list_append(&cmd->lcl_params, &param->super);
+                    ocoms_list_append(&cmd->lcl_params, &param->super);
                 }
             }
         }
@@ -471,11 +471,11 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
         if (is_unknown) {
             has_unknowns = true;
             if (!ignore_unknown) {
-                service_output(0, "Error: unknown option \"%s\"", 
+                ocoms_output(0, "Error: unknown option \"%s\"", 
                             cmd->lcl_argv[i]);
             }
             while (i < cmd->lcl_argc) {
-                service_argv_append(&cmd->lcl_tail_argc, &cmd->lcl_tail_argv, 
+                ocoms_argv_append(&cmd->lcl_tail_argc, &cmd->lcl_tail_argv, 
                                  cmd->lcl_argv[i]);
                 ++i;
             }
@@ -484,7 +484,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
 
     /* Thread serialization */
 
-    service_mutex_unlock(&cmd->lcl_mutex);
+    ocoms_mutex_unlock(&cmd->lcl_mutex);
 
     /* All done */
     if(has_unknowns && !ignore_unknown) {
@@ -498,7 +498,7 @@ int service_cmd_line_parse(service_cmd_line_t *cmd, bool ignore_unknown,
 /*
  * Return a consolidated "usage" message for a OPAL command line handle.
  */
-char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
+char *ocoms_cmd_line_get_usage_msg(ocoms_cmd_line_t *cmd)
 {
     size_t i, len;
     int argc;
@@ -506,13 +506,13 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
     char **argv;
     char *ret, temp[MAX_WIDTH * 2], line[MAX_WIDTH * 2];
     char *start, *desc, *ptr;
-    service_list_item_t *item;
-    service_cmd_line_option_t *option, **sorted;
+    ocoms_list_item_t *item;
+    ocoms_cmd_line_option_t *option, **sorted;
     bool filled;
 
     /* Thread serialization */
 
-    service_mutex_lock(&cmd->lcl_mutex);
+    ocoms_mutex_lock(&cmd->lcl_mutex);
 
     /* Make an argv of all the usage strings */
 
@@ -522,21 +522,21 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
 
     /* First, take the original list and sort it */
 
-    sorted = (service_cmd_line_option_t**)malloc(sizeof(service_cmd_line_option_t *) * 
-                                         service_list_get_size(&cmd->lcl_options));
+    sorted = (ocoms_cmd_line_option_t**)malloc(sizeof(ocoms_cmd_line_option_t *) * 
+                                         ocoms_list_get_size(&cmd->lcl_options));
     if (NULL == sorted) {
         return NULL;
     }
-    for (i = 0, item = service_list_get_first(&cmd->lcl_options); 
-         service_list_get_end(&cmd->lcl_options) != item;
-         ++i, item = service_list_get_next(item)) {
-        sorted[i] = (service_cmd_line_option_t *) item;
+    for (i = 0, item = ocoms_list_get_first(&cmd->lcl_options); 
+         ocoms_list_get_end(&cmd->lcl_options) != item;
+         ++i, item = ocoms_list_get_next(item)) {
+        sorted[i] = (ocoms_cmd_line_option_t *) item;
     }
-    qsort(sorted, i, sizeof(service_cmd_line_option_t*), qsort_callback);
+    qsort(sorted, i, sizeof(ocoms_cmd_line_option_t*), qsort_callback);
 
     /* Now go through the sorted array and make the strings */
 
-    for (j = 0; j < service_list_get_size(&cmd->lcl_options); ++j) {
+    for (j = 0; j < ocoms_list_get_size(&cmd->lcl_options); ++j) {
         option = sorted[j];
         if (NULL != option->clo_description) {
             
@@ -585,7 +585,7 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
                and start adding the description on the next line. */
 
             if (strlen(line) > PARAM_WIDTH) {
-                service_argv_append(&argc, &argv, line);
+                ocoms_argv_append(&argc, &argv, line);
 
                 /* Now reset the line to be all blanks up to
                    PARAM_WIDTH so that we can start adding the
@@ -633,7 +633,7 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
 
                 if (strlen(start) < (MAX_WIDTH - PARAM_WIDTH)) {
                     strcat(line, start);
-                    service_argv_append(&argc, &argv, line);
+                    ocoms_argv_append(&argc, &argv, line);
                     break;
                 }
 
@@ -646,7 +646,7 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
                     if (isspace(*ptr)) {
                         *ptr = '\0';
                         strcat(line, start);
-                        service_argv_append(&argc, &argv, line);
+                        ocoms_argv_append(&argc, &argv, line);
 
                         start = ptr + 1;
                         memset(line, ' ', PARAM_WIDTH);
@@ -666,7 +666,7 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
                             *ptr = '\0';
 
                             strcat(line, start);
-                            service_argv_append(&argc, &argv, line);
+                            ocoms_argv_append(&argc, &argv, line);
                             
                             start = ptr + 1;
                             memset(line, ' ', PARAM_WIDTH);
@@ -680,7 +680,7 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
 
                     if (ptr >= start + len) {
                         strcat(line, start);
-                        service_argv_append(&argc, &argv, line);
+                        ocoms_argv_append(&argc, &argv, line);
                         start = desc + len + 1;
                     }
                 }
@@ -689,15 +689,15 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
         }
     }
     if (NULL != argv) {
-        ret = service_argv_join(argv, '\n');
-        service_argv_free(argv);
+        ret = ocoms_argv_join(argv, '\n');
+        ocoms_argv_free(argv);
     } else {
         ret = strdup("");
     }
     free(sorted);
 
     /* Thread serialization */
-    service_mutex_unlock(&cmd->lcl_mutex);
+    ocoms_mutex_unlock(&cmd->lcl_mutex);
 
     /* All done */
     return ret;
@@ -707,25 +707,25 @@ char *service_cmd_line_get_usage_msg(service_cmd_line_t *cmd)
 /*
  * Test if a given option was taken on the parsed command line.
  */
-bool service_cmd_line_is_taken(service_cmd_line_t *cmd, const char *opt)
+bool ocoms_cmd_line_is_taken(ocoms_cmd_line_t *cmd, const char *opt)
 {
-    return (service_cmd_line_get_ninsts(cmd, opt) > 0);
+    return (ocoms_cmd_line_get_ninsts(cmd, opt) > 0);
 }
 
 
 /*
  * Return the number of instances of an option found during parsing.
  */
-int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, const char *opt)
+int ocoms_cmd_line_get_ninsts(ocoms_cmd_line_t *cmd, const char *opt)
 {
     int ret;
-    service_list_item_t *item;
-    service_cmd_line_param_t *param;
-    service_cmd_line_option_t *option;
+    ocoms_list_item_t *item;
+    ocoms_cmd_line_param_t *param;
+    ocoms_cmd_line_option_t *option;
 
     /* Thread serialization */
 
-    service_mutex_lock(&cmd->lcl_mutex);
+    ocoms_mutex_lock(&cmd->lcl_mutex);
 
     /* Find the corresponding option.  If we find it, look through all
        the parsed params and see if we have any matches. */
@@ -733,10 +733,10 @@ int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, const char *opt)
     ret = 0;
     option = find_option(cmd, opt);
     if (NULL != option) {
-        for (item = service_list_get_first(&cmd->lcl_params); 
-             service_list_get_end(&cmd->lcl_params) != item;
-             item = service_list_get_next(item)) {
-            param = (service_cmd_line_param_t *) item;
+        for (item = ocoms_list_get_first(&cmd->lcl_params); 
+             ocoms_list_get_end(&cmd->lcl_params) != item;
+             item = ocoms_list_get_next(item)) {
+            param = (ocoms_cmd_line_param_t *) item;
             if (param->clp_option == option) {
                 ++ret;
             }
@@ -745,7 +745,7 @@ int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, const char *opt)
 
     /* Thread serialization */
 
-    service_mutex_unlock(&cmd->lcl_mutex);
+    ocoms_mutex_unlock(&cmd->lcl_mutex);
 
     /* All done */
 
@@ -757,17 +757,17 @@ int service_cmd_line_get_ninsts(service_cmd_line_t *cmd, const char *opt)
  * Return a specific parameter for a specific instance of a option
  * from the parsed command line.
  */
-char *service_cmd_line_get_param(service_cmd_line_t *cmd, const char *opt, int inst, 
+char *ocoms_cmd_line_get_param(ocoms_cmd_line_t *cmd, const char *opt, int inst, 
                               int idx)
 {
     int num_found;
-    service_list_item_t *item;
-    service_cmd_line_param_t *param;
-    service_cmd_line_option_t *option;
+    ocoms_list_item_t *item;
+    ocoms_cmd_line_param_t *param;
+    ocoms_cmd_line_option_t *option;
 
     /* Thread serialization */
 
-    service_mutex_lock(&cmd->lcl_mutex);
+    ocoms_mutex_lock(&cmd->lcl_mutex);
 
     /* Find the corresponding option.  If we find it, look through all
        the parsed params and see if we have any matches. */
@@ -780,13 +780,13 @@ char *service_cmd_line_get_param(service_cmd_line_t *cmd, const char *opt, int i
            parameter index greater than we will have */
 
         if (idx < option->clo_num_params) {
-            for (item = service_list_get_first(&cmd->lcl_params); 
-                 service_list_get_end(&cmd->lcl_params) != item;
-                 item = service_list_get_next(item)) {
-                param = (service_cmd_line_param_t *) item;
+            for (item = ocoms_list_get_first(&cmd->lcl_params); 
+                 ocoms_list_get_end(&cmd->lcl_params) != item;
+                 item = ocoms_list_get_next(item)) {
+                param = (ocoms_cmd_line_param_t *) item;
                 if (param->clp_option == option) {
                     if (num_found == inst) {
-                        service_mutex_unlock(&cmd->lcl_mutex);
+                        ocoms_mutex_unlock(&cmd->lcl_mutex);
                         return param->clp_argv[idx];
                     }
                     ++num_found;
@@ -797,7 +797,7 @@ char *service_cmd_line_get_param(service_cmd_line_t *cmd, const char *opt, int i
     
     /* Thread serialization */
     
-    service_mutex_unlock(&cmd->lcl_mutex);
+    ocoms_mutex_unlock(&cmd->lcl_mutex);
     
     /* All done */
 
@@ -808,7 +808,7 @@ char *service_cmd_line_get_param(service_cmd_line_t *cmd, const char *opt, int i
 /*
  * Return the number of arguments parsed on a OPAL command line handle.
  */
-int service_cmd_line_get_argc(service_cmd_line_t *cmd)
+int ocoms_cmd_line_get_argc(ocoms_cmd_line_t *cmd)
 {
     return (NULL != cmd) ? cmd->lcl_argc : OCOMS_ERROR;
 }
@@ -817,7 +817,7 @@ int service_cmd_line_get_argc(service_cmd_line_t *cmd)
 /*
  * Return a string argument parsed on a OPAL command line handle.
  */
-char *service_cmd_line_get_argv(service_cmd_line_t *cmd, int index)
+char *ocoms_cmd_line_get_argv(ocoms_cmd_line_t *cmd, int index)
 {
     return (NULL == cmd) ? NULL :
         (index >= cmd->lcl_argc || index < 0) ? NULL : cmd->lcl_argv[index];
@@ -828,13 +828,13 @@ char *service_cmd_line_get_argv(service_cmd_line_t *cmd, int index)
  * Return the entire "tail" of unprocessed argv from a OPAL command
  * line handle.
  */
-int service_cmd_line_get_tail(service_cmd_line_t *cmd, int *tailc, char ***tailv)
+int ocoms_cmd_line_get_tail(ocoms_cmd_line_t *cmd, int *tailc, char ***tailv)
 {
     if (NULL != cmd) {
-        service_mutex_lock(&cmd->lcl_mutex);
+        ocoms_mutex_lock(&cmd->lcl_mutex);
         *tailc = cmd->lcl_tail_argc;
-        *tailv = service_argv_copy(cmd->lcl_tail_argv);
-        service_mutex_unlock(&cmd->lcl_mutex);
+        *tailv = ocoms_argv_copy(cmd->lcl_tail_argv);
+        ocoms_mutex_unlock(&cmd->lcl_mutex);
         return OCOMS_SUCCESS;
     } else {
         return OCOMS_ERROR;
@@ -846,7 +846,7 @@ int service_cmd_line_get_tail(service_cmd_line_t *cmd, int *tailc, char ***tailv
  * Static functions
  **************************************************************************/
 
-static void option_constructor(service_cmd_line_option_t *o)
+static void option_constructor(ocoms_cmd_line_option_t *o)
 {
     o->clo_short_name = '\0';
     o->clo_single_dash_name = NULL;
@@ -861,7 +861,7 @@ static void option_constructor(service_cmd_line_option_t *o)
 }
 
 
-static void option_destructor(service_cmd_line_option_t *o)
+static void option_destructor(ocoms_cmd_line_option_t *o)
 {
     if (NULL != o->clo_single_dash_name) {
         free(o->clo_single_dash_name);
@@ -878,7 +878,7 @@ static void option_destructor(service_cmd_line_option_t *o)
 }
 
 
-static void param_constructor(service_cmd_line_param_t *p)
+static void param_constructor(ocoms_cmd_line_param_t *p)
 {
     p->clp_arg = NULL;
     p->clp_option = NULL;
@@ -887,26 +887,26 @@ static void param_constructor(service_cmd_line_param_t *p)
 }
 
 
-static void param_destructor(service_cmd_line_param_t *p)
+static void param_destructor(ocoms_cmd_line_param_t *p)
 {
     if (NULL != p->clp_argv) {
-        service_argv_free(p->clp_argv);
+        ocoms_argv_free(p->clp_argv);
     }
 }
 
 
-static void cmd_line_constructor(service_cmd_line_t *cmd)
+static void cmd_line_constructor(ocoms_cmd_line_t *cmd)
 {
     /* Initialize the mutex.  Since we're creating (and therefore the
        only thread that has this instance), there's no need to lock it
        right now. */
 
-    OBJ_CONSTRUCT(&cmd->lcl_mutex, service_mutex_t);
+    OBJ_CONSTRUCT(&cmd->lcl_mutex, ocoms_mutex_t);
 
     /* Initialize the lists */
 
-    OBJ_CONSTRUCT(&cmd->lcl_options, service_list_t);
-    OBJ_CONSTRUCT(&cmd->lcl_params, service_list_t);
+    OBJ_CONSTRUCT(&cmd->lcl_options, ocoms_list_t);
+    OBJ_CONSTRUCT(&cmd->lcl_params, ocoms_list_t);
 
     /* Initialize the argc/argv pairs */
 
@@ -917,16 +917,16 @@ static void cmd_line_constructor(service_cmd_line_t *cmd)
 }
 
 
-static void cmd_line_destructor(service_cmd_line_t *cmd)
+static void cmd_line_destructor(ocoms_cmd_line_t *cmd)
 {
-    service_list_item_t *item;
+    ocoms_list_item_t *item;
 
     /* Free the contents of the options list (do not free the list
        itself; it was not allocated from the heap) */
 
-    for (item = service_list_remove_first(&cmd->lcl_options);
+    for (item = ocoms_list_remove_first(&cmd->lcl_options);
          NULL != item;
-         item = service_list_remove_first(&cmd->lcl_options)) {
+         item = ocoms_list_remove_first(&cmd->lcl_options)) {
         OBJ_RELEASE(item);
     }
 
@@ -945,9 +945,9 @@ static void cmd_line_destructor(service_cmd_line_t *cmd)
 }
 
 
-static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
+static int make_opt(ocoms_cmd_line_t *cmd, ocoms_cmd_line_init_t *e)
 {
-    service_cmd_line_option_t *option;
+    ocoms_cmd_line_option_t *option;
 
     /* Bozo checks */
 
@@ -963,7 +963,7 @@ static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
 
     /* Allocate and fill an option item */
 
-    option = OBJ_NEW(service_cmd_line_option_t);
+    option = OBJ_NEW(ocoms_cmd_line_option_t);
     if (NULL == option) {
         return OCOMS_ERR_OUT_OF_RESOURCE;
     }
@@ -991,9 +991,9 @@ static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
 
     /* Append the item, serializing thread access */
 
-    service_mutex_lock(&cmd->lcl_mutex);
-    service_list_append(&cmd->lcl_options, &option->super);
-    service_mutex_unlock(&cmd->lcl_mutex);
+    ocoms_mutex_lock(&cmd->lcl_mutex);
+    ocoms_list_append(&cmd->lcl_options, &option->super);
+    ocoms_mutex_unlock(&cmd->lcl_mutex);
 
     /* All done */
 
@@ -1001,29 +1001,29 @@ static int make_opt(service_cmd_line_t *cmd, service_cmd_line_init_t *e)
 }
 
 
-static void free_parse_results(service_cmd_line_t *cmd)
+static void free_parse_results(ocoms_cmd_line_t *cmd)
 {
-    service_list_item_t *item;
+    ocoms_list_item_t *item;
 
     /* Free the contents of the params list (do not free the list
        itself; it was not allocated from the heap) */
 
-    for (item = service_list_remove_first(&cmd->lcl_params);
+    for (item = ocoms_list_remove_first(&cmd->lcl_params);
          NULL != item; 
-         item = service_list_remove_first(&cmd->lcl_params)) {
+         item = ocoms_list_remove_first(&cmd->lcl_params)) {
         OBJ_RELEASE(item);
     }
 
     /* Free the argv's */
 
     if (NULL != cmd->lcl_argv) {
-        service_argv_free(cmd->lcl_argv);
+        ocoms_argv_free(cmd->lcl_argv);
     }
     cmd->lcl_argv = NULL;
     cmd->lcl_argc = 0;
 
     if (NULL != cmd->lcl_tail_argv) {
-        service_argv_free(cmd->lcl_tail_argv);
+        ocoms_argv_free(cmd->lcl_tail_argv);
     }
     cmd->lcl_tail_argv = NULL;
     cmd->lcl_tail_argc = 0;
@@ -1036,18 +1036,18 @@ static void free_parse_results(service_cmd_line_t *cmd)
  * short name).  Ensure to differentiate the resulting options from
  * "single dash" names.
  */
-static int split_shorts(service_cmd_line_t *cmd, char *token, char **args, 
+static int split_shorts(ocoms_cmd_line_t *cmd, char *token, char **args, 
                         int *output_argc, char ***output_argv, 
                         int *num_args_used, bool ignore_unknown)
 {
     int i, j, len;
-    service_cmd_line_option_t *option;
+    ocoms_cmd_line_option_t *option;
     char fake_token[3];
     int num_args;
 
     /* Setup that we didn't use any of the args */
 
-    num_args = service_argv_count(args);
+    num_args = ocoms_argv_count(args);
     *num_args_used = 0;
 
     /* Traverse the token.  If it's empty (e.g., if someone passes a
@@ -1072,7 +1072,7 @@ static int split_shorts(service_cmd_line_t *cmd, char *token, char **args,
             if (!ignore_unknown) {
                 return OCOMS_ERR_BAD_PARAM;
             } else {
-                service_argv_append(output_argc, output_argv, fake_token);
+                ocoms_argv_append(output_argc, output_argv, fake_token);
             }
         } 
 
@@ -1082,14 +1082,14 @@ static int split_shorts(service_cmd_line_t *cmd, char *token, char **args,
            handled at a higher level) */
 
         else {
-            service_argv_append(output_argc, output_argv, fake_token);
+            ocoms_argv_append(output_argc, output_argv, fake_token);
             for (j = 0; j < option->clo_num_params; ++j) {
                 if (*num_args_used < num_args) {
-                    service_argv_append(output_argc, output_argv,
+                    ocoms_argv_append(output_argc, output_argv,
                                      args[*num_args_used]);
                     ++(*num_args_used);
                 } else {
-                    service_argv_append(output_argc, output_argv, 
+                    ocoms_argv_append(output_argc, output_argv, 
                                      special_empty_token);
                 }
             }
@@ -1102,20 +1102,20 @@ static int split_shorts(service_cmd_line_t *cmd, char *token, char **args,
 }
 
 
-static service_cmd_line_option_t *find_option(service_cmd_line_t *cmd, 
+static ocoms_cmd_line_option_t *find_option(ocoms_cmd_line_t *cmd, 
                                       const char *option_name)
 {
-    service_list_item_t *item;
-    service_cmd_line_option_t *option;
+    ocoms_list_item_t *item;
+    ocoms_cmd_line_option_t *option;
 
     /* Iterate through the list of options hanging off the
-       service_cmd_line_t and see if we find a match in either the short
+       ocoms_cmd_line_t and see if we find a match in either the short
        or long names */
 
-    for (item = service_list_get_first(&cmd->lcl_options);
-         service_list_get_end(&cmd->lcl_options) != item;
-         item = service_list_get_next(item)) {
-        option = (service_cmd_line_option_t *) item;
+    for (item = ocoms_list_get_first(&cmd->lcl_options);
+         ocoms_list_get_end(&cmd->lcl_options) != item;
+         item = ocoms_list_get_next(item)) {
+        option = (ocoms_cmd_line_option_t *) item;
         if ((NULL != option->clo_long_name &&
              0 == strcmp(option_name, option->clo_long_name)) ||
             (NULL != option->clo_single_dash_name &&
@@ -1132,7 +1132,7 @@ static service_cmd_line_option_t *find_option(service_cmd_line_t *cmd,
 }
 
 
-static void set_dest(service_cmd_line_option_t *option, char *sval)
+static void set_dest(ocoms_cmd_line_option_t *option, char *sval)
 {
     int ival = atoi(sval);
     long lval = strtol(sval, NULL, 10);
@@ -1192,7 +1192,7 @@ static void set_dest(service_cmd_line_option_t *option, char *sval)
 /*
  * Helper function to qsort_callback
  */
-static void fill(const service_cmd_line_option_t *a, char result[3][BUFSIZ])
+static void fill(const ocoms_cmd_line_option_t *a, char result[3][BUFSIZ])
 {
     int i = 0;
 
@@ -1219,8 +1219,8 @@ static int qsort_callback(const void *aa, const void *bb)
 {
     int ret, i;
     char str1[3][BUFSIZ], str2[3][BUFSIZ];
-    const service_cmd_line_option_t *a = *((const service_cmd_line_option_t**) aa);
-    const service_cmd_line_option_t *b = *((const service_cmd_line_option_t**) bb);
+    const ocoms_cmd_line_option_t *a = *((const ocoms_cmd_line_option_t**) aa);
+    const ocoms_cmd_line_option_t *b = *((const ocoms_cmd_line_option_t**) bb);
 
     /* Icky comparison of command line options.  There are multiple
        forms of each command line option, so we first have to check

@@ -63,7 +63,7 @@
  */
 
 unsigned long
-service_bcopy_csum_partial (
+ocoms_bcopy_csum_partial (
     const void *  source,
     void *  destination,
     size_t copylen,
@@ -410,7 +410,7 @@ service_bcopy_csum_partial (
 }
 
 unsigned int
-service_bcopy_uicsum_partial (
+ocoms_bcopy_uicsum_partial (
     const void *  source,
     void *  destination,
     size_t copylen,
@@ -767,7 +767,7 @@ service_bcopy_uicsum_partial (
  */
 
 unsigned long
-service_csum_partial (
+ocoms_csum_partial (
     const void *  source,
     size_t csumlen,
     unsigned long*  lastPartialLong,
@@ -917,7 +917,7 @@ service_csum_partial (
 }
 
 unsigned int
-service_uicsum_partial (
+ocoms_uicsum_partial (
     const void *  source,
     size_t csumlen,
     unsigned int*  lastPartialInt,
@@ -1068,14 +1068,14 @@ service_uicsum_partial (
 
 /* globals for CRC32 bcopy and calculation routines */
 
-static bool _service_crc_table_initialized = false;
-static unsigned int _service_crc_table[256];
+static bool _ocoms_crc_table_initialized = false;
+static unsigned int _ocoms_crc_table[256];
 
 /* CRC32 table generation routine - thanks to Charles Michael Heard for his
  * optimized CRC32 code...
  */
 
-void service_initialize_crc_table(void)
+void ocoms_initialize_crc_table(void)
 {
     register int i,j;
     register unsigned int crc_accum;
@@ -1088,15 +1088,15 @@ void service_initialize_crc_table(void)
             else
                 crc_accum = (crc_accum << 1);
         }
-        _service_crc_table[i] = crc_accum;
+        _ocoms_crc_table[i] = crc_accum;
     }
 
     /* set global bool to true to do this work once! */
-    _service_crc_table_initialized = true;
+    _ocoms_crc_table_initialized = true;
     return;
 }
 
-unsigned int service_bcopy_uicrc_partial(
+unsigned int ocoms_bcopy_uicrc_partial(
     const void *  source, 
     void *  destination,
     size_t copylen, 
@@ -1108,8 +1108,8 @@ unsigned int service_bcopy_uicrc_partial(
     register unsigned char t;
     unsigned int tmp;
 
-    if (!_service_crc_table_initialized) {
-        service_initialize_crc_table();
+    if (!_ocoms_crc_table_initialized) {
+        ocoms_initialize_crc_table();
     }
 
     if (INTALIGNED(source) && INTALIGNED(destination)) {
@@ -1123,7 +1123,7 @@ unsigned int service_bcopy_uicrc_partial(
             ts = (unsigned char *)&tmp;
             for (j = 0; j < (int)sizeof(unsigned int); j++) {
                 i = ((partial_crc >> 24) ^ *ts++) & 0xff;
-                partial_crc = (partial_crc << 8) ^ _service_crc_table[i];
+                partial_crc = (partial_crc << 8) ^ _ocoms_crc_table[i];
             }
             copylen -= sizeof(unsigned int);
         }
@@ -1134,12 +1134,12 @@ unsigned int service_bcopy_uicrc_partial(
             t = *ts++;
             *td++ = t;
             i = ((partial_crc >> 24) ^ t) & 0xff;
-            partial_crc = (partial_crc << 8) ^ _service_crc_table[i];
+            partial_crc = (partial_crc << 8) ^ _ocoms_crc_table[i];
         }
         /* calculate CRC over remaining bytes... */
         while (crclenresidue--) {
             i = ((partial_crc >> 24) ^ *ts++) & 0xff;
-            partial_crc = (partial_crc << 8) ^ _service_crc_table[i];
+            partial_crc = (partial_crc << 8) ^ _ocoms_crc_table[i];
         }
     }
     else {
@@ -1149,11 +1149,11 @@ unsigned int service_bcopy_uicrc_partial(
             t = *src++;
             *dst++ = t;
             i = ((partial_crc >> 24) ^ t) & 0xff;
-            partial_crc = (partial_crc << 8) ^ _service_crc_table[i];
+            partial_crc = (partial_crc << 8) ^ _ocoms_crc_table[i];
         }
         while (crclenresidue--) {
             i = ((partial_crc >> 24) ^ *src++) & 0xff;
-            partial_crc = (partial_crc << 8) ^ _service_crc_table[i];
+            partial_crc = (partial_crc << 8) ^ _ocoms_crc_table[i];
         }
     }
 
@@ -1161,15 +1161,15 @@ unsigned int service_bcopy_uicrc_partial(
 }
 
 
-unsigned int service_uicrc_partial(
+unsigned int ocoms_uicrc_partial(
     const void *  source, size_t crclen, unsigned int partial_crc) 
 {
     register int i, j;
     register unsigned char * t;
     unsigned int tmp;
 
-    if (!_service_crc_table_initialized) {
-        service_initialize_crc_table();
+    if (!_ocoms_crc_table_initialized) {
+        ocoms_initialize_crc_table();
     }
     
     if (INTALIGNED(source)) {
@@ -1179,21 +1179,21 @@ unsigned int service_uicrc_partial(
             t = (unsigned char *)&tmp;
             for (j = 0; j < (int)sizeof(unsigned int); j++) {
                 i = ((partial_crc >> 24) ^ *t++) & 0xff;
-                partial_crc = (partial_crc << 8) ^ _service_crc_table[i];
+                partial_crc = (partial_crc << 8) ^ _ocoms_crc_table[i];
             }
             crclen -= sizeof(unsigned int);
         }
         t = (unsigned char *)src;
         while (crclen--) {
             i = ((partial_crc >> 24) ^ *t++) & 0xff;
-            partial_crc = (partial_crc << 8) ^ _service_crc_table[i];
+            partial_crc = (partial_crc << 8) ^ _ocoms_crc_table[i];
         }
     }
     else {
         register unsigned char *  src = (unsigned char *)source;
         while (crclen--) {
             i = ((partial_crc >> 24) ^ *src++) & 0xff;
-            partial_crc = (partial_crc << 8) ^ _service_crc_table[i];
+            partial_crc = (partial_crc << 8) ^ _ocoms_crc_table[i];
         }
     }
     

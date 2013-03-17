@@ -28,13 +28,13 @@
 #include <unistd.h>
 #endif
 
-#include "ocoms/util/service_environ.h"
+#include "ocoms/util/ocoms_environ.h"
 #include "ocoms/util/output.h"
 #include "ocoms/util/printf.h"
 #include "ocoms/mca/mca.h"
 #include "ocoms/mca/base/base.h"
 #include "ocoms/mca/base/mca_base_component_repository.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
 
 /*
@@ -48,17 +48,17 @@ char *ocoms_mca_base_user_default_path=NULL;
 /*
  * Private functions
  */
-static void set_defaults(service_output_stream_t *lds);
-static void parse_verbose(char *e, service_output_stream_t *lds);
-ocoms_mca_service_install_dirs_t service_install_dirs = {"","",""};
+static void set_defaults(ocoms_output_stream_t *lds);
+static void parse_verbose(char *e, ocoms_output_stream_t *lds);
+ocoms_mca_ocoms_install_dirs_t ocoms_install_dirs = {"","",""};
 
 /*
  * Main MCA initialization.  
  */
-int ocoms_mca_base_open(ocoms_mca_service_install_dirs_t install_dirs)
+int ocoms_mca_base_open(ocoms_mca_ocoms_install_dirs_t install_dirs)
 {
   char *value;
-  service_output_stream_t lds;
+  ocoms_output_stream_t lds;
   char hostname[64];
 
   if (!ocoms_mca_base_opened) {
@@ -67,11 +67,11 @@ int ocoms_mca_base_open(ocoms_mca_service_install_dirs_t install_dirs)
     return OCOMS_SUCCESS;
   }
 
-  service_install_dirs = install_dirs;
+  ocoms_install_dirs = install_dirs;
     /* define the system and user default paths */
 #if OCOMS_WANT_HOME_CONFIG_FILES
-    ocoms_mca_base_system_default_path = strdup(service_install_dirs.pkglibdir);
-    asprintf(&ocoms_mca_base_user_default_path, "%s"OCOMS_PATH_SEP".llc"OCOMS_PATH_SEP"components", service_home_directory());
+    ocoms_mca_base_system_default_path = strdup(ocoms_install_dirs.pkglibdir);
+    asprintf(&ocoms_mca_base_user_default_path, "%s"OCOMS_PATH_SEP".llc"OCOMS_PATH_SEP"components", ocoms_home_directory());
 #else
 # if defined(__WINDOWS__) && defined(_DEBUG)
     asprintf(&ocoms_mca_base_system_default_path, "%s/debug", ocoms_install_dirs.pkglibdir); 
@@ -115,8 +115,8 @@ int ocoms_mca_base_open(ocoms_mca_service_install_dirs_t install_dirs)
   }
   gethostname(hostname, 64);
   asprintf(&lds.lds_prefix, "[%s:%05d] ", hostname, getpid());
-  service_output_reopen(0, &lds);
-  service_output_verbose(5, 0, "mca: base: opening components");
+  ocoms_output_reopen(0, &lds);
+  ocoms_output_verbose(5, 0, "mca: base: opening components");
   free(lds.lds_prefix);
 
   /* Open up the component repository */
@@ -128,12 +128,12 @@ int ocoms_mca_base_open(ocoms_mca_service_install_dirs_t install_dirs)
 /*
  * Set sane default values for the lds
  */
-static void set_defaults(service_output_stream_t *lds)
+static void set_defaults(ocoms_output_stream_t *lds)
 {
 
     /* Load up defaults */
 
-    OBJ_CONSTRUCT(lds, service_output_stream_t);
+    OBJ_CONSTRUCT(lds, ocoms_output_stream_t);
 #ifndef __WINDOWS__
     lds->lds_syslog_priority = LOG_INFO;
 #endif
@@ -145,7 +145,7 @@ static void set_defaults(service_output_stream_t *lds)
 /*
  * Parse the value of an environment variable describing verbosity
  */
-static void parse_verbose(char *e, service_output_stream_t *lds)
+static void parse_verbose(char *e, ocoms_output_stream_t *lds)
 {
   char *edup;
   char *ptr, *next;

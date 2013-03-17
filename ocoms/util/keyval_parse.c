@@ -1,7 +1,7 @@
 
 #include "ocoms/platform/ocoms_config.h"
 
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 #include "ocoms/util/keyval_parse.h"
 #include "ocoms/util/keyval/keyval_lex.h"
 #include "ocoms/util/output.h"
@@ -11,24 +11,24 @@
 #endif  /* HAVE_STRING_H */
 
 static const char *keyval_filename;
-static service_keyval_parse_fn_t keyval_callback;
+static ocoms_keyval_parse_fn_t keyval_callback;
 static char *key_buffer = NULL;
 static size_t key_buffer_len = 0;
-static service_mutex_t keyval_mutex;
+static ocoms_mutex_t keyval_mutex;
 
 static int parse_line(void);
 static void parse_error(int num);
 
-int service_util_keyval_parse_init(void)
+int ocoms_util_keyval_parse_init(void)
 {
-    OBJ_CONSTRUCT(&keyval_mutex, service_mutex_t);
+    OBJ_CONSTRUCT(&keyval_mutex, ocoms_mutex_t);
 
     return OCOMS_SUCCESS;
 }
 
 
 int
-service_util_keyval_parse_finalize(void)
+ocoms_util_keyval_parse_finalize(void)
 {
     if (NULL != key_buffer) free(key_buffer);
 
@@ -39,40 +39,40 @@ service_util_keyval_parse_finalize(void)
 
 
 int
-service_util_keyval_parse(const char *filename,
-                       service_keyval_parse_fn_t callback)
+ocoms_util_keyval_parse(const char *filename,
+                       ocoms_keyval_parse_fn_t callback)
 {
     int val;
     int ret = OCOMS_SUCCESS;;
 
-    SERVICE_THREAD_LOCK(&keyval_mutex);
+    OCOMS_THREAD_LOCK(&keyval_mutex);
 
     keyval_filename = filename;
     keyval_callback = callback;
 
     /* Open the opal */
-    service_util_keyval_yyin = fopen(keyval_filename, "r");
-    if (NULL == service_util_keyval_yyin) {
+    ocoms_util_keyval_yyin = fopen(keyval_filename, "r");
+    if (NULL == ocoms_util_keyval_yyin) {
         ret = OCOMS_ERR_NOT_FOUND;
         goto cleanup;
     }
 
-    service_util_keyval_parse_done = false;
-    service_util_keyval_yynewlines = 1;
-    service_util_keyval_init_buffer(service_util_keyval_yyin);
-    while (!service_util_keyval_parse_done) {
-        val = service_util_keyval_yylex();
+    ocoms_util_keyval_parse_done = false;
+    ocoms_util_keyval_yynewlines = 1;
+    ocoms_util_keyval_init_buffer(ocoms_util_keyval_yyin);
+    while (!ocoms_util_keyval_parse_done) {
+        val = ocoms_util_keyval_yylex();
         switch (val) {
-        case SERVICE_UTIL_KEYVAL_PARSE_DONE:
-            /* This will also set service_util_keyval_parse_done to true, so just
+        case OCOMS_UTIL_KEYVAL_PARSE_DONE:
+            /* This will also set ocoms_util_keyval_parse_done to true, so just
                break here */
             break;
 
-        case SERVICE_UTIL_KEYVAL_PARSE_NEWLINE:
+        case OCOMS_UTIL_KEYVAL_PARSE_NEWLINE:
             /* blank line!  ignore it */
             break;
 
-        case SERVICE_UTIL_KEYVAL_PARSE_SINGLE_WORD:
+        case OCOMS_UTIL_KEYVAL_PARSE_SINGLE_WORD:
             parse_line();
             break;
 
@@ -82,10 +82,10 @@ service_util_keyval_parse(const char *filename,
             break;
         }
     }
-    fclose(service_util_keyval_yyin);
+    fclose(ocoms_util_keyval_yyin);
 
 cleanup:
-    SERVICE_THREAD_UNLOCK(&keyval_mutex);
+    OCOMS_THREAD_UNLOCK(&keyval_mutex);
     return ret;
 }
 
@@ -96,9 +96,9 @@ static int parse_line(void)
     int val;
 
     /* Save the name name */
-    if (key_buffer_len < strlen(service_util_keyval_yytext) + 1) {
+    if (key_buffer_len < strlen(ocoms_util_keyval_yytext) + 1) {
         char *tmp;
-        key_buffer_len = strlen(service_util_keyval_yytext) + 1;
+        key_buffer_len = strlen(ocoms_util_keyval_yytext) + 1;
         tmp = (char*)realloc(key_buffer, key_buffer_len);
         if (NULL == tmp) {
             free(key_buffer);
@@ -109,36 +109,36 @@ static int parse_line(void)
         key_buffer = tmp;
     }
 
-    strncpy(key_buffer, service_util_keyval_yytext, key_buffer_len);
+    strncpy(key_buffer, ocoms_util_keyval_yytext, key_buffer_len);
 
     /* The first thing we have to see is an "=" */
 
-    val = service_util_keyval_yylex();
-    if (service_util_keyval_parse_done || SERVICE_UTIL_KEYVAL_PARSE_EQUAL != val) {
+    val = ocoms_util_keyval_yylex();
+    if (ocoms_util_keyval_parse_done || OCOMS_UTIL_KEYVAL_PARSE_EQUAL != val) {
         parse_error(2);
         return OCOMS_ERROR;
     }
 
     /* Next we get the value */
 
-    val = service_util_keyval_yylex();
-    if (SERVICE_UTIL_KEYVAL_PARSE_SINGLE_WORD == val ||
-        SERVICE_UTIL_KEYVAL_PARSE_VALUE == val) {
-        keyval_callback(key_buffer, service_util_keyval_yytext);
+    val = ocoms_util_keyval_yylex();
+    if (OCOMS_UTIL_KEYVAL_PARSE_SINGLE_WORD == val ||
+        OCOMS_UTIL_KEYVAL_PARSE_VALUE == val) {
+        keyval_callback(key_buffer, ocoms_util_keyval_yytext);
 
         /* Now we need to see the newline */
 
-        val = service_util_keyval_yylex();
-        if (SERVICE_UTIL_KEYVAL_PARSE_NEWLINE == val ||
-            SERVICE_UTIL_KEYVAL_PARSE_DONE == val) {
+        val = ocoms_util_keyval_yylex();
+        if (OCOMS_UTIL_KEYVAL_PARSE_NEWLINE == val ||
+            OCOMS_UTIL_KEYVAL_PARSE_DONE == val) {
             return OCOMS_SUCCESS;
         }
     }
 
     /* Did we get an EOL or EOF? */
 
-    else if (SERVICE_UTIL_KEYVAL_PARSE_DONE == val ||
-             SERVICE_UTIL_KEYVAL_PARSE_NEWLINE == val) {
+    else if (OCOMS_UTIL_KEYVAL_PARSE_DONE == val ||
+             OCOMS_UTIL_KEYVAL_PARSE_NEWLINE == val) {
         keyval_callback(key_buffer, NULL);
         return OCOMS_SUCCESS;
     }
@@ -152,6 +152,6 @@ static int parse_line(void)
 static void parse_error(int num)
 {
     /* JMS need better error/warning message here */
-    service_output(0, "keyval parser: error %d reading file %s at line %d:\n  %s\n",
-                num, keyval_filename, service_util_keyval_yynewlines, service_util_keyval_yytext);
+    ocoms_output(0, "keyval parser: error %d reading file %s at line %d:\n  %s\n",
+                num, keyval_filename, ocoms_util_keyval_yynewlines, ocoms_util_keyval_yytext);
 }

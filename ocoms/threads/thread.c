@@ -20,21 +20,21 @@
 #include "ocoms/platform/ocoms_config.h"
 
 #include "ocoms/threads/threads.h"
-#include "ocoms/platform/service_constants.h"
+#include "ocoms/platform/ocoms_constants.h"
 
-bool service_debug_threads = false;
+bool ocoms_debug_threads = false;
 
-static void service_thread_construct(service_thread_t *t);
+static void ocoms_thread_construct(ocoms_thread_t *t);
 
-OBJ_CLASS_INSTANCE(service_thread_t,
-                   service_object_t,
-                   service_thread_construct, NULL);
+OBJ_CLASS_INSTANCE(ocoms_thread_t,
+                   ocoms_object_t,
+                   ocoms_thread_construct, NULL);
 
 
 /*
  * Constructor
  */
-static void service_thread_construct(service_thread_t *t)
+static void ocoms_thread_construct(ocoms_thread_t *t)
 {
     t->t_run = 0;
 #ifdef __WINDOWS__
@@ -53,7 +53,7 @@ static void service_thread_construct(service_thread_t *t)
  * Windows threads
  ************************************************************************/
 
-int service_thread_start(service_thread_t *t)
+int ocoms_thread_start(ocoms_thread_t *t)
 {
     DWORD tid;
 
@@ -78,7 +78,7 @@ int service_thread_start(service_thread_t *t)
 }
 
 
-int service_thread_join(service_thread_t *t, void **thr_return)
+int ocoms_thread_join(ocoms_thread_t *t, void **thr_return)
 {
     DWORD rc;
 
@@ -97,7 +97,7 @@ int service_thread_join(service_thread_t *t, void **thr_return)
 }
 
 
-bool service_thread_self_compare(service_thread_t *t)
+bool ocoms_thread_self_compare(ocoms_thread_t *t)
 {
     HANDLE thread_handle;
     thread_handle = GetCurrentThread();
@@ -105,15 +105,15 @@ bool service_thread_self_compare(service_thread_t *t)
 }
 
 
-service_thread_t *service_thread_get_self(void)
+ocoms_thread_t *ocoms_thread_get_self(void)
 {
-    service_thread_t *t = OBJ_NEW(service_thread_t);
+    ocoms_thread_t *t = OBJ_NEW(ocoms_thread_t);
     t->t_handle = GetCurrentThread();
     return t;
 }
 
 
-void service_thread_kill(service_thread_t *t, int sig)
+void ocoms_thread_kill(ocoms_thread_t *t, int sig)
 {
 }
 
@@ -123,7 +123,7 @@ void service_thread_kill(service_thread_t *t, int sig)
  * POSIX threads
  ************************************************************************/
 
-int service_thread_start(service_thread_t *t)
+int ocoms_thread_start(ocoms_thread_t *t)
 {
     int rc;
 
@@ -139,7 +139,7 @@ int service_thread_start(service_thread_t *t)
 }
 
 
-int service_thread_join(service_thread_t *t, void **thr_return)
+int ocoms_thread_join(ocoms_thread_t *t, void **thr_return)
 {
     int rc = pthread_join(t->t_handle, thr_return);
     t->t_handle = (pthread_t) -1;
@@ -147,20 +147,20 @@ int service_thread_join(service_thread_t *t, void **thr_return)
 }
 
 
-bool service_thread_self_compare(service_thread_t *t)
+bool ocoms_thread_self_compare(ocoms_thread_t *t)
 {
     return t->t_handle == pthread_self();
 }
 
 
-service_thread_t *service_thread_get_self(void)
+ocoms_thread_t *ocoms_thread_get_self(void)
 {
-    service_thread_t *t = OBJ_NEW(service_thread_t);
+    ocoms_thread_t *t = OBJ_NEW(ocoms_thread_t);
     t->t_handle = pthread_self();
     return t;
 }
 
-void service_thread_kill(service_thread_t *t, int sig)
+void ocoms_thread_kill(ocoms_thread_t *t, int sig)
 {
     pthread_kill(t->t_handle, sig);
 }
@@ -172,7 +172,7 @@ void service_thread_kill(service_thread_t *t, int sig)
  * Solaris threads
  ************************************************************************/
 
-int service_thread_start(service_thread_t *t)
+int ocoms_thread_start(ocoms_thread_t *t)
 {
     int rc;
 
@@ -189,7 +189,7 @@ int service_thread_start(service_thread_t *t)
 }
 
 
-int service_thread_join(service_thread_t *t, void **thr_return)
+int ocoms_thread_join(ocoms_thread_t *t, void **thr_return)
 {
     int rc = thr_join(t->t_handle, NULL, thr_return);
     t->t_handle = (thread_t) -1;
@@ -197,20 +197,20 @@ int service_thread_join(service_thread_t *t, void **thr_return)
 }
 
 
-bool service_thread_self_compare(service_thread_t *t)
+bool ocoms_thread_self_compare(ocoms_thread_t *t)
 {
     return t->t_handle == thr_self();
 }
 
 
-service_thread_t *service_thread_get_self(void)
+ocoms_thread_t *ocoms_thread_get_self(void)
 {
-    service_thread_t *t = OBJ_NEW(service_thread_t);
+    ocoms_thread_t *t = OBJ_NEW(ocoms_thread_t);
     t->t_handle = thr_self();
     return t;
 }
 
-void service_thread_kill(service_thread_t *t, int sig)
+void ocoms_thread_kill(ocoms_thread_t *t, int sig)
 {
     thr_kill(t->t_handle, sig);
 }
@@ -222,29 +222,29 @@ void service_thread_kill(service_thread_t *t, int sig)
  * No thread support
  ************************************************************************/
 
-int service_thread_start(service_thread_t *t)
+int ocoms_thread_start(ocoms_thread_t *t)
 {
     return OCOMS_ERROR;
 }
 
 
-int service_thread_join(service_thread_t *t, void **thr_return)
+int ocoms_thread_join(ocoms_thread_t *t, void **thr_return)
 {
     return OCOMS_ERROR;
 }
 
 
-bool service_thread_self_compare(service_thread_t *t)
+bool ocoms_thread_self_compare(ocoms_thread_t *t)
 {
     return true;
 }
 
-service_thread_t *service_thread_get_self(void)
+ocoms_thread_t *ocoms_thread_get_self(void)
 {
     return NULL;
 }
 
-void service_thread_kill(service_thread_t *t, int sig)
+void ocoms_thread_kill(ocoms_thread_t *t, int sig)
 {
 }
 

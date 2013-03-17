@@ -19,8 +19,8 @@
  * $HEADER$
  */
 
-#ifndef _SERVICE_CRC_H_
-#define _SERVICE_CRC_H_
+#ifndef _OCOMS_CRC_H_
+#define _OCOMS_CRC_H_
 
 #include "ocoms/platform/ocoms_config.h"
 
@@ -32,16 +32,16 @@ BEGIN_C_DECLS
 #define CRC_INITIAL_REGISTER ((unsigned int)0xffffffff)
 
 
-#define SERVICE_CSUM( SRC, LEN )  service_uicsum( SRC, LEN )
-#define SERVICE_CSUM_PARTIAL( SRC, LEN, UI1, UI2 ) \
-    service_uicsum_partial( SRC, LEN, UI1, UI2 )
-#define SERVICE_CSUM_BCOPY_PARTIAL( SRC, DST, LEN1, LEN2, UI1, UI2 ) \
-    service_bcopy_uicsum_partial( SRC, DST, LEN1, LEN2, UI1, UI2 )
-#define SERVICE_CSUM_ZERO  0
+#define OCOMS_CSUM( SRC, LEN )  ocoms_uicsum( SRC, LEN )
+#define OCOMS_CSUM_PARTIAL( SRC, LEN, UI1, UI2 ) \
+    ocoms_uicsum_partial( SRC, LEN, UI1, UI2 )
+#define OCOMS_CSUM_BCOPY_PARTIAL( SRC, DST, LEN1, LEN2, UI1, UI2 ) \
+    ocoms_bcopy_uicsum_partial( SRC, DST, LEN1, LEN2, UI1, UI2 )
+#define OCOMS_CSUM_ZERO  0
 
 
 OCOMS_DECLSPEC unsigned long
-service_bcopy_csum_partial(
+ocoms_bcopy_csum_partial(
     const void *  source,
     void *  destination,
     size_t copylen,
@@ -51,7 +51,7 @@ service_bcopy_csum_partial(
     );
 
 static inline unsigned long
-service_bcopy_csum (
+ocoms_bcopy_csum (
     const void *  source,
     void *  destination,
     size_t copylen,
@@ -60,11 +60,11 @@ service_bcopy_csum (
 {
     unsigned long plong = 0;
     size_t plength = 0;
-    return service_bcopy_csum_partial(source, destination, copylen, csumlen, &plong, &plength);
+    return ocoms_bcopy_csum_partial(source, destination, copylen, csumlen, &plong, &plength);
 }
                                                                                                                   
 OCOMS_DECLSPEC unsigned int 
-service_bcopy_uicsum_partial (
+ocoms_bcopy_uicsum_partial (
     const void *  source,
     void *  destination,
     size_t copylen,
@@ -74,7 +74,7 @@ service_bcopy_uicsum_partial (
     );
 
 static inline unsigned int
-service_bcopy_uicsum (
+ocoms_bcopy_uicsum (
     const void *  source,
     void *  destination,
     size_t copylen,
@@ -83,11 +83,11 @@ service_bcopy_uicsum (
 {
     unsigned int pint = 0;
     size_t plength = 0;
-    return service_bcopy_uicsum_partial(source, destination, copylen, csumlen, &pint, &plength);
+    return ocoms_bcopy_uicsum_partial(source, destination, copylen, csumlen, &pint, &plength);
 }
                                                                                                                   
 OCOMS_DECLSPEC unsigned long 
-service_csum_partial (
+ocoms_csum_partial (
     const void *  source,
     size_t csumlen,
     unsigned long*  lastPartialLong,
@@ -96,17 +96,17 @@ service_csum_partial (
 
 
 static inline unsigned long 
-service_csum(const void *  source, size_t csumlen)
+ocoms_csum(const void *  source, size_t csumlen)
 {
     unsigned long lastPartialLong = 0;
     size_t lastPartialLength = 0;
-    return service_csum_partial(source, csumlen, &lastPartialLong, &lastPartialLength);
+    return ocoms_csum_partial(source, csumlen, &lastPartialLong, &lastPartialLength);
 }
 /*
  * The buffer passed to this function is assumed to be 16-bit aligned
  */
 static inline uint16_t
-service_csum16 (const void *  source, size_t csumlen)
+ocoms_csum16 (const void *  source, size_t csumlen)
 {
     uint16_t *src = (uint16_t *) source;
     register uint32_t csum = 0;
@@ -126,7 +126,7 @@ service_csum16 (const void *  source, size_t csumlen)
 }
 
 OCOMS_DECLSPEC unsigned int
-service_uicsum_partial (
+ocoms_uicsum_partial (
     const void *  source,
     size_t csumlen,
     unsigned int *  lastPartialInt,
@@ -134,21 +134,21 @@ service_uicsum_partial (
     );
 
 static inline unsigned int 
-service_uicsum(const void *  source, size_t csumlen)
+ocoms_uicsum(const void *  source, size_t csumlen)
 {
     unsigned int lastPartialInt = 0;
     size_t lastPartialLength = 0;
-    return service_uicsum_partial(source, csumlen, &lastPartialInt, &lastPartialLength);
+    return ocoms_uicsum_partial(source, csumlen, &lastPartialInt, &lastPartialLength);
 }
                                                                                                                   
 /*
  * CRC Support
  */
 
-void service_initialize_crc_table(void);
+void ocoms_initialize_crc_table(void);
 
 OCOMS_DECLSPEC unsigned int 
-service_bcopy_uicrc_partial(
+ocoms_bcopy_uicrc_partial(
     const void *  source,
     void *  destination,
     size_t copylen,
@@ -156,26 +156,26 @@ service_bcopy_uicrc_partial(
     unsigned int partial_crc);
 
 static inline unsigned int 
-service_bcopy_uicrc(
+ocoms_bcopy_uicrc(
     const void *  source, 
     void *  destination,
     size_t copylen, 
     size_t crclen)
 {
-    return service_bcopy_uicrc_partial(source, destination, copylen, crclen, CRC_INITIAL_REGISTER);
+    return ocoms_bcopy_uicrc_partial(source, destination, copylen, crclen, CRC_INITIAL_REGISTER);
 }
 
 OCOMS_DECLSPEC unsigned int 
-service_uicrc_partial(
+ocoms_uicrc_partial(
     const void *  source, 
     size_t crclen, 
     unsigned int partial_crc);
 
 
 static inline unsigned int 
-service_uicrc(const void *  source, size_t crclen)
+ocoms_uicrc(const void *  source, size_t crclen)
 {
-    return service_uicrc_partial(source, crclen, CRC_INITIAL_REGISTER);
+    return ocoms_uicrc_partial(source, crclen, CRC_INITIAL_REGISTER);
 }
                                                                                                                   
 END_C_DECLS
