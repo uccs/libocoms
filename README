@@ -3,6 +3,6 @@
 
 
 2. Build RPM:
-./autogen.pl && ./configure --prefix=$PWD/install && make libservice_rpms && echo -e "\n\nDONE."
+./autogen.pl && ./configure --prefix=$PWD/install && make libocoms_rpms && echo -e "\n\nDONE."
 
-NOTE: don't try to build RPM with "make -j8 libservice_rpms" - it will fault.
+NOTE: don't try to build RPM with "make -j8 libocoms_rpms" - it will fault.

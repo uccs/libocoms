@@ -23,5 +23,5 @@ headers += \
 	memoryhooks/memory.h \
 	memoryhooks/memory_internal.h
 
-libservice_la_SOURCES += \
+libocoms_la_SOURCES += \
 	memoryhooks/memory.c

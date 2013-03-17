@@ -24,7 +24,7 @@ dist_pkgdata_DATA =
 #AM_LFLAGS = -Popal_show_help_yy
 #LEX_OUTPUT_ROOT = lex.opal_show_help_yy
 
-noinst_LTLIBRARIES = libserviceutil.la
+noinst_LTLIBRARIES = libocomsutil.la
 
 # Source code files
 
@@ -52,7 +52,7 @@ util_headers = \
         path.h \
         keyval_parse.h
 
-libserviceutil_la_SOURCES = \
+libocomsutil_la_SOURCES = \
         $(util_headers) \
         argv.c \
         cmd_line.c \
@@ -77,11 +77,11 @@ libserviceutil_la_SOURCES = \
         path.c \
         keyval_parse.c
 
-libserviceutil_la_LIBADD =  \
-    keyval/libserviceutilkeyval.la
+libocomsutil_la_LIBADD =  \
+    keyval/libocomsutilkeyval.la
 
-libserviceutil_la_DEPENDENCIES = \
-    keyval/libserviceutilkeyval.la
+libocomsutil_la_DEPENDENCIES = \
+    keyval/libocomsutilkeyval.la
 
 CFLAGS += @RTE_CFLAGS@
 LDFLAGS += @RTE_LDFLAGS@

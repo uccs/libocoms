@@ -20,11 +20,11 @@
 AM_LFLAGS = -Pocoms_util_keyval_yy
 LEX_OUTPUT_ROOT = lex.ocoms_util_keyval_yy
 
-noinst_LTLIBRARIES = libserviceutilkeyval.la
+noinst_LTLIBRARIES = libocomsutilkeyval.la
 
 # Source code files
 
-libserviceutilkeyval_la_SOURCES = \
+libocomsutilkeyval_la_SOURCES = \
 	keyval_lex.h \
     keyval_lex.l
 

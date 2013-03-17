@@ -28,7 +28,7 @@ headers += \
         threads/threads.h \
 	threads/tsd.h
 
-libservice_la_SOURCES += \
+libocoms_la_SOURCES += \
         threads/condition.c \
         threads/mutex.c \
         threads/thread.c \

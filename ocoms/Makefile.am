@@ -38,28 +38,28 @@ DIST_SUBDIRS = \
 
 # Build the main OPAL library
 
-lib_LTLIBRARIES = libservice.la
-libservice_la_SOURCES =
-libservice_la_LIBADD = \
+lib_LTLIBRARIES = libocoms.la
+libocoms_la_SOURCES =
+libocoms_la_LIBADD = \
         $(LIBLTDL) \
         asm/libasm.la \
         datatype/libdatatype.la \
-        util/libserviceutil.la
+        util/libocomsutil.la
 
-libservice_la_DEPENDENCIES = $(libservice_la_LIBADD)
-libservice_la_LDFLAGS =
-#libservice_la_LDFLAGS = -version-info $(libservice_so_version)
+libocoms_la_DEPENDENCIES = $(libocoms_la_LIBADD)
+libocoms_la_LDFLAGS =
+#libocoms_la_LDFLAGS = -version-info $(libocoms_so_version)
 
 # included subdirectory Makefile.am's and appended-to variables
 headers =
 noinst_LTLIBRARIES =
 dist_pkgdata_DATA =
-libservice_la_SOURCES += $(headers)
+libocoms_la_SOURCES += $(headers)
 
 # Conditionally install the header files
 
 #if WANT_INSTALL_HEADERS
-#servicedir = $(includedir)/ocoms/$(subdir)
+#ocomsdir = $(includedir)/ocoms/$(subdir)
 #nobase_ocoms_HEADERS = $(headers)
 #
 ## This is somewhat of a hack -- libltdl is installed by libtoolize,

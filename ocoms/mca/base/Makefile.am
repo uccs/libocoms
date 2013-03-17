@@ -6,7 +6,7 @@ headers += \
         mca/base/mca_base_param.h \
         mca/base/mca_base_param_internal.h
 
-libservice_la_SOURCES += \
+libocoms_la_SOURCES += \
         mca/base/mca_base_close.c \
         mca/base/mca_base_cmd_line.c \
         mca/base/mca_base_component_compare.c \

@@ -70,7 +70,7 @@ libdatatype_la_LIBADD = libdatatype_reliable.la
 
 # Conditionally install the header files
 #if WANT_INSTALL_HEADERS
-#servicedir = $(includedir)/ocoms/$(subdir)
+#ocomsdir = $(includedir)/ocoms/$(subdir)
 #ocoms_HEADERS = $(headers)
 #endif
 

@@ -22,9 +22,9 @@ EXTRA_DIST = README VERSION LICENSE autogen.pl
 
 # include examples/Makefile.include
 
-libservice_ladir = $(includedir)
+libocoms_ladir = $(includedir)
 
-nobase_dist_libservice_la_HEADERS = \
+nobase_dist_libocoms_la_HEADERS = \
 							ocoms/libocoms_version.h \
 							ocoms/util/arch.h \
 							ocoms/util/cmd_line.h \
@@ -99,14 +99,14 @@ nobase_dist_libservice_la_HEADERS = \
 ACLOCAL_AMFLAGS = -I config
 
 
-libservice-tarball:
+libocoms-tarball:
 	-make_dist_tarball
 	if [ $$? -ne 0 ]; then \
 		echo "*** Problems in make_dist_tarball"; \
 		(exit 1); exit 1; \
 	fi
 
-libservice_rpms: libservice-tarball rpms-all
+libocoms_rpms: libocoms-tarball rpms-all
 
 rpmspec = $(PACKAGE).spec
 rpmmacros =\
