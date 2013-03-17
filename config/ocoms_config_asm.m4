@@ -1038,7 +1038,7 @@ if test "$ocoms_cv_asm_arch" != "WINDOWS" ; then
     # see if we have a pre-built one already
     AC_MSG_CHECKING([for pre-built assembly file])
     ocoms_cv_asm_file=""
-    if $GREP "$ocoms_cv_asm_arch" "${top_ocoms_srcdir}/service/asm/asm-data.txt" | $FGREP "$ocoms_cv_asm_format" >conftest.out 2>&1 ; then
+    if $GREP "$ocoms_cv_asm_arch" "${top_ocoms_srcdir}/ocoms/asm/asm-data.txt" | $FGREP "$ocoms_cv_asm_format" >conftest.out 2>&1 ; then
         ocoms_cv_asm_file="`cut -f3 conftest.out`"
         if test ! "$ocoms_cv_asm_file" = "" ; then
             ocoms_cv_asm_file="atomic-${ocoms_cv_asm_file}.s"

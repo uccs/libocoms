@@ -10,11 +10,12 @@
 
 # This file is m4_included in the top-level configure.ac
 
-AC_DEFUN([OCOMS_CONFIG_FILES],[
+AC_DEFUN([OPAL_CONFIG_FILES],[
     AC_CONFIG_FILES([
+        ocoms/Makefile
         ocoms/platform/Makefile
         ocoms/asm/Makefile
         ocoms/datatype/Makefile
+        ocoms/util/Makefile
     ])
 ])
-#        ocoms/util/Makefile

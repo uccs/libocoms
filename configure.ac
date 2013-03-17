@@ -117,7 +117,7 @@ AC_DEFINE_UNQUOTED([OCOMS_ENABLE_PROGRESS_THREADS], [$OCOMS_ENABLE_PROGRESS_THRE
 
 # List header files to generate
 
-AM_CONFIG_HEADER([service/platform/ocoms_config.h])
+AM_CONFIG_HEADER([ocoms/platform/ocoms_config.h])
 
 ocoms_show_subtitle "Initialization, setup"
 
@@ -163,7 +163,7 @@ AH_TOP([/* -*- c -*-
 ])
 
 AH_BOTTOM([
-#include "service/platform/service_config_bottom.h"
+#include "ocoms/platform/service_config_bottom.h"
 #endif /* OCOMS_CONFIG_H */
 ])
 
@@ -197,7 +197,7 @@ AC_SUBST(MAJOR_VERSION)
 AC_SUBST(MINOR_VERSION)
 AC_SUBST(MICRO_VERSION)
 
-AC_CONFIG_FILES([service/libocoms_version.h libocoms.spec])
+AC_CONFIG_FILES([ocoms/libocoms_version.h libocoms.spec])
 
 # RPM build info
 RPM_RELEASE=1
@@ -878,7 +878,7 @@ AM_PROG_LEX
 
 if test -z "$LEX" -o -n "`echo $LEX | $GREP missing`" -o \
     "`basename $LEX`" != "flex"; then
-    if test ! -f "$srcdir/service/util/show_help_lex.c"; then
+    if test ! -f "$srcdir/ocoms/util/show_help_lex.c"; then
         AC_MSG_WARN([*** Could not find GNU Flex on your system.])
         AC_MSG_WARN([*** GNU Flex required for developer builds of Open MPI.])
         AC_MSG_WARN([*** Other versions of Lex are not supported.])
@@ -997,11 +997,11 @@ ocoms_show_title "Final top-level OCOMS configuration"
     m4_ifdef([LT_PACKAGE_VERSION], [], [m4_define([LT_PACKAGE_VERSION], [1.5.22])])
 
     m4_if(m4_version_compare(m4_defn([LT_PACKAGE_VERSION]), 2.0), -1, [
-    AC_LIBLTDL_CONVENIENCE(service/libltdl)
+    AC_LIBLTDL_CONVENIENCE(ocoms/libltdl)
     AC_LIBTOOL_DLOPEN
     AC_PROG_LIBTOOL
     ], [
-    LT_CONFIG_LTDL_DIR([service/libltdl], [subproject])
+    LT_CONFIG_LTDL_DIR([ocoms/libltdl], [subproject])
     LTDL_CONVENIENCE
     LT_INIT([dlopen win32-dll])
     ])
@@ -1031,9 +1031,9 @@ ocoms_show_title "Final top-level OCOMS configuration"
         # rather than have successive assignments to these shell
         # variables, lest the $(foo) names try to get evaluated here.
         # Yuck!
-        CPPFLAGS='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/service/include m4_ifdef([project_orte], [-I$(top_srcdir)/orte/include]) m4_ifdef([project_ompi], [-I$(top_srcdir)/ompi/include])'" $CPPFLAGS"
+        CPPFLAGS='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/ocoms/include m4_ifdef([project_orte], [-I$(top_srcdir)/orte/include]) m4_ifdef([project_ompi], [-I$(top_srcdir)/ompi/include])'" $CPPFLAGS"
         # C++ is only relevant if we're building OCOMS
-        m4_ifdef([project_ompi], [CXXCPPFLAGS='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/service/include -I$(top_srcdir)/orte/include -I$(top_srcdir)/ompi/include'" $CXXCPPFLAGS"])
+        m4_ifdef([project_ompi], [CXXCPPFLAGS='-I$(top_srcdir) -I$(top_builddir) -I$(top_srcdir)/ocoms/include -I$(top_srcdir)/orte/include -I$(top_srcdir)/ompi/include'" $CXXCPPFLAGS"])
     else
         CPPFLAGS='-I$(top_srcdir)'" $CPPFLAGS"
         # C++ is only relevant if we're building OCOMS
@@ -1122,25 +1122,25 @@ ocoms_show_title "Final top-level OCOMS configuration"
     ocoms_show_subtitle "Final output"
     files="Makefile 
            config/Makefile 
-           service/Makefile 
-           service/util/Makefile 
-           service/util/keyval/Makefile 
+           ocoms/Makefile 
+           ocoms/util/Makefile 
+           ocoms/util/keyval/Makefile 
            tests/Makefile 
            tests/init/Makefile 
            tests/onesided/Makefile"
 
-#service/Makefile 
+#ocoms/Makefile 
     files1="Makefile
            config/Makefile
-           service/util/Makefile
-           service/util/keyval/Makefile"
+           ocoms/util/Makefile
+           ocoms/util/keyval/Makefile"
 
     AC_CONFIG_FILES([
             Makefile
             config/Makefile 
-            service/Makefile 
-            service/util/Makefile 
-            service/util/keyval/Makefile 
+            ocoms/Makefile 
+            ocoms/util/Makefile 
+            ocoms/util/keyval/Makefile 
     ])
 
     OCOMS_CONFIG_FILES

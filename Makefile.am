@@ -17,7 +17,7 @@
 # $HEADER$
 #
 
-SUBDIRS = config service $(MCA_PROJECT_SUBDIRS)
+SUBDIRS = config ocoms $(MCA_PROJECT_SUBDIRS)
 EXTRA_DIST = README VERSION LICENSE autogen.pl
 
 # include examples/Makefile.include
@@ -25,75 +25,75 @@ EXTRA_DIST = README VERSION LICENSE autogen.pl
 libservice_ladir = $(includedir)
 
 nobase_dist_libservice_la_HEADERS = \
-							service/libocoms_version.h \
-							service/util/arch.h \
-							service/util/cmd_line.h \
-							service/util/fd.h \
-							service/util/keyval_parse.h \
-							service/util/output.h \
-							service/util/printf.h \
-							service/util/service_bitmap.h \
-							service/util/service_free_list.h \
-							service/util/service_hash_table.h \
-							service/util/service_object.h \
-							service/util/service_rb_tree.h \
-							service/util/argv.h \
-							service/util/crc.h \
-							service/util/if.h \
-							service/util/os_path.h \
-							service/util/path.h \
-							service/util/service_atomic_lifo.h \
-							service/util/service_environ.h \
-							service/util/service_graph.h \
-							service/util/service_list.h \
-							service/util/service_pointer_array.h \
-							service/util/service_value_array.h \
-							service/mca/mca.h \
-							service/mca/base/base.h \
-							service/mca/base/mca_base_component_repository.h \
-							service/mca/base/mca_base_param.h \
-							service/mca/base/mca_base_param_internal.h \
-							service/sys/architecture.h \
-							service/sys/atomic.h \
-							service/sys/atomic_impl.h \
-							service/sys/timer.h \
-							service/sys/alpha/atomic.h \
-							service/sys/amd64/atomic.h \
-							service/sys/amd64/timer.h \
-							service/sys/arm/atomic.h \
-							service/sys/arm/timer.h \
-							service/sys/ia32/atomic.h \
-							service/sys/ia32/timer.h \
-							service/sys/ia64/atomic.h \
-							service/sys/ia64/timer.h \
-							service/sys/mips/atomic.h \
-							service/sys/mips/timer.h \
-							service/sys/powerpc/atomic.h \
-							service/sys/powerpc/timer.h \
-							service/sys/sparc/atomic.h \
-							service/sys/sparcv9/atomic.h \
-							service/sys/sparcv9/timer.h \
-							service/sys/win32/atomic.h \
-							service/sys/win32/timer.h \
-							service/threads/condition.h \
-							service/threads/mutex.h \
-							service/threads/mutex_unix.h \
-							service/threads/mutex_windows.h \
-							service/threads/threads.h \
-							service/threads/tsd.h \
-							service/memoryhooks/memory.h \
-							service/memoryhooks/memory_internal.h \
-							service/platform/ocoms_config.h \
-							service/platform/service_config_top.h \
-							service/platform/service_portable_platform.h \
-							service/platform/service_config_bottom.h \
-							service/platform/service_constants.h \
-							service/platform/service_stdint.h \
-							service/primitives/align.h \
-							service/primitives/prefetch.h \
-							service/primitives/hash_string.h \
-							service/primitives/service_socket_errno.h \
-							service/primitives/types.h
+							ocoms/libocoms_version.h \
+							ocoms/util/arch.h \
+							ocoms/util/cmd_line.h \
+							ocoms/util/fd.h \
+							ocoms/util/keyval_parse.h \
+							ocoms/util/output.h \
+							ocoms/util/printf.h \
+							ocoms/util/service_bitmap.h \
+							ocoms/util/service_free_list.h \
+							ocoms/util/service_hash_table.h \
+							ocoms/util/service_object.h \
+							ocoms/util/service_rb_tree.h \
+							ocoms/util/argv.h \
+							ocoms/util/crc.h \
+							ocoms/util/if.h \
+							ocoms/util/os_path.h \
+							ocoms/util/path.h \
+							ocoms/util/service_atomic_lifo.h \
+							ocoms/util/service_environ.h \
+							ocoms/util/service_graph.h \
+							ocoms/util/service_list.h \
+							ocoms/util/service_pointer_array.h \
+							ocoms/util/service_value_array.h \
+							ocoms/mca/mca.h \
+							ocoms/mca/base/base.h \
+							ocoms/mca/base/mca_base_component_repository.h \
+							ocoms/mca/base/mca_base_param.h \
+							ocoms/mca/base/mca_base_param_internal.h \
+							ocoms/sys/architecture.h \
+							ocoms/sys/atomic.h \
+							ocoms/sys/atomic_impl.h \
+							ocoms/sys/timer.h \
+							ocoms/sys/alpha/atomic.h \
+							ocoms/sys/amd64/atomic.h \
+							ocoms/sys/amd64/timer.h \
+							ocoms/sys/arm/atomic.h \
+							ocoms/sys/arm/timer.h \
+							ocoms/sys/ia32/atomic.h \
+							ocoms/sys/ia32/timer.h \
+							ocoms/sys/ia64/atomic.h \
+							ocoms/sys/ia64/timer.h \
+							ocoms/sys/mips/atomic.h \
+							ocoms/sys/mips/timer.h \
+							ocoms/sys/powerpc/atomic.h \
+							ocoms/sys/powerpc/timer.h \
+							ocoms/sys/sparc/atomic.h \
+							ocoms/sys/sparcv9/atomic.h \
+							ocoms/sys/sparcv9/timer.h \
+							ocoms/sys/win32/atomic.h \
+							ocoms/sys/win32/timer.h \
+							ocoms/threads/condition.h \
+							ocoms/threads/mutex.h \
+							ocoms/threads/mutex_unix.h \
+							ocoms/threads/mutex_windows.h \
+							ocoms/threads/threads.h \
+							ocoms/threads/tsd.h \
+							ocoms/memoryhooks/memory.h \
+							ocoms/memoryhooks/memory_internal.h \
+							ocoms/platform/ocoms_config.h \
+							ocoms/platform/service_config_top.h \
+							ocoms/platform/service_portable_platform.h \
+							ocoms/platform/service_config_bottom.h \
+							ocoms/platform/service_constants.h \
+							ocoms/platform/service_stdint.h \
+							ocoms/primitives/align.h \
+							ocoms/primitives/prefetch.h \
+							ocoms/primitives/hash_string.h \
+							ocoms/primitives/service_socket_errno.h \
+							ocoms/primitives/types.h
 
 
 ACLOCAL_AMFLAGS = -I config

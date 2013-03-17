@@ -1188,7 +1188,7 @@ verbose "\n$step. Running autotools on top-level tree\n\n";
 verbose "==> Remove stale files\n";
 find_and_delete(qw/config.guess config.sub depcomp compile install-sh ltconfig
     ltmain.sh missing mkinstalldirs libtool/);
-system("rm -rf service/libltdl");
+system("rm -rf ocoms/libltdl");
 
 # Remove the old m4 file and write the new one
 verbose "==> Writing m4 file with autogen.pl results \n";

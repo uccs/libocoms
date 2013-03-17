@@ -159,7 +159,7 @@ AC_DEFUN([_OCOMS_SETUP_LIBLTDL_INTERNAL],[
     CFLAGS_save="$CFLAGS"
     CFLAGS="$OCOMS_CFLAGS_BEFORE_PICKY $OCOMS_VISIBILITY_CFLAGS"
 
-    OCOMS_CONFIG_SUBDIR(service/libltdl, [$ocoms_subdir_args], 
+    OCOMS_CONFIG_SUBDIR(ocoms/libltdl, [$ocoms_subdir_args], 
                        [HAPPY=1], [HAPPY=0])
     if test "$HAPPY" = "1"; then
         LIBLTDL_SUBDIR=libltdl
@@ -167,14 +167,14 @@ AC_DEFUN([_OCOMS_SETUP_LIBLTDL_INTERNAL],[
 
         CPPFLAGS_save="$CPPFLAGS"
         CPPFLAGS="-I."
-        AC_EGREP_HEADER([lt_dladvise_init], [service/libltdl/ltdl.h],
+        AC_EGREP_HEADER([lt_dladvise_init], [ocoms/libltdl/ltdl.h],
                         [OCOMS_HAVE_LTDL_ADVISE=1])
         CPPFLAGS="$CPPFLAGS_save"
 
         # Arrgh.  This is gross.  But I can't think of any other
         # way to do it.  :-(
-        flags=`$EGREP ^LIBADD_DL service/libltdl/Makefile | cut -d= -f2-`
-        OCOMS_CHECK_LINKER_FLAGS([service/libltdl/libtool], 
+        flags=`$EGREP ^LIBADD_DL ocoms/libltdl/Makefile | cut -d= -f2-`
+        OCOMS_CHECK_LINKER_FLAGS([ocoms/libltdl/libtool], 
                                 [-export-dynamic $flags])
 
         WRAPPER_EXTRA_LIBS="$WRAPPER_EXTRA_LIBS $extra_ldflags"
@@ -182,7 +182,7 @@ AC_DEFUN([_OCOMS_SETUP_LIBLTDL_INTERNAL],[
     else
         AC_MSG_WARN([Failed to build GNU libltdl.  This usually means that something])
         AC_MSG_WARN([is incorrectly setup with your environment.  There may be useful information in])
-        AC_MSG_WARN([service/libltdl/config.log.  You can also disable GNU libltdl, which will disable])
+        AC_MSG_WARN([ocoms/libltdl/config.log.  You can also disable GNU libltdl, which will disable])
         AC_MSG_WARN([dynamic shared object loading, by configuring with --disable-dlopen.])
         AC_MSG_ERROR([Cannot continue])
     fi
