@@ -33,16 +33,16 @@
 BEGIN_C_DECLS
 
 static int finish_parsing(void);
-int service_util_keyval_yywrap(void);
+int ocoms_util_keyval_yywrap(void);
 
 END_C_DECLS
 
 /*
  * global variables
  */
-int service_util_keyval_yynewlines = 1;
-bool service_util_keyval_parse_done = false;
-char *service_util_keyval_string = NULL;
+int ocoms_util_keyval_yynewlines = 1;
+bool ocoms_util_keyval_parse_done = false;
+char *ocoms_util_keyval_string = NULL;
 
 #define yyterminate() \
   return finish_parsing()
@@ -57,15 +57,15 @@ CHAR        [A-Za-z0-9_\-\.]
 
 %%
 
-{WHITE}*\n          { service_util_keyval_yynewlines++; return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
-#.*\n               { service_util_keyval_yynewlines++; return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
-"//".*\n            { service_util_keyval_yynewlines++; return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
+{WHITE}*\n          { ocoms_util_keyval_yynewlines++; return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
+#.*\n               { ocoms_util_keyval_yynewlines++; return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
+"//".*\n            { ocoms_util_keyval_yynewlines++; return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
 
 "/*"                { BEGIN(comment);
                       return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
 <comment>[^*\n]*       ; /* Eat up non '*'s */
 <comment>"*"+[^*/\n]*  ; /* Eat '*'s not followed by a '/' */
-<comment>\n         { service_util_keyval_yynewlines++;
+<comment>\n         { ocoms_util_keyval_yynewlines++;
                       return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; } 
 <comment>"*"+"/"    { BEGIN(INITIAL); /* Done with Block Comment */
                       return OCOMS_UTIL_KEYVAL_PARSE_NEWLINE; }
@@ -99,9 +99,9 @@ static int finish_parsing(void)
     return YY_NULL;
 }
 
-int service_util_keyval_yywrap(void)
+int ocoms_util_keyval_yywrap(void)
 {
-    service_util_keyval_parse_done = true;
+    ocoms_util_keyval_parse_done = true;
     return 1;
 }
 
@@ -114,7 +114,7 @@ int service_util_keyval_yywrap(void)
  * have a valid buffer.  Hence, here we ensure to give it a valid
  * buffer.
  */
-int service_util_keyval_init_buffer(FILE *file)
+int ocoms_util_keyval_init_buffer(FILE *file)
 {
     YY_BUFFER_STATE buf = yy_create_buffer(file, YY_BUF_SIZE);
     yy_switch_to_buffer(buf);
