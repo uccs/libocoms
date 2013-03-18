@@ -38,6 +38,20 @@
  *********************************************************************/
 #if OCOMS_HAVE_ATOMIC_CMPSET_32
 
+#if !defined(OCOMS_HAVE_ATOMIC_SWAP_32)
+#define OCOMS_HAVE_ATOMIC_SWAP_32 1
+static inline int32_t ocoms_atomic_swap_32(volatile int32_t *addr, int32_t newval)
+{
+    int32_t old;
+
+    do {
+            old = *addr;
+        } while (0 == ocoms_atomic_cmpset_32(addr, old, newval));
+
+    return old;
+}
+#endif /* OCOMS_HAVE_ATOMIC_SWAP_32 */
+
 #if !defined(OCOMS_HAVE_ATOMIC_ADD_32)
 #define OCOMS_HAVE_ATOMIC_ADD_32 1
 static inline int32_t
@@ -71,6 +85,20 @@ ocoms_atomic_sub_32(volatile int32_t *addr, int delta)
 
 
 #if OCOMS_HAVE_ATOMIC_CMPSET_64
+
+#if !defined(OCOMS_HAVE_ATOMIC_SWAP_64)
+#define OCOMS_HAVE_ATOMIC_SWAP_32 1
+static inline int32_t ocoms_atomic_swap_64(volatile int32_t *addr, int32_t newval)
+{
+    int64_t old;
+
+    do {
+            old = *addr;
+        } while (0 == ocoms_atomic_cmpset_64(addr, old, newval));
+
+    return old;
+}
+#endif /* OCOMS_HAVE_ATOMIC_SWAP_64 */
 
 #if !defined(OCOMS_HAVE_ATOMIC_ADD_64)
 #define OCOMS_HAVE_ATOMIC_ADD_64 1
@@ -244,6 +272,18 @@ static inline int ocoms_atomic_cmpset_rel_ptr(volatile void* addr,
 }
 
 #endif /* (OCOMS_HAVE_ATOMIC_CMPSET_32 || OCOMS_HAVE_ATOMIC_CMPSET_64) */
+
+#if (OCOMS_HAVE_ATOMIC_SWAP_32 || OCOMS_HAVE_ATOMIC_SWAP_64)
+
+#if SIZEOF_VOID_P == 4 && OCOMS_HAVE_ATOMIC_SWAP_32
+#define ocoms_atomic_swap_ptr(addr, value) ocoms_atomic_swap_32((int32_t *) addr, value)
+#elif SIZEOF_VOID_P == 8 && OCOMS_HAVE_ATOMIC_SWAP_64
+#define ocoms_atomic_swap_ptr(addr, value) ocoms_atomic_swap_64((int64_t *) addr, value)
+#endif
+
+#endif /* (OCOMS_HAVE_ATOMIC_SWAP_32 || OCOMS_HAVE_ATOMIC_SWAP_64) */
+
+#if OPAL_HAVE_ATOMIC_MATH_32 || OPAL_HAVE_ATOMIC_MATH_64
 
 #if OCOMS_HAVE_ATOMIC_MATH_32 || OCOMS_HAVE_ATOMIC_MATH_64
 
