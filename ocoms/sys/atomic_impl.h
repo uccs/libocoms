@@ -87,8 +87,8 @@ ocoms_atomic_sub_32(volatile int32_t *addr, int delta)
 #if OCOMS_HAVE_ATOMIC_CMPSET_64
 
 #if !defined(OCOMS_HAVE_ATOMIC_SWAP_64)
-#define OCOMS_HAVE_ATOMIC_SWAP_32 1
-static inline int32_t ocoms_atomic_swap_64(volatile int32_t *addr, int32_t newval)
+#define OCOMS_HAVE_ATOMIC_SWAP_64 1
+static inline int64_t ocoms_atomic_swap_64(volatile int64_t *addr, int64_t newval)
 {
     int64_t old;
 
@@ -282,8 +282,6 @@ static inline int ocoms_atomic_cmpset_rel_ptr(volatile void* addr,
 #endif
 
 #endif /* (OCOMS_HAVE_ATOMIC_SWAP_32 || OCOMS_HAVE_ATOMIC_SWAP_64) */
-
-#if OPAL_HAVE_ATOMIC_MATH_32 || OPAL_HAVE_ATOMIC_MATH_64
 
 #if OCOMS_HAVE_ATOMIC_MATH_32 || OCOMS_HAVE_ATOMIC_MATH_64
 

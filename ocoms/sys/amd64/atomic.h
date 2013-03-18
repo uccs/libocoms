@@ -140,7 +140,7 @@ static inline int32_t ocoms_atomic_swap_32(volatile int32_t *addr, int32_t newva
 
 #if OCOMS_C_GCC_INLINE_ASSEMBLY
 
-#define CCS_HAVE_ATOMIC_SWAP_64 1
+#define OCOMS_HAVE_ATOMIC_SWAP_64 1
 
 static inline int64_t ocoms_atomic_swap_64(volatile int64_t *addr, int64_t newval)
 {
