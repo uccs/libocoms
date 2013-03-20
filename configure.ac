@@ -97,12 +97,6 @@ ocoms_show_subtitle "Checking versions"
 
 . $srcdir/VERSION
 
-AC_SUBST(libocoms_so_version)
-AC_SUBST(libmca_ocoms_common_hwloc_so_version)
-AC_SUBST(libmca_common_sm_so_version)
-AC_SUBST(libmca_common_mx_so_version)
-AC_SUBST(libmca_common_portals_so_version)
-
 #
 # Hardwire all progress threads to be off
 #
