@@ -52,17 +52,6 @@ enum {
 
 #define OCOMS_ERR_MAX                (OCOMS_ERR_BASE - 100)
 
-/* Predefined RTE TAGS */
-typedef enum {
-    OCOMS_RTE_TAG_COMMON_SM_COMP_INDEX = 100,
-    OCOMS_RTE_TAG_COMMON_SM_BACK_FILE_CREATED,
-} ocoms_rte_tags_t;
-
-/* Pasha: dummy orte_show_help declaration */
-#define orte_show_help(A...)
-/* Pasha: dummy OCOMS_SOS_GET_ERROR_CODE */
-#define OCOMS_SOS_GET_ERROR_CODE(rc) rc
-
 enum {
     AM_TAG_OPENIB = 1,
 };
