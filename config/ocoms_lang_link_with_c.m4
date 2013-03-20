@@ -25,16 +25,13 @@ AC_DEFUN([OCOMS_LANG_LINK_WITH_C], [
        [m4_if([$1], [Fortran 77],
           [m4_define([ocoms_lang_link_with_c_fortran], 1)],
           [m4_define([ocoms_lang_link_with_c_fortran], 0)])])
-     m4_if(ocoms_lang_link_with_c_fortran, 1,
-       [OCOMS_F77_MAKE_C_FUNCTION([testfunc_name], [testfunc])],
-       [testfunc_name="testfunc"])
 
      # Write out C part
      AC_LANG_PUSH(C)
      rm -f conftest_c.$ac_ext
       cat > conftest_c.$ac_ext << EOF
-int $testfunc_name(int a);
-int $testfunc_name(int a) { return a; }
+int testfunc(int a);
+int testfunc(int a) { return a; }
 EOF
 
      # Now compile both parts
@@ -46,9 +43,9 @@ EOF
           [AC_LINK_IFELSE([AC_LANG_PROGRAM([], [
        external testfunc
        call testfunc(1)
-])],
-             [AS_VAR_SET(lang_var, ["yes"])], [AS_VAR_SET(lang_var, ["no"])])],
-          [AC_LINK_IFELSE([AC_LANG_PROGRAM([
+	 ])],
+     [AS_VAR_SET(lang_var, ["yes"])], [AS_VAR_SET(lang_var, ["no"])])],
+     [AC_LINK_IFELSE([AC_LANG_PROGRAM([
 #if defined(c_plusplus) || defined(__cplusplus)
 extern "C" int testfunc(int);
 #else

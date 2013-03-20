@@ -46,79 +46,6 @@ AC_DEFUN([OCOMS_INTL_PTHREAD_TRY_LINK], [
 ])dnl
 
 
-AC_DEFUN([OCOMS_INTL_PTHREAD_TRY_LINK_F77], [
-# BEGIN: OCOMS_INTL_PTHREAD_TRY_LINK_F77
-#
-# Make sure that we can run a small application in Fortran, with
-# pthreads living in a C object file
-OCOMS_F77_MAKE_C_FUNCTION([ocoms_ac_thread_fn], [pthreadtest])
-
-# Fortran module
-cat > conftestf.f <<EOF
-      program fpthread
-      call pthreadtest
-      end
-EOF
-
-# C module
-if test -f conftest.h; then
-    ocoms_conftest_h="#include \"conftest.h\""
-else
-    ocoms_conftest_h=""
-fi
-cat > conftest.c <<EOF
-#include <stdio.h>
-#include <stdlib.h>
-#include <pthread.h>
-$ocoms_conftest_h
-
-#ifdef __cplusplus
-extern "C" {
-#endif
-void $ocoms_ac_thread_fn()
-{
-  pthread_t th;
-  pthread_create(&th, NULL, NULL, NULL);
-  pthread_join(th, 0);
-  pthread_attr_init(0);
-  pthread_cleanup_push(0, 0);
-  pthread_create(0,0,0,0);
-  pthread_cleanup_pop(0); 
-}
-#ifdef __cplusplus
-}
-#endif
-EOF
-
-# Try the compile
-OCOMS_LOG_COMMAND(
-    [$CC $CFLAGS -I. -c conftest.c],
-    OCOMS_LOG_COMMAND(
-        [$F77 $FFLAGS conftestf.f conftest.o -o conftest $LDFLAGS $LIBS],
-        [HAPPY=1],
-	[HAPPY=0]),
-    [HAPPY=0])
-
-if test "$HAPPY" = "1"; then
-   $1
-else
-    OCOMS_LOG_MSG([here is the C program:], 1)
-    OCOMS_LOG_FILE([conftest.c])
-    if test -f conftest.h; then
-	OCOMS_LOG_MSG([here is contest.h:], 1)
-	OCOMS_LOG_FILE([conftest.h])
-    fi
-    OCOMS_LOG_MSG([here is the fortran program:], 1)
-    OCOMS_LOG_FILE([conftestf.f])
-    $2
-fi
-
-unset HAPPY ocoms_conftest_h
-rm -rf conftest*
-# END: OCOMS_INTL_PTHREAD_TRY_LINK_F77
-])dnl
-
-
 # ********************************************************************
 #
 # Try to compile thread support without any special flags
@@ -219,42 +146,6 @@ if test "$ocoms_pthread_cxx_success" = "0"; then
 fi
 ])dnl
 
-
-AC_DEFUN([OCOMS_INTL_POSIX_THREADS_PLAIN_FC], [
-#
-# Fortran compiler
-#
-if test "$ocoms_pthread_f77_success" = "0" -a "$OCOMS_WANT_F77_BINDINGS" = "1"; then
-  AC_MSG_CHECKING([if F77 compiler and POSIX threads work as is])
-  if test "$HAVE_POSIX_THREADS" = "1" ; then
-    run_this_test=1
-  else
-    case "${host_cpu}-${host_os}" in
-      *solaris*)
-        AC_MSG_RESULT([no - Solaris, not checked])
-        run_this_test=0
-      ;;
-      *)
-        run_this_test=1
-      ;;
-    esac
-  fi
-
-  if test "$run_this_test" = "1" ; then
-    AC_LANG_PUSH(C)
-    OCOMS_INTL_PTHREAD_TRY_LINK_F77(ocoms_pthread_f77_success=1, 
-                                  ocoms_pthread_f77_success=0)
-    AC_LANG_POP(C)
-    if test "$ocoms_pthread_f77_success" = "1"; then
-      AC_MSG_RESULT([yes])
-    else
-      AC_MSG_RESULT([no])
-    fi
-  fi
-fi
-])dnl
-
-
 AC_DEFUN([OCOMS_INTL_POSIX_THREADS_PLAIN], [
 # BEGIN: OCOMS_INTL_POSIX_THREADS_PLAIN
 #
@@ -273,10 +164,6 @@ AC_PROVIDE_IFELSE([AC_PROG_CC],
 AC_PROVIDE_IFELSE([AC_PROG_CXX], 
                   [OCOMS_INTL_POSIX_THREADS_PLAIN_CXX], 
                   [ocoms_pthread_cxx_success=1])
-
-AC_PROVIDE_IFELSE([AC_PROG_F77], 
-                  [OCOMS_INTL_POSIX_THREADS_PLAIN_FC],
-                  [ocoms_pthread_f77_success=1])
 
 # End: OCOMS_INTL_POSIX_THREADS_PLAIN
 ])dnl
@@ -338,33 +225,6 @@ if test "$ocoms_pthread_cxx_success" = "0"; then
 fi
 ])
 
-
-AC_DEFUN([OCOMS_INTL_POSIX_THREADS_SPECIAL_FLAGS_FC], [
-#
-# Fortran compiler
-#
-if test "$ocoms_pthread_f77_success" = "0" -a "$OCOMS_WANT_F77_BINDINGS" = "1"; then
-  for pf in $pflags; do
-    AC_MSG_CHECKING([if F77 compiler and POSIX threads work with $pf])
-    FFLAGS="$orig_FFLAGS $pf"
-    AC_LANG_PUSH(C)
-    OCOMS_INTL_PTHREAD_TRY_LINK_F77(ocoms_pthread_f77_success=1, 
-                                  ocoms_pthread_f77_success=0)
-    AC_LANG_POP(C)
-    if test "$ocoms_pthread_f77_success" = "1"; then
-      PTHREAD_FFLAGS="$pf"
-      AC_MSG_RESULT([yes])
-      break
-    else
-      PTHREAD_FFLAGS=
-      FFLAGS="$orig_FFLAGS"
-      AC_MSG_RESULT([no])
-    fi
-  done
-fi
-])
-
-
 AC_DEFUN([OCOMS_INTL_POSIX_THREADS_SPECIAL_FLAGS],[
 # Begin: OCOMS_INTL_POSIX_THREADS_SPECIAL_FLAGS
 #
@@ -399,10 +259,6 @@ AC_PROVIDE_IFELSE([AC_PROG_CC],
 AC_PROVIDE_IFELSE([AC_PROG_CXX], 
                   [OCOMS_INTL_POSIX_THREADS_SPECIAL_FLAGS_CXX], 
                   [ocoms_pthread_cxx_success=1])
-
-AC_PROVIDE_IFELSE([AC_PROG_F77], 
-                  [OCOMS_INTL_POSIX_THREADS_SPECIAL_FLAGS_FC],
-                  [ocoms_pthread_f77_success=1])
 
 # End: OCOMS_INTL_POSIX_THREADS_SPECIAL_FLAGS
 ])dnl
@@ -523,48 +379,6 @@ if test "$ocoms_pthread_cxx_success" = "0"; then
 fi
 ])dnl
 
-
-AC_DEFUN([OCOMS_INTL_POSIX_THREADS_LIBS_FC],[
-#
-# Fortran compiler
-#
-if test "$ocoms_pthread_f77_success" = "0" -a "$OCOMS_WANT_F77_BINDINGS" = "1"; then
-  if test ! "$ocoms_pthread_c_success" = "0" -a ! "$PTHREAD_LIBS" = "" ; then
-    AC_MSG_CHECKING([if F77 compiler and POSIX threads work with $PTHREAD_LIBS])
-    LIBS="$orig_LIBS $PTHREAD_LIBS"
-    AC_LANG_PUSH(C)
-    OCOMS_INTL_PTHREAD_TRY_LINK_F77(ocoms_pthread_f77_success=1, 
-                                  ocoms_pthread_f77_success=0)
-    AC_LANG_POP(C)
-    if test "$ocoms_pthread_f77_success" = "1"; then
-      AC_MSG_RESULT([yes])
-    else
-      LIBS="$orig_LIBS"
-      AC_MSG_RESULT([no])
-      AC_MSG_ERROR([Can not find working threads configuration.  aborting])
-    fi
-  else
-    for pl in $plibs; do
-      AC_MSG_CHECKING([if F77 compiler and POSIX threads work with $pl])
-      LIBS="$orig_LIBS $pl"
-      AC_LANG_PUSH(C)
-      OCOMS_INTL_PTHREAD_TRY_LINK_F77(ocoms_pthread_f77_success=1, 
-                                    ocoms_pthread_f77_success=0)
-      AC_LANG_POP(C)
-      if test "$ocoms_pthread_f77_success" = "1"; then
-	PTHREAD_LIBS="$pl"
-        AC_MSG_RESULT([yes])
-        break
-      else
-        LIBS="$orig_LIBS"
-        AC_MSG_RESULT([no])
-      fi
-    done
-  fi
-fi
-])dnl
-
-
 AC_DEFUN([OCOMS_INTL_POSIX_THREADS_LIBS],[
 # Begin: OCOMS_INTL_POSIX_THREADS_LIBS
 #
@@ -587,10 +401,6 @@ AC_PROVIDE_IFELSE([AC_PROG_CXX],
                   [OCOMS_INTL_POSIX_THREADS_LIBS_CXX], 
                   [ocoms_pthread_cxx_success=1])
 
-AC_PROVIDE_IFELSE([AC_PROG_F77], 
-                  [OCOMS_INTL_POSIX_THREADS_LIBS_FC],
-                  [ocoms_pthread_f77_success=1])
-
 # End: OCOMS_INTL_POSIX_THREADS_LIBS]
 )dnl
 
@@ -604,7 +414,6 @@ AC_DEFUN([OCOMS_CONFIG_POSIX_THREADS],[
     AC_REQUIRE([AC_PROG_GREP])
 
 ocoms_pthread_c_success=0
-ocoms_pthread_f77_success=0
 ocoms_pthread_cxx_success=0
 
 orig_CFLAGS="$CFLAGS"
@@ -667,13 +476,8 @@ CXXCPPFLAGS="$orig_CXXCPPFLAGS"
 LDFLAGS="$orig_LDFLAGS"
 LIBS="$orig_LIBS"
 
-if test "$OCOMS_WANT_F77_BINDINGS" != "1"; then
-  ocoms_pthread_f77_success=1
-fi
-
 if test "$ocoms_pthread_c_success" = "1" -a \
-        "$ocoms_pthread_cxx_success" = "1" -a \
-       "$ocoms_pthread_f77_success" = "1"; then
+        "$ocoms_pthread_cxx_success" = "1"; then
   internal_useless=1
   $1
 else
@@ -681,6 +485,6 @@ else
   $2
 fi
 
-unset ocoms_pthread_c_success ocoms_pthread_f77_success ocoms_pthread_cxx_success
+unset ocoms_pthread_c_success ocoms_pthread_cxx_success
 unset internal_useless
 ])dnl
