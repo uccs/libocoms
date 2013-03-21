@@ -1,0 +1,97 @@
+%define rel @RPM_RELEASE@
+%define version @VERSION@
+%define pkgname @PACKAGE@
+%define prefix @prefix@
+%define __check_files %{nil}
+%define _prefix %{prefix}
+%define _libdir %{prefix}/lib
+%{!?configure_opts: %define configure_opts %{nil}}
+
+
+%define lt_release @LT_RELEASE@
+%define lt_version @LT_CURRENT@.@LT_REVISION@.@LT_AGE@
+
+
+Name: %{pkgname}
+Summary: libocoms package - Open Component Services 
+Version: %{version}
+Release: %{rel}
+Vendor: Mellanox
+
+License: GNU
+Group: Libraries
+Source: %{pkgname}-%{version}.tar.gz
+#Requires:
+BuildRequires: gcc-c++ libstdc++ libstdc++-devel
+BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
+URL: http://www.mellanox.com
+Prefix: %{prefix}
+Packager: <hpcuser@mellanox.com> 
+
+%description
+libocoms YYYYYYYYYYYYYYYYYYYYYY
+
+%prep
+rm -rf $RPM_BUILD_ROOT
+
+
+%setup -q
+#%patch
+
+
+%build
+%configure %{configure_opts}
+make
+
+
+%install
+rm -rf "$RPM_BUILD_ROOT"
+
+make DESTDIR="$RPM_BUILD_ROOT" install
+
+
+%post
+if [ "$1" = "1" ]; then
+	# Perform tasks to prepare for the initial installation
+	/sbin/ldconfig || exit 1
+	sed -i "s@libdir=.*@libdir=$RPM_INSTALL_PREFIX/lib@g" $RPM_INSTALL_PREFIX/lib/%{pkgname}.la
+elif [ "$1" = "2" ]; then
+	# Perform whatever maintenance must occur before the upgrade begins
+	echo Preparing to upgrade libocoms
+fi
+exit 0
+
+
+%preun
+if [ "$1" = "1" ]; then
+	# Perform tasks to prepare for the uninstall
+	echo Preparing to uninstall libocoms
+elif [ "$1" = "2" ]; then
+	# Perform whatever maintenance must occur before the upgrade begins
+	echo Running libocoms post upgrade scripts ...
+fi
+
+
+%clean
+# We may be in the directory that we're about to remove, so cd out of
+# there before we remove it
+cd /tmp
+
+# Remove installed driver after rpm build finished
+chmod -R o+w $RPM_BUILD_DIR/%{name}-%{version}
+rm -rf $RPM_BUILD_DIR/%{name}-%{version}
+
+test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
+
+
+%files
+%defattr(-, root, root)
+%{prefix}
+%dir %{prefix}/include/ocoms
+%dir %{prefix}/lib
+
+# If you uninstall a library
+%postun
+/sbin/ldconfig
+exit 0
+
