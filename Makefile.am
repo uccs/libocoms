@@ -93,7 +93,16 @@ nobase_dist_libocoms_la_HEADERS = \
 							ocoms/primitives/prefetch.h \
 							ocoms/primitives/hash_string.h \
 							ocoms/primitives/ocoms_socket_errno.h \
-							ocoms/primitives/types.h
+							ocoms/primitives/types.h \
+							ocoms/datatype/ocoms_convertor.h \
+							ocoms/datatype/ocoms_datatype_checksum.h \
+							ocoms/datatype/ocoms_datatype_copy.h \
+							ocoms/datatype/ocoms_datatype_cuda.h \
+							ocoms/datatype/ocoms_datatype.h \
+							ocoms/datatype/ocoms_datatype_memcpy.h \
+							ocoms/datatype/ocoms_datatype_pack.h \
+							ocoms/datatype/ocoms_datatype_prototypes.h \
+							ocoms/datatype/ocoms_datatype_unpack.h
 
 
 ACLOCAL_AMFLAGS = -I config
