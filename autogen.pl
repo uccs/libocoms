@@ -26,7 +26,6 @@ use Getopt::Long;
 my $m4_output_file = "config/autogen_found_items.m4";
 my $m4;
 # Sanity check file
-my $topdir_file = "ccs/include/ccs_config_bottom.h";
 my $dnl_line = "dnl ---------------------------------------------------------------------------";
 
 # Data structures to fill up with all the stuff we find
@@ -976,8 +975,8 @@ print("\n CWD - $rlg_dir = \n");
 #---------------------------------------------------------------------------
 
 # Check for project existence
-my $project_name_long = "Common Communication Substrate";
-my $project_name_short = "libservice";
+my $project_name_long = "Open Component Services";
+my $project_name_short = "libocoms";
 
 #if (! -e "ompi") {
 #    $no_ompi_arg = 1;
@@ -1008,7 +1007,7 @@ $dnl_line\n\n";
 #---------------------------------------------------------------------------
 
 my $step = 1;
-verbose "Starting to configure CCS
+verbose "Starting to configure OCOMS
 
 $step. Checking tool versions\n\n";
 
@@ -1133,11 +1132,6 @@ print("\n BBB CWD - $rlg_dir = \n");
 #end debug
 # Top-level projects to examine
 my $projects;
-###push(@{$projects}, { name => "ccs", dir => "ccs", need_base => 1 });
-# Pasha: We can't include servic project there becasue it does not have any componentes
-# push(@{$projects}, { name => "service", dir => "service", need_base => 1 });
-#push(@{$projects}, { name => "orte", dir => "orte", need_base => 1 })
-#    if (!$no_ompi_arg || !$no_orte_arg);
 
 # Save the list of projects in the m4 file
 my $str;
@@ -1194,7 +1188,7 @@ verbose "\n$step. Running autotools on top-level tree\n\n";
 verbose "==> Remove stale files\n";
 find_and_delete(qw/config.guess config.sub depcomp compile install-sh ltconfig
     ltmain.sh missing mkinstalldirs libtool/);
-system("rm -rf service/libltdl");
+system("rm -rf ocoms/libltdl");
 
 # Remove the old m4 file and write the new one
 verbose "==> Writing m4 file with autogen.pl results \n";
@@ -1221,7 +1215,7 @@ safe_system($cmd);
 
 verbose "
 ================================================
-Done autogening CCS
+Done autogening OCOMS
 ================================================\n\n";
 
 # Done!
