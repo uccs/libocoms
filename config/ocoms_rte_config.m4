@@ -1,6 +1,4 @@
-
 AC_DEFUN([RTE_CONFIG],[
-    AS_ECHO([ Hah got this to work])
     AC_ARG_WITH([rte],
                 [AC_HELP_STRING([--with-rte(=DIR)],
                                 [Where to find the RTE libraries and header
