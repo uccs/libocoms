@@ -212,8 +212,11 @@ AC_SUBST([BUILD_TIME])
 BUILD_HOST="`hostname`"
 AC_SUBST([BUILD_HOST])
 
-BUILD_USER="`whoami`"
-AC_SUBST([BUILD_USER])
+PACKAGER="`whoami`"
+AC_SUBST([PACKAGER])
+
+VENDOR="libocoms"
+AC_SUBST([VENDOR])
 
 ############################################################################
 # Configuration options
