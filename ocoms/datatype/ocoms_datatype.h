@@ -22,7 +22,7 @@
  */
 
 /**
- * ocoms_datatype_t interface for OPAL internal data type representation
+ * ocoms_datatype_t interface for OCOMS internal data type representation
  *
  * ocoms_datatype_t is a class which represents contiguous or
  * non-contiguous data together with constituent type-related
@@ -40,7 +40,6 @@
 #endif
 
 #include "ocoms/util/ocoms_object.h"
-#include "ocoms/datatype/ocoms_datatype.h"
 
 BEGIN_C_DECLS
 
@@ -127,7 +126,7 @@ struct ocoms_datatype_t {
                                  /**< basic elements count used to compute the size of the
                                       datatype for remote nodes. The length of the array is dependent on
                                       the maximum number of datatypes of all top layers.
-                                      Reason being is that Fortran is not at the OPAL layer. */
+                                      Reason being is that Fortran is not at the OCOMS layer. */
     /* --- cacheline 5 boundary (320 bytes) was 32 bytes ago --- */
 
     /* size: 352, cachelines: 6, members: 15 */
@@ -145,7 +144,7 @@ OCOMS_DECLSPEC extern const size_t ocoms_datatype_local_sizes[OCOMS_DATATYPE_MAX
 OCOMS_DECLSPEC extern uint32_t ocoms_local_arch;
 
 /*
- * The OPAL-layer's Basic datatypes themselves.
+ * The OCOMS-layer's Basic datatypes themselves.
  */
 OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_empty;
 OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_loop;
@@ -177,7 +176,7 @@ OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_wchar;
 /*
  * Functions exported externally
  */
-OCOMS_DECLSPEC int ocoms_datatype_register_params(void);
+int ocoms_datatype_register_params(void);
 OCOMS_DECLSPEC int32_t ocoms_datatype_init( void );
 OCOMS_DECLSPEC int32_t ocoms_datatype_finalize( void );
 OCOMS_DECLSPEC ocoms_datatype_t* ocoms_datatype_create( int32_t expectedSize );
@@ -218,7 +217,8 @@ ocoms_datatype_is_contiguous_memory_layout( const ocoms_datatype_t* datatype, in
 {
     if( !(datatype->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS) ) return 0;
     if( (count == 1) || (datatype->flags & OCOMS_DATATYPE_FLAG_NO_GAPS) ) return 1;
-    assert( (OCOMS_PTRDIFF_TYPE)datatype->size != (datatype->ub - datatype->lb) );
+    assert( (OCOMS_PTRDIFF_TYPE)datatype->size != (datatype->ub - datatype->lb)  && count != 0 );
+
     return 0;
 }
 
