@@ -2,6 +2,8 @@
  * Copyright (c) 2004-2007 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
+ * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
+ * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow

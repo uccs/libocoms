@@ -2,6 +2,8 @@
  * Copyright (c) 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright (c) 2009 Sandia National Laboratories. All rights reserved.
  *
+ * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
+ * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
