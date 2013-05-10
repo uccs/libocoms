@@ -10,6 +10,8 @@
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
  * Copyright (c) 2007      Cisco Systems, Inc.  All rights reserved.
+ * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
+ * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow

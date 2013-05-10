@@ -14,6 +14,8 @@ dnl Copyright (c) 2006-2008 Sun Microsystems, Inc.  All rights reserved.
 dnl Copyright (c) 2006-2007 Los Alamos National Security, LLC.  All rights
 dnl                         reserved. 
 dnl Copyright (c) 2009      Oak Ridge National Labs.  All rights reserved.
+dnl Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
+dnl Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
 dnl $COPYRIGHT$
 dnl 
 dnl Additional copyrights may follow

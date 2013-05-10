@@ -11,6 +11,8 @@ dnl                         University of Stuttgart.  All rights reserved.
 dnl Copyright (c) 2004-2005 The Regents of the University of California.
 dnl                         All rights reserved.
 dnl Copyright (c) 2009      Sun Microsystems, Inc.  All rights reserved.
+dnl Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
+dnl Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
 dnl $COPYRIGHT$
 dnl 
 dnl Additional copyrights may follow
