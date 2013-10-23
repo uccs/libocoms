@@ -66,7 +66,7 @@ int ocoms_mca_base_cmd_line_setup(ocoms_cmd_line_t *cmd)
 
     {
         ocoms_cmd_line_init_t entry = 
-            {"mca", "base", "param_file_prefix", '\0', "am", NULL, 1,
+            {"mca_base_param_file_prefix", '\0', "am", NULL, 1,
              NULL, OCOMS_CMD_LINE_TYPE_STRING,
              "Aggregate MCA parameter set file list"
             };
@@ -175,7 +175,7 @@ static void add_to_env(char **params, char **values, char ***env)
        vars of the form OMPI_MCA_*=value. */
 
     for (i = 0; NULL != params && NULL != params[i]; ++i) {
-        name = ocoms_mca_base_param_environ_variable(params[i], NULL, NULL);
+        (void) ocoms_mca_base_var_env_name (params[i], &name);
         ocoms_setenv(name, values[i], true, env);
         free(name);
     }

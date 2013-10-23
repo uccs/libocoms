@@ -43,7 +43,7 @@
 #if OCOMS_CUDA_SUPPORT
 #include "ocoms/datatype/ocoms_datatype_cuda.h"
 #define MEMCPY_CUDA( DST, SRC, BLENGTH, CONVERTOR ) \
-    CONVERTOR->cbmemcpy( (DST), (SRC), (BLENGTH) )
+    CONVERTOR->cbmemcpy( (DST), (SRC), (BLENGTH), (CONVERTOR) )
 #endif
 
 extern int ocoms_convertor_create_stack_with_pos_general( ocoms_convertor_t* convertor,
@@ -57,7 +57,7 @@ static void ocoms_convertor_construct( ocoms_convertor_t* convertor )
     convertor->remoteArch     = ocoms_local_arch;
     convertor->flags          = OCOMS_DATATYPE_FLAG_NO_GAPS | CONVERTOR_COMPLETED;
 #if OCOMS_CUDA_SUPPORT
-    convertor->cbmemcpy       = &memcpy;
+    convertor->cbmemcpy       = &ocoms_cuda_memcpy;
 #endif
 }
 
@@ -430,6 +430,17 @@ int32_t ocoms_convertor_set_position_nocheck( ocoms_convertor_t* convertor,
                                                           ocoms_datatype_local_sizes );
     } else {
         rc = ocoms_convertor_generic_simple_position( convertor, position );
+        /**
+         * If we have a non-contigous send convertor don't allow it move in the middle
+         * of a predefined datatype, it won't be able to copy out the left-overs
+         * anyway. Instead force the position to stay on predefined datatypes
+         * boundaries. As we allow partial predefined datatypes on the contiguous
+         * case, we should be accepted by any receiver convertor.
+         */
+        if( CONVERTOR_SEND & convertor->flags ) {
+            convertor->bConverted -= convertor->partial_length;
+            convertor->partial_length = 0;
+        }
     }
     *position = convertor->bConverted;
     return rc;

@@ -1,3 +1,4 @@
+/* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil -*- */
 /*
  * Copyright (c) 2004-2005 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
@@ -11,6 +12,8 @@
  *                         All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2013      Los Alamos National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
@@ -26,7 +29,7 @@
 #include "ocoms/util/ocoms_list.h"
 #include "ocoms/mca/mca.h"
 #include "ocoms/mca/base/base.h"
-#include "ocoms/mca/base/mca_base_param_internal.h"
+#include "ocoms/mca/base/mca_base_vari.h"
 #if 0
 #include "ocoms/util/keyval_parse.h"
 #endif
@@ -34,52 +37,46 @@
 static void save_value(const char *name, const char *value);
 
 static char * file_being_read;
+static ocoms_list_t * _param_list;
 
-int ocoms_mca_base_parse_paramfile(const char *paramfile)
+int ocoms_mca_base_parse_paramfile(const char *paramfile, ocoms_list_t *list)
 {
     file_being_read = (char*)paramfile;
-    
+    _param_list = list;
+
     return ocoms_util_keyval_parse(paramfile, save_value);
 }
 
 static void save_value(const char *name, const char *value)
 {
-    ocoms_list_item_t *item;
-    ocoms_mca_base_param_file_value_t *fv;
+    ocoms_mca_base_var_file_value_t *fv;
+    bool found = false;
 
     /* First traverse through the list and ensure that we don't
        already have a param of this name.  If we do, just replace the
        value. */
 
-    for (item = ocoms_list_get_first(&ocoms_mca_base_param_file_values);
-         ocoms_list_get_end(&ocoms_mca_base_param_file_values) != item;
-         item = ocoms_list_get_next(item)) {
-        fv = (ocoms_mca_base_param_file_value_t *) item;
-        if (0 == strcmp(name, fv->mbpfv_param)) {
-            if (NULL != fv->mbpfv_value ) {
-                free(fv->mbpfv_value);
+    OCOMS_LIST_FOREACH(fv, _param_list, ocoms_mca_base_var_file_value_t) {
+        if (0 == strcmp(name, fv->mbvfv_var)) {
+            if (NULL != fv->mbvfv_value) {
+                free (fv->mbvfv_value);
             }
-            if (NULL != value) {
-                fv->mbpfv_value = strdup(value);
-            } else {
-                fv->mbpfv_value = NULL;
-            }
-            fv->mbpfv_file = strdup(file_being_read);
+            found = true;
+            break;
+        }
+    }
+
+    if (!found) {
+        /* We didn't already have the param, so append it to the list */
+        fv = OBJ_NEW(ocoms_mca_base_var_file_value_t);
+        if (NULL == fv) {
             return;
         }
+
+        fv->mbvfv_var = strdup(name);
+        ocoms_list_append(_param_list, &fv->super);
     }
 
-    /* We didn't already have the param, so append it to the list */
-
-    fv = OBJ_NEW(ocoms_mca_base_param_file_value_t);
-    if (NULL != fv) {
-        fv->mbpfv_param = strdup(name);
-        if (NULL != value) {
-            fv->mbpfv_value = strdup(value);
-        } else {
-            fv->mbpfv_value = NULL;
-        }
-        fv->mbpfv_file = strdup(file_being_read);
-        ocoms_list_append(&ocoms_mca_base_param_file_values, (ocoms_list_item_t*) fv);
-    }
+    fv->mbvfv_value = value ? strdup(value) : NULL;
+    fv->mbvfv_file  = file_being_read;
 }

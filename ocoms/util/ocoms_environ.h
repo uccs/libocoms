@@ -9,7 +9,7 @@
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
- * Copyright (c)      2007 Los Alamos National Security, LLC.  All rights
+ * Copyright (c) 2007-2013 Los Alamos National Security, LLC.  All rights
  *                         reserved. 
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
@@ -135,15 +135,11 @@ OCOMS_DECLSPEC const char* ocoms_tmp_directory( void );
 
 /* Some care is needed with environ on OS X when dealing with shared
    libraries.  Handle that care here... */
-#if !defined(__WINDOWS__)
-
 #ifdef HAVE__NSGETENVIRON
 #define environ (*_NSGetEnviron())
 #else
 OCOMS_DECLSPEC extern char **environ;
 #endif
-
-#endif  /* !defined(__WINDOWS__) */
 
 END_C_DECLS
 

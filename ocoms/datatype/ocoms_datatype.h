@@ -1,4 +1,4 @@
-/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil -*- */
 /*
  * Copyright (c) 2004-2006 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
@@ -10,7 +10,7 @@
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2006 The Regents of the University of California.
  *                         All rights reserved.
- * Copyright (c) 2007      Los Alamos National Security, LLC.  All rights
+ * Copyright (c) 2007-2013 Los Alamos National Security, LLC.  All rights
  *                         reserved.
  * Copyright (c) 2009      Sun Microsystems, Inc.  All rights reserved.
  * Copyright (c) 2009      Oak Ridge National Labs.  All rights reserved.
@@ -51,14 +51,16 @@ BEGIN_C_DECLS
  *
  * This must match the same definition as in ocoms_datatype_internal.h
  */
+#if !defined(OCOMS_DATATYPE_MAX_PREDEFINED)
 #define OCOMS_DATATYPE_MAX_PREDEFINED 25
+#endif
 /*
  * No more than this number of _Basic_ datatypes in C/CPP or Fortran
  * are supported (in order to not change setup and usage of btypes).
  *
  * XXX TODO Adapt to whatever the OMPI-layer needs
  */
-#define OCOMS_DATATYPE_MAX_SUPPORTED  46
+#define OCOMS_DATATYPE_MAX_SUPPORTED  47
 
 
 /* flags for the datatypes. */
@@ -115,11 +117,11 @@ struct ocoms_datatype_t {
     OCOMS_PTRDIFF_TYPE  ub;       /**< upper bound in memory */
     /* --- cacheline 1 boundary (64 bytes) --- */
     uint32_t           align;    /**< data should be aligned to */
-    uint32_t           nbElems;  /**< total number of elements inside the datatype */
+    size_t             nbElems;  /**< total number of elements inside the datatype */
 
     /* Attribute fields */
     char               name[OCOMS_MAX_OBJECT_NAME];  /**< name of the datatype */
-    /* --- cacheline 2 boundary (128 bytes) was 8 bytes ago --- */
+    /* --- cacheline 2 boundary (128 bytes) was 8-12 bytes ago --- */
     dt_type_desc_t     desc;     /**< the data description */
     dt_type_desc_t     opt_desc; /**< short description of the data used when conversion is useless
                                       or in the send case (without conversion) */
@@ -129,10 +131,10 @@ struct ocoms_datatype_t {
                                       datatype for remote nodes. The length of the array is dependent on
                                       the maximum number of datatypes of all top layers.
                                       Reason being is that Fortran is not at the OCOMS layer. */
-    /* --- cacheline 5 boundary (320 bytes) was 32 bytes ago --- */
+    /* --- cacheline 5 boundary (320 bytes) was 32-36 bytes ago --- */
 
     /* size: 352, cachelines: 6, members: 15 */
-    /* last cacheline: 32 bytes */
+    /* last cacheline: 28-32 bytes */
 };
 
 typedef struct ocoms_datatype_t ocoms_datatype_t;
@@ -168,9 +170,9 @@ OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_float4;     /* in by
 OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_float8;     /* in bytes */
 OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_float12;    /* in bytes */
 OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_float16;    /* in bytes */
-OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_complex8;   /* in bytes */
-OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_complex16;  /* in bytes */
-OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_complex32;  /* in bytes */
+OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_float_complex;
+OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_double_complex;
+OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_long_double_complex;
 OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_bool;
 OCOMS_DECLSPEC extern const ocoms_datatype_t ocoms_datatype_wchar;
 
@@ -219,8 +221,6 @@ ocoms_datatype_is_contiguous_memory_layout( const ocoms_datatype_t* datatype, in
 {
     if( !(datatype->flags & OCOMS_DATATYPE_FLAG_CONTIGUOUS) ) return 0;
     if( (count == 1) || (datatype->flags & OCOMS_DATATYPE_FLAG_NO_GAPS) ) return 1;
-    assert( (OCOMS_PTRDIFF_TYPE)datatype->size != (datatype->ub - datatype->lb)  && count != 0 );
-
     return 0;
 }
 
@@ -276,10 +276,10 @@ ocoms_datatype_get_true_extent( const ocoms_datatype_t* pData, OCOMS_PTRDIFF_TYP
     return 0;
 }
 
-OCOMS_DECLSPEC int32_t
+OCOMS_DECLSPEC ssize_t
 ocoms_datatype_get_element_count( const ocoms_datatype_t* pData, size_t iSize );
 OCOMS_DECLSPEC int32_t
-ocoms_datatype_set_element_count( const ocoms_datatype_t* pData, uint32_t count, size_t* length );
+ocoms_datatype_set_element_count( const ocoms_datatype_t* pData, size_t count, size_t* length );
 OCOMS_DECLSPEC int32_t
 ocoms_datatype_copy_content_same_ddt( const ocoms_datatype_t* pData, int32_t count,
                                      char* pDestBuf, char* pSrcBuf );

@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007      Los Alamos National Security, LLC.  All rights
+ * Copyright (c) 2007-2013 Los Alamos National Security, LLC.  All rights
  *                         reserved. 
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
@@ -22,7 +22,7 @@
 
 #include "ocoms/threads/tsd.h"
 
-#if !OCOMS_HAVE_POSIX_THREADS && !OCOMS_HAVE_SOLARIS_THREADS && !defined(__WINDOWS__)
+#if !OCOMS_HAVE_POSIX_THREADS && !OCOMS_HAVE_SOLARIS_THREADS
 
 #define TSD_ENTRIES 32
 

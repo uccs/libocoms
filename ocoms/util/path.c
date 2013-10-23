@@ -9,10 +9,12 @@
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
- * Copyright (c) 2009      Cisco Systems, Inc.  All rights reserved.
+ * Copyright (c) 2009-2012 Cisco Systems, Inc.  All rights reserved.
  * Copyright (c) 2010      IBM Corporation.  All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2012-2013 Los Alamos National Security, LLC.
+ *                         All rights reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
@@ -49,6 +51,7 @@
 #include <sys/mount.h>
 #endif
 
+#include "ocoms/platform/ocoms_stdint.h"
 #include "ocoms/util/output.h"
 #include "ocoms/util/path.h"
 #include "ocoms/util/os_path.h"
@@ -60,15 +63,9 @@ static char *list_env_get(char *var, char **list);
 
 bool ocoms_path_is_absolute( const char *path )
 {
-#if defined(__WINDOWS__)
-    /* On Windows an absolute path always start with [a-z]:\ or with \\ */
-    if( (isalpha(path[0]) && (':' == path[1])) ||
-        ('\\' == path[0]) && ('\\' == path[1]) ) return true;
-#else
     if( OCOMS_PATH_SEP[0] == *path ) {
         return true;
     }
-#endif  /* defined(__WINDOWS__) */
     return false;
 }
 
@@ -85,7 +82,7 @@ char *ocoms_path_find(char *fname, char **pathv, int mode, char **envv)
 
     /* If absolute path is given, return it without searching. */
     if( ocoms_path_is_absolute(fname) ) {
-        return ocoms_path_access(fname, "", mode);
+        return ocoms_path_access(fname, NULL, mode);
     }
 
     /* Initialize. */
@@ -367,13 +364,7 @@ char* ocoms_find_absolute_path( char* app_name )
     
     if( NULL != abs_app_name ) {
         char* resolved_path = (char*)malloc(OCOMS_PATH_MAX);
-#if !defined(__WINDOWS__)
         realpath( abs_app_name, resolved_path );
-#else
-#ifdef HAVE_SHLWAPI_H
-		PathCanonicalize(resolved_path, abs_app_name);
-#endif
-#endif  /* !defined(__WINDOWS__) */
         if( abs_app_name != app_name ) free(abs_app_name);
         return resolved_path;
     }
@@ -419,10 +410,6 @@ char* ocoms_find_absolute_path( char* app_name )
  *   statfs(const char *path, struct statfs *buf);
  *          with f_fstypename, contains a string of length MFSTYPENAMELEN
  *          return 0 success, -1 on failure with errno set.
- * Windows (interix):
- *      statvfs(const char *path, struct statvfs *buf);
- *          with unsigned long f_fsid
- *          return 0 success, -1 on failure with errno set.
  */
 #ifndef LL_SUPER_MAGIC
 #define LL_SUPER_MAGIC                    0x0BD00BD0     /* Lustre magic number */
@@ -437,21 +424,18 @@ char* ocoms_find_absolute_path( char* app_name )
 #define GPFS_SUPER_MAGIC  0x47504653    /* Thats GPFS in ASCII */
 #endif
 
-#define MASK1          0xff
 #define MASK2        0xffff
-#define MASK3      0xffffff
 #define MASK4    0xffffffff
 
 bool ocoms_path_nfs(char *fname)
 {
-#if !defined(__WINDOWS__)
     int i;
     int rc;
     int trials;
     char * file = strdup (fname);
 #if defined(__SVR4) && defined(__sun)
     struct statvfs buf;
-#elif defined(linux) || defined (__BSD) || (defined(__APPLE__) && defined(__MACH__))
+#elif defined(__linux__) || defined (__BSD) || (defined(__APPLE__) && defined(__MACH__))
     struct statfs buf;
 #endif
     /*
@@ -479,7 +463,7 @@ again:
     do {
 #if defined(__SVR4) && defined(__sun)
         rc = statvfs (file, &buf);
-#elif defined(linux) || defined (__BSD) || (defined(__APPLE__) && defined(__MACH__))
+#elif defined(__linux__) || defined (__BSD) || (defined(__APPLE__) && defined(__MACH__))
         rc = statfs (file, &buf);
 #endif
     } while (-1 == rc && ESTALE == errno && (0 < --trials));
@@ -516,7 +500,7 @@ again:
     for (i = 0; i < FS_TYPES_NUM; i++)
         if (0 == strncasecmp (fs_types[i].f_fsname, buf.f_fstypename, MFSNAMELEN))
             goto found;
-#elif defined(linux)
+#elif defined(__linux__)
     for (i = 0; i < FS_TYPES_NUM; i++)
         if (fs_types[i].f_fsid == (buf.f_type & fs_types[i].f_mask))
             goto found;
@@ -533,9 +517,6 @@ found:
 
 #undef FS_TYPES_NUM
 
-#else
-    return false;
-#endif /* __WINDOWS__ */
 }
 
     

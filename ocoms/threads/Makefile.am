@@ -26,7 +26,6 @@ headers += \
         threads/condition.h \
         threads/mutex.h \
         threads/mutex_unix.h \
-        threads/mutex_windows.h \
         threads/threads.h \
 	threads/tsd.h
 

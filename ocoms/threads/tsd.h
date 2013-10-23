@@ -1,5 +1,5 @@
 /* 
- * Copyright (c) 2007      Los Alamos National Security, LLC.  All rights
+ * Copyright (c) 2007-2013 Los Alamos National Security, LLC.  All rights
  *                         reserved. 
  * Copyright (c) 2008      Cisco Systems, Inc.  All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
@@ -195,46 +195,6 @@ static inline int
 ocoms_tsd_getspecific(ocoms_tsd_key_t key, void **valuep)
 {
     return thr_getspecific(key, valuep);
-}
-
-#elif defined(__WINDOWS__)
-
-/* BWB - FIX ME - this is still not quite right -- we also need to
-   implement support for running the destructors when a thread exits,
-   but I'm not sure we have a framework for doing that just yet. */
-
-typedef DWORD ocoms_tsd_key_t;
-
-static inline int
-ocoms_tsd_key_create(ocoms_tsd_key_t *key,
-                    ocoms_tsd_destructor_t destructor)
-{
-    *key = TlsAlloc();
-
-    return (*key == TLS_OUT_OF_INDEXES) ? OCOMS_ERROR : OCOMS_SUCCESS;
-}
-
-static inline int
-ocoms_tsd_key_delete(ocoms_tsd_key_t key)
-{
-    key = TlsFree(key);
-
-    return (key == 0) ? OCOMS_ERROR : OCOMS_SUCCESS;
-}
-
-static inline int
-ocoms_tsd_setspecific(ocoms_tsd_key_t key, void *value)
-{
-    BOOL ret = TlsSetValue(key, (LPVOID) value);
-
-    return (ret) ? OCOMS_SUCCESS : OCOMS_ERROR;
-}
-
-static inline int
-ocoms_tsd_getspecific(ocoms_tsd_key_t key, void **valuep)
-{
-    *valuep = TlsGetValue(key);
-    return OCOMS_SUCCESS;
 }
 
 #else
