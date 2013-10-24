@@ -101,7 +101,7 @@ ocoms_mca_base_var_enum_t ocoms_mca_base_var_enum_bool = {
 };
 
 
-int ocoms_mca_base_var_enum_create (char *name, ocoms_mca_base_var_enum_value_t *values, ocoms_mca_base_var_enum_t **enumerator)
+int ocoms_mca_base_var_enum_create (const char *name, const ocoms_mca_base_var_enum_value_t *values, ocoms_mca_base_var_enum_t **enumerator)
 {
     ocoms_mca_base_var_enum_t *new_enum;
     int i;
@@ -118,10 +118,20 @@ int ocoms_mca_base_var_enum_create (char *name, ocoms_mca_base_var_enum_value_t 
         return OCOMS_ERR_OUT_OF_RESOURCE;
     }
 
-    new_enum->enum_values = values;
-
-    for (i = 0 ; new_enum->enum_values[i].string ; ++i);
+    for (i = 0 ; values[i].string ; ++i);
     new_enum->enum_value_count = i;
+
+    /* make a copy of the values */
+    new_enum->enum_values = calloc (new_enum->enum_value_count + 1, sizeof (*new_enum->enum_values));
+    if (NULL == new_enum->enum_values) {
+        OBJ_DESTRUCT(new_enum);
+        return OCOMS_ERR_OUT_OF_RESOURCE;
+    }
+
+    for (i = 0 ; i < new_enum->enum_value_count ; ++i) {
+        new_enum->enum_values[i].value = values[i].value;
+        new_enum->enum_values[i].string = strdup (values[i].string);
+    }
 
     *enumerator = new_enum;
 
@@ -141,7 +151,7 @@ static int enum_dump (ocoms_mca_base_var_enum_t *self, char **out)
     }
 
     tmp = NULL;
-    for (i = 0; self->enum_values[i].string ; ++i) {
+    for (i = 0; i < self->enum_value_count && self->enum_values[i].string ; ++i) {
         ret = asprintf (out, "%s%s%d:\"%s\"", tmp ? tmp : "", tmp ? ", " : "", self->enum_values[i].value,
                         self->enum_values[i].string);
         if (tmp) free (tmp);
@@ -253,7 +263,16 @@ static void ocoms_mca_base_var_enum_constructor (ocoms_mca_base_var_enum_t *enum
 
 static void ocoms_mca_base_var_enum_destructor (ocoms_mca_base_var_enum_t *enumerator)
 {
+    int i;
     if (enumerator->enum_name) {
         free (enumerator->enum_name);
+    }
+
+    /* release the copy of the values */
+    if (enumerator->enum_values) {
+        for (i = 0 ; i < enumerator->enum_value_count ; ++i) {
+            free ((void *) enumerator->enum_values[i].string);
+        }
+        free (enumerator->enum_values);
     }
 }

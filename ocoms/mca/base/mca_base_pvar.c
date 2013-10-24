@@ -375,6 +375,10 @@ int ocoms_mca_base_pvar_mark_invalid (int index)
 
 int ocoms_mca_base_pvar_notify (ocoms_mca_base_pvar_handle_t *handle, ocoms_mca_base_pvar_event_t event, int *count)
 {
+    if (ocoms_mca_base_pvar_is_invalid (handle->pvar)) {
+        return OCOMS_ERR_NOT_BOUND;
+    }
+
     return handle->pvar->notify (handle->pvar, event, handle->obj_handle, count);
 }
 
@@ -463,26 +467,8 @@ int ocoms_mca_base_pvar_handle_alloc (ocoms_mca_base_pvar_session_t *session, in
             break;
         }
 
-        if (ocoms_mca_base_pvar_is_sum (pvar)) {
-            /* for sums (counters, timers, etc) we need to keep track of
-               what the last value of the underlying counter was. this allows
-               us to push the computation of handle values from the event(s)
-               (which could be in a critical path) to pvar read/stop/reset/etc */
-            pvar_handle->last_value = calloc (*count, datatype_size);
-            if (NULL == pvar_handle->last_value) {
-                ret = OCOMS_ERR_OUT_OF_RESOURCE;
-                break;
-            }
-        }
-
         if (!ocoms_mca_base_pvar_is_continuous (pvar) || ocoms_mca_base_pvar_is_sum (pvar) ||
             ocoms_mca_base_pvar_is_watermark (pvar)) {
-            pvar_handle->tmp_value = calloc (*count, datatype_size);
-            if (NULL == pvar_handle->tmp_value) {
-                ret = OCOMS_ERR_OUT_OF_RESOURCE;
-                break;
-            }
-       
             /* if a variable is not continuous we will need to keep track of its last value
                to support start->stop->read correctly. use calloc to initialize the current
                value to 0. */
@@ -493,20 +479,37 @@ int ocoms_mca_base_pvar_handle_alloc (ocoms_mca_base_pvar_session_t *session, in
             }
         }
 
-        /* get the current value of the performance variable if this is a
-           continuous sum or watermark. if this variable needs to be started first the
-           current value is not relevant. */
-        if (ocoms_mca_base_pvar_is_continuous (pvar) && (ocoms_mca_base_pvar_is_sum (pvar) || ocoms_mca_base_pvar_is_sum (pvar))) {
-            if (ocoms_mca_base_pvar_is_sum (pvar)) {
-                /* the initial value of a sum is 0 */
-                ret = pvar->get_value (pvar, pvar_handle->last_value, pvar_handle->obj_handle);
-            } else {
-                /* the initial value of a watermark is the current value of the variable */
-                ret = pvar->get_value (pvar, pvar_handle->current_value, pvar_handle->obj_handle);
+        if (ocoms_mca_base_pvar_is_sum (pvar) || ocoms_mca_base_pvar_is_watermark (pvar)) {
+            /* for sums (counters, timers, etc) we need to keep track of
+               what the last value of the underlying counter was. this allows
+               us to push the computation of handle values from the event(s)
+               (which could be in a critical path) to pvar read/stop/reset/etc */
+            pvar_handle->tmp_value = calloc (*count, datatype_size);
+            if (NULL == pvar_handle->tmp_value) {
+                ret = OCOMS_ERR_OUT_OF_RESOURCE;
+                break;
+            }
+       
+            pvar_handle->last_value = calloc (*count, datatype_size);
+            if (NULL == pvar_handle->last_value) {
+                ret = OCOMS_ERR_OUT_OF_RESOURCE;
+                break;
             }
 
-            if (OCOMS_SUCCESS != ret) {
-                return ret;
+            /* get the current value of the performance variable if this is a
+               continuous sum or watermark. if this variable needs to be started first the
+               current value is not relevant. */
+            if (ocoms_mca_base_pvar_is_continuous (pvar)) {
+                if (ocoms_mca_base_pvar_is_sum (pvar)) {
+                    ret = pvar->get_value (pvar, pvar_handle->last_value, pvar_handle->obj_handle);
+                } else {
+                    /* the initial value of a watermark is the current value of the variable */
+                    ret = pvar->get_value (pvar, pvar_handle->current_value, pvar_handle->obj_handle);
+                }
+
+                if (OCOMS_SUCCESS != ret) {
+                    return ret;
+                }
             }
         }
 
@@ -533,14 +536,6 @@ int ocoms_mca_base_pvar_handle_alloc (ocoms_mca_base_pvar_session_t *session, in
 
 int ocoms_mca_base_pvar_handle_free (ocoms_mca_base_pvar_handle_t *handle)
 {
-    if (handle->session) {
-        ocoms_list_remove_item (&handle->session->handles, &handle->super);
-    }
-
-    if (handle->pvar) {
-        ocoms_list_remove_item (&handle->pvar->bound_handles, &handle->list2);
-    }
-
     OBJ_RELEASE(handle);
 
     return OCOMS_SUCCESS;
@@ -550,6 +545,10 @@ int ocoms_mca_base_pvar_handle_update (ocoms_mca_base_pvar_handle_t *handle)
 {
     int i, ret;
     void *tmp;
+
+    if (ocoms_mca_base_pvar_is_invalid (handle->pvar)) {
+        return OCOMS_ERR_NOT_BOUND;
+    }
 
     if (!ocoms_mca_base_pvar_handle_is_running (handle)) {
         return OCOMS_SUCCESS;
@@ -657,6 +656,10 @@ int ocoms_mca_base_pvar_handle_read_value (ocoms_mca_base_pvar_handle_t *handle,
 {
     int ret;
 
+    if (ocoms_mca_base_pvar_is_invalid (handle->pvar)) {
+        return OCOMS_ERR_NOT_BOUND;
+    }
+
     /* ensure this handle's value is up to date. */
     ret = ocoms_mca_base_pvar_handle_update (handle);
     if (OCOMS_SUCCESS != ret) {
@@ -678,6 +681,10 @@ int ocoms_mca_base_pvar_handle_read_value (ocoms_mca_base_pvar_handle_t *handle,
 int ocoms_mca_base_pvar_handle_write_value (ocoms_mca_base_pvar_handle_t *handle, const void *value)
 {
     int ret;
+
+    if (ocoms_mca_base_pvar_is_invalid (handle->pvar)) {
+        return OCOMS_ERR_NOT_BOUND;
+    }
 
     if (ocoms_mca_base_pvar_is_readonly (handle->pvar)) {
         return OCOMS_ERR_PERM;
@@ -735,6 +742,10 @@ int ocoms_mca_base_pvar_handle_stop (ocoms_mca_base_pvar_handle_t *handle)
 {
     int ret;
 
+    if (ocoms_mca_base_pvar_is_invalid (handle->pvar)) {
+        return OCOMS_ERR_NOT_BOUND;
+    }
+
     /* Can't stop a continuous or an already stopped variable */
     if (!ocoms_mca_base_pvar_handle_is_running (handle) || ocoms_mca_base_pvar_is_continuous (handle->pvar)) {
         return OCOMS_ERR_NOT_SUPPORTED;
@@ -757,6 +768,10 @@ int ocoms_mca_base_pvar_handle_stop (ocoms_mca_base_pvar_handle_t *handle)
 int ocoms_mca_base_pvar_handle_reset (ocoms_mca_base_pvar_handle_t *handle)
 {
     int ret = OCOMS_SUCCESS;
+
+    if (ocoms_mca_base_pvar_is_invalid (handle->pvar)) {
+        return OCOMS_ERR_NOT_BOUND;
+    }
 
     /* reset this handle to a state analagous to when it was created */
     if (ocoms_mca_base_pvar_is_sum (handle->pvar)) {
@@ -908,7 +923,8 @@ static void ompi_mpi_pvar_session_destructor (ocoms_mca_base_pvar_session_t *ses
     ocoms_mca_base_pvar_handle_t *handle, *next;
 
     /* it is likely a user error if there are any allocated handles when the session
-       is freed. clean it up anyway. */
+     * is freed. clean it up anyway. The handle destructor will remove the handle from
+     * the session's handle list. */
     OCOMS_LIST_FOREACH_SAFE(handle, next, &session->handles, ocoms_mca_base_pvar_handle_t) {
         OBJ_DESTRUCT(handle);
     }
@@ -945,7 +961,15 @@ static void ocoms_mca_base_pvar_handle_destructor (ocoms_mca_base_pvar_handle_t 
         free (handle->tmp_value);
     }
 
+    /* remove this handle from the pvar list */
+    ocoms_list_remove_item (&handle->pvar->bound_handles, &handle->list2);
+
     OBJ_DESTRUCT(&handle->list2);
+
+    /* remove this handle from the session */
+    if (handle->session) {
+        ocoms_list_remove_item (&handle->session->handles, &handle->super);
+    }
 }
 
 OBJ_CLASS_INSTANCE(ocoms_mca_base_pvar_handle_t, ocoms_list_item_t, ocoms_mca_base_pvar_handle_constructor,
