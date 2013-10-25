@@ -32,7 +32,7 @@
 #if OCOMS_ENABLE_DEBUG
 #include "ocoms/util/output.h"
 
-extern int ocoms_unpack_debug;
+extern bool ocoms_unpack_debug;
 #define DO_DEBUG(INST)  if( ocoms_unpack_debug ) { INST }
 #else
 #define DO_DEBUG(INST)
@@ -326,7 +326,7 @@ ocoms_unpack_partial_datatype( ocoms_convertor_t* pConvertor, dt_elem_desc_t* pE
      * memory, need to use the special host to device memory copy.
      * Note this code path was only seen on large receives of
      * noncontiguous data via buffered sends. */
-    pConvertor->cbmemcpy(saved_data, real_data, data_length );
+    pConvertor->cbmemcpy(saved_data, real_data, data_length, pConvertor );
 #else
     /* Save the content of the user memory */
     MEMCPY( saved_data, real_data, data_length );
@@ -349,10 +349,10 @@ ocoms_unpack_partial_datatype( ocoms_convertor_t* pConvertor, dt_elem_desc_t* pE
      * data via buffered sends. */
     {
         char resaved_data[16];
-        pConvertor->cbmemcpy(resaved_data, real_data, data_length );
+        pConvertor->cbmemcpy(resaved_data, real_data, data_length, pConvertor );
         for( i = 0; i < data_length; i++ ) {
             if( unused_byte == resaved_data[i] )
-                pConvertor->cbmemcpy(&real_data[i], &saved_data[i], 1);
+                pConvertor->cbmemcpy(&real_data[i], &saved_data[i], 1, pConvertor);
         }
     }
 #else

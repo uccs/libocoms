@@ -39,87 +39,14 @@ OBJ_CLASS_INSTANCE(ocoms_thread_t,
 static void ocoms_thread_construct(ocoms_thread_t *t)
 {
     t->t_run = 0;
-#ifdef __WINDOWS__
-    t->t_handle = (HANDLE)NULL;
-#elif OCOMS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
     t->t_handle = (pthread_t) -1;
 #elif OCOMS_HAVE_SOLARIS_THREADS
     t->t_handle = (thread_t) -1;
 #endif
 }
 
-
-#ifdef __WINDOWS__
-
-/************************************************************************
- * Windows threads
- ************************************************************************/
-
-int ocoms_thread_start(ocoms_thread_t *t)
-{
-    DWORD tid;
-
-    if (OCOMS_ENABLE_DEBUG) {
-        if (NULL == t->t_run || t->t_handle != (HANDLE) -1L) {
-            return OCOMS_ERR_BAD_PARAM;
-        }
-    }
-
-    t->t_handle = CreateThread(NULL,    /* default security attributes */
-                               0,       /* default stack size */
-                               (LPTHREAD_START_ROUTINE) t->t_run,
-                               t,       /* argument */
-                               0,       /* default creation flags */
-                               &tid);
-
-    if (t->t_handle == NULL) {
-        return OCOMS_ERROR;
-    }
-
-    return OCOMS_SUCCESS;
-}
-
-
-int ocoms_thread_join(ocoms_thread_t *t, void **thr_return)
-{
-    DWORD rc;
-
-    if (WaitForSingleObject(t->t_handle, INFINITE) != WAIT_OBJECT_0) {
-        return OCOMS_ERROR;
-    }
-    if (!GetExitCodeThread(t->t_handle, &rc)) {
-        return OCOMS_ERROR;
-    }
-
-    if( NULL != thr_return ) {
-        *thr_return = (void *)((intptr_t)rc);
-    }
-
-    return OCOMS_SUCCESS;
-}
-
-
-bool ocoms_thread_self_compare(ocoms_thread_t *t)
-{
-    HANDLE thread_handle;
-    thread_handle = GetCurrentThread();
-    return (thread_handle == t->t_handle ? true : false);
-}
-
-
-ocoms_thread_t *ocoms_thread_get_self(void)
-{
-    ocoms_thread_t *t = OBJ_NEW(ocoms_thread_t);
-    t->t_handle = GetCurrentThread();
-    return t;
-}
-
-
-void ocoms_thread_kill(ocoms_thread_t *t, int sig)
-{
-}
-
-#elif OCOMS_HAVE_POSIX_THREADS
+#if OCOMS_HAVE_POSIX_THREADS
 
 /************************************************************************
  * POSIX threads

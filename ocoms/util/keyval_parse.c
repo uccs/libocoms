@@ -83,6 +83,7 @@ ocoms_util_keyval_parse(const char *filename,
         }
     }
     fclose(ocoms_util_keyval_yyin);
+    ocoms_util_keyval_yylex_destroy ();
 
 cleanup:
     OCOMS_THREAD_UNLOCK(&keyval_mutex);

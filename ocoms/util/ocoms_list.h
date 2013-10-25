@@ -12,6 +12,8 @@
  * Copyright (c) 2007      Voltaire All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2013      Los Alamos National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
@@ -159,6 +161,127 @@ struct ocoms_list_t
  * List container type.
  */
 typedef struct ocoms_list_t ocoms_list_t;
+
+/** Cleanly destruct a list
+ *
+ * The ocoms_list_t destructor doesn't release the items on the
+ * list - so provide two convenience macros that do so and then
+ * destruct/release the list object itself
+ *
+ * @param[in] list List to destruct or release
+ */
+#define OCOMS_LIST_DESTRUCT(list)                                \
+    do {                                                        \
+        ocoms_list_item_t *it;                                   \
+        while (NULL != (it = ocoms_list_remove_first(list))) {   \
+            OBJ_RELEASE(it);                                    \
+        }                                                       \
+        OBJ_DESTRUCT(list);                                     \
+    } while(0);
+
+#define OCOMS_LIST_RELEASE(list)                                 \
+    do {                                                        \
+        ocoms_list_item_t *it;                                   \
+        while (NULL != (it = ocoms_list_remove_first(list))) {   \
+            OBJ_RELEASE(it);                                    \
+        }                                                       \
+        OBJ_RELEASE(list);                                      \
+    } while(0);
+
+
+/**
+ * Loop over a list.
+ *
+ * @param[in] item Storage for each item
+ * @param[in] list List to iterate over
+ * @param[in] type Type of each list item
+ *
+ * This macro provides a simple way to loop over the items in an ocoms_list_t. It
+ * is not safe to call ocoms_list_remove_item from within the loop.
+ *
+ * Example Usage:
+ *
+ * class_foo_t *foo;
+ * ocoms_list_foreach(foo, list, class_foo_t) {
+ *    do something;
+ * }
+ */
+#define OCOMS_LIST_FOREACH(item, list, type)                             \
+  for (item = (type *) (list)->ocoms_list_sentinel.ocoms_list_next ;      \
+       item != (type *) &(list)->ocoms_list_sentinel ;                   \
+       item = (type *) ((ocoms_list_item_t *) (item))->ocoms_list_next)
+
+/**
+ * Loop over a list in reverse.
+ *
+ * @param[in] item Storage for each item
+ * @param[in] list List to iterate over
+ * @param[in] type Type of each list item
+ *
+ * This macro provides a simple way to loop over the items in an ocoms_list_t. It
+ * is not safe to call ocoms_list_remove_item from within the loop.
+ *
+ * Example Usage:
+ *
+ * class_foo_t *foo;
+ * ocoms_list_foreach(foo, list, class_foo_t) {
+ *    do something;
+ * }
+ */
+#define OCOMS_LIST_FOREACH_REV(item, list, type)                         \
+  for (item = (type *) (list)->ocoms_list_sentinel.ocoms_list_prev ;      \
+       item != (type *) &(list)->ocoms_list_sentinel ;                   \
+       item = (type *) ((ocoms_list_item_t *) (item))->ocoms_list_prev)
+
+/**
+ * Loop over a list in a *safe* way
+ *
+ * @param[in] item Storage for each item
+ * @param[in] next Storage for next item
+ * @param[in] list List to iterate over
+ * @param[in] type Type of each list item
+ *
+ * This macro provides a simple way to loop over the items in an ocoms_list_t. It
+ * is safe to call ocoms_list_remove_item(list, item) from within the loop.
+ *
+ * Example Usage:
+ *
+ * class_foo_t *foo, *next;
+ * ocoms_list_foreach_safe(foo, next, list, class_foo_t) {
+ *    do something;
+ *    ocoms_list_remove_item (list, (ocoms_list_item_t *) foo);
+ * }
+ */
+#define OCOMS_LIST_FOREACH_SAFE(item, next, list, type)                  \
+  for (item = (type *) (list)->ocoms_list_sentinel.ocoms_list_next,       \
+         next = (type *) ((ocoms_list_item_t *) (item))->ocoms_list_next ;\
+       item != (type *) &(list)->ocoms_list_sentinel ;                   \
+       item = next, next = (type *) ((ocoms_list_item_t *) (item))->ocoms_list_next)
+
+/**
+ * Loop over a list in a *safe* way
+ *
+ * @param[in] item Storage for each item
+ * @param[in] next Storage for next item
+ * @param[in] list List to iterate over
+ * @param[in] type Type of each list item
+ *
+ * This macro provides a simple way to loop over the items in an ocoms_list_t. If
+ * is safe to call ocoms_list_remove_item(list, item) from within the loop.
+ *
+ * Example Usage:
+ *
+ * class_foo_t *foo, *next;
+ * ocoms_list_foreach_safe(foo, next, list, class_foo_t) {
+ *    do something;
+ *    ocoms_list_remove_item (list, (ocoms_list_item_t *) foo);
+ * }
+ */
+#define OCOMS_LIST_FOREACH_SAFE_REV(item, prev, list, type)              \
+  for (item = (type *) (list)->ocoms_list_sentinel.ocoms_list_prev,       \
+         prev = (type *) ((ocoms_list_item_t *) (item))->ocoms_list_prev ;\
+       item != (type *) &(list)->ocoms_list_sentinel ;                   \
+       item = prev, prev = (type *) ((ocoms_list_item_t *) (item))->ocoms_list_prev)
 
 
 /**
@@ -756,22 +879,6 @@ static inline void ocoms_list_insert_pos(ocoms_list_t *list, ocoms_list_item_t *
      * The important thing to realize here is that a and b will be \em
      * double pointers to the items that you need to compare.  Here's
      * a sample compare function to illustrate this point:
-     *
-     * \verb
-     * static int compare(ocoms_list_item_t **a, ocoms_list_item_t **b)
-     * {
-     *     orte_pls_base_cmp_t *aa = *((orte_pls_base_cmp_t **) a);
-     *     orte_pls_base_cmp_t *bb = *((orte_pls_base_cmp_t **) b);
-     *
-     *     if (bb->priority > aa->priority) {
-     *         return 1;
-     *     } else if (bb->priority == aa->priority) {
-     *         return 0;
-     *     } else {
-     *         return -1;
-     *     }
-     * }
-     * \endverb
      */
     typedef int (*ocoms_list_item_compare_fn_t)(ocoms_list_item_t **a,
                                                ocoms_list_item_t **b);

@@ -29,12 +29,8 @@
 #include <stdio.h>
 
 #if OCOMS_WANT_LIBLTDL
-  #ifndef __WINDOWS__
-    #if OCOMS_LIBLTDL_INTERNAL
-      #include "ocoms/libltdl/ltdl.h"
-    #else
-      #include "ltdl.h"
-    #endif
+  #if OCOMS_LIBLTDL_INTERNAL
+    #include "ocoms/libltdl/ltdl.h"
   #else
     #include "ltdl.h"
   #endif
@@ -381,6 +377,13 @@ static void ri_destructor(ocoms_object_t *obj)
   repository_item_t *ri = (repository_item_t *) obj;
   dependency_item_t *di;
   ocoms_list_item_t *item;
+  int group_id;
+
+  group_id = ocoms_mca_base_var_group_find (NULL, ri->ri_type,
+                                      ri->ri_component_struct->mca_component_name);
+  if (0 <= group_id) {
+    ocoms_mca_base_var_group_deregister (group_id);
+  }
 
   /* Close the component (and potentially unload it from memory */
   lt_dlclose(ri->ri_dlhandle);

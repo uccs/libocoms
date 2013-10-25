@@ -11,6 +11,8 @@
  *                         All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2012      Los Alamos National Security, LLC.
+ *                         All rights reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
@@ -24,6 +26,8 @@
 #define OCOMS_PATH_H
 
 #include "ocoms/platform/ocoms_config.h"
+
+#include "ocoms/platform/ocoms_constants.h"
 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
@@ -140,6 +144,18 @@ OCOMS_DECLSPEC bool ocoms_path_nfs(char *fname) __ocoms_attribute_warn_unused_re
 
 OCOMS_DECLSPEC int ocoms_path_df(const char *path, uint64_t *out_avail);
 
+/**
+ * @brief Returns the disk usage of path.
+ *
+ * @param[in] path       Path to check
+ * @out_avail[out]       Amount of free space available on path (if successful)
+ *
+ * @retval OCOMS_SUCCESS  If the operation was successful
+ * @retval OCOMS_ERROR    otherwise
+ */
+OCOMS_DECLSPEC int
+ocoms_path_df(const char *path,
+             uint64_t *out_avail)__ocoms_attribute_warn_unused_result__;
+
 END_C_DECLS
 #endif /* OCOMS_PATH_H */
-

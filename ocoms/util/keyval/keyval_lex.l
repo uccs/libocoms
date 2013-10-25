@@ -1,3 +1,5 @@
+%option nounput
+
 %{ /* -*- C -*- */
 /*
  * Copyright (c) 2004-2005 The Trustees of Indiana University and Indiana
@@ -12,6 +14,8 @@
  *                         All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2012      Los Alamos National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
@@ -34,7 +38,6 @@
 
 BEGIN_C_DECLS
 
-static int finish_parsing(void);
 int ocoms_util_keyval_yywrap(void);
 
 END_C_DECLS
@@ -45,9 +48,6 @@ END_C_DECLS
 int ocoms_util_keyval_yynewlines = 1;
 bool ocoms_util_keyval_parse_done = false;
 char *ocoms_util_keyval_string = NULL;
-
-#define yyterminate() \
-  return finish_parsing()
 
 %}
 
@@ -83,12 +83,13 @@ CHAR        [A-Za-z0-9_\-\.]
 
 %%
 
+/* Old flex (2.5.4a? and older) does not define a destroy function */
+#if !defined(YY_FLEX_SUBMINOR_VERSION)
+#define YY_FLEX_SUBMINOR_VERSION 0
+#endif
 
-/*
- * This cleans up at the end of the parse (since, in this case, we
- * always parse the entire file) and prevents a memory leak.
- */
-static int finish_parsing(void) 
+#if (YY_FLEX_MAJOR_VERSION < 2) || (YY_FLEX_MAJOR_VERSION == 2 && (YY_FLEX_MINOR_VERSION < 5 || (YY_FLEX_MINOR_VERSION == 5 && YY_FLEX_SUBMINOR_VERSION < 5)))
+int ocoms_util_keyval_yylex_destroy(void)
 {
     if (NULL != YY_CURRENT_BUFFER) {
         yy_delete_buffer(YY_CURRENT_BUFFER); 
@@ -100,6 +101,7 @@ static int finish_parsing(void)
     }
     return YY_NULL;
 }
+#endif
 
 int ocoms_util_keyval_yywrap(void)
 {

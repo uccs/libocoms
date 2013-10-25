@@ -10,7 +10,7 @@
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
  * Copyright (c) 2007      Cisco Systems, Inc.  All rights reserved.
- * Copyright (c) 2007      Los Alamos National Security, LLC.  All rights
+ * Copyright (c) 2007-2013 Los Alamos National Security, LLC.  All rights
  *                         reserved. 
  * Copyright (c) 2007      Voltaire. All rights reserved.
  * Copyright (c) 2010      Oracle and/or its affiliates.  All rights reserved.
@@ -112,11 +112,7 @@ static inline void ocoms_mutex_atomic_unlock(ocoms_mutex_t *mutex);
 
 END_C_DECLS
 
-#ifdef __WINDOWS__
-#include "mutex_windows.h"
-#else
 #include "mutex_unix.h"
-#endif
 
 BEGIN_C_DECLS
 
@@ -179,7 +175,7 @@ static inline bool ocoms_set_using_threads(bool have)
 #if OCOMS_ENABLE_MULTI_THREADS
     ocoms_uses_threads = have;
 #else
-    have = have;               /* just shut up the compiler */
+    have = true;               /* just shut up the compiler */
     ocoms_uses_threads = false;
 #endif
     return ocoms_uses_threads;

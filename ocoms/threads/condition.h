@@ -73,9 +73,9 @@ static inline int ocoms_condition_wait(ocoms_condition_t *c, ocoms_mutex_t *m)
     c->c_waiting++;
 
 #if OCOMS_ENABLE_DEBUG && !OCOMS_ENABLE_MULTI_THREADS
-    if (ocoms_mutex_check_locks && 0 == m->m_lock_debug) {                                         \
-        ocoms_output(0, "Warning -- mutex not locked in condition_wait"); \
-    }                                                                   \
+    if (ocoms_mutex_check_locks && 0 == m->m_lock_debug) {
+        ocoms_output(0, "Warning -- mutex not locked in condition_wait");
+    }
     m->m_lock_debug--;
 #endif
 

@@ -62,11 +62,7 @@ typedef struct {
     bool ldi_syslog;
     int ldi_syslog_priority;
 
-#ifndef __WINDOWS__
     char *ldi_syslog_ident;
-#else
-    HANDLE ldi_syslog_ident;
-#endif
     char *ldi_prefix;
     int ldi_prefix_len;
 
@@ -96,11 +92,15 @@ static int output(int output_id, const char *format, va_list arglist);
 
 
 #define OCOMS_OUTPUT_MAX_STREAMS 64
-#if defined(__WINDOWS__) || defined(HAVE_SYSLOG)
+#if defined(HAVE_SYSLOG)
 #define USE_SYSLOG 1
 #else
 #define USE_SYSLOG 0
 #endif
+
+/* global state */
+bool ocoms_output_redirected_to_syslog = false;
+int ocoms_output_redirected_syslog_pri;
 
 /*
  * Local state
@@ -111,8 +111,10 @@ static output_desc_t info[OCOMS_OUTPUT_MAX_STREAMS];
 static char *temp_str = 0;
 static size_t temp_str_len = 0;
 static ocoms_mutex_t mutex;
+#if defined(HAVE_SYSLOG)
 static bool syslog_opened = false;
-
+#endif
+static char *redirect_syslog_ident = NULL;
 
 OBJ_CLASS_INSTANCE(ocoms_output_stream_t, ocoms_object_t, construct, NULL);
 
@@ -133,23 +135,53 @@ bool ocoms_output_init(void)
     if (NULL != str) {
         default_stderr_fd = atoi(str);
     }
+    str = getenv("OCOMS_OUTPUT_REDIRECT");
+    if (NULL != str) {
+        if (0 == strcasecmp(str, "syslog")) {
+            ocoms_output_redirected_to_syslog = true;
+        }
+    }
+    str = getenv("OCOMS_OUTPUT_SYSLOG_PRI");
+    if (NULL != str) {
+        if (0 == strcasecmp(str, "info")) {
+            ocoms_output_redirected_syslog_pri = LOG_INFO;
+        } else if (0 == strcasecmp(str, "error")) {
+            ocoms_output_redirected_syslog_pri = LOG_ERR;
+        } else if (0 == strcasecmp(str, "warn")) {
+            ocoms_output_redirected_syslog_pri = LOG_WARNING;
+        } else {
+            ocoms_output_redirected_syslog_pri = LOG_ERR;
+        }
+    } else {
+        ocoms_output_redirected_syslog_pri = LOG_ERR;
+    }
+
+    str = getenv("OCOMS_OUTPUT_SYSLOG_IDENT");
+    if (NULL != str) {
+        redirect_syslog_ident = strdup(str);
+    }
 
     OBJ_CONSTRUCT(&verbose, ocoms_output_stream_t);
-#if defined(__WINDOWS__)
-    {
-        WSADATA wsaData;
-        WSAStartup( MAKEWORD(2,2), &wsaData );
+    if (ocoms_output_redirected_to_syslog) {
+        verbose.lds_want_syslog = true;
+        verbose.lds_syslog_priority = ocoms_output_redirected_syslog_pri;
+        if (NULL != str) {
+            verbose.lds_syslog_ident = strdup(redirect_syslog_ident);
+        }
+        verbose.lds_want_stderr = false;
+        verbose.lds_want_stdout = false;
+    } else {
+        verbose.lds_want_stderr = true;
     }
-#endif  /* defined(__WINDOWS__) */
     gethostname(hostname, sizeof(hostname));
-    verbose.lds_want_stderr = true;
+    hostname[sizeof(hostname)-1] = '\0';
     asprintf(&verbose.lds_prefix, "[%s:%05d] ", hostname, getpid());
 
     for (i = 0; i < OCOMS_OUTPUT_MAX_STREAMS; ++i) {
         info[i].ldi_used = false;
         info[i].ldi_enabled = false;
 
-        info[i].ldi_syslog = false;
+        info[i].ldi_syslog = ocoms_output_redirected_to_syslog;
         info[i].ldi_file = false;
         info[i].ldi_file_suffix = NULL;
         info[i].ldi_file_want_append = false;
@@ -311,10 +343,6 @@ void ocoms_output_close(int output_id)
         if (i >= OCOMS_OUTPUT_MAX_STREAMS && syslog_opened) {
             closelog();
         }
-#elif defined(__WINDOWS__)
-        if(info[output_id].ldi_syslog_ident != NULL) {
-            DeregisterEventSource(info[output_id].ldi_syslog_ident);
-        }
 #endif
     }
 
@@ -469,9 +497,6 @@ void ocoms_output_finalize(void)
         OBJ_DESTRUCT(&verbose);
         OBJ_DESTRUCT(&mutex);
     }
-#if defined(__WINDOWS__)
-    WSACleanup();
-#endif  /* defined(__WINDOWS__) */
 }
 
 /************************************************************************/
@@ -505,12 +530,20 @@ static void construct(ocoms_object_t *obj)
 static int do_open(int output_id, ocoms_output_stream_t * lds)
 {
     int i;
+    bool redirect_to_file = false;
+    char *str, *sfx;
 
     /* Setup */
 
     if (!initialized) {
         ocoms_output_init();
     }
+
+    str = getenv("OCOMS_OUTPUT_REDIRECT");
+    if (NULL != str && 0 == strcasecmp(str, "file")) {
+        redirect_to_file = true;
+    }
+    sfx = getenv("OCOMS_OUTPUT_SUFFIX");
 
     /* If output_id == -1, find an available stream, or return
      * OCOMS_ERROR */
@@ -554,28 +587,40 @@ static int do_open(int output_id, ocoms_output_stream_t * lds)
     info[i].ldi_verbose_level = lds->lds_verbose_level;
 
 #if USE_SYSLOG
-    info[i].ldi_syslog = lds->lds_want_syslog;
-    if (lds->lds_want_syslog) {
-
 #if defined(HAVE_SYSLOG)
-        if (NULL != lds->lds_syslog_ident) {
-            info[i].ldi_syslog_ident = strdup(lds->lds_syslog_ident);
-            openlog(lds->lds_syslog_ident, LOG_PID, LOG_USER);
+    if (ocoms_output_redirected_to_syslog) {
+        info[i].ldi_syslog = true;
+        info[i].ldi_syslog_priority = ocoms_output_redirected_syslog_pri;
+        if (NULL != redirect_syslog_ident) {
+            info[i].ldi_syslog_ident = strdup(redirect_syslog_ident);
+            openlog(redirect_syslog_ident, LOG_PID, LOG_USER);
         } else {
             info[i].ldi_syslog_ident = NULL;
             openlog("opal", LOG_PID, LOG_USER);
         }
-#elif defined(__WINDOWS__)
-        if (NULL == (info[i].ldi_syslog_ident =
-                     RegisterEventSource(NULL, TEXT("opal: ")))) {
-            /* handle the error */
-            return OCOMS_ERROR;
+        syslog_opened = true;
+    } else {
+#endif
+        info[i].ldi_syslog = lds->lds_want_syslog;
+        if (lds->lds_want_syslog) {
+
+#if defined(HAVE_SYSLOG)
+            if (NULL != lds->lds_syslog_ident) {
+                info[i].ldi_syslog_ident = strdup(lds->lds_syslog_ident);
+                openlog(lds->lds_syslog_ident, LOG_PID, LOG_USER);
+            } else {
+                info[i].ldi_syslog_ident = NULL;
+                openlog("ocoms", LOG_PID, LOG_USER);
+            }
+#endif
+            syslog_opened = true;
+            info[i].ldi_syslog_priority = lds->lds_syslog_priority;
         }
+
+#if defined(HAVE_SYSLOG)
+    }
 #endif
 
-        syslog_opened = true;
-        info[i].ldi_syslog_priority = lds->lds_syslog_priority;
-    }
 #else
     info[i].ldi_syslog = false;
 #endif
@@ -596,15 +641,38 @@ static int do_open(int output_id, ocoms_output_stream_t * lds)
         info[i].ldi_suffix_len = 0;
     }
     
-    info[i].ldi_stdout = lds->lds_want_stdout;
-    info[i].ldi_stderr = lds->lds_want_stderr;
+    if (ocoms_output_redirected_to_syslog) {
+        /* since all is redirected to syslog, ensure
+         * we don't duplicate the output to the std places
+         */
+        info[i].ldi_stdout = false;
+        info[i].ldi_stderr = false;
+        info[i].ldi_file = false;
+        info[i].ldi_fd = -1;
+    } else {
+        /* since we aren't redirecting to syslog, use what was
+         * given to us
+         */
+        if (NULL != str && redirect_to_file) {
+            info[i].ldi_stdout = false;
+            info[i].ldi_stderr = false;
+            info[i].ldi_file = true;
+        } else {
+            info[i].ldi_stdout = lds->lds_want_stdout;
+            info[i].ldi_stderr = lds->lds_want_stderr;
 
-    info[i].ldi_fd = -1;
-    info[i].ldi_file = lds->lds_want_file;
-    info[i].ldi_file_suffix = (NULL == lds->lds_file_suffix) ? NULL :
-        strdup(lds->lds_file_suffix);
-    info[i].ldi_file_want_append = lds->lds_want_file_append;
-    info[i].ldi_file_num_lines_lost = 0;
+            info[i].ldi_fd = -1;
+            info[i].ldi_file = lds->lds_want_file;
+        }
+        if (NULL != sfx) {
+            info[i].ldi_file_suffix = strdup(sfx);
+        } else {
+            info[i].ldi_file_suffix = (NULL == lds->lds_file_suffix) ? NULL :
+                strdup(lds->lds_file_suffix);
+        }
+        info[i].ldi_file_want_append = lds->lds_want_file_append;
+        info[i].ldi_file_num_lines_lost = 0;
+    }
 
     /* Don't open a file in the session directory now -- do that lazily
      * so that if there's no output, we don't have an empty file */
@@ -617,6 +685,42 @@ static int open_file(int i)
 {
     int flags;
     char *filename;
+    int n;
+
+    /* first check to see if this file is already open
+     * on someone else's stream - if so, we don't want
+     * to open it twice
+     */
+    for (n=0; n < OCOMS_OUTPUT_MAX_STREAMS; n++) {
+        if (i == n) {
+            continue;
+        }
+        if (!info[n].ldi_used) {
+            continue;
+        }
+        if (!info[n].ldi_file) {
+            continue;
+        }
+        if (NULL != info[i].ldi_file_suffix &&
+            NULL != info[n].ldi_file_suffix) {
+            if (0 != strcmp(info[i].ldi_file_suffix, info[n].ldi_file_suffix)) {
+                break;
+            }
+        }
+        if (NULL == info[i].ldi_file_suffix &&
+            NULL != info[n].ldi_file_suffix) {
+            break;
+        }
+        if (NULL != info[i].ldi_file_suffix &&
+            NULL == info[n].ldi_file_suffix) {
+            break;
+        }
+        if (info[n].ldi_fd < 0) {
+            break;
+        }
+        info[i].ldi_fd = info[n].ldi_fd;
+        return OCOMS_SUCCESS;
+    }
 
     /* Setup the filename and open flags */
 
@@ -653,13 +757,9 @@ static int open_file(int i)
 
         /* Make the file be close-on-exec to prevent child inheritance
          * problems */
-
-#ifndef __WINDOWS__
-        /* TODO: Need to find out the equivalent in windows */
         if (-1 == fcntl(info[i].ldi_fd, F_SETFD, 1)) {
            return OCOMS_ERR_IN_ERRNO;
         }
-#endif
 
     }
 
@@ -703,12 +803,10 @@ static void free_descriptor(int output_id)
 	}
 	ldi->ldi_file_suffix = NULL;
 
-#ifndef __WINDOWS__
 	if (NULL != ldi->ldi_syslog_ident) {
 	    free(ldi->ldi_syslog_ident);
 	}
 	ldi->ldi_syslog_ident = NULL;
-#endif
     }
 }
 

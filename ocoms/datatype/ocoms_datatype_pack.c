@@ -31,7 +31,7 @@
 
 #include "ocoms/util/output.h"
 
-extern int ocoms_pack_debug;
+extern bool ocoms_pack_debug;
 #define DO_DEBUG(INST)  if( ocoms_pack_debug ) { INST }
 #else
 #define DO_DEBUG(INST)
@@ -266,7 +266,8 @@ ocoms_generic_simple_pack_function( ocoms_convertor_t* pConvertor,
     size_t iov_len_local;
     uint32_t iov_count;
 
-    DO_DEBUG( ocoms_output( 0, "ocoms_convertor_generic_simple_pack( %p, {%p, %lu}, %d )\n", (void*)pConvertor,
+    DO_DEBUG( ocoms_output( 0, "ocoms_convertor_generic_simple_pack( %p:%p, {%p, %lu}, %d )\n",
+                           (void*)pConvertor, (void*)pConvertor->pBaseBuf,
                            iov[0].iov_base, (unsigned long)iov[0].iov_len, *out_size ); );
 
     description = pConvertor->use_desc->desc;
@@ -307,9 +308,9 @@ ocoms_generic_simple_pack_function( ocoms_convertor_t* pConvertor,
             }
             if( OCOMS_DATATYPE_END_LOOP == pElem->elem.common.type ) { /* end of the current loop */
                 DO_DEBUG( ocoms_output( 0, "pack end_loop count %d stack_pos %d"
-				       " pos_desc %d disp %ld space %lu\n",
+                                       " pos_desc %d disp %ld space %lu\n",
                                        (int)pStack->count, pConvertor->stack_pos,
-				       pos_desc, (long)pStack->disp, (unsigned long)iov_len_local ); );
+                                       pos_desc, (long)pStack->disp, (unsigned long)iov_len_local ); );
                 if( --(pStack->count) == 0 ) { /* end of loop */
                     if( pConvertor->stack_pos == 0 ) {
                         /* we lie about the size of the next element in order to

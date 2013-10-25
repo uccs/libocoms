@@ -2,7 +2,7 @@
  * Copyright (c) 2004-2005 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
  *                         Corporation.  All rights reserved.
- * Copyright (c) 2004-2006 The University of Tennessee and The University
+ * Copyright (c) 2004-2013 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
  * Copyright (c) 2004-2005 High Performance Computing Center Stuttgart, 
@@ -11,6 +11,9 @@
  *                         All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2012      Los Alamos National Security, LLC. 
+ *                         All rights reserved.
+ * Copyright (c) 2012-2013 Cisco Systems, Inc.  All rights reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
@@ -32,7 +35,8 @@
 #include "ocoms/util/argv.h"
 #include "ocoms/util/cmd_line.h"
 #include "ocoms/util/output.h"
-#include "ocoms/mca/base/mca_base_param.h"
+
+#include "ocoms/mca/base/mca_base_var.h"
 #include "ocoms/platform/ocoms_constants.h"
 
 
@@ -133,7 +137,7 @@ static int split_shorts(ocoms_cmd_line_t *cmd,
                         int *num_args_used, bool ignore_unknown);
 static ocoms_cmd_line_option_t *find_option(ocoms_cmd_line_t *cmd, 
                                       const char *option_name) __ocoms_attribute_nonnull__(1) __ocoms_attribute_nonnull__(2);
-static void set_dest(ocoms_cmd_line_option_t *option, char *sval);
+static int set_dest(ocoms_cmd_line_option_t *option, char *sval);
 static void fill(const ocoms_cmd_line_option_t *a, char result[3][BUFSIZ]);
 static int qsort_callback(const void *a, const void *b);
 
@@ -202,42 +206,12 @@ int ocoms_cmd_line_make_opt_mca(ocoms_cmd_line_t *cmd,
 /*
  * Create a command line option, --long-name and/or -s (short name).
  */
-int ocoms_cmd_line_make_opt(ocoms_cmd_line_t *cmd, char short_name, 
-                          const char *long_name, int num_params, 
-                          const char *desc)
-{
-    ocoms_cmd_line_init_t e;
-
-    e.ocl_mca_type_name = NULL;
-    e.ocl_mca_component_name = NULL;
-    e.ocl_mca_param_name = NULL;
-
-    e.ocl_cmd_short_name = short_name;
-    e.ocl_cmd_single_dash_name = NULL;
-    e.ocl_cmd_long_name = long_name;
-
-    e.ocl_num_params = num_params;
-
-    e.ocl_variable_dest = NULL;
-    e.ocl_variable_type = OCOMS_CMD_LINE_TYPE_NULL;
-
-    e.ocl_description = desc;
-
-    return make_opt(cmd, &e);
-}
-
-
-/*
- * Create a command line option, --long-name and/or -s (short name).
- */
 int ocoms_cmd_line_make_opt3(ocoms_cmd_line_t *cmd, char short_name, 
                             const char *sd_name, const char *long_name, 
                             int num_params, const char *desc)
 {
     ocoms_cmd_line_init_t e;
 
-    e.ocl_mca_type_name = NULL;
-    e.ocl_mca_component_name = NULL;
     e.ocl_mca_param_name = NULL;
 
     e.ocl_cmd_short_name = short_name;
@@ -265,12 +239,14 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
     int i, j, orig, ret;
     ocoms_cmd_line_option_t *option;
     ocoms_cmd_line_param_t *param;
-    bool is_unknown;
+    bool is_unknown_option;
+    bool is_unknown_token;
     bool is_option;
-    bool has_unknowns;
     char **shortsv;
     int shortsc;
     int num_args_used;
+    bool have_help_option = false;
+    bool printed_error = false;
 
     /* Bozo check */
 
@@ -291,15 +267,22 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
     cmd->lcl_argc = argc;
     cmd->lcl_argv = ocoms_argv_copy(argv);
 
+    /* Check up front: do we have a --help option? */
+
+    option = find_option(cmd, "help");
+    if (NULL != option) {
+        have_help_option = true;
+    }
+
     /* Now traverse the easy-to-parse sequence of tokens.  Note that
        incrementing i must happen elsehwere; it can't be the third
        clause in the "if" statement. */
 
     param = NULL;
     option = NULL;
-    has_unknowns = false;
     for (i = 1; i < cmd->lcl_argc; ) {
-        is_unknown = false;
+        is_unknown_option = false;
+        is_unknown_token = false;
         is_option = false;
 
         /* Are we done?  i.e., did we find the special "--" token?  If
@@ -317,11 +300,12 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
             break;
         }
 
-        /* If it's not an option, then we've found an unrecognized
-           token. */
+        /* If it's not an option, then this is an error.  Note that
+           this is different than an unrecognized token; an
+           unrecognized option is *always* an error. */
 
         else if ('-' != cmd->lcl_argv[i][0]) {
-            is_unknown = true;
+            is_unknown_token = true;
         }
 
         /* Nope, this is supposedly an option.  Is it a long name? */
@@ -360,11 +344,11 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
                         ocoms_argv_insert(&cmd->lcl_argv, i, shortsv);
                         cmd->lcl_argc = ocoms_argv_count(cmd->lcl_argv);
                     } else {
-                        is_unknown = true;
+                        is_unknown_option = true;
                     }
                     ocoms_argv_free(shortsv);
                 } else {
-                    is_unknown = true;
+                    is_unknown_option = true;
                 }
             }
 
@@ -377,9 +361,9 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
 
         if (is_option) {
             if (NULL == option) {
-                is_unknown = true;
+                is_unknown_option = true;
             } else {
-                is_unknown = false;
+                is_unknown_option = false;
                 orig = i;
                 ++i;
 
@@ -406,25 +390,36 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
                     /* If we run out of parameters, error */
 
                     if (i >= cmd->lcl_argc) {
-                        ocoms_output(0, "Error: option \"%s\" did not have "
-                                    "enough parameters (%d)",
-                                    cmd->lcl_argv[orig],
-                                    option->clo_num_params);
+                        fprintf(stderr, "%s: Error: option \"%s\" did not "
+                                "have enough parameters (%d)\n",
+                                cmd->lcl_argv[0],
+                                cmd->lcl_argv[orig],
+                                option->clo_num_params);
+                        if (have_help_option) {
+                            fprintf(stderr, "Type '%s --help' for usage.\n",
+                                    cmd->lcl_argv[0]);
+                        }
                         OBJ_RELEASE(param);
-                        i = cmd->lcl_argc;
-                        break;
+                        printed_error = true;
+                        goto error;
                     } else {
                         if (0 == strcmp(cmd->lcl_argv[i], 
                                         special_empty_token)) {
-                            ocoms_output(0, "Error: option \"%s\" did not have "
-                                        "enough parameters (%d)",
-                                        cmd->lcl_argv[orig],
-                                        option->clo_num_params);
-                            if (NULL != param->clp_argv)
+                            fprintf(stderr, "%s: Error: option \"%s\" did not "
+                                    "have enough parameters (%d)\n",
+                                    cmd->lcl_argv[0],
+                                    cmd->lcl_argv[orig],
+                                    option->clo_num_params);
+                            if (have_help_option) {
+                                fprintf(stderr, "Type '%s --help' for usage.\n",
+                                        cmd->lcl_argv[0]);
+                            }
+                            if (NULL != param->clp_argv) {
                                 ocoms_argv_free(param->clp_argv);
+                            }
                             OBJ_RELEASE(param);
-                            i = cmd->lcl_argc;
-                            break;
+                            printed_error = true;
+                            goto error;
                         } 
 
                         /* Otherwise, save this parameter */
@@ -442,7 +437,10 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
                             if (0 == j &&
                                 (NULL != option->clo_mca_param_env_var ||
                                  NULL != option->clo_variable_dest)) {
-                                set_dest(option, cmd->lcl_argv[i]);
+                                if (OCOMS_SUCCESS != (ret = set_dest(option, cmd->lcl_argv[i]))) {
+                                    ocoms_mutex_unlock(&cmd->lcl_mutex);
+                                    return ret;
+                                }
                             }
                         }
                     }
@@ -452,7 +450,10 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
                    need to set a boolean value to "true". */
 
                 if (0 == option->clo_num_params) {
-                    set_dest(option, "1");
+                    if (OCOMS_SUCCESS != (ret = set_dest(option, "1"))) {
+                        ocoms_mutex_unlock(&cmd->lcl_mutex);
+                        return ret;
+                    }
                 }
 
                 /* If we succeeded in all that, save the param to the
@@ -467,20 +468,25 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
         /* If we figured out above that this was an unknown option,
            handle it.  Copy everything (including the current token)
            into the tail.  If we're not ignoring unknowns, then print
-           an error and return. 
-        */
-
-        if (is_unknown) {
-            has_unknowns = true;
-            if (!ignore_unknown) {
-                ocoms_output(0, "Error: unknown option \"%s\"", 
-                            cmd->lcl_argv[i]);
+           an error and return. */
+        if (is_unknown_option || is_unknown_token) {
+            if (!ignore_unknown || is_unknown_option) {
+                fprintf(stderr, "%s: Error: unknown option \"%s\"\n", 
+                        cmd->lcl_argv[0], cmd->lcl_argv[i]);
+                printed_error = true;
+                if (have_help_option) {
+                    fprintf(stderr, "Type '%s --help' for usage.\n",
+                            cmd->lcl_argv[0]);
+                }
             }
+        error:
             while (i < cmd->lcl_argc) {
                 ocoms_argv_append(&cmd->lcl_tail_argc, &cmd->lcl_tail_argv, 
                                  cmd->lcl_argv[i]);
                 ++i;
             }
+
+            /* Because i has advanced, we'll fall out of the loop */
         }
     }
 
@@ -489,8 +495,8 @@ int ocoms_cmd_line_parse(ocoms_cmd_line_t *cmd, bool ignore_unknown,
     ocoms_mutex_unlock(&cmd->lcl_mutex);
 
     /* All done */
-    if(has_unknowns && !ignore_unknown) {
-        return OCOMS_ERR_BAD_PARAM;
+    if (printed_error) {
+        return OCOMS_ERR_SILENT;
     }
 
     return OCOMS_SUCCESS;
@@ -527,6 +533,7 @@ char *ocoms_cmd_line_get_usage_msg(ocoms_cmd_line_t *cmd)
     sorted = (ocoms_cmd_line_option_t**)malloc(sizeof(ocoms_cmd_line_option_t *) * 
                                          ocoms_list_get_size(&cmd->lcl_options));
     if (NULL == sorted) {
+        ocoms_mutex_unlock(&cmd->lcl_mutex);
         return NULL;
     }
     for (i = 0, item = ocoms_list_get_first(&cmd->lcl_options); 
@@ -616,6 +623,7 @@ char *ocoms_cmd_line_get_usage_msg(ocoms_cmd_line_t *cmd)
             desc = strdup(option->clo_description);
             if (NULL == desc) {
                 free(sorted);
+                ocoms_mutex_unlock(&cmd->lcl_mutex);
                 return strdup("");
             }
             start = desc;
@@ -984,11 +992,9 @@ static int make_opt(ocoms_cmd_line_t *cmd, ocoms_cmd_line_init_t *e)
 
     option->clo_type = e->ocl_variable_type;
     option->clo_variable_dest = e->ocl_variable_dest;
-    if (NULL != e->ocl_mca_type_name) {
-        option->clo_mca_param_env_var = 
-            ocoms_mca_base_param_environ_variable(e->ocl_mca_type_name,
-                                            e->ocl_mca_component_name,
-                                            e->ocl_mca_param_name);
+    if (NULL != e->ocl_mca_param_name) {
+        (void) ocoms_mca_base_var_env_name (e->ocl_mca_param_name,
+                                     &option->clo_mca_param_env_var);
     }
 
     /* Append the item, serializing thread access */
@@ -1134,11 +1140,12 @@ static ocoms_cmd_line_option_t *find_option(ocoms_cmd_line_t *cmd,
 }
 
 
-static void set_dest(ocoms_cmd_line_option_t *option, char *sval)
+static int set_dest(ocoms_cmd_line_option_t *option, char *sval)
 {
-    int ival = atoi(sval);
-    long lval = strtol(sval, NULL, 10);
+    int ival = atol(sval);
+    long lval = strtoul(sval, NULL, 10);
     char *str = NULL;
+    size_t i;
 
     /* Set MCA param.  We do this in the environment because the MCA
        parameter may not have been registered yet -- and if it isn't
@@ -1176,9 +1183,55 @@ static void set_dest(ocoms_cmd_line_option_t *option, char *sval)
             *((char**) option->clo_variable_dest) = strdup(sval);
             break;
         case OCOMS_CMD_LINE_TYPE_INT:
+            /* check to see that the value given to us truly is an int */
+            for (i=0; i < strlen(sval); i++) {
+                if (!isdigit(sval[i]) && '-' != sval[i]) {
+                    /* show help isn't going to be available yet, so just
+                     * print the msg
+                     */
+                    fprintf(stderr, "----------------------------------------------------------------------------\n");
+                    fprintf(stderr, "Open MPI has detected that a parameter given to a command line\n");
+                    fprintf(stderr, "option does not match the expected format:\n\n");
+                    if (NULL != option->clo_long_name) {
+                        fprintf(stderr, "  Option: %s\n", option->clo_long_name);
+                    } else if ('\0' != option->clo_short_name) {
+                        fprintf(stderr, "  Option: %c\n", option->clo_short_name);
+                    } else {
+                        fprintf(stderr, "  Option: <unknown>\n");
+                    }
+                    fprintf(stderr, "  Param:  %s\n\n", sval);
+                    fprintf(stderr, "This is frequently caused by omitting to provide the parameter\n");
+                    fprintf(stderr, "to an option that requires one. Please check the command line and try again.\n");
+                    fprintf(stderr, "----------------------------------------------------------------------------\n");
+                    return OCOMS_ERR_SILENT;
+                }
+            }
             *((int*) option->clo_variable_dest) = ival;
             break;
         case OCOMS_CMD_LINE_TYPE_SIZE_T:
+            /* check to see that the value given to us truly is a size_t */
+            for (i=0; i < strlen(sval); i++) {
+                if (!isdigit(sval[i]) && '-' != sval[i]) {
+                    /* show help isn't going to be available yet, so just
+                     * print the msg
+                     */
+                    fprintf(stderr, "----------------------------------------------------------------------------\n");
+                    fprintf(stderr, "Open MPI has detected that a parameter given to a command line\n");
+                    fprintf(stderr, "option does not match the expected format:\n\n");
+                    if (NULL != option->clo_long_name) {
+                        fprintf(stderr, "  Option: %s\n", option->clo_long_name);
+                    } else if ('\0' != option->clo_short_name) {
+                        fprintf(stderr, "  Option: %c\n", option->clo_short_name);
+                    } else {
+                        fprintf(stderr, "  Option: <unknown>\n");
+                    }
+                    fprintf(stderr, "  Param:  %s\n\n", sval);
+                    fprintf(stderr, "This is frequently caused by omitting to provide the parameter\n");
+                    fprintf(stderr, "to an option that requires one. Please check the command line and try again.\n");
+                    fprintf(stderr, "----------------------------------------------------------------------------\n");
+                    return OCOMS_ERR_SILENT;
+                }
+            }
             *((size_t*) option->clo_variable_dest) = lval;
             break;
         case OCOMS_CMD_LINE_TYPE_BOOL:
@@ -1188,6 +1241,7 @@ static void set_dest(ocoms_cmd_line_option_t *option, char *sval)
             break;
         }
     }
+    return OCOMS_SUCCESS;
 }
 
 
