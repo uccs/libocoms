@@ -1,8 +1,20 @@
-1. Build:
-./autogen.pl && ./configure --prefix=$PWD/install && make -j8 install && echo -e "\n\nDONE."
+Open Component Module Serves (OCOMS)
 
 
-2. Build RPM:
-./autogen.pl && ./configure --prefix=$PWD/install && make libocoms_rpms && echo -e "\n\nDONE."
+OCOMS is a stand alone light-weight network utility library. It provides
+components and functionality to build module component architecture (MCA) based 
+network libraries. The code is based on Open MPI's subproject Open Portability 
+Abstraction Layer (OPAL). The OCOMS library provides same functionality as 
+OPAL while providing the ability to be integrated with other network libraries. 
+More details can be found here:http://www.open-mpi.org/doc/
 
-NOTE: don't try to build RPM with "make -j8 libocoms_rpms" - it will fault.
+1. Build procedure:
+./autogen.pl 
+./configure --prefix=<prefix>/install 
+make
+make install
+
+2. Build and RPM generation procedure:
+./autogen.pl 
+./configure --prefix=<prefix>/install 
+make libocoms_rpms 
