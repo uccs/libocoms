@@ -1,12 +1,11 @@
-Open Component Module Serves (OCOMS)
-
+Open Component Module Service (OCOMS)
 
 OCOMS is a stand alone light-weight network utility library. It provides
-components and functionality to build module component architecture (MCA) based 
+components and functionality to build the modular component architecture (MCA) based 
 network libraries. The code is based on Open MPI's subproject Open Portability 
-Abstraction Layer (OPAL). The OCOMS library provides same functionality as 
+Abstraction Layer (OPAL). The OCOMS library provides the same functionality as 
 OPAL while providing the ability to be integrated with other network libraries. 
-More details can be found here:http://www.open-mpi.org/doc/
+More details can be found here: http://www.open-mpi.org/doc/
 
 1. Build procedure:
 ./autogen.pl 
