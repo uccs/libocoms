@@ -85,7 +85,7 @@ static inline size_t ocoms_hash_table_get_size(ocoms_hash_table_t *ht)
  *  Remove all elements from the table.
  *
  *  @param   table   The input hash table (IN).
- *  @return  OPAL return code.
+ *  @return  OCOMS return code.
  *
  */
 
@@ -113,7 +113,7 @@ OCOMS_DECLSPEC int ocoms_hash_table_get_value_uint32(ocoms_hash_table_t* table, 
  *  @param   table   The input hash table (IN).
  *  @param   key     The input key (IN).
  *  @param   value   The value to be associated with the key (IN).
- *  @return  OPAL return code.
+ *  @return  OCOMS return code.
  *
  */
 
@@ -124,7 +124,7 @@ OCOMS_DECLSPEC int ocoms_hash_table_set_value_uint32(ocoms_hash_table_t* table, 
  *
  *  @param   table   The input hash table (IN).
  *  @param   key     The input key (IN).
- *  @return  OPAL return code.
+ *  @return  OCOMS return code.
  *
  */
 
@@ -163,7 +163,7 @@ OCOMS_DECLSPEC int ocoms_hash_table_set_value_uint64(ocoms_hash_table_t *table, 
  *
  *  @param   table   The input hash table (IN).
  *  @param   key     The input key (IN).
- *  @return  OPAL return code.
+ *  @return  OCOMS return code.
  *
  */
 
@@ -191,7 +191,7 @@ OCOMS_DECLSPEC int ocoms_hash_table_get_value_ptr(ocoms_hash_table_t *table, con
  *  @param   table   The input hash table (IN).
  *  @param   key     The input key (IN).
  *  @param   value   The value to be associated with the key (IN).
- *  @return  OPAL return code.
+ *  @return  OCOMS return code.
  *
  */
 
@@ -202,7 +202,7 @@ OCOMS_DECLSPEC int ocoms_hash_table_set_value_ptr(ocoms_hash_table_t *table, con
  *
  *  @param   table   The input hash table (IN).
  *  @param   key     The input key (IN).
- *  @return  OPAL return code.
+ *  @return  OCOMS return code.
  *
  */
 
@@ -227,7 +227,7 @@ OCOMS_DECLSPEC int ocoms_hash_table_remove_value_ptr(ocoms_hash_table_t *table, 
  *  @param  node    The pointer to the hash table internal node which stores
  *                  the key-value pair (this is required for subsequent calls
  *                  to get_next_key) (OUT)
- *  @return OPAL error code
+ *  @return OCOMS error code
  *
  */
 
@@ -245,7 +245,7 @@ OCOMS_DECLSPEC int ocoms_hash_table_get_first_key_uint32(ocoms_hash_table_t *tab
  *  @param  out_node The pointer to the hash table internal node which stores
  *                   the key-value pair (this is required for subsequent calls
  *                   to get_next_key) (OUT)
- *  @return OPAL error code
+ *  @return OCOMS error code
  *
  */
 
@@ -263,7 +263,7 @@ OCOMS_DECLSPEC int ocoms_hash_table_get_next_key_uint32(ocoms_hash_table_t *tabl
  *  @param  node    The pointer to the hash table internal node which stores
  *                  the key-value pair (this is required for subsequent calls
  *                  to get_next_key) (OUT)
- *  @return OPAL error code
+ *  @return OCOMS error code
  *
  */
 
@@ -281,7 +281,7 @@ OCOMS_DECLSPEC int ocoms_hash_table_get_first_key_uint64(ocoms_hash_table_t *tab
  *  @param  out_node The pointer to the hash table internal node which stores
  *                   the key-value pair (this is required for subsequent calls
  *                   to get_next_key) (OUT)
- *  @return OPAL error code
+ *  @return OCOMS error code
  *
  */
     
