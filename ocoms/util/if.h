@@ -14,6 +14,7 @@
  * Copyright (c) 2008      Sun Microsystems, Inc.  All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2013 Cisco Systems, Inc.  All rights reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
@@ -91,6 +92,13 @@ OCOMS_DECLSPEC int ocoms_ifnametoindex(const char* if_name);
  */
 OCOMS_DECLSPEC int16_t ocoms_ifnametokindex(const char* if_name);
 
+/*
+ *  Attempt to resolve an address (given as either IPv4/IPv6 string
+ *  or hostname) and return the kernel index of the interface
+ *  that is on the same network as the specified address
+ */
+OCOMS_DECLSPEC int16_t ocoms_ifaddrtokindex(const char* if_addr);
+
 /**
  *  Lookup an interface by ocoms_list index and return its kernel index.
  *  
@@ -157,6 +165,22 @@ OCOMS_DECLSPEC int ocoms_ifindextoaddr(int if_index, struct sockaddr*,
 OCOMS_DECLSPEC int ocoms_ifindextomask(int if_index, uint32_t*, int);
 
 /**
+ *  Lookup an interface by index and return its MAC address.
+ *
+ *  @param if_index (IN)  Interface index
+ *  @param if_mac (OUT)   Interface's MAC address
+ */
+OCOMS_DECLSPEC int ocoms_ifindextomac(int if_index, uint8_t if_mac[6]);
+
+/**
+ *  Lookup an interface by index and return its MTU.
+ *
+ *  @param if_index (IN)  Interface index
+ *  @param if_mtu (OUT)   Interface's MTU
+ */
+OCOMS_DECLSPEC int ocoms_ifindextomtu(int if_index, int *if_mtu);
+
+/**
  *  Lookup an interface by index and return its flags.
  *
  *  @param if_index (IN)  Interface index
@@ -181,7 +205,7 @@ OCOMS_DECLSPEC bool ocoms_ifislocal(const char *hostname);
  * @return OCOMS_SUCCESS if no problems encountered
  * @return OCOMS_ERROR if data could not be released
  */
-OCOMS_DECLSPEC int ocoms_iftupletoaddr(char *addr, uint32_t *net, uint32_t *mask);
+OCOMS_DECLSPEC int ocoms_iftupletoaddr(const char *addr, uint32_t *net, uint32_t *mask);
 
 /**
  * Determine if given interface is loopback
@@ -190,6 +214,15 @@ OCOMS_DECLSPEC int ocoms_iftupletoaddr(char *addr, uint32_t *net, uint32_t *mask
  */
 OCOMS_DECLSPEC bool ocoms_ifisloopback(int if_index);
 
+/*
+ * Determine if a specified interface is included in a NULL-terminated argv array
+ */
+OCOMS_DECLSPEC int ocoms_ifmatches(int idx, char **nets);
+
+/*
+ * Provide a list of strings that contain all known aliases for this node
+ */
+OCOMS_DECLSPEC void ocoms_ifgetaliases(char ***aliases);
 
 END_C_DECLS
 

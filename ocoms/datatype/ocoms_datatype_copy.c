@@ -3,7 +3,7 @@
  * Copyright (c) 2004-2006 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
  *                         Corporation.  All rights reserved.
- * Copyright (c) 2004-2010 The University of Tennessee and The University
+ * Copyright (c) 2004-2013 The University of Tennessee and The University
  *                         of Tennessee Research Foundation.  All rights
  *                         reserved.
  * Copyright (c) 2004-2006 High Performance Computing Center Stuttgart,
@@ -38,7 +38,7 @@
 
 
 #if OCOMS_ENABLE_DEBUG
-extern int ocoms_copy_debug;
+extern bool ocoms_copy_debug;
 #define DO_DEBUG(INST)  if( ocoms_copy_debug ) { INST }
 #else
 #define DO_DEBUG(INST)
@@ -80,7 +80,7 @@ static size_t ocoms_datatype_memop_block_size = 128 * 1024;
 #undef MEM_OP_NAME
 #define MEM_OP_NAME non_overlap_cuda
 #undef MEM_OP
-#define MEM_OP ocoms_cuda_memcpy
+#define MEM_OP ocoms_cuda_memcpy_sync
 #include "ocoms_datatype_copy.h"
 
 #undef MEM_OP_NAME
@@ -103,7 +103,6 @@ int32_t ocoms_datatype_copy_content_same_ddt( const ocoms_datatype_t* datatype, 
                                              char* destination_base, char* source_base )
 {
     OCOMS_PTRDIFF_TYPE extent;
-    size_t iov_len_local;
     int32_t (*fct)( const ocoms_datatype_t*, int32_t, char*, char*);
 
 #if OCOMS_CUDA_SUPPORT
@@ -118,7 +117,6 @@ int32_t ocoms_datatype_copy_content_same_ddt( const ocoms_datatype_t* datatype, 
      */
     if( 0 == count ) return 1;
 
-    iov_len_local = count * datatype->size;
     /**
      * see discussion in coll_basic_reduce.c for the computation of extent when
      * count != 1. Short version of the story:

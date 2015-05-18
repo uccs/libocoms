@@ -1,3 +1,4 @@
+/* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil -*- */
 /*
  * Copyright (c) 2004-2005 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
@@ -43,12 +44,8 @@
 #endif
 
 #if OCOMS_WANT_LIBLTDL
-  #ifndef __WINDOWS__
-    #if OCOMS_LIBLTDL_INTERNAL
-      #include "ocoms/libltdl/ltdl.h"
-    #else
-      #include "ltdl.h"
-    #endif
+  #if OCOMS_LIBLTDL_INTERNAL
+    #include "ocoms/libltdl/ltdl.h"
   #else
     #include "ltdl.h"
   #endif
@@ -137,6 +134,21 @@ static char **found_filenames = NULL;
 static char *last_path_to_use = NULL;
 #endif /* OCOMS_WANT_LIBLTDL */
 
+static int component_find_check (const char *framework_name, char **requested_component_names, ocoms_list_t *components);
+
+/*
+ * Dummy structure for casting for open_only logic
+ */
+struct ocoms_mca_base_open_only_dummy_component_t {
+    /** MCA base component */
+    ocoms_mca_base_component_t version;
+    /** MCA base data */
+    ocoms_mca_base_component_data_t data;
+};
+typedef struct ocoms_mca_base_open_only_dummy_component_t ocoms_mca_base_open_only_dummy_component_t;
+
+static char negate[] = "^";
+
 static bool use_component(const bool include_mode,
                           const char **requested_component_names,
                           const char *component_name);
@@ -153,14 +165,20 @@ static bool use_component(const bool include_mode,
  */
 int ocoms_mca_base_component_find(const char *directory, const char *type, 
                             const ocoms_mca_base_component_t *static_components[], 
-                            char **requested_component_names,
-                            bool include_mode,
+                            const char *requested_components,
                             ocoms_list_t *found_components,
                             bool open_dso_components)
 {
-    int i;
-    ocoms_list_item_t *item;
+    char **requested_component_names = NULL;
     ocoms_mca_base_component_list_item_t *cli;
+    bool include_mode;
+    int i, ret;
+
+    ret = ocoms_mca_base_component_parse_requested (requested_components, &include_mode,
+                           &requested_component_names);
+    if (OCOMS_SUCCESS != ret) {
+        return ret;
+    }
 
     /* Find all the components that were statically linked in */
     OBJ_CONSTRUCT(found_components, ocoms_list_t);
@@ -171,7 +189,8 @@ int ocoms_mca_base_component_find(const char *directory, const char *type,
                            static_components[i]->mca_component_name) ) {
             cli = OBJ_NEW(ocoms_mca_base_component_list_item_t);
             if (NULL == cli) {
-                return OCOMS_ERR_OUT_OF_RESOURCE;
+                ret = OCOMS_ERR_OUT_OF_RESOURCE;
+                goto component_find_out;
             }
             cli->cli_component = static_components[i];
             ocoms_list_append(found_components, (ocoms_list_item_t *) cli);
@@ -180,45 +199,29 @@ int ocoms_mca_base_component_find(const char *directory, const char *type,
 
 #if OCOMS_WANT_LIBLTDL
     /* Find any available dynamic components in the specified directory */
-    if (open_dso_components) {
-        int param, param_disable_dlopen;
-        param = ocoms_mca_base_param_find("mca", NULL, "component_disable_dlopen");
-        ocoms_mca_base_param_lookup_int(param, &param_disable_dlopen);
-        
-        if (0 == param_disable_dlopen) {
-            find_dyn_components(directory, type,
-                                (const char**)requested_component_names,
-                                include_mode, found_components); 
-        }
+    if (open_dso_components && !ocoms_mca_base_component_disable_dlopen) {
+        find_dyn_components(directory, type,
+                            (const char**)requested_component_names,
+                            include_mode, found_components); 
     } else {
         ocoms_output_verbose(40, 0, 
                             "mca: base: component_find: dso loading for %s MCA components disabled", 
                             type);
     }
 #endif
+    if (include_mode) {
+        ret = component_find_check (type, requested_component_names, found_components);
+    } else {
+        ret = OCOMS_SUCCESS;
+    }
 
-    /* Ensure that *all* requested components exist.  Print a warning
-       and abort if they do not. */
-    for (i = 0; include_mode && NULL != requested_component_names && 
-             NULL != requested_component_names[i]; ++i) {
-        for (item = ocoms_list_get_first(found_components);
-             ocoms_list_get_end(found_components) != item; 
-             item = ocoms_list_get_next(item)) {
-            cli = (ocoms_mca_base_component_list_item_t*) item;
-            if (0 == strcmp(requested_component_names[i], 
-                            cli->cli_component->mca_component_name)) {
-                break;
-            }
-        }
 
-        if (ocoms_list_get_end(found_components) == item) {
-            char h[MAXHOSTNAMELEN];
-            gethostname(h, sizeof(h));
-            orte_show_help("help-mca-base.txt", 
-                           "find-available:not-valid", true,
-                           h, type, requested_component_names[i]);
-            return OCOMS_ERR_NOT_FOUND;
-        }
+    ret = OCOMS_SUCCESS;
+
+component_find_out:
+
+    if (NULL != requested_component_names) {
+        ocoms_argv_free(requested_component_names);
     }
 
     /* All done */
@@ -241,6 +244,71 @@ int ocoms_mca_base_component_find_finalize(void)
     return OCOMS_SUCCESS;
 }
 
+int ocoms_mca_base_components_filter (const char *framework_name, ocoms_list_t *components, int output_id,
+                                const char *filter_names, uint32_t filter_flags)
+{
+    ocoms_mca_base_component_list_item_t *cli, *next;
+    char **requested_component_names = NULL;
+    bool include_mode, can_use;
+    int ret;
+
+    assert (NULL != components);
+
+    if (0 == filter_flags && NULL == filter_names) {
+        return OCOMS_SUCCESS;
+    }
+
+    ret = ocoms_mca_base_component_parse_requested (filter_names, &include_mode,
+                           &requested_component_names);
+    if (OCOMS_SUCCESS != ret) {
+        return ret;
+    }
+
+    OCOMS_LIST_FOREACH_SAFE(cli, next, components, ocoms_mca_base_component_list_item_t) {
+        const ocoms_mca_base_component_t *component = cli->cli_component;
+        ocoms_mca_base_open_only_dummy_component_t *dummy =
+            (ocoms_mca_base_open_only_dummy_component_t *) cli->cli_component;
+
+        can_use = use_component (include_mode, (const char **) requested_component_names,
+                                 cli->cli_component->mca_component_name);
+
+        if (!can_use || (filter_flags & dummy->data.param_field) != filter_flags) {
+            if (can_use && (filter_flags & MCA_BASE_METADATA_PARAM_CHECKPOINT) &&
+                !(MCA_BASE_METADATA_PARAM_CHECKPOINT & dummy->data.param_field)) {
+                ocoms_output_verbose(10, output_id,
+                                    "mca: base: components_filter: "
+                                    "(%s) Component %s is *NOT* Checkpointable - Disabled",
+                                    component->reserved,
+                                    component->mca_component_name);
+            }
+
+            ocoms_list_remove_item (components, &cli->super);
+
+            ocoms_mca_base_component_unload (component, output_id);
+
+            OBJ_RELEASE(cli);
+        } else if (filter_flags & MCA_BASE_METADATA_PARAM_CHECKPOINT) {
+            ocoms_output_verbose(10, output_id,
+                                "mca: base: components_filter: "
+                                "(%s) Component %s is Checkpointable",
+                                component->reserved,
+                                component->mca_component_name);
+        }
+    }
+
+    if (include_mode) {
+        ret = component_find_check (framework_name, requested_component_names, components);
+    } else {
+        ret = OCOMS_SUCCESS;
+    }
+
+    if (NULL != requested_component_names) {
+        ocoms_argv_free (requested_component_names);
+    }
+
+    return ret;
+}
+
 #if OCOMS_WANT_LIBLTDL
 
 /*
@@ -259,7 +327,7 @@ static void find_dyn_components(const char *path, const char *type_name,
                                 ocoms_list_t *found_components)
 {
     int i, len;
-    char *path_to_use, *dir, *end;
+    char *path_to_use = NULL, *dir, *end;
     component_file_item_t *file;
     ocoms_list_item_t *cur;
     char prefix[32 + MCA_BASE_MAX_TYPE_NAME_LEN], *basename;
@@ -269,11 +337,16 @@ static void find_dyn_components(const char *path, const char *type_name,
        use that as the path. */
   
     if (NULL == path) {
-        ocoms_mca_base_param_lookup_string(ocoms_mca_base_param_component_path, 
-                                     &path_to_use);
-        if (NULL == path_to_use) {
+        if (NULL != ocoms_mca_base_component_path) {
+            path_to_use = strdup (ocoms_mca_base_component_path);
+        } else {
             /* If there's no path, then there's nothing to search -- we're
                done */
+            return;
+        }
+
+        if (NULL == path_to_use) {
+            /* out of memory */
             return;
         }
     } else {
@@ -361,12 +434,6 @@ static void find_dyn_components(const char *path, const char *type_name,
         file->filename[OCOMS_PATH_MAX] = '\0';
         file->status = UNVISITED;
 
-#if defined(__WINDOWS__) && defined(_DEBUG)
-        /* remove the debug suffix 'd', otherwise we will fail to 
-           load the module in later phase. */
-        file->name[strlen(file->name)-1] = '\0';
-#endif
-
         ocoms_list_append(&found_files, (ocoms_list_item_t *) 
                          file);
     }
@@ -444,7 +511,6 @@ static int file_exists(const char *filename, const char *ext)
 static int open_component(component_file_item_t *target_file, 
                        ocoms_list_t *found_components)
 {
-  int show_errors, param;
   lt_dlhandle component_handle;
   ocoms_mca_base_component_t *component_struct;
   char *struct_name, *err;
@@ -458,9 +524,8 @@ static int open_component(component_file_item_t *target_file,
   ocoms_output_verbose(40, 0, "mca: base: component_find: examining dyanmic %s MCA component \"%s\"",
                      target_file->type, target_file->name);
   ocoms_output_verbose(40, 0, "mca: base: component_find: %s", target_file->filename);
-  param = ocoms_mca_base_param_find("mca", NULL, "component_show_load_errors");
-  ocoms_mca_base_param_lookup_int(param, &show_errors);
-  vl = show_errors ? 0 : 40;
+
+  vl = ocoms_mca_base_component_show_load_errors ? 0 : 40;
 
   /* Was this component already loaded (e.g., via dependency)? */
 
@@ -920,11 +985,79 @@ static bool use_component(const bool include_mode,
      * As xor is a binary operator let's implement it manually before
      * a compiler screws it up.
      */
-    if ( (include_mode && found) || !(include_mode || found) ) {
-        return true;
-    } else {    
-        return false;
-    }
+
+    return (include_mode && found) || !(include_mode || found);
 }
 
+/* Ensure that *all* requested components exist.  Print a warning
+   and abort if they do not. */
+static int component_find_check (const char *framework_name, char **requested_component_names, ocoms_list_t *components)
+{
+    ocoms_mca_base_component_list_item_t *cli;
+    int i;
 
+    for (i = 0; NULL != requested_component_names && 
+             NULL != requested_component_names[i]; ++i) {
+        bool found = false;
+
+        OCOMS_LIST_FOREACH(cli, components, ocoms_mca_base_component_list_item_t) {
+            if (0 == strcmp(requested_component_names[i], 
+                            cli->cli_component->mca_component_name)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            char h[MAXHOSTNAMELEN];
+            gethostname(h, sizeof(h));
+            /*ocoms_show_help("help-mca-base.txt", 
+                           "find-available:not-valid", true,
+                           h, framework_name, requested_component_names[i]);*/
+            fprintf(stderr,"%s:%d: find-available:not-valid: %s:%s\n",
+                __FILE__,__LINE__, framework_name, requested_component_names[i]);
+            return OCOMS_ERR_NOT_FOUND;
+        }
+    }
+
+    return OCOMS_SUCCESS;
+}
+
+int ocoms_mca_base_component_parse_requested (const char *requested, bool *include_mode,
+                                        char ***requested_component_names)
+{
+    const char *requested_orig = requested;
+
+    *requested_component_names = NULL;
+    *include_mode = true;
+
+    /* See if the user requested anything */
+    if (NULL == requested || 0 == strlen (requested)) {
+        return OCOMS_SUCCESS;
+    }
+
+    /* Are we including or excluding?  We only allow the negate
+       character to be the *first* character of the value (but be nice
+       and allow any number of negate characters in the beginning). */
+    *include_mode = requested[0] != negate[0];
+
+    /* skip over all negate symbols at the beginning */
+    requested += strspn (requested, negate);
+
+    /* Double check to ensure that the user did not specify the negate
+       character anywhere else in the value. */
+    if (NULL != strstr (requested, negate)) {
+        /*ocoms_show_help("help-mca-base.txt", 
+                       "framework-param:too-many-negates",
+                       true, requested_orig);*/
+        fprintf(stderr,"%s:%d: framework-param:too-many-negates: %s\n",
+                __FILE__,__LINE__, requested_orig);
+        return OCOMS_ERROR;
+    }
+
+    /* Split up the value into individual component names */
+    *requested_component_names = ocoms_argv_split(requested, ',');
+
+    /* All done */
+    return OCOMS_SUCCESS;
+}

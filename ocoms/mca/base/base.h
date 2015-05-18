@@ -1,3 +1,4 @@
+/* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil -*- */
 /*
  * Copyright (c) 2004-2008 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
@@ -12,6 +13,8 @@
  * Copyright (c) 2009      Cisco Systems, Inc.  All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2013      Los Alamos National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
@@ -31,7 +34,8 @@
  * These units are large enough to warrant their own .h files
  */
 #include "ocoms/mca/mca.h"
-#include "ocoms/mca/base/mca_base_param.h"
+#include "ocoms/mca/base/mca_base_var.h"
+#include "ocoms/mca/base/mca_base_framework.h"
 #include "ocoms/util/cmd_line.h"
 
 BEGIN_C_DECLS
@@ -62,7 +66,9 @@ OCOMS_DECLSPEC OBJ_CLASS_DECLARATION(ocoms_mca_base_component_priority_list_item
 /*
  * Public variables
  */
-OCOMS_DECLSPEC extern int ocoms_mca_base_param_component_path;
+OCOMS_DECLSPEC extern char *ocoms_mca_base_component_path;
+OCOMS_DECLSPEC extern bool ocoms_mca_base_component_show_load_errors;
+OCOMS_DECLSPEC extern bool ocoms_mca_base_component_disable_dlopen;
 OCOMS_DECLSPEC extern char *ocoms_mca_base_system_default_path;
 OCOMS_DECLSPEC extern char *ocoms_mca_base_user_default_path;
 
@@ -144,17 +150,52 @@ OCOMS_DECLSPEC char * ocoms_mca_base_component_to_string(const ocoms_mca_base_co
 
 OCOMS_DECLSPEC int ocoms_mca_base_component_find(const char *directory, const char *type,
                                           const ocoms_mca_base_component_t *static_components[],
-                                          char **requested_component_names,
-                                          bool include_mode,
+					  const char *requested_components,
                                           ocoms_list_t *found_components,
                                           bool open_dso_components);
+
+/**
+ * Parse the requested component string and return an ocoms_argv of the requested
+ * (or not requested) components.
+ */
+int ocoms_mca_base_component_parse_requested (const char *requested, bool *include_mode,
+                                        char ***requested_component_names);
+
+/**
+ * Filter a list of components based on a comma-delimted list of names and/or
+ * a set of meta-data flags.
+ *
+ * @param[in,out] components List of components to filter
+ * @param[in] output_id Output id to write to for error/warning/debug messages
+ * @param[in] filter_names Comma delimited list of components to use. Negate with ^.
+ * May be NULL.
+ * @param[in] filter_flags Metadata flags components are required to have set (CR ready)
+ *
+ * @returns OCOMS_SUCCESS On success
+ * @returns OCOMS_ERR_NOT_FOUND If some component in {filter_names} is not found in
+ * {components}. Does not apply to negated filters.
+ * @returns ocoms error code On other error.
+ *
+ * This function closes and releases any components that do not match the filter_name and
+ * filter flags.
+ */
+OCOMS_DECLSPEC int ocoms_mca_base_components_filter (const char *framework_name, ocoms_list_t *components, int output_id,
+					      const char *filter_names, uint32_t filter_flags);
+
+
 
 /* Safely release some memory allocated by ocoms_mca_base_component_find()
    (i.e., is safe to call even if you never called
    ocoms_mca_base_component_find()). */
 OCOMS_DECLSPEC int ocoms_mca_base_component_find_finalize(void);
 
+/* ocoms_mca_base_components_register.c */
+OCOMS_DECLSPEC int ocoms_mca_base_framework_components_register (struct ocoms_mca_base_framework_t *framework,
+                                                          ocoms_mca_base_register_flag_t flags);
+
 /* ocoms_mca_base_components_open.c */
+OCOMS_DECLSPEC int ocoms_mca_base_framework_components_open (struct ocoms_mca_base_framework_t *framework,
+                                                      ocoms_mca_base_open_flag_t flags);
 
 OCOMS_DECLSPEC int ocoms_mca_base_components_open(const char *type_name, int output_id,
                                            const ocoms_mca_base_component_t **static_components,
@@ -162,9 +203,30 @@ OCOMS_DECLSPEC int ocoms_mca_base_components_open(const char *type_name, int out
                                            bool open_dso_components);
 
 /* ocoms_mca_base_components_close.c */
+/**
+ * Close and release a component.
+ *
+ * @param[in] component Component to close
+ * @param[in] output_id Output id for debugging output
+ *
+ * After calling this function the component may no longer be used.
+ */
+OCOMS_DECLSPEC void ocoms_mca_base_component_close (const ocoms_mca_base_component_t *component, int output_id);
+
+/**
+ * Release a component without closing it.
+ * @param[in] component Component to close
+ * @param[in] output_id Output id for debugging output
+ *
+ * After calling this function the component may no longer be used.
+ */
+void ocoms_mca_base_component_unload (const ocoms_mca_base_component_t *component, int output_id);
 
 OCOMS_DECLSPEC int ocoms_mca_base_components_close(int output_id, ocoms_list_t *components_available, 
                                             const ocoms_mca_base_component_t *skip);
+
+OCOMS_DECLSPEC int ocoms_mca_base_framework_components_close (struct ocoms_mca_base_framework_t *framework,
+						       const ocoms_mca_base_component_t *skip);
 
 END_C_DECLS
 

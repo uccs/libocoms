@@ -9,7 +9,7 @@
  *                         University of Stuttgart.  All rights reserved.
  * Copyright (c) 2004-2005 The Regents of the University of California.
  *                         All rights reserved.
- * Copyright (c) 2007      Los Alamos National Security, LLC.  All rights
+ * Copyright (c) 2007-2013 Los Alamos National Security, LLC.  All rights
  *                         reserved. 
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
@@ -31,24 +31,6 @@
 bool ocoms_uses_threads = false;
 bool ocoms_mutex_check_locks = false;
 
-
-#ifdef __WINDOWS__
-
-static void ocoms_mutex_construct(ocoms_mutex_t *m)
-{
-    InterlockedExchange(&m->m_lock, 0);
-#if !OCOMS_ENABLE_MULTI_THREADS && OCOMS_ENABLE_DEBUG
-    m->m_lock_debug = 0;
-    m->m_lock_file = NULL;
-    m->m_lock_line = 0;
-#endif  /* !OCOMS_ENABLE_MULTI_THREADS && OCOMS_ENABLE_DEBUG */
-}
-
-static void ocoms_mutex_destruct(ocoms_mutex_t *m)
-{
-}
-
-#else
 
 static void ocoms_mutex_construct(ocoms_mutex_t *m)
 {
@@ -98,8 +80,6 @@ static void ocoms_mutex_destruct(ocoms_mutex_t *m)
     mutex_destroy(&m->m_lock_solaris);
 #endif
 }
-
-#endif /* __WINDOWS__ */
 
 OBJ_CLASS_INSTANCE(ocoms_mutex_t,
                    ocoms_object_t,

@@ -9,6 +9,7 @@
 #                         University of Stuttgart.  All rights reserved.
 # Copyright (c) 2004-2005 The Regents of the University of California.
 #                         All rights reserved.
+# Copyright (c) 2011-2012 Cisco Systems, Inc.  All rights reserved.
 # Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
 # Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
 # $COPYRIGHT$
@@ -29,7 +30,11 @@
 #
 ######################################################################
 generated/@OCOMS_ASM_FILE@: base/@OCOMS_ASSEMBLY_ARCH@.asm
-	$(PERL) '$(top_srcdir)/ocoms/asm/generate-asm.pl' '@OCOMS_ASSEMBLY_ARCH@' '@OCOMS_ASSEMBLY_FORMAT@' '$(top_srcdir)/ocoms/asm/base' '$(top_builddir)/ocoms/asm/generated/@OCOMS_ASM_FILE@'
+	@ if test ! -f "$(top_srcdir)/ocoms/asm/$@" ; then \
+	    cmd="$(PERL) '$(top_srcdir)/ocoms/asm/generate-asm.pl' '@OCOMS_ASSEMBLY_ARCH@' '@OCOMS_ASSEMBLY_FORMAT@' '$(top_srcdir)/ocoms/asm/base' '$(top_builddir)/ocoms/asm/generated/@OCOMS_ASM_FILE@'" ; \
+	    echo "$$cmd" ; \
+	    eval $$cmd ; \
+	fi
 
 atomic-asm.S: generated/@OCOMS_ASM_FILE@
 	rm -f atomic-asm.S
@@ -62,12 +67,12 @@ EXTRA_DIST	= \
 	base/default.conf \
 	base/ALPHA.asm \
 	base/AMD64.asm \
+	base/ARM.asm \
 	base/IA32.asm \
 	base/IA64.asm \
 	base/MIPS.asm \
 	base/POWERPC32.asm \
 	base/POWERPC64.asm \
-	base/SPARC.asm \
 	base/SPARCV9_32.asm \
 	base/SPARCV9_64.asm
 

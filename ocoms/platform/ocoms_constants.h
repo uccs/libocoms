@@ -47,7 +47,13 @@ enum {
     OCOMS_ERR_INVALID_PHYS_CPU               = (OCOMS_ERR_BASE - 39),
     OCOMS_ERR_MULTIPLE_AFFINITIES            = (OCOMS_ERR_BASE - 40),
     OCOMS_ERR_SLOT_LIST_RANGE                = (OCOMS_ERR_BASE - 41),
-    OCOMS_ERR_NETWORK_NOT_PARSEABLE          = (OCOMS_ERR_BASE - 42)
+    OCOMS_ERR_NETWORK_NOT_PARSEABLE          = (OCOMS_ERR_BASE - 42),
+    OCOMS_ERR_SILENT                         = (OCOMS_ERR_BASE - 43),
+    OCOMS_ERR_NOT_INITIALIZED                = (OCOMS_ERR_BASE - 44),
+    OCOMS_ERR_NOT_BOUND                      = (OCOMS_ERR_BASE - 45),
+    OCOMS_ERR_TAKE_NEXT_OPTION               = (OCOMS_ERR_BASE - 46),
+    OCOMS_ERR_PROC_ENTRY_NOT_FOUND           = (OCOMS_ERR_BASE - 47),
+    OCOMS_ERR_DATA_VALUE_NOT_FOUND           = (OCOMS_ERR_BASE - 48)
 };
 
 #define OCOMS_ERR_MAX                (OCOMS_ERR_BASE - 100)

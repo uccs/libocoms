@@ -186,24 +186,24 @@ AM_CONDITIONAL(OCOMS_HAVE_SOLARIS_THREADS, test "$THREAD_TYPE" = "solaris")
 AC_MSG_CHECKING([if want OCOMS thread support])
 AC_ARG_ENABLE([ocoms-multi-threads],
     AC_HELP_STRING([--enable-ocoms-multi-threads],
-        [Enable thread support inside OCOMS (default: disabled)]),
+        [Enable thread support inside OCOMS (default: enabled)]),
     [enable_ocoms_multi_threads="$enableval"],
     [enable_ocoms_multi_threads="undef"])
 
 if test "$enable_ocoms_multi_threads" = "undef" ; then 
-dnl    # no argument given either way.  Default to whether
-dnl    # we have threads or not
-dnl    if test "$THREAD_TYPE" != "none" ; then
-dnl        OCOMS_ENABLE_MULTI_THREADS=1
-dnl        enable_ocoms_multi_threads="yes"
-dnl    else
-dnl        OCOMS_ENABLE_MULTI_THREADS=0
-dnl        enable_ocoms_multi_threads="no"
-dnl    fi
-    # no argument - default to no, but leave
-    # enable_ocoms_multi_threads="undef" so we
-    # can later detect that it wasn't specified
-    OCOMS_ENABLE_MULTI_THREADS=0
+    # no argument given either way.  Default to whether
+    # we have threads or not
+    if test "$THREAD_TYPE" != "none" ; then
+        OCOMS_ENABLE_MULTI_THREADS=1
+        enable_ocoms_multi_threads="yes"
+    else
+        OCOMS_ENABLE_MULTI_THREADS=0
+        enable_ocoms_multi_threads="no"
+    fi
+dnl    # no argument - default to no, but leave
+dnl    # enable_ocoms_multi_threads="undef" so we
+dnl    # can later detect that it wasn't specified
+dnl    OCOMS_ENABLE_MULTI_THREADS=0
 elif test "$enable_ocoms_multi_threads" = "no" ; then
     OCOMS_ENABLE_MULTI_THREADS=0
 else

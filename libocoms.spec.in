@@ -2,6 +2,8 @@
 %define version @VERSION@
 %define pkgname @PACKAGE@
 %define prefix @prefix@
+%define vendor @VENDOR@
+%define packager @PACKAGER@
 %define __check_files %{nil}
 %define _prefix %{prefix}
 %define _libdir %{prefix}/lib
@@ -13,23 +15,25 @@
 
 
 Name: %{pkgname}
-Summary: libocoms package - Open Component Services 
+Summary: libOCOMS package - Open Component Services
 Version: %{version}
 Release: %{rel}
-Vendor: Mellanox
+Vendor: %{vendor}
 
-License: GNU
+License: BSD
 Group: Libraries
 Source: %{pkgname}-%{version}.tar.gz
 #Requires:
 BuildRequires: gcc-c++ libstdc++ libstdc++-devel
 BuildRoot: %(mktemp -ud %{_tmppath}/%{name}-%{version}-%{release}-XXXXXX)
-URL: http://www.mellanox.com
+URL: http://uccs.github.com/libocoms
 Prefix: %{prefix}
-Packager: <hpcuser@mellanox.com> 
+Packager: %{packager}
 
 %description
-libocoms YYYYYYYYYYYYYYYYYYYYYY
+libOCOMS - Open Component Services Library (OCOMS).
+The library provides module component architecture (MCA), class, list, freelist, hash, and other functionalities.
+libOCOMS code is heavily based on Open MPI's OPAL code-base, and presents a lightweight version of the OPAL project.
 
 %prep
 rm -rf $RPM_BUILD_ROOT
@@ -94,4 +98,3 @@ test "x$RPM_BUILD_ROOT" != "x" && rm -rf $RPM_BUILD_ROOT
 %postun
 /sbin/ldconfig
 exit 0
-

@@ -1,3 +1,4 @@
+/* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil -*- */
 /*
  * Copyright (c) 2004-2006 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
@@ -11,6 +12,8 @@
  *                         All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2013      Los Alamos National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  * 
  * Additional copyrights may follow
@@ -27,65 +30,67 @@
 #include "ocoms/mca/base/mca_base_component_repository.h"
 #include "ocoms/platform/ocoms_constants.h"
 
-int ocoms_mca_base_components_close(int output_id, 
-                              ocoms_list_t *components_available, 
-                              const ocoms_mca_base_component_t *skip)
+void ocoms_mca_base_component_unload (const ocoms_mca_base_component_t *component, int output_id)
 {
-  ocoms_list_item_t *item;
-  ocoms_mca_base_component_priority_list_item_t *pcli, *skipped_pcli = NULL;
-  const ocoms_mca_base_component_t *component;
+    int ret;
 
-  /* Close and unload all components in the available list, except the
-     "skip" item.  This is handy to close out all non-selected
-     components.  It's easier to simply remove the entire list and
-     then simply re-add the skip entry when done. */
+    /* Unload */
+    ocoms_output_verbose(10, output_id, 
+                        "mca: base: close: unloading component %s",
+                        component->mca_component_name);
 
-  for (item = ocoms_list_remove_first(components_available);
-       NULL != item; 
-       item = ocoms_list_remove_first(components_available)) {
-    pcli = (ocoms_mca_base_component_priority_list_item_t *) item;
-    component = pcli->super.cli_component;
+    /* XXX -- TODO -- Replace reserved by mca_project_name for 1.9 */
+    ret = ocoms_mca_base_var_group_find (component->reserved, component->mca_type_name,
+                                   component->mca_component_name);
+    if (0 <= ret) {
+        ocoms_mca_base_var_group_deregister (ret);
+    }
 
-    if (component != skip) {
+    ocoms_mca_base_component_repository_release((ocoms_mca_base_component_t *) component);    
+}
 
-      /* Close */
-
-
-      if (NULL != component->mca_close_component) {
+void ocoms_mca_base_component_close (const ocoms_mca_base_component_t *component, int output_id)
+{
+    /* Close */
+    if (NULL != component->mca_close_component) {
         component->mca_close_component();
         ocoms_output_verbose(10, output_id, 
                             "mca: base: close: component %s closed",
-                           component->mca_component_name);
-      }
-
-      /* Unload */
-
-      ocoms_output_verbose(10, output_id, 
-                          "mca: base: close: unloading component %s",
-                         component->mca_component_name);
-      ocoms_mca_base_component_repository_release((ocoms_mca_base_component_t *) component);
-      free(pcli);
-    } else {
-      skipped_pcli = pcli;
+                            component->mca_component_name);
     }
-  }
 
-  /* If we found it, re-add the skipped component to the available
-     list (see above comment) */
+    ocoms_mca_base_component_unload (component, output_id);
+}
 
-  if (NULL != skipped_pcli) {
-    ocoms_list_append(components_available, (ocoms_list_item_t *) skipped_pcli);
-  }
+int ocoms_mca_base_framework_components_close (ocoms_mca_base_framework_t *framework,
+                                         const ocoms_mca_base_component_t *skip)
+{
+    return ocoms_mca_base_components_close (framework->framework_output,
+                                      &framework->framework_components,
+                                      skip);
+}
 
-  /*
-   * If we are not the verbose output stream, and we shouldn't skip
-   * any components, close the output stream.  If there's a skip
-   * component, this is a 'choose one' framework and we're closing the
-   * unchoosen components, but will still be using the framework.
-   */
-  if (0 != output_id && NULL == skip) {
-      ocoms_output_close (output_id);
-  }
-  /* All done */
-  return OCOMS_SUCCESS;
+int ocoms_mca_base_components_close(int output_id, ocoms_list_t *components, 
+                              const ocoms_mca_base_component_t *skip)
+{
+    ocoms_mca_base_component_list_item_t *cli, *next;
+
+    /* Close and unload all components in the available list, except the
+       "skip" item.  This is handy to close out all non-selected
+       components.  It's easier to simply remove the entire list and
+       then simply re-add the skip entry when done. */
+
+    OCOMS_LIST_FOREACH_SAFE(cli, next, components, ocoms_mca_base_component_list_item_t) {
+        if (skip == cli->cli_component) {
+            continue;
+        }
+
+        ocoms_mca_base_component_close (cli->cli_component, output_id);
+        ocoms_list_remove_item (components, &cli->super);
+
+        OBJ_RELEASE(cli);
+    }
+
+    /* All done */
+    return OCOMS_SUCCESS;
 }

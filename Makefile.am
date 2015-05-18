@@ -53,8 +53,6 @@ nobase_dist_libocoms_la_HEADERS = \
 							ocoms/mca/mca.h \
 							ocoms/mca/base/base.h \
 							ocoms/mca/base/mca_base_component_repository.h \
-							ocoms/mca/base/mca_base_param.h \
-							ocoms/mca/base/mca_base_param_internal.h \
 							ocoms/sys/architecture.h \
 							ocoms/sys/atomic.h \
 							ocoms/sys/atomic_impl.h \
@@ -80,7 +78,6 @@ nobase_dist_libocoms_la_HEADERS = \
 							ocoms/threads/condition.h \
 							ocoms/threads/mutex.h \
 							ocoms/threads/mutex_unix.h \
-							ocoms/threads/mutex_windows.h \
 							ocoms/threads/threads.h \
 							ocoms/threads/tsd.h \
 							ocoms/memoryhooks/memory.h \

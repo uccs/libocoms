@@ -14,7 +14,8 @@
 #                         reserved.
 # Copyright (c) 2009      Oak Ridge National Labs.  All rights reserved.
 # Copyright (c) 2010 Cisco Systems, Inc.  All rights reserved.
-# Copyright (c) 2011      NVIDIA Corporation.  All rights reserved.
+# Copyright (c) 2010      Cisco Systems, Inc.  All rights reserved.
+# Copyright (c) 2011-2013 NVIDIA Corporation.  All rights reserved.
 # Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
 # Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
 # $COPYRIGHT$
@@ -80,6 +81,4 @@ libdatatype_la_LIBADD = libdatatype_reliable.la
 if OCOMS_cuda_support
 libdatatype_la_SOURCES += ocoms_datatype_cuda.c
 datatype_headers += ocoms_datatype_cuda.h
-AM_CPPFLAGS = $(ocoms_datatype_CPPFLAGS)
-libdatatype_la_LIBADD += $(ocoms_datatype_LIBS)
 endif

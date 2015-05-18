@@ -121,11 +121,6 @@ int ocoms_mca_base_select(const char *type_name, int output_id,
     ocoms_output_verbose(5, output_id,
                         "mca:base:select:(%5s) Selected component [%s]",
                         type_name, (*best_component)->mca_component_name);
-#if 0 /* Pasha: Not sure if we need this one */
-    if (ocoms_profile) {
-        ocoms_output(0, "%s:%s", type_name, (*best_component)->mca_component_name);
-    }
-#endif
     
     /*
      * Close the non-selected components

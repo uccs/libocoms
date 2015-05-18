@@ -30,6 +30,9 @@
 #elif OCOMS_HAVE_SOLARIS_THREADS
 #include <thread.h>
 #endif
+#ifdef HAVE_SIGNAL_H
+#include <signal.h>
+#endif
 
 #include "ocoms/util/ocoms_object.h"
 #if OCOMS_ENABLE_DEBUG
@@ -49,9 +52,7 @@ struct ocoms_thread_t {
     ocoms_object_t super;
     ocoms_thread_fn_t t_run;
     void* t_arg;
-#ifdef __WINDOWS__
-    HANDLE t_handle;
-#elif OCOMS_HAVE_POSIX_THREADS
+#ifdef OCOMS_HAVE_POSIX_THREADS
     pthread_t t_handle;
 #elif OCOMS_HAVE_SOLARIS_THREADS
     thread_t t_handle;

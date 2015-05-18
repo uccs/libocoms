@@ -36,7 +36,7 @@
 #if OCOMS_ENABLE_DEBUG
 #include "ocoms/util/output.h"
 
-extern int ocoms_position_debug;
+extern bool ocoms_position_debug;
 #define DO_DEBUG(INST)  if( ocoms_position_debug ) { INST }
 #else
 #define DO_DEBUG(INST)

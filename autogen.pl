@@ -969,11 +969,6 @@ if (!$ok || $help_arg) {
     exit($ok ? 0 : 1);
 }
 
-#debug
-use Cwd;
-my $rlg_dir = getcwd;
-print("\n CWD - $rlg_dir = \n");
-#end debug
 #---------------------------------------------------------------------------
 
 # Check for project existence
@@ -1090,11 +1085,6 @@ if ($include_arg) {
 }
 
 #---------------------------------------------------------------------------
-#debug
-use Cwd;
-my $rlg_dir = getcwd;
-print("\n AAA CWD - $rlg_dir = \n");
-#end debug
 
 ##########################################################################
 # Temporary: while we're transitioning from autogen.sh, remove some of
@@ -1127,11 +1117,6 @@ if (! (-f "configure.ac" )) {
     exit(1);
 }
 
-#debug
-use Cwd;
-my $rlg_dir = getcwd;
-print("\n BBB CWD - $rlg_dir = \n");
-#end debug
 # Top-level projects to examine
 my $projects;
 
@@ -1151,20 +1136,10 @@ foreach my $p (@$projects) {
 $m4 .= "\ndnl Project names
 m4_define([project_name_long], [$project_name_long])
 m4_define([project_name_short], [$project_name_short])\n";
-#debug
-use Cwd;
-my $rlg_dir = getcwd;
-print("\n CCC CWD - $rlg_dir = \n");
-#end debug
 
 # Setup MCA
 mca_run_global($projects);
 
-#debug
-use Cwd;
-my $rlg_dir = getcwd;
-print("\n DDD CWD - $rlg_dir = \n");
-#end debug
 #---------------------------------------------------------------------------
 
 
@@ -1203,11 +1178,6 @@ close(M4);
 
 # Run autoreconf
 verbose "==> Running autoreconf\n";
-#debug
-use Cwd;
-my $rlg_dir = getcwd;
-print("\n CWD - $rlg_dir = \n");
-#end debug
 my $cmd = "autoreconf -ivf --warnings=all,no-obsolete,no-override -I config";
 foreach my $project (@{$projects}) {
 print(" \n\n - project: $project->{dir} \n");

@@ -38,6 +38,7 @@
 
 int ocoms_util_keyval_yylex(void);
 int ocoms_util_keyval_init_buffer(FILE *file);
+int ocoms_util_keyval_yylex_destroy(void);
 
 extern FILE *ocoms_util_keyval_yyin;
 extern bool ocoms_util_keyval_parse_done;

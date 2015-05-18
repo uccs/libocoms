@@ -1,4 +1,4 @@
-/* -*- Mode: C; c-basic-offset:4 ; -*- */
+/* -*- Mode: C; c-basic-offset:4 ; indent-tabs-mode:nil -*- */
 /*
  * Copyright (c) 2004-2006 The Trustees of Indiana University and Indiana
  *                         University Research and Technology
@@ -13,6 +13,8 @@
  * Copyright (c) 2009      Oak Ridge National Labs.  All rights reserved.
  * Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
  * Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+ * Copyright (c) 2013      Los Alamos National Security, LLC. All rights
+ *                         reserved.
  * $COPYRIGHT$
  *
  * Additional copyrights may follow
@@ -124,22 +126,20 @@ static inline void DUMP( char* fmt __ocoms_attribute_unused_tmp__, ... )
 #define OCOMS_DATATYPE_FLOAT8         16
 #define OCOMS_DATATYPE_FLOAT12        17
 #define OCOMS_DATATYPE_FLOAT16        18
-#define OCOMS_DATATYPE_COMPLEX8       19
-#define OCOMS_DATATYPE_COMPLEX16      20
-#define OCOMS_DATATYPE_COMPLEX32      21
+#define OCOMS_DATATYPE_FLOAT_COMPLEX  19
+#define OCOMS_DATATYPE_DOUBLE_COMPLEX 20
+#define OCOMS_DATATYPE_LONG_DOUBLE_COMPLEX 21
 #define OCOMS_DATATYPE_BOOL           22
 #define OCOMS_DATATYPE_WCHAR          23
 #define OCOMS_DATATYPE_UNAVAILABLE    24
 
 #ifndef OCOMS_DATATYPE_MAX_PREDEFINED
-#define OCOMS_DATATYPE_MAX_PREDEFINED 25
-#endif
-
+#define OCOMS_DATATYPE_MAX_PREDEFINED (OCOMS_DATATYPE_UNAVAILABLE+1)
+#elif OCOMS_DATATYPE_MAX_PREDEFINED <= OCOMS_DATATYPE_UNAVAILABLE
 /*
  * If the number of basic datatype should change update
- * OCOMS_DATATYPE_MAX_PREDEFINED in datatype.h
+ * OCOMS_DATATYPE_MAX_PREDEFINED in ocoms_datatype.h
  */
-#if OCOMS_DATATYPE_MAX_PREDEFINED <= OCOMS_DATATYPE_UNAVAILABLE
 #error OCOMS_DATATYPE_MAX_PREDEFINED should be updated to the next value after the OCOMS_DATATYPE_UNAVAILABLE define
 #endif
 
@@ -232,50 +232,11 @@ struct ocoms_datatype_t;
  * into
  *     OCOMS_DATATYPE_INIT_BTYPES_ARRAY_[0-21], then order and naming would _not_ matter....
  */
-#define Z5    0, 0, 0, 0, 0
-#define Z10   Z5, Z5
-#define Z15   Z10, Z5
-#define Z20   Z10, Z10
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UNAVAILABLE { 0, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_LOOP        { 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_END_LOOP    { 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_LB          { 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UB          { 0, 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_INT1        { 0, 0, 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_INT2        { Z5, 1, }              /*5*/
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_INT4        { Z5, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_INT8        { Z5, 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_INT16       { Z5, 0, 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UINT1       { Z5, 0, 0, 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UINT2       { Z10, 1, }             /*10*/
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UINT4       { Z10, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UINT8       { Z10, 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UINT16      { Z10, 0, 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_FLOAT2      { Z10, 0, 0, 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_FLOAT4      { Z15, 1, }             /*15*/
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_FLOAT8      { Z15, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_FLOAT12     { Z15, 0, 0, 1, }
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_FLOAT16     { Z15, 0, 0, 0, 1, }
-#if HAVE_FLOAT__COMPLEX
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_COMPLEX8    { Z15, 0, 0, 0, 0, 1 }
-#else
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_COMPLEX8    { Z15, 2 }    /* two floats */
-#endif
-#if HAVE_DOUBLE__COMPLEX
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_COMPLEX16   { Z15, 0, 0, 0, 0, 0, 1 }
-#else
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_COMPLEX16   { Z15, 0, 2, }
-#endif
-#if HAVE_LONG_DOUBLE__COMPLEX
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_COMPLEX32   { Z15, 0, 0, 0, 0, 0, 0, 1 }
-#else
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_COMPLEX32   { Z15, 0, 0, 0, 2, }
-#endif
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_BOOL        { Z20, 0, 1, }          /*22*/
-#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_WCHAR       { Z20, 0, 0, 1, }
 
-#define OCOMS_DATATYPE_INIT_NAME(NAME) "OCOMS_" _OCOMS_DATATYPE_INIT_NAME(NAME)
-#define _OCOMS_DATATYPE_INIT_NAME(NAME)  #NAME
+#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UNAVAILABLE { 0 }
+#define OCOMS_DATATYPE_INIT_BTYPES_ARRAY(NAME) { [OCOMS_DATATYPE_ ## NAME] = 1 }
+
+#define OCOMS_DATATYPE_INIT_NAME(NAME) "OCOMS_" #NAME
 
 /*
  * Macro to initialize the main description for basic types, setting the pointer
@@ -284,76 +245,76 @@ struct ocoms_datatype_t;
  */
 #define OCOMS_DATATYPE_INIT_DESC_PREDEFINED(NAME)                                     \
     {                                                                                \
-        1 /*length*/, 1/*used*/,                                                     \
-        &(ocoms_datatype_predefined_elem_desc[2 * OCOMS_DATATYPE_ ## NAME]) /*desc*/   \
+        .length = 1, .used = 1,                                                      \
+        .desc = &(ocoms_datatype_predefined_elem_desc[2 * OCOMS_DATATYPE_ ## NAME])    \
     }
-#define OCOMS_DATATYPE_INIT_DESC_NULL  {0 /*length*/, 0/*used*/, NULL /*desc*/}
+#define OCOMS_DATATYPE_INIT_DESC_NULL  {.length = 0, .used = 0, .desc = NULL}
 
 #define OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( NAME, FLAGS )                   \
     {                                                                                \
-        OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                                       \
-        OCOMS_DATATYPE_FLAG_UNAVAILABLE | OCOMS_DATATYPE_FLAG_PREDEFINED | (FLAGS) /*flag*/, \
-        OCOMS_DATATYPE_ ## NAME /*id*/,                                               \
-        0 /*bdt_used*/,                                                              \
-        0 /*size*/,                                                                  \
-        0 /*true_lb*/, 0 /*true_ub*/, 0 /*lb*/, 0 /*ub*/,                            \
-        0 /*align*/,                                                                 \
-        1 /*nbElems*/,                                                               \
-        OCOMS_DATATYPE_INIT_NAME(NAME), /*name*/                                      \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(UNAVAILABLE), /*desc*/                    \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(UNAVAILABLE), /*opt_desc*/                \
-        OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UNAVAILABLE /*btypes*/                       \
+        .super = OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                              \
+        .flags = OCOMS_DATATYPE_FLAG_UNAVAILABLE | OCOMS_DATATYPE_FLAG_PREDEFINED | (FLAGS), \
+        .id = OCOMS_DATATYPE_ ## NAME,                                                \
+        .bdt_used = 0,                                                               \
+        .size = 0,                                                                   \
+        .true_lb = 0, .true_ub = 0, .lb = 0, .ub = 0,                                \
+        .align = 0,                                                                  \
+        .nbElems = 1,                                                                \
+        .name = OCOMS_DATATYPE_INIT_NAME(NAME),                                       \
+        .desc = OCOMS_DATATYPE_INIT_DESC_PREDEFINED(UNAVAILABLE),                     \
+        .opt_desc = OCOMS_DATATYPE_INIT_DESC_PREDEFINED(UNAVAILABLE),                 \
+        .btypes = OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UNAVAILABLE                        \
     }
 
 #define OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE( FLAGS )                               \
     OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( UNAVAILABLE, (FLAGS) )
 
-#define OCOMS_DATATYPE_INITIALIZER_EMPTY( FLAGS )                                     \
-    {                                                                                \
-        OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                                       \
-        OCOMS_DATATYPE_FLAG_PREDEFINED | (FLAGS) /*flag*/,                            \
-        0 /*id*/,                                                                    \
-        0 /*bdt_used*/,                                                              \
-        0 /*size*/,                                                                  \
-        0 /*true_lb*/, 0 /*true_ub*/, 0 /*lb*/, 0 /*ub*/,                            \
-        0 /*align*/,                                                                 \
-        1 /*nbElems*/,                                                               \
-        OCOMS_DATATYPE_INIT_NAME(EMPTY), /*name*/                                     \
-        OCOMS_DATATYPE_INIT_DESC_NULL, /*desc*/                                       \
-        OCOMS_DATATYPE_INIT_DESC_NULL, /*opt_desc*/                                   \
-        OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UNAVAILABLE /*btypes*/                       \
+#define OCOMS_DATATYPE_INITIALIZER_EMPTY( FLAGS )                        \
+    {                                                                   \
+        .super = OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                 \
+        .flags = OCOMS_DATATYPE_FLAG_PREDEFINED | (FLAGS),               \
+        .id = 0,                                                        \
+        .bdt_used = 0,                                                  \
+        .size = 0,                                                      \
+        .true_lb = 0, .true_ub = 0, .lb = 0, .ub = 0,                   \
+        .align = 0,                                                     \
+        .nbElems = 1,                                                   \
+        .name = OCOMS_DATATYPE_INIT_NAME(EMPTY),                         \
+        .desc = OCOMS_DATATYPE_INIT_DESC_NULL,                           \
+        .opt_desc = OCOMS_DATATYPE_INIT_DESC_NULL,                       \
+        .btypes = OCOMS_DATATYPE_INIT_BTYPES_ARRAY_UNAVAILABLE           \
     }
 
-#define OCOMS_DATATYPE_INIT_BASIC_TYPE( TYPE, NAME, FLAGS )                           \
-    {                                                                                \
-        OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                                       \
-        OCOMS_DATATYPE_FLAG_PREDEFINED | (FLAGS) /*flag*/,                            \
-        TYPE /*id*/,                                                                 \
-        (((uint32_t)1)<<(TYPE)) /*bdt_used*/,                                        \
-        0 /*size*/,                                                                  \
-        0 /*true_lb*/, 0 /*true_ub*/, 0 /*lb*/, 0 /*ub*/,                            \
-        0 /*align*/,                                                                 \
-        1 /*nbElems*/,                                                               \
-        OCOMS_DATATYPE_INIT_NAME(NAME), /*name*/                                      \
-        OCOMS_DATATYPE_INIT_DESC_NULL, /*desc*/                                       \
-        OCOMS_DATATYPE_INIT_DESC_NULL, /*opt_desc*/                                   \
-        OCOMS_DATATYPE_INIT_BTYPES_ARRAY_ ## NAME /*btypes*/                          \
+#define OCOMS_DATATYPE_INIT_BASIC_TYPE( TYPE, NAME, FLAGS )              \
+    {                                                                   \
+        .super = OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                 \
+        .flags = OCOMS_DATATYPE_FLAG_PREDEFINED | (FLAGS),               \
+        .id = TYPE,                                                     \
+        .bdt_used = (((uint32_t)1)<<(TYPE)),                            \
+        .size = 0,                                                      \
+        .true_lb = 0, .true_ub = 0, .lb = 0, .ub = 0,                   \
+        .align = 0,                                                     \
+        .nbElems = 1,                                                   \
+        .name = OCOMS_DATATYPE_INIT_NAME(NAME),                          \
+        .desc = OCOMS_DATATYPE_INIT_DESC_NULL,                           \
+        .opt_desc = OCOMS_DATATYPE_INIT_DESC_NULL,                       \
+        .btypes = OCOMS_DATATYPE_INIT_BTYPES_ARRAY(NAME)                 \
     }
 
 #define OCOMS_DATATYPE_INIT_BASIC_DATATYPE( TYPE, ALIGN, NAME, FLAGS )                \
     {                                                                                \
-        OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                                       \
-        OCOMS_DATATYPE_FLAG_BASIC | (FLAGS) /*flag*/,                                 \
-        OCOMS_DATATYPE_ ## NAME /*id*/,                                               \
-        (((uint32_t)1)<<(OCOMS_DATATYPE_ ## NAME)) /*bdt_used*/,                      \
-        sizeof(TYPE) /*size*/,                                                       \
-        0 /*true_lb*/, sizeof(TYPE) /*true_ub*/, 0 /*lb*/, sizeof(TYPE) /*ub*/,      \
-        (ALIGN) /*align*/,                                                           \
-        1 /*nbElems*/,                                                               \
-        OCOMS_DATATYPE_INIT_NAME(NAME) /*name*/,                                      \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(NAME) /*desc*/,                           \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(NAME) /*opt_desc*/,                       \
-        OCOMS_DATATYPE_INIT_BTYPES_ARRAY_ ## NAME /*btypes*/                          \
+        .super = OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                              \
+        .flags = OCOMS_DATATYPE_FLAG_BASIC | (FLAGS),                                 \
+        .id = OCOMS_DATATYPE_ ## NAME,                                                \
+        .bdt_used = (((uint32_t)1)<<(OCOMS_DATATYPE_ ## NAME)),                       \
+        .size = sizeof(TYPE),                                                        \
+        .true_lb = 0, .true_ub = sizeof(TYPE), .lb = 0, .ub = sizeof(TYPE),          \
+        .align = (ALIGN),                                                            \
+        .nbElems = 1,                                                                \
+        .name = OCOMS_DATATYPE_INIT_NAME(NAME),                                       \
+        .desc = OCOMS_DATATYPE_INIT_DESC_PREDEFINED(NAME),                            \
+        .opt_desc = OCOMS_DATATYPE_INIT_DESC_PREDEFINED(NAME),                        \
+        .btypes = OCOMS_DATATYPE_INIT_BTYPES_ARRAY(NAME)                              \
     }
 
 #define OCOMS_DATATYPE_INITIALIZER_LOOP(FLAGS)       OCOMS_DATATYPE_INIT_BASIC_TYPE( OCOMS_DATATYPE_LOOP, LOOP, FLAGS )
@@ -429,109 +390,23 @@ struct ocoms_datatype_t;
 #define OCOMS_DATATYPE_INITIALIZER_FLOAT16(FLAGS)    OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( FLOAT16, FLAGS )
 #endif
 
-/*
- * Until we figure out the whole logic behing the _Complex type, disable it. It only exists
- * in C99 (i.e. __STDC_VERSION__ >= 199901L) but [evidently] not all compilers correctly
- * export the __STDC_VERSION__.
- * http://predef.sourceforge.net/prestd.html for more info.
- */
-
-#define OCOMS_USE_FLOAT__COMPLEX       (0 && HAVE_FLOAT__COMPLEX)
-#define OCOMS_USE_DOUBLE__COMPLEX      (0 && HAVE_DOUBLE__COMPLEX)
-#define OCOMS_USE_LONG_DOUBLE__COMPLEX (0 && HAVE_LONG_DOUBLE__COMPLEX)
-
-#if OCOMS_USE_FLOAT__COMPLEX && (SIZEOF_FLOAT__COMPLEX == 8)
-#define OCOMS_DATATYPE_INITIALIZER_COMPLEX8(FLAGS)   OCOMS_DATATYPE_INIT_BASIC_DATATYPE( float _Complex, OCOMS_ALIGNMENT_FLOAT_COMPLEX, COMPLEX8, (FLAGS) )
+#if HAVE_FLOAT__COMPLEX
+#define OCOMS_DATATYPE_INITIALIZER_FLOAT_COMPLEX(FLAGS) OCOMS_DATATYPE_INIT_BASIC_DATATYPE( float _Complex, OCOMS_ALIGNMENT_FLOAT_COMPLEX, FLOAT_COMPLEX, FLAGS )
 #else
-
-#if SIZEOF_FLOAT == 4
-typedef struct {
-    float r;
-    float i;
-} ocoms_complex_float_t;
-
-#define OCOMS_DATATYPE_INITIALIZER_COMPLEX8( FLAGS )                     \
-    {                                                                   \
-        OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                          \
-        OCOMS_DATATYPE_FLAG_BASIC | (FLAGS) /*flag*/,                    \
-        OCOMS_DATATYPE_COMPLEX8 /*id*/,                                  \
-        (((uint32_t)1)<<(OCOMS_DATATYPE_ ## FLOAT4)) /*bdt_used*/,       \
-        sizeof(ocoms_complex_float_t) /*size*/,                          \
-        0 /*true_lb*/, sizeof(ocoms_complex_float_t) /*true_ub*/, 0 /*lb*/, sizeof(ocoms_complex_float_t) /*ub*/, \
-        OCOMS_ALIGNMENT_FLOAT /*align*/,                                 \
-        2 /*nbElems*/,                                                  \
-        OCOMS_DATATYPE_INIT_NAME(COMPLEX8) /*name*/,                     \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(COMPLEX8) /*desc*/,          \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(COMPLEX8) /*opt_desc*/,      \
-        {Z15, 2, } /*btypes*/                                           \
-    }
-#else
-#define OCOMS_DATATYPE_INITIALIZER_COMPLEX8(FLAGS)  OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( COMPLEX8, FLAGS )
+#define OCOMS_DATATYPE_INITIALIZER_FLOAT_COMPLEX(FLAGS) OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( FLOAT_COMPLEX, FLAGS)
 #endif
 
-#endif  /* HAVE_FLOAT__COMPLEX */
-
-#if OCOMS_USE_DOUBLE__COMPLEX && (SIZEOF_DOUBLE__COMPLEX == 16)
-#define OCOMS_DATATYPE_INITIALIZER_COMPLEX16(FLAGS)  OCOMS_DATATYPE_INIT_BASIC_DATATYPE( double _Complex, OCOMS_ALIGNMENT_DOUBLE_COMPLEX, COMPLEX16, (FLAGS) )
+#if HAVE_DOUBLE__COMPLEX
+#define OCOMS_DATATYPE_INITIALIZER_DOUBLE_COMPLEX(FLAGS) OCOMS_DATATYPE_INIT_BASIC_DATATYPE( double _Complex, OCOMS_ALIGNMENT_DOUBLE_COMPLEX, DOUBLE_COMPLEX, FLAGS )
 #else
-
-#if SIZEOF_DOUBLE == 8
-typedef struct {
-    double r;
-    double i;
-} ocoms_complex_double_t;
-
-#define OCOMS_DATATYPE_INITIALIZER_COMPLEX16( FLAGS )                    \
-    {                                                                   \
-        OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                          \
-        OCOMS_DATATYPE_FLAG_BASIC | (FLAGS) /*flag*/,                    \
-        OCOMS_DATATYPE_COMPLEX16 /*id*/,                                 \
-        (((uint32_t)1)<<(OCOMS_DATATYPE_ ## FLOAT8)) /*bdt_used*/,       \
-        sizeof(ocoms_complex_double_t) /*size*/,                         \
-        0 /*true_lb*/, sizeof(ocoms_complex_double_t) /*true_ub*/, 0 /*lb*/, sizeof(ocoms_complex_double_t) /*ub*/, \
-        OCOMS_ALIGNMENT_DOUBLE /*align*/,                                \
-        2 /*nbElems*/,                                                  \
-        OCOMS_DATATYPE_INIT_NAME(COMPLEX16) /*name*/,                    \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(COMPLEX16) /*desc*/,         \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(COMPLEX16) /*opt_desc*/,     \
-        {Z15, 2, } /*btypes*/                                           \
-    }
-#else
-#define OCOMS_DATATYPE_INITIALIZER_COMPLEX16(FLAGS) OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( COMPLEX16, FLAGS )
+#define OCOMS_DATATYPE_INITIALIZER_DOUBLE_COMPLEX(FLAGS) OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( DOUBLE_COMPLEX, FLAGS)
 #endif
 
-#endif  /* HAVE_DOUBLE__COMPLEX */
-
-#if OCOMS_USE_LONG_DOUBLE__COMPLEX && (SIZEOF_LONG_DOUBLE__COMPLEX == 32)
-#define OCOMS_DATATYPE_INITIALIZER_COMPLEX32(FLAGS)   OCOMS_DATATYPE_INIT_BASIC_DATATYPE( long double _Complex, OCOMS_ALIGNMENT_LONG_DOUBLE_COMPLEX, COMPLEX32, (FLAGS) )
+#if HAVE_LONG_DOUBLE__COMPLEX
+#define OCOMS_DATATYPE_INITIALIZER_LONG_DOUBLE_COMPLEX(FLAGS) OCOMS_DATATYPE_INIT_BASIC_DATATYPE( long double _Complex, OCOMS_ALIGNMENT_LONG_DOUBLE_COMPLEX, LONG_DOUBLE_COMPLEX, FLAGS )
 #else
-
-#if HAVE_LONG_DOUBLE && (SIZEOF_LONG_DOUBLE == 16)
-typedef struct {
-    long double r;
-    long double i;
-} ocoms_complex_long_double_t;
-
-#define OCOMS_DATATYPE_INITIALIZER_COMPLEX32( FLAGS )                    \
-    {                                                                   \
-        OCOMS_OBJ_STATIC_INIT(ocoms_datatype_t),                          \
-        OCOMS_DATATYPE_FLAG_BASIC | (FLAGS) /*flag*/,                    \
-        OCOMS_DATATYPE_COMPLEX32 /*id*/,                                 \
-        (((uint32_t)1)<<(OCOMS_DATATYPE_ ## FLOAT16)) /*bdt_used*/,      \
-        sizeof(ocoms_complex_long_double_t) /*size*/,                    \
-        0 /*true_lb*/, sizeof(ocoms_complex_long_double_t) /*true_ub*/, 0 /*lb*/, sizeof(ocoms_complex_long_double_t) /*ub*/, \
-        OCOMS_ALIGNMENT_LONG_DOUBLE /*align*/,                           \
-        2 /*nbElems*/,                                                  \
-        OCOMS_DATATYPE_INIT_NAME(COMPLEX32) /*name*/,                    \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(COMPLEX32) /*desc*/,         \
-        OCOMS_DATATYPE_INIT_DESC_PREDEFINED(COMPLEX32) /*opt_desc*/,     \
-        {Z15, 2, } /*btypes*/                                           \
-    }
-#else
-#define OCOMS_DATATYPE_INITIALIZER_COMPLEX32(FLAGS) OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( COMPLEX32, FLAGS )
+#define OCOMS_DATATYPE_INITIALIZER_LONG_DOUBLE_COMPLEX(FLAGS) OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( LONG_DOUBLE_COMPLEX, FLAGS)
 #endif
-
-#endif  /* HAVE_LONG_DOUBLE__COMPLEX */
 
 #define OCOMS_DATATYPE_INITIALIZER_BOOL(FLAGS)       OCOMS_DATATYPE_INIT_BASIC_DATATYPE( _Bool, OCOMS_ALIGNMENT_BOOL, BOOL, FLAGS )
 
@@ -540,7 +415,6 @@ typedef struct {
 #else
 #define OCOMS_DATATYPE_INITIALIZER_WCHAR(FLAGS)      OCOMS_DATATYPE_INITIALIZER_UNAVAILABLE_NAMED( WCHAR, FLAGS )
 #endif
-
 
 #define BASIC_DDT_FROM_ELEM( ELEM ) (ocoms_datatype_basicDatatypes[(ELEM).elem.common.type])
 
