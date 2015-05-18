@@ -20,12 +20,12 @@
  * $HEADER$
  */
 
-#include "ocoms_config.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
+#include "ocoms/platform/ocoms_config.h"
 #include "ocoms/util/ocoms_list.h"
 #include "ocoms/util/argv.h"
 #include "ocoms/util/output.h"
@@ -158,7 +158,7 @@ static int register_components(const char *project_name, const char *type_name,
         }
 
         /* Register this component's version */
-        ocoms_mca_base_var_register (project_name, type_name, component->mca_component_name, "major_version",
+        /*ocoms_mca_base_var_register (project_name, type_name, component->mca_component_name, "major_version",
                                NULL, MCA_BASE_VAR_TYPE_INT, NULL, 0, MCA_BASE_VAR_FLAG_DEFAULT_ONLY |
                                MCA_BASE_VAR_FLAG_INTERNAL, OCOMS_INFO_LVL_9, MCA_BASE_VAR_SCOPE_CONSTANT,
                                &component->mca_component_major_version);
@@ -170,7 +170,7 @@ static int register_components(const char *project_name, const char *type_name,
                                NULL, MCA_BASE_VAR_TYPE_INT, NULL, 0, MCA_BASE_VAR_FLAG_DEFAULT_ONLY |
                                MCA_BASE_VAR_FLAG_INTERNAL, OCOMS_INFO_LVL_9, MCA_BASE_VAR_SCOPE_CONSTANT,
                                &component->mca_component_release_version);
-        
+        */
         ocoms_list_append(dest, item);
     }
     

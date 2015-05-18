@@ -50,6 +50,8 @@ nobase_dist_libocoms_la_HEADERS = \
 							ocoms/util/ocoms_list.h \
 							ocoms/util/ocoms_pointer_array.h \
 							ocoms/util/ocoms_value_array.h \
+							ocoms/util/ocoms_info_support.h \
+							ocoms/util/error.h \
 							ocoms/mca/mca.h \
 							ocoms/mca/base/base.h \
 							ocoms/mca/base/mca_base_component_repository.h \
@@ -82,7 +84,6 @@ nobase_dist_libocoms_la_HEADERS = \
 							ocoms/threads/tsd.h \
 							ocoms/memoryhooks/memory.h \
 							ocoms/memoryhooks/memory_internal.h \
-							ocoms/platform/ocoms_config.h \
 							ocoms/platform/ocoms_config_top.h \
 							ocoms/platform/ocoms_portable_platform.h \
 							ocoms/platform/ocoms_config_bottom.h \
@@ -103,6 +104,8 @@ nobase_dist_libocoms_la_HEADERS = \
 							ocoms/datatype/ocoms_datatype_prototypes.h \
 							ocoms/datatype/ocoms_datatype_unpack.h
 
+
+nobase_nodist_libocoms_la_HEADERS = ocoms/platform/ocoms_config.h
 
 ACLOCAL_AMFLAGS = -I config
 

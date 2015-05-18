@@ -221,7 +221,7 @@ OCOMS_DECLSPEC int ocoms_rb_tree_size(ocoms_rb_tree_t *tree);
     }\
     while(0);
 
-static int ocoms_rb_tree_new(ocoms_rb_tree_t **rb_tree, ocoms_progress_fn_t progress)
+static inline int ocoms_rb_tree_new(ocoms_rb_tree_t **rb_tree, ocoms_progress_fn_t progress)
 {
     ocoms_rb_tree_t *rbt = OBJ_NEW(ocoms_rb_tree_t);
     rbt->free_list.fl_condition.ocoms_progress_fn = progress;

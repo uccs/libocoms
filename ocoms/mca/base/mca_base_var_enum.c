@@ -20,8 +20,7 @@
  * $HEADER$
  */
 
-#include "ocoms_config.h"
-
+#include "ocoms/platform/ocoms_config.h"
 #include "ocoms/mca/base/mca_base_var_enum.h"
 
 #include <stdio.h>

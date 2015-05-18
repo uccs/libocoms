@@ -207,6 +207,7 @@ AC_DEFUN([OCOMS_CHECK_ATTRIBUTES], [
     ocoms_cv___attribute__malloc=0
     ocoms_cv___attribute__may_alias=0
     ocoms_cv___attribute__no_instrument_function=0
+    ocoms_cv___attribute__noinline=0
     ocoms_cv___attribute__nonnull=0
     ocoms_cv___attribute__noreturn=0
     ocoms_cv___attribute__noreturn_funcptr=0
@@ -217,6 +218,7 @@ AC_DEFUN([OCOMS_CHECK_ATTRIBUTES], [
     ocoms_cv___attribute__visibility=0
     ocoms_cv___attribute__warn_unused_result=0
     ocoms_cv___attribute__weak_alias=0
+    ocoms_cv___attribute__destructor=0
   else
     AC_MSG_RESULT([yes])
 
@@ -535,6 +537,24 @@ AC_DEFUN([OCOMS_CHECK_ATTRIBUTES], [
         [],
         [])
 
+    _OCOMS_CHECK_SPECIFIC_ATTRIBUTE([noinline],
+        [
+         int foo(int arg1, int arg2) __attribute__ ((__noinline__));
+         int foo(int arg1, int arg2) { return arg1 * arg2 + arg1; }
+         static int bar(int arg1, int arg2) __attribute__ ((__noinline__));
+         static int bar(int arg1, int arg2) { return arg1 * arg2 + arg1; }
+        ],
+        [],
+        [])
+
+    _OCOMS_CHECK_SPECIFIC_ATTRIBUTE([destructor],
+        [
+        void foo(void) __attribute__ ((__destructor__));
+        void foo(void) { return ; }
+        ],
+        [],
+        [])
+
   fi
 
   # Now that all the values are set, define them
@@ -563,6 +583,8 @@ AC_DEFUN([OCOMS_CHECK_ATTRIBUTES], [
                      [Whether your compiler has __attribute__ may_alias or not])
   AC_DEFINE_UNQUOTED(OCOMS_HAVE_ATTRIBUTE_NO_INSTRUMENT_FUNCTION, [$ocoms_cv___attribute__no_instrument_function],
                      [Whether your compiler has __attribute__ no_instrument_function or not])
+  AC_DEFINE_UNQUOTED(OCOMS_HAVE_ATTRIBUTE_NOINLINE, [$ocoms_cv___attribute__noinline],
+                     [Whether your compiler has __attribute__ noinline or not])
   AC_DEFINE_UNQUOTED(OCOMS_HAVE_ATTRIBUTE_NONNULL, [$ocoms_cv___attribute__nonnull],
                      [Whether your compiler has __attribute__ nonnull or not])
   AC_DEFINE_UNQUOTED(OCOMS_HAVE_ATTRIBUTE_NORETURN, [$ocoms_cv___attribute__noreturn],
@@ -583,4 +605,6 @@ AC_DEFUN([OCOMS_CHECK_ATTRIBUTES], [
                      [Whether your compiler has __attribute__ warn unused result or not])
   AC_DEFINE_UNQUOTED(OCOMS_HAVE_ATTRIBUTE_WEAK_ALIAS, [$ocoms_cv___attribute__weak_alias],
                      [Whether your compiler has __attribute__ weak alias or not])
+  AC_DEFINE_UNQUOTED(OCOMS_HAVE_ATTRIBUTE_DESTRUCTOR, [$ocoms_cv___attribute__destructor],
+                     [Whether your compiler has __attribute__ destructor or not])
 ])
