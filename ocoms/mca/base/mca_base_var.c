@@ -20,7 +20,6 @@
  * $HEADER$
  */
 
-#include "ocoms_config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -33,6 +32,7 @@
 #endif
 #include <errno.h>
 
+#include "ocoms/platform/ocoms_config.h"
 #include "ocoms/platform/ocoms_stdint.h"
 #include "ocoms/util/os_path.h"
 #include "ocoms/util/path.h"
@@ -1146,8 +1146,8 @@ static int register_variable (const char *project_name, const char *framework_na
     project_name = NULL;
 
     /* See if this entry is already in the array */
-    var_index = var_find (project_name, framework_name, component_name, variable_name,
-                          true);
+    /* Warning: only variable name is used for checking the uniqueness of variable */
+    var_index = var_find (NULL, NULL, NULL, variable_name, true);
 
     if (0 > var_index) {
         /* Create a new parameter entry */
@@ -1193,7 +1193,7 @@ static int register_variable (const char *project_name, const char *framework_na
             }
         }
 
-        ret = ocoms_mca_base_var_generate_full_name4 (NULL, framework_name, component_name,
+        ret = ocoms_mca_base_var_generate_full_name4 (NULL, NULL, NULL,
                                                 variable_name, &var->mbv_full_name);
         if (OCOMS_SUCCESS != ret) {
             OBJ_RELEASE(var);
@@ -1238,24 +1238,8 @@ static int register_variable (const char *project_name, const char *framework_na
             /* Shouldn't ever happen */
             return OCOMS_ERROR;
         }
-
-        /* Verify the name components match */
-        if (0 != compare_strings(framework_name, group->group_framework) ||
-            0 != compare_strings(component_name, group->group_component) ||
-            0 != compare_strings(variable_name, var->mbv_variable_name)) {
-            /*ocoms_show_help("help-mca-var.txt", "var-name-conflict",
-                           true, var->mbv_full_name, framework_name,
-                           component_name, variable_name,
-                           group->group_framework, group->group_component,
-                           var->mbv_variable_name);*/
-            fprintf(stderr,"%s:%d: var-name-conflict: %s:%s\n",
-                __FILE__,__LINE__);
-            /* This is developer error. abort! */
-            assert (0);
-            return OCOMS_ERROR;
-        }
-
-        if (var->mbv_type != type) {
+        
+	if (var->mbv_type != type) {
 #if OCOMS_ENABLE_DEBUG
             /*ocoms_show_help("help-mca-var.txt",
                            "re-register-with-different-type",
@@ -1920,10 +1904,9 @@ int ocoms_mca_base_var_dump(int index, char ***out, ocoms_mca_base_var_dump_type
             return OCOMS_ERR_OUT_OF_RESOURCE;
         }
 
-        asprintf (out[0], "%s \"%s\" (current value: \"%s\", data source: %s, level: %d %s, type: %s",
+        asprintf (out[0], "%s \"%s\" (default value: \"%s\", type: %s",
                   VAR_IS_DEFAULT_ONLY(var[0]) ? "informational" : "parameter",
-                  full_name, value_string, source_string, var->mbv_info_lvl + 1,
-                  info_lvl_strings[var->mbv_info_lvl], var_type_names[var->mbv_type]);
+                  full_name, value_string, var_type_names[var->mbv_type]);
         free (value_string);
         free (source_string);
 

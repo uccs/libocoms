@@ -23,10 +23,11 @@ AM_CPPFLAGS =
 
 SUBDIRS = \
 	platform \
-    $(LIBLTDL_SUBDIR) \
+	$(LIBLTDL_SUBDIR) \
 	asm \
-    datatype \
-    util 
+	datatype \
+	dstore \
+	util 
 
 # libltdl is included by variable because if --disable-dlopen was
 # used, there will be no generated Makefile in that directory (and
@@ -35,7 +36,8 @@ DIST_SUBDIRS = \
 	platform \
 	$(LIBLTDL_SUBDIR) \
 	asm \
-    datatype \
+	datatype \
+	dstore \
 	util 
 
 # Build the main OPAL library
@@ -46,6 +48,7 @@ libocoms_la_LIBADD = \
         $(LIBLTDL) \
         asm/libasm.la \
         datatype/libdatatype.la \
+        dstore/libdstore.la \
         util/libocomsutil.la
 
 libocoms_la_DEPENDENCIES = $(libocoms_la_LIBADD)

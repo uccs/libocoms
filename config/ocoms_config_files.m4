@@ -17,6 +17,7 @@ AC_DEFUN([OCOMS_CONFIG_FILES],[
         ocoms/platform/Makefile
         ocoms/asm/Makefile
         ocoms/datatype/Makefile
+        ocoms/dstore/Makefile
     ])
 ])
 #        ocoms/util/Makefile

@@ -144,7 +144,7 @@ void ocoms_datatype_dump( const ocoms_datatype_t* pData )
         index += snprintf( buffer + index, length - index, "No optimized description\n" );
     }
     buffer[index] = '\0';  /* make sure we end the string with 0 */
-    ocoms_output( 0, "%s\n", buffer );
+    DUMP("%s\n", buffer );
 
     free(buffer);
 }
