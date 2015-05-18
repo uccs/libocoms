@@ -898,7 +898,7 @@ AC_DEFUN([OCOMS_CONFIG_ASM],[
             OCOMS_GCC_INLINE_ASSIGN='"or %0,[$]0,[$]0" : "=&r"(ret)'
             ;;
 
-        powerpc-*|powerpc64-*|powerpc64le-*|rs6000-*|ppc-*)
+        powerpc-*|powerpc64-*|rs6000-*|ppc-*)
             OCOMS_CHECK_POWERPC_REG
             if test "$ac_cv_sizeof_long" = "4" ; then
                 ocoms_cv_asm_arch="POWERPC32"
