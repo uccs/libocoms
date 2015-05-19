@@ -20,7 +20,7 @@
  * $HEADER$
  */
 
-#include "ocoms_config.h"
+#include "ocoms/platform/ocoms_config.h"
 
 #include <stdio.h>
 #include <string.h>

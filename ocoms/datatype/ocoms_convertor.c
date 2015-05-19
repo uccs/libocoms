@@ -537,12 +537,10 @@ int32_t ocoms_convertor_set_position_nocheck( ocoms_convertor_t* convertor,
             uint32_t required_stack_length = datatype->btypes[OCOMS_DATATYPE_LOOP] + 1; \
                                                                         \
             if( required_stack_length > convertor->stack_size ) {       \
+                assert(convertor->pStack == convertor->static_stack);   \
                 convertor->stack_size = required_stack_length;          \
                 convertor->pStack     = (dt_stack_t*)malloc(sizeof(dt_stack_t) * \
                                                             convertor->stack_size ); \
-            } else {                                                    \
-                convertor->pStack = convertor->static_stack;            \
-                convertor->stack_size = DT_STATIC_STACK_SIZE;           \
             }                                                           \
         }                                                               \
         ocoms_convertor_create_stack_at_begining( convertor, ocoms_datatype_local_sizes ); \

@@ -20,7 +20,6 @@
  * $HEADER$
  */
 
-#include "ocoms_config.h"
 
 #include <stddef.h>
 #ifdef HAVE_ALLOCA_H
@@ -28,6 +27,7 @@
 #endif
 #include <stdlib.h>
 
+#include "ocoms/platform/ocoms_config.h"
 #include "ocoms/datatype/ocoms_datatype.h"
 #include "ocoms/datatype/ocoms_convertor.h"
 #include "ocoms/datatype/ocoms_datatype_internal.h"

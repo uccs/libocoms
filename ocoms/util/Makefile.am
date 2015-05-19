@@ -54,7 +54,9 @@ util_headers = \
         crc.h \
         os_path.h \
         path.h \
-        keyval_parse.h
+        keyval_parse.h \
+		ocoms_info_support.h \
+		error.h
 
 libocomsutil_la_SOURCES = \
         $(util_headers) \
@@ -79,7 +81,9 @@ libocomsutil_la_SOURCES = \
         crc.c \
         os_path.c \
         path.c \
-        keyval_parse.c
+        keyval_parse.c \
+		ocoms_info_support.c \
+		error.c
 
 libocomsutil_la_LIBADD =  \
     keyval/libocomsutilkeyval.la
