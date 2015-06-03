@@ -71,6 +71,11 @@ static inline void ocoms_atomic_wmb(void)
     MEMBAR("#StoreStore");
 }
 
+static inline
+void ocoms_atomic_isync()
+{
+}
+
 #endif /* OCOMS_GCC_INLINE_ASSEMBLY */
 
 

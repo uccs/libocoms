@@ -54,6 +54,11 @@ static inline void ocoms_atomic_wmb(void)
 #endif  /* HAVE_WDM_H */
 }
 
+static inline
+void ocoms_atomic_isync()
+{
+}
+
 /**********************************************************************
  *
  * Atomic math operations

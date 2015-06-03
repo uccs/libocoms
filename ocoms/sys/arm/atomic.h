@@ -81,6 +81,11 @@ void ocoms_atomic_wmb(void)
     WMB();
 }
 
+static inline
+void ocoms_atomic_isync()
+{
+}
+
 
 /**********************************************************************
  *
