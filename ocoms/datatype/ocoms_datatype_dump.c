@@ -102,7 +102,7 @@ int ocoms_datatype_dump_data_desc( dt_elem_desc_t* pDesc, int nbElems, char* ptr
 }
 
 
-void ocoms_datatype_dump( const ocoms_datatype_t* pData )
+void ocoms_datatype_dump_v2( const ocoms_datatype_t* pData, bool dump_to_stderr)
 {
     size_t length;
     int index = 0;
@@ -144,7 +144,15 @@ void ocoms_datatype_dump( const ocoms_datatype_t* pData )
         index += snprintf( buffer + index, length - index, "No optimized description\n" );
     }
     buffer[index] = '\0';  /* make sure we end the string with 0 */
-    DUMP("%s\n", buffer );
+    if (dump_to_stderr) {
+        fprintf(stderr, "%s\n", buffer);
+    } else {
+        DUMP("%s\n", buffer );
+    }
 
     free(buffer);
+}
+
+void ocoms_datatype_dump( const ocoms_datatype_t* pData) {
+    return ocoms_datatype_dump_v2(pData, false);
 }
