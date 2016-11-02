@@ -63,7 +63,7 @@ static void ocoms_free_list_destruct(ocoms_free_list_t* fl)
 {
     ocoms_list_item_t *item;
     ocoms_free_list_memory_t *fl_mem;
-
+    ocoms_free_list_item_t *fl_item;
 #if 0 && OCOMS_ENABLE_DEBUG
     if(ocoms_list_get_size(&fl->super) != fl->fl_num_allocated) {
         ocoms_output(0, "ocoms_free_list: %d allocated %d returned: %s:%d\n",
@@ -71,6 +71,14 @@ static void ocoms_free_list_destruct(ocoms_free_list_t* fl)
             fl->super.super.cls_init_file_name, fl->super.super.cls_init_lineno);
     }
 #endif
+    while(NULL != (item = ocoms_atomic_lifo_pop(&(fl->super)))) {
+        fl_item = (ocoms_free_list_item_t*)item;
+
+        /* destruct the item (we constructed it), the underlying memory will be
+         * reclaimed when we free the slab (opal_free_list_memory_t ptr)
+         * containing it */
+        OBJ_DESTRUCT(fl_item);
+    }
 
     if( NULL != fl->free ) {
         while(NULL != (item = ocoms_list_remove_first(&(fl->fl_allocations)))) {
