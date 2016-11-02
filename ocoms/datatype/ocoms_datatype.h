@@ -226,6 +226,7 @@ ocoms_datatype_is_contiguous_memory_layout( const ocoms_datatype_t* datatype, in
 
 
 OCOMS_DECLSPEC void ocoms_datatype_dump( const ocoms_datatype_t* pData );
+OCOMS_DECLSPEC void ocoms_datatype_dump_v2( const ocoms_datatype_t* pData, bool dump_to_stderr );
 /* data creation functions */
 OCOMS_DECLSPEC int32_t ocoms_datatype_clone( const ocoms_datatype_t * src_type, ocoms_datatype_t * dest_type );
 OCOMS_DECLSPEC int32_t ocoms_datatype_create_contiguous( int count, const ocoms_datatype_t* oldType, ocoms_datatype_t** newType );
