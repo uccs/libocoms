@@ -228,7 +228,30 @@ static inline int32_t ocoms_atomic_sub_32(volatile int32_t* v, int dec)
    return t;
 }
 
+#else /* OCOMS_ASM_ARM_VERSION <=5 or no GCC inline assembly */
 
-#endif /* OCOMS_GCC_INLINE_ASSEMBLY */
+#define OCOMS_HAVE_ATOMIC_CMPSET_32 1
+#define __kuser_cmpxchg (*((int (*)(int, int, volatile int*))(0xffff0fc0)))
+static inline int ocoms_atomic_cmpset_32(volatile int32_t *addr,
+                                        int32_t oldval, int32_t newval)
+{
+    return !(__kuser_cmpxchg(oldval, newval, addr));
+}
+
+static inline int ocoms_atomic_cmpset_acq_32(volatile int32_t *addr,
+                                            int32_t oldval, int32_t newval)
+{
+    /* kernel function includes all necessary memory barriers */
+    return ocoms_atomic_cmpset_32(addr, oldval, newval);
+}
+
+static inline int ocoms_atomic_cmpset_rel_32(volatile int32_t *addr,
+                                            int32_t oldval, int32_t newval)
+{
+    /* kernel function includes all necessary memory barriers */
+    return ocoms_atomic_cmpset_32(addr, oldval, newval);
+}
+
+#endif
 
 #endif /* ! OCOMS_SYS_ARCH_ATOMIC_H */

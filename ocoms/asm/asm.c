@@ -24,7 +24,7 @@
 #include "ocoms/sys/atomic.h"
 
 
-#if OCOMS_ASSEMBLY_ARCH == OMPI_SPARC
+#if OCOMS_ASSEMBLY_ARCH == OCOMS_SPARC
 
 #if OCOMS_WANT_SMP_LOCKS
 
