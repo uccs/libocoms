@@ -14,7 +14,7 @@
 #include <errno.h>
 #include <unistd.h>
 
-#include "opal/align.h"
+#include "ocoms/primitives/align.h"
 #include "ocoms/util/output.h"
 #include "ocoms/datatype/ocoms_convertor.h"
 #include "ocoms/datatype/ocoms_datatype_cuda.h"

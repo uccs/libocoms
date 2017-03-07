@@ -37,7 +37,7 @@
  *  - \c OCOMS_HAVE_ATOMIC_MEM_BARRIER atomic memory barriers
  *  - \c OCOMS_HAVE_ATOMIC_SPINLOCKS atomic spinlocks
  *  - \c OCOMS_HAVE_ATOMIC_MATH_32 if 32 bit add/sub/cmpset can be done "atomicly"
- *  - \c OCOMS_HAVE_ATOMIC_MATH_64 if 32 bit add/sub/cmpset can be done "atomicly"
+ *  - \c OCOMS_HAVE_ATOMIC_MATH_64 if 64 bit add/sub/cmpset can be done "atomicly"
  *
  * Note that for the Atomic math, atomic add/sub may be implemented as
  * C code using ocoms_atomic_cmpset.  The appearance of atomic
@@ -76,15 +76,15 @@
    OCOMS_{C,CXX}_{GCC,DEC,XLC}_INLINE_ASSEMBLY defines and whether we
    are in C or C++ */
 #if defined(c_plusplus) || defined(__cplusplus)
-#define OCOMS_GCC_INLINE_ASSEMBLY OCOMS_CXX_GCC_INLINE_ASSEMBLY
-#define OCOMS_DEC_INLINE_ASSEMBLY OCOMS_CXX_DEC_INLINE_ASSEMBLY
-#define OCOMS_XLC_INLINE_ASSEMBLY OCOMS_CXX_XLC_INLINE_ASSEMBLY
+/* We no longer support inline assembly for C++ as OCOMS is a C-only interface */
+#define OCOMS_GCC_INLINE_ASSEMBLY 0
+#define OCOMS_DEC_INLINE_ASSEMBLY 0
+#define OCOMS_XLC_INLINE_ASSEMBLY 0
 #else
 #define OCOMS_GCC_INLINE_ASSEMBLY OCOMS_C_GCC_INLINE_ASSEMBLY
 #define OCOMS_DEC_INLINE_ASSEMBLY OCOMS_C_DEC_INLINE_ASSEMBLY
 #define OCOMS_XLC_INLINE_ASSEMBLY OCOMS_C_XLC_INLINE_ASSEMBLY
 #endif
-
 
 
 BEGIN_C_DECLS
@@ -124,6 +124,8 @@ typedef struct ocoms_atomic_lock_t ocoms_atomic_lock_t;
 #define OCOMS_HAVE_INLINE_ATOMIC_SUB_32 0
 #define OCOMS_HAVE_INLINE_ATOMIC_ADD_64 0
 #define OCOMS_HAVE_INLINE_ATOMIC_SUB_64 0
+#define OCOMS_HAVE_INLINE_ATOMIC_SWAP_32 0
+#define OCOMS_HAVE_INLINE_ATOMIC_SWAP_64 0
 #else
 #define OCOMS_HAVE_INLINE_ATOMIC_MEM_BARRIER 1
 #define OCOMS_HAVE_INLINE_ATOMIC_CMPSET_32 1
@@ -132,7 +134,17 @@ typedef struct ocoms_atomic_lock_t ocoms_atomic_lock_t;
 #define OCOMS_HAVE_INLINE_ATOMIC_SUB_32 1
 #define OCOMS_HAVE_INLINE_ATOMIC_ADD_64 1
 #define OCOMS_HAVE_INLINE_ATOMIC_SUB_64 1
+#define OCOMS_HAVE_INLINE_ATOMIC_SWAP_32 1
+#define OCOMS_HAVE_INLINE_ATOMIC_SWAP_64 1
 #endif
+
+/**
+ * Enumeration of lock states
+ */
+enum {
+    OCOMS_ATOMIC_UNLOCKED = 0,
+    OCOMS_ATOMIC_LOCKED = 1
+};
 
 /**********************************************************************
  *
@@ -142,15 +154,18 @@ typedef struct ocoms_atomic_lock_t ocoms_atomic_lock_t;
  *********************************************************************/
 #if defined(DOXYGEN)
 /* don't include system-level gorp when generating doxygen files */ 
-#elif OCOMS_ASSEMBLY_ARCH == OCOMS_WINDOWS
-/* windows first, as they have API-level primitives for this stuff */
-#include "ocoms/sys/win32/atomic.h"
-#elif OCOMS_ASSEMBLY_ARCH == OCOMS_ALPHA
-#include "ocoms/sys/alpha/atomic.h"
+//#elif OCOMS_ASSEMBLY_BUILTIN == OCOMS_BUILTIN_SYNC
+//#include "ocoms/sys/sync_builtin/atomic.h"
+//#elif OCOMS_ASSEMBLY_BUILTIN == OCOMS_BUILTIN_GCC
+//#include "ocoms/sys/gcc_builtin/atomic.h"
+//#elif OCOMS_ASSEMBLY_BUILTIN == OCOMS_BUILTIN_OSX
+//#include "ocoms/sys/osx/atomic.h"
 #elif OCOMS_ASSEMBLY_ARCH == OCOMS_AMD64
 #include "ocoms/sys/amd64/atomic.h"
 #elif OCOMS_ASSEMBLY_ARCH == OCOMS_ARM
 #include "ocoms/sys/arm/atomic.h"
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_ARM64
+#include "ocoms/sys/arm64/atomic.h"
 #elif OCOMS_ASSEMBLY_ARCH == OCOMS_IA32
 #include "ocoms/sys/ia32/atomic.h"
 #elif OCOMS_ASSEMBLY_ARCH == OCOMS_IA64
@@ -178,6 +193,15 @@ typedef struct ocoms_atomic_lock_t ocoms_atomic_lock_t;
 #endif
 #ifndef OCOMS_HAVE_ATOMIC_CMPSET_64
 #define OCOMS_HAVE_ATOMIC_CMPSET_64 0
+#endif
+#ifndef OCOMS_HAVE_ATOMIC_CMPSET_128
+#define OCOMS_HAVE_ATOMIC_CMPSET_128 0
+#endif
+#ifndef OCOMS_HAVE_ATOMIC_LLSC_32
+#define OCOMS_HAVE_ATOMIC_LLSC_32 0
+#endif
+#ifndef OCOMS_HAVE_ATOMIC_LLSC_64
+#define OCOMS_HAVE_ATOMIC_LLSC_64 0
 #endif
 #endif /* DOXYGEN */
 
@@ -258,14 +282,6 @@ void ocoms_atomic_wmb(void);
 #endif
 
 #if defined(DOXYGEN) || OCOMS_HAVE_ATOMIC_SPINLOCKS || (OCOMS_HAVE_ATOMIC_CMPSET_32 || OCOMS_HAVE_ATOMIC_CMPSET_64)
-/**
- * Enumeration of lock states
- */
-enum {
-    OCOMS_ATOMIC_UNLOCKED = 0,
-    OCOMS_ATOMIC_LOCKED = 1
-};
-
 
 /**
  * Initialize a lock to value
@@ -385,11 +401,9 @@ int ocoms_atomic_cmpset_rel_64(volatile int64_t *addr, int64_t oldval,
 #if defined(DOXYGEN) ||  OCOMS_HAVE_ATOMIC_MATH_32 || OCOMS_HAVE_ATOMIC_CMPSET_32
 
 /* OCOMS_HAVE_INLINE_ATOMIC_*_32 will be 1 if <arch>/atomic.h provides
-   a static inline version of it (in assembly).  If it's 0 but
-   OCOMS_HAVE_ATOMIC_CMPSET_32 is 1, then atomic_impl.h (below) will
-   define a static inline version of it (in C, using
-   atomic_cmpset_32()).  */
-#if OCOMS_HAVE_INLINE_ATOMIC_ADD_32 || OCOMS_HAVE_ATOMIC_CMPSET_32
+   a static inline version of it (in assembly).  If we have to fall
+   back on cmpset 32, that too will be inline. */
+#if OCOMS_HAVE_INLINE_ATOMIC_ADD_32 || (!defined(OCOMS_HAVE_ATOMIC_ADD_32) && OCOMS_HAVE_ATOMIC_CMPSET_32)
 static inline
 #endif
 int32_t ocoms_atomic_add_32(volatile int32_t *addr, int delta);
@@ -430,11 +444,9 @@ static inline
 int64_t ocoms_atomic_add_64(volatile int64_t *addr, int64_t delta);
 
 /* OCOMS_HAVE_INLINE_ATOMIC_*_64 will be 1 if <arch>/atomic.h provides
-   a static inline version of it (in assembly).  If it's 0 but
-   OCOMS_HAVE_ATOMIC_CMPSET_64 is 1, then atomic_impl.h (below) will
-   define a static inline version of it (in C, using
-   atomic_cmpset_64()).  */
-#if OCOMS_HAVE_INLINE_ATOMIC_SUB_64 || OCOMS_HAVE_ATOMIC_CMPSET_64
+   a static inline version of it (in assembly).  If we have to fall
+   back to cmpset 64, that too will be inline */
+#if OCOMS_HAVE_INLINE_ATOMIC_SUB_64 || (!defined(OCOMS_HAVE_ATOMIC_ADD_64) && OCOMS_HAVE_ATOMIC_CMPSET_64)
 static inline
 #endif
 int64_t ocoms_atomic_sub_64(volatile int64_t *addr, int64_t delta);

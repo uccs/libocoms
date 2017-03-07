@@ -83,6 +83,8 @@ BEGIN_C_DECLS
 #include "ocoms/sys/amd64/timer.h"
 #elif OCOMS_ASSEMBLY_ARCH == OCOMS_ARM
 #include "ocoms/sys/arm/timer.h"
+#elif OCOMS_ASSEMBLY_ARCH == OCOMS_ARM64
+#include "ocoms/sys/arm64/timer.h"
 #elif OCOMS_ASSEMBLY_ARCH == OCOMS_IA32
 #include "ocoms/sys/ia32/timer.h"
 #elif OCOMS_ASSEMBLY_ARCH == OCOMS_IA64

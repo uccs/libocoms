@@ -12,13 +12,195 @@ dnl                         All rights reserved.
 dnl Copyright (c) 2008-2009 Cisco Systems, Inc.  All rights reserved.
 dnl Copyright (c) 2010      Oracle and/or its affiliates.  All rights reserved.
 dnl Copyright (c) 2011-2013 UT-Battelle, LLC. All rights reserved.
-dnl Copyright (C) 2013      Mellanox Technologies Ltd. All rights reserved.
+dnl Copyright (C) 2013-2017 Mellanox Technologies Ltd. All rights reserved.
+dnl Copyright (c) 2014-2016 Los Alamos National Security, LLC. All rights
 dnl $COPYRIGHT$
 dnl 
 dnl Additional copyrights may follow
 dnl 
 dnl $HEADER$
 dnl
+
+
+AC_DEFUN([OCOMS_CHECK_SYNC_BUILTIN_CSWAP_INT128], [
+
+  OCOMS_VAR_SCOPE_PUSH([sync_bool_compare_and_swap_128_result CFLAGS_save])
+
+  AC_ARG_ENABLE([cross-cmpset128],[AC_HELP_STRING([--enable-cross-cmpset128],
+                [enable the use of the __sync builtin atomic compare-and-swap 128 when cross compiling])])
+
+  sync_bool_compare_and_swap_128_result=0
+
+  if test ! "$enable_cross_cmpset128" = "yes" ; then
+      AC_MSG_CHECKING([for processor support of __sync builtin atomic compare-and-swap on 128-bit values])
+
+      AC_RUN_IFELSE([AC_LANG_PROGRAM([], [__int128 x = 0; __sync_bool_compare_and_swap (&x, 0, 1);])],
+	  [AC_MSG_RESULT([yes])
+	      sync_bool_compare_and_swap_128_result=1],
+	  [AC_MSG_RESULT([no])],
+	  [AC_MSG_RESULT([no (cross compiling)])])
+
+      if test $sync_bool_compare_and_swap_128_result = 0 ; then
+	  CFLAGS_save=$CFLAGS
+	  CFLAGS="$CFLAGS -mcx16"
+
+	  AC_MSG_CHECKING([for __sync builtin atomic compare-and-swap on 128-bit values with -mcx16 flag])
+	  AC_RUN_IFELSE([AC_LANG_PROGRAM([], [__int128 x = 0; __sync_bool_compare_and_swap (&x, 0, 1);])],
+              [AC_MSG_RESULT([yes])
+		  sync_bool_compare_and_swap_128_result=1
+		  CFLAGS_save="$CFLAGS"],
+              [AC_MSG_RESULT([no])],
+	      [AC_MSG_RESULT([no (cross compiling)])])
+
+	  CFLAGS=$CFLAGS_save
+      fi
+  else
+      AC_MSG_CHECKING([for compiler support of __sync builtin atomic compare-and-swap on 128-bit values])
+
+      # Check if the compiler supports the __sync builtin
+      AC_TRY_LINK([], [__int128 x = 0; __sync_bool_compare_and_swap (&x, 0, 1);],
+	  [AC_MSG_RESULT([yes])
+	      sync_bool_compare_and_swap_128_result=1],
+	  [AC_MSG_RESULT([no])])
+
+      if test $sync_bool_compare_and_swap_128_result = 0 ; then
+	  CFLAGS_save=$CFLAGS
+	  CFLAGS="$CFLAGS -mcx16"
+
+	  AC_MSG_CHECKING([for __sync builtin atomic compare-and-swap on 128-bit values with -mcx16 flag])
+	  AC_TRY_LINK([], [__int128 x = 0; __sync_bool_compare_and_swap (&x, 0, 1);],
+              [AC_MSG_RESULT([yes])
+		  sync_bool_compare_and_swap_128_result=1
+		  CFLAGS_save="$CFLAGS"],
+              [AC_MSG_RESULT([no])])
+
+	  CFLAGS=$CFLAGS_save
+      fi
+  fi
+
+  AC_DEFINE_UNQUOTED([OCOMS_HAVE_SYNC_BUILTIN_CSWAP_INT128], [$sync_bool_compare_and_swap_128_result],
+	[Whether the __sync builtin atomic compare and swap supports 128-bit values])
+
+  OCOMS_VAR_SCOPE_POP
+])
+
+AC_DEFUN([OCOMS_CHECK_SYNC_BUILTINS], [
+  AC_MSG_CHECKING([for __sync builtin atomics])
+
+  AC_TRY_LINK([long tmp;], [__sync_synchronize();
+__sync_bool_compare_and_swap(&tmp, 0, 1);
+__sync_add_and_fetch(&tmp, 1);],
+    [AC_MSG_RESULT([yes])
+     $1],
+    [AC_MSG_RESULT([no])
+     $2])
+
+  AC_MSG_CHECKING([for 64-bit __sync builtin atomics])
+
+  AC_TRY_LINK([
+#include <stdint.h>
+uint64_t tmp;], [
+__sync_bool_compare_and_swap(&tmp, 0, 1);
+__sync_add_and_fetch(&tmp, 1);],
+    [AC_MSG_RESULT([yes])
+     ocoms_asm_sync_have_64bit=1],
+    [AC_MSG_RESULT([no])
+     ocoms_asm_sync_have_64bit=0])
+
+  AC_DEFINE_UNQUOTED([OCOMS_ASM_SYNC_HAVE_64BIT],[$ocoms_asm_sync_have_64bit],
+		     [Whether 64-bit is supported by the __sync builtin atomics])
+
+  # Check for 128-bit support
+  OCOMS_CHECK_SYNC_BUILTIN_CSWAP_INT128
+])
+
+
+AC_DEFUN([OCOMS_CHECK_GCC_BUILTIN_CSWAP_INT128], [
+
+  OCOMS_VAR_SCOPE_PUSH([atomic_compare_exchange_n_128_result CFLAGS_save])
+
+  AC_ARG_ENABLE([cross-cmpset128],[AC_HELP_STRING([--enable-cross-cmpset128],
+                [enable the use of the __sync builtin atomic compare-and-swap 128 when cross compiling])])
+
+  atomic_compare_exchange_n_128_result=0
+
+  if test ! "$enable_cross_cmpset128" = "yes" ; then
+      AC_MSG_CHECKING([for processor support of __atomic builtin atomic compare-and-swap on 128-bit values])
+
+      AC_RUN_IFELSE([AC_LANG_PROGRAM([], [__int128 x = 0, y = 0; __atomic_compare_exchange_n (&x, &y, 1, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);])],
+	  [AC_MSG_RESULT([yes])
+	      atomic_compare_exchange_n_128_result=1],
+	  [AC_MSG_RESULT([no])],
+	  [AC_MSG_RESULT([no (cross compiling)])])
+
+      if test $atomic_compare_exchange_n_128_result = 0 ; then
+	  CFLAGS_save=$CFLAGS
+	  CFLAGS="$CFLAGS -mcx16"
+
+	  AC_MSG_CHECKING([for __atomic builtin atomic compare-and-swap on 128-bit values with -mcx16 flag])
+          AC_RUN_IFELSE([AC_LANG_PROGRAM([], [__int128 x = 0, y = 0; __atomic_compare_exchange_n (&x, &y, 1, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);])],
+              [AC_MSG_RESULT([yes])
+		  atomic_compare_exchange_n_128_result=1
+		  CFLAGS_save="$CFLAGS"],
+              [AC_MSG_RESULT([no])],
+	      [AC_MSG_RESULT([no (cross compiling)])])
+
+	  CFLAGS=$CFLAGS_save
+      fi
+
+      if test $atomic_compare_exchange_n_128_result = 1 ; then
+         AC_MSG_CHECKING([if __int128 atomic compare-and-swap is always lock-free])
+          AC_RUN_IFELSE([AC_LANG_PROGRAM([], [if (!__atomic_always_lock_free(16, 0)) { return 1; }])],
+              [AC_MSG_RESULT([yes])],
+              [AC_MSG_RESULT([no])
+                 OCOMS_CHECK_SYNC_BUILTIN_CSWAP_INT128
+                 atomic_compare_exchange_n_128_result=0],
+             [AC_MSG_RESULT([no (cross compiling)])])
+      fi
+  else
+      AC_MSG_CHECKING([for compiler support of __atomic builtin atomic compare-and-swap on 128-bit values])
+
+      # Check if the compiler supports the __atomic builtin
+      AC_TRY_LINK([], [__int128 x = 0, y = 0; __atomic_compare_exchange_n (&x, &y, 1, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);],
+	  [AC_MSG_RESULT([yes])
+	      atomic_compare_exchange_n_128_result=1],
+	  [AC_MSG_RESULT([no])])
+
+      if test $atomic_compare_exchange_n_128_result = 0 ; then
+	  CFLAGS_save=$CFLAGS
+	  CFLAGS="$CFLAGS -mcx16"
+
+	  AC_MSG_CHECKING([for __atomic builtin atomic compare-and-swap on 128-bit values with -mcx16 flag])
+          AC_TRY_LINK([], [__int128 x = 0, y = 0; __atomic_compare_exchange_n (&x, &y, 1, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);],
+              [AC_MSG_RESULT([yes])
+		  atomic_compare_exchange_n_128_result=1
+		  CFLAGS_save="$CFLAGS"],
+              [AC_MSG_RESULT([no])])
+
+	  CFLAGS=$CFLAGS_save
+      fi
+  fi
+
+  AC_DEFINE_UNQUOTED([OCOMS_HAVE_GCC_BUILTIN_CSWAP_INT128], [$atomic_compare_exchange_n_128_result],
+	[Whether the __atomic builtin atomic compare and swap is lock-free on 128-bit values])
+
+  OCOMS_VAR_SCOPE_POP
+])
+
+AC_DEFUN([OCOMS_CHECK_GCC_ATOMIC_BUILTINS], [
+  AC_MSG_CHECKING([for __atomic builtin atomics])
+
+  AC_TRY_LINK([long tmp, old = 0;], [__atomic_thread_fence(__ATOMIC_SEQ_CST);
+__atomic_compare_exchange_n(&tmp, &old, 1, 0, __ATOMIC_RELAXED, __ATOMIC_RELAXED);
+__atomic_add_fetch(&tmp, 1, __ATOMIC_RELAXED);],
+    [AC_MSG_RESULT([yes])
+     $1],
+    [AC_MSG_RESULT([no])
+     $2])
+
+  # Check for 128-bit support
+  OCOMS_CHECK_GCC_BUILTIN_CSWAP_INT128
+])
 
 
 dnl #################################################################
@@ -797,38 +979,27 @@ dnl
 dnl #################################################################
 AC_DEFUN([OCOMS_CONFIG_ASM],[
     AC_REQUIRE([OCOMS_SETUP_CC])
-    # Only require C++ if we're building the OMPI project
-    m4_ifdef([project_ocoms], [AC_REQUIRE([OCOMS_SETUP_CXX])])
     AC_REQUIRE([AM_PROG_AS])
 
-    # OS X Leopard ld bus errors if you have "-g" or "-gX" in the link line
-    # with our assembly (!).  So remove it from CCASFLAGS if it's
-    # there (and we're on Leopard).
-    OCOMS_VAR_SCOPE_PUSH([ocoms_config_asm_flags_new ocoms_config_asm_flag])
-    AC_MSG_CHECKING([if need to remove -g from CCASFLAGS])
-    case "$host" in
-        *-apple-darwin9.*)
-            for ocoms_config_asm_flag in $CCASFLAGS; do
-                # See http://www.gnu.org/software/autoconf/manual/html_node/Quadrigraphs.html#Quadrigraphs
-                # for an explanation of @<:@ and @:>@ -- they m4 expand 
-                # to [ and ]
-                case $ocoms_config_asm_flag in
-                -g)            ;;
-                -g@<:@0-9@:>@) ;;
-                *)
-                    ocoms_config_asm_flags_new="$ocoms_config_asm_flags_new $ocoms_config_asm_flag"
-                    ;;
-                esac
-            done
-            CCASFLAGS="$ocoms_config_asm_flags_new"
-            AC_MSG_RESULT([OS X Leopard - yes ($CCASFLAGS)])
-            ;;
-        *)
-            AC_MSG_RESULT([no])
-            ;;
-    esac
-    OCOMS_VAR_SCOPE_POP
+    AC_ARG_ENABLE([builtin-atomics],
+      [AC_HELP_STRING([--enable-builtin-atomics],
+         [Enable use of __sync builtin atomics (default: disabled)])])
 
+    AC_ARG_ENABLE([osx-builtin-atomics],
+      [AC_HELP_STRING([--enable-osx-builtin-atomics],
+         [Enable use of OSX builtin atomics (default: disabled)])])
+
+    ocoms_cv_asm_builtin="BUILTIN_NO"
+    if test "$ocoms_cv_asm_builtin" = "BUILTIN_NO" && test "$enable_builtin_atomics" = "yes" ; then
+       OCOMS_CHECK_GCC_ATOMIC_BUILTINS([ocoms_cv_asm_builtin="BUILTIN_GCC"], [])
+    fi
+    if test "$ocoms_cv_asm_builtin" = "BUILTIN_NO" && test "$enable_builtin_atomics" = "yes" ; then
+       OCOMS_CHECK_SYNC_BUILTINS([ocoms_cv_asm_builtin="BUILTIN_SYNC"], [])
+    fi
+    if test "$ocoms_cv_asm_builtin" = "BUILTIN_NO" && test "$enable_osx_builtin_atomics" = "yes" ; then
+       AC_CHECK_HEADER([libkern/OSAtomic.h],
+                       [ocoms_cv_asm_builtin="BUILTIN_OSX"])
+    fi
     AC_MSG_CHECKING([whether to enable smp locks])
     AC_ARG_ENABLE([smp-locks], 
         [AC_HELP_STRING([--enable-smp-locks],
@@ -843,9 +1014,7 @@ AC_DEFUN([OCOMS_CONFIG_ASM],[
     AC_DEFINE_UNQUOTED([OCOMS_WANT_SMP_LOCKS], [$want_smp_locks],
                        [whether we want to have smp locks in atomic ops or not])
 
-    if test "$ocoms_cv_c_compiler_vendor" = "microsoft" ; then
-        ocoms_cv_asm_arch="WINDOWS"
-    else
+
         OCOMS_CHECK_ASM_PROC
         OCOMS_CHECK_ASM_TEXT
         OCOMS_CHECK_ASM_GLOBAL
@@ -870,6 +1039,7 @@ AC_DEFUN([OCOMS_CONFIG_ASM],[
             fi
             OCOMS_ASM_SUPPORT_64BIT=1
             OCOMS_GCC_INLINE_ASSIGN='"xaddl %1,%0" : "=m"(ret), "+r"(negone) : "m"(ret)'
+            OCOMS_CHECK_CMPXCHG16B
             ;;
 
         ia64-*)
@@ -877,16 +1047,42 @@ AC_DEFUN([OCOMS_CONFIG_ASM],[
             OCOMS_ASM_SUPPORT_64BIT=1
             OCOMS_GCC_INLINE_ASSIGN='"mov %0=r0\n;;\n" : "=&r"(ret)'
             ;;
-
-        alpha-*|alphaev[[4-8]]-*|alphaev56-*|alphaev6[[78]]-*)
-            ocoms_cv_asm_arch="ALPHA"
+	aarch64*)
+            ocoms_cv_asm_arch="ARM64"
             OCOMS_ASM_SUPPORT_64BIT=1
-            OCOMS_GCC_INLINE_ASSIGN='"bis [$]31,[$]31,%0" : "=&r"(ret)'
+            OCOMS_ASM_ARM_VERSION=8
+            AC_DEFINE_UNQUOTED([OCOMS_ASM_ARM_VERSION], [$OCOMS_ASM_ARM_VERSION],
+                               [What ARM assembly version to use])
+            OCOMS_GCC_INLINE_ASSIGN='"mov %0, #0" : "=&r"(ret)'
             ;;
 
         armv7*)
             ocoms_cv_asm_arch="ARM"
             OCOMS_ASM_SUPPORT_64BIT=1
+            OCOMS_ASM_ARM_VERSION=7
+            AC_DEFINE_UNQUOTED([OCOMS_ASM_ARM_VERSION], [$OCOMS_ASM_ARM_VERSION],
+                               [What ARM assembly version to use])
+            OCOMS_GCC_INLINE_ASSIGN='"mov %0, #0" : "=&r"(ret)'
+            ;;
+
+        armv6*)
+            ocoms_cv_asm_arch="ARM"
+            OCOMS_ASM_SUPPORT_64BIT=0
+            OCOMS_ASM_ARM_VERSION=6
+            CCASFLAGS="$CCASFLAGS -march=armv7-a"
+            AC_DEFINE_UNQUOTED([OCOMS_ASM_ARM_VERSION], [$OCOMS_ASM_ARM_VERSION],
+                               [What ARM assembly version to use])
+            OCOMS_GCC_INLINE_ASSIGN='"mov %0, #0" : "=&r"(ret)'
+            ;;
+
+        armv5*linux*|armv4*linux*)
+            # uses Linux kernel helpers for some atomic operations
+            ocoms_cv_asm_arch="ARM"
+            OCOMS_ASM_SUPPORT_64BIT=0
+            OCOMS_ASM_ARM_VERSION=5
+            CCASFLAGS="$CCASFLAGS -march=armv7-a"
+            AC_DEFINE_UNQUOTED([OCOMS_ASM_ARM_VERSION], [$OCOMS_ASM_ARM_VERSION],
+                               [What ARM assembly version to use])
             OCOMS_GCC_INLINE_ASSIGN='"mov %0, #0" : "=&r"(ret)'
             ;;
 
@@ -898,7 +1094,7 @@ AC_DEFUN([OCOMS_CONFIG_ASM],[
             OCOMS_GCC_INLINE_ASSIGN='"or %0,[$]0,[$]0" : "=&r"(ret)'
             ;;
 
-        powerpc-*|powerpc64-*|powerpc64le-*|rs6000-*|ppc-*)
+        powerpc-*|powerpc64-*|powerpcle-*|powerpc64le-*|rs6000-*|ppc-*)
             OCOMS_CHECK_POWERPC_REG
             if test "$ac_cv_sizeof_long" = "4" ; then
                 ocoms_cv_asm_arch="POWERPC32"
@@ -928,10 +1124,8 @@ AC_DEFUN([OCOMS_CONFIG_ASM],[
                     OCOMS_ASM_SUPPORT_64BIT=0
                     ocoms_cv_asm_arch="SPARC"
 AC_MSG_WARN([Sparc v8 target is not supported in this release of Open MPI.])
-AC_MSG_WARN([You must specify the target architecture v8plus])
-AC_MSG_WARN([(cc: -xarch=v8plus, gcc: -mcpu=v9) for CFLAGS, CXXFLAGS,])
-AC_MSG_WARN([FFLAGS, and FCFLAGS to compile Open MPI in 32 bit mode on])
-AC_MSG_WARN([Sparc processors])
+AC_MSG_WARN([You must specify the target architecture v8plus to compile])
+AC_MSG_WARN([Open MPI in 32 bit mode on Sparc processors (see the README).])
 AC_MSG_ERROR([Can not continue.])
                 else
                     OCOMS_ASM_SUPPORT_64BIT=1
@@ -948,10 +1142,20 @@ AC_MSG_ERROR([Can not continue.])
             ;;
 
         *)
-            AC_MSG_ERROR([No atomic primitives available for $host])
+             AC_MSG_ERROR([No atomic primitives available for $host])
             ;;
         esac
 
+	if test "x$OCOMS_ASM_SUPPORT_64BIT" = "x1" && test "$ocoms_cv_asm_builtin" = "BUILTIN_SYNC" &&
+		test "$ocoms_asm_sync_have_64bit" = "0" ; then
+	    # __sync builtins exist but do not implement 64-bit support. Fall back on inline asm.
+	    ocoms_cv_asm_builtin="BUILTIN_NO"
+	fi
+
+      if test "$ocoms_cv_asm_builtin" = "BUILTIN_SYNC" || test "$ocoms_cv_asm_builtin" = "BUILTIN_GCC" ; then
+        AC_DEFINE([OCOMS_C_GCC_INLINE_ASSEMBLY], [1],
+          [Whether C compiler supports GCC style inline assembly])
+      else
         AC_DEFINE_UNQUOTED([OCOMS_ASM_SUPPORT_64BIT],
             [$OCOMS_ASM_SUPPORT_64BIT],
             [Whether we can do 64bit assembly operations or not.  Should not be used outside of the assembly header files])
@@ -973,13 +1177,6 @@ AC_MSG_ERROR([Can not continue.])
          OCOMS_CHECK_INLINE_C_GCC([$OCOMS_GCC_INLINE_ASSIGN])
          OCOMS_CHECK_INLINE_C_DEC
          OCOMS_CHECK_INLINE_C_XLC
-         # Only check C++ if we're building the OMPI project and we
-         # want the C++ bindings
-         m4_ifdef([project_ocoms],
-                  [AS_IF([test "$WANT_MPI_CXX_SUPPORT" = "1"],
-                         [OCOMS_CHECK_INLINE_CXX_GCC([$OCOMS_GCC_INLINE_ASSIGN])
-                          OCOMS_CHECK_INLINE_CXX_DEC
-                          OCOMS_CHECK_INLINE_CXX_XLC])])
 
          # format:
          #   config_file-text-global-label_suffix-gsym-lsym-type-size-align_log-ppc_r_reg-64_bit-gnu_stack
@@ -989,7 +1186,7 @@ AC_MSG_ERROR([Can not continue.])
          asm_format="${asm_format}-${ocoms_cv_asm_lsym}"
          asm_format="${asm_format}-${ocoms_cv_asm_type}-${ocoms_asm_size}"
          asm_format="${asm_format}-${ocoms_asm_align_log_result}"
-         if test "$ocoms_cv_asm_arch" = "POWERPC32" -o "$ocoms_cv_asm_arch" = "POWERPC64" ; then
+         if test "$ocoms_cv_asm_arch" = "POWERPC32" || test "$ocoms_cv_asm_arch" = "POWERPC64" ; then
              asm_format="${asm_format}-${ocoms_cv_asm_powerpc_r_reg}"
          else
              asm_format="${asm_format}-1"
@@ -1006,15 +1203,45 @@ AC_MSG_ERROR([Can not continue.])
         AC_DEFINE_UNQUOTED([OCOMS_ASSEMBLY_FORMAT], ["$OCOMS_ASSEMBLY_FORMAT"],
                            [Format of assembly file])
         AC_SUBST([OCOMS_ASSEMBLY_FORMAT])
-    fi # if cv_c_compiler_vendor = microsoft
+      fi # if ocoms_cv_asm_builtin = BUILTIN_SYNC
 
     result="OCOMS_$ocoms_cv_asm_arch"
     OCOMS_ASSEMBLY_ARCH="$ocoms_cv_asm_arch"
-    AC_MSG_CHECKING([for asssembly architecture])
+    AC_MSG_CHECKING([for assembly architecture])
     AC_MSG_RESULT([$ocoms_cv_asm_arch])
     AC_DEFINE_UNQUOTED([OCOMS_ASSEMBLY_ARCH], [$result],
-        [Architecture type of assembly to use for atomic operations])
+        [Architecture type of assembly to use for atomic operations and CMA])
     AC_SUBST([OCOMS_ASSEMBLY_ARCH])
+
+    # Check for RDTSCP support
+    result=0
+    AS_IF([test "$ocoms_cv_asm_arch" = "OCOMS_AMD64" || test "$ocoms_cv_asm_arch" = "OCOMS_IA32"],
+          [AC_MSG_CHECKING([for RDTSCP assembly support])
+           AC_LANG_PUSH([C])
+           AC_TRY_RUN([[
+int main(int argc, char* argv[])
+{
+  unsigned int rax, rdx;
+  __asm__ __volatile__ ("rdtscp\n": "=a" (rax), "=d" (rdx):: "%rax", "%rdx");
+  return 0;
+}
+           ]],
+           [result=1
+            AC_MSG_RESULT([yes])],
+           [AC_MSG_RESULT([no])],
+           [#cross compile not supported
+            AC_MSG_RESULT(["no (cross compiling)"])])
+           AC_LANG_POP([C])])
+    AC_DEFINE_UNQUOTED([OCOMS_ASSEMBLY_SUPPORTS_RDTSCP], [$result],
+                       [Whether we have support for RDTSCP instruction])
+
+    result="OCOMS_$ocoms_cv_asm_builtin"
+    OCOMS_ASSEMBLY_BUILTIN="$ocoms_cv_asm_builtin"
+    AC_MSG_CHECKING([for builtin atomics])
+    AC_MSG_RESULT([$ocoms_cv_asm_builtin])
+    AC_DEFINE_UNQUOTED([OCOMS_ASSEMBLY_BUILTIN], [$result],
+        [Whether to use builtin atomics])
+    AC_SUBST([OCOMS_ASSEMBLY_BUILTIN])
 
     OCOMS_ASM_FIND_FILE
 

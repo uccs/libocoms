@@ -64,6 +64,8 @@ nobase_dist_libocoms_la_HEADERS = \
 							ocoms/sys/amd64/timer.h \
 							ocoms/sys/arm/atomic.h \
 							ocoms/sys/arm/timer.h \
+							ocoms/sys/arm64/atomic.h \
+							ocoms/sys/arm64/timer.h \
 							ocoms/sys/ia32/atomic.h \
 							ocoms/sys/ia32/timer.h \
 							ocoms/sys/ia64/atomic.h \
