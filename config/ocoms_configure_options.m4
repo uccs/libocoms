@@ -615,13 +615,7 @@ AS_IF([test "$ocoms_check_cuda_happy" = "yes"],
                            [AC_MSG_RESULT([not found])
                             AC_MSG_WARN([Expected file $with_cuda_libdir/libcuda.* not found])
                             AC_MSG_ERROR([Cannot continue])],
-                           [AC_MSG_RESULT([ok - found directory ($with_cuda_libdir)])])])],
-             [with_cuda_libdir=/usr/lib64
-              AS_IF([test "x`ls $with_cuda_libdir/libcuda.* 2> /dev/null`" = "x"],
-                    [AC_MSG_RESULT([not found])
-                     AC_MSG_WARN([Expected file $with_cuda_libdir/libcuda.* not found])
-                     AC_MSG_ERROR([Cannot continue])],
-                    [AC_MSG_RESULT([ok - found directory ($with_cuda_libdir)])])])],
+                           [AC_MSG_RESULT([ok - found directory ($with_cuda_libdir)])])])])],
       [AC_MSG_RESULT([not applicable since --with-cuda is not set])])
 
 AC_MSG_CHECKING([if have cuda support])
