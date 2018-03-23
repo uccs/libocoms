@@ -228,6 +228,7 @@ OCOMS_DECLSPEC int ocoms_mca_base_components_close(int output_id, ocoms_list_t *
 OCOMS_DECLSPEC int ocoms_mca_base_framework_components_close (struct ocoms_mca_base_framework_t *framework,
 						       const ocoms_mca_base_component_t *skip);
 
+OCOMS_DECLSPEC void ocoms_mca_base_set_component_template(char *template);
 END_C_DECLS
 
 #endif /* MCA_BASE_H */
