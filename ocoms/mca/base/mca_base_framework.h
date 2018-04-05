@@ -175,8 +175,8 @@ OCOMS_DECLSPEC int ocoms_mca_base_framework_register (ocoms_mca_base_framework_t
  *
  * Call a framework's open function.
  */
-OCOMS_DECLSPEC int ocoms_ca_base_framework_open (ocoms_mca_base_framework_t *framework,
-                                           ocoms_mca_base_open_flag_t flags);
+OCOMS_DECLSPEC int ocoms_mca_base_framework_open (ocoms_mca_base_framework_t *framework,
+                                                  ocoms_mca_base_open_flag_t flags);
 
 /**
  * Close a framework

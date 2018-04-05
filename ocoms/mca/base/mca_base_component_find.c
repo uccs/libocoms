@@ -128,7 +128,7 @@ static void free_dependency_list(ocoms_list_t *dependencies);
  */
 static const char *ompi_info_suffix = ".ompi_info";
 static const char *key_dependency = "dependency=";
-static const char component_template[] = "mca_%s_";
+static char* component_template = "mca";
 static ocoms_list_t found_files;
 static char **found_filenames = NULL;
 static char *last_path_to_use = NULL;
@@ -154,6 +154,19 @@ static bool use_component(const bool include_mode,
                           const char *component_name);
 
 
+void ocoms_mca_base_set_component_template(char *template) {
+    component_template = template;
+}
+void ocoms_string_concat_delimited(char *dest, const char **input, int count, char *delimiter) {
+    int i;
+    if (count <= 0)
+        return;
+    strcpy(dest, input[0]);
+    for (i=1; i<count; i++) {
+        strcat(dest, delimiter);
+        strcat(dest, input[i]);
+    }
+}
 /*
  * Function to find as many components of a given type as possible.  This
  * includes statically-linked in components as well as opening up a
@@ -352,7 +365,7 @@ static void find_dyn_components(const char *path, const char *type_name,
     } else {
         path_to_use = strdup(path);
     }
-  
+
     /* If we haven't done so already, iterate over all the files in
        the directories in the path and make a master array of all the
        matching filenames that we find.  Save the filenames in an
@@ -403,7 +416,12 @@ static void find_dyn_components(const char *path, const char *type_name,
     
     /* Look through the list of found files and find those that match
        the desired framework name */
-    snprintf(prefix, sizeof(prefix) - 1, component_template, type_name);
+    {
+        const char *tmp[2] = {component_template, type_name};
+        ocoms_string_concat_delimited(prefix, tmp, 2, "_");
+        strcat(prefix, "_");
+    }
+
     len = strlen(prefix);
     OBJ_CONSTRUCT(&found_files, ocoms_list_t);
     for (i = 0; NULL != found_filenames && NULL != found_filenames[i]; ++i) {
@@ -452,7 +470,6 @@ static void find_dyn_components(const char *path, const char *type_name,
         if( UNVISITED == file->status ) {
             bool op = true;
             file->status = CHECKING_CYCLE;
-
             op = use_component(include_mode, names, file->name);
             if( true == op ) {
                 open_component(file, found_components);
@@ -520,6 +537,7 @@ static int open_component(component_file_item_t *target_file,
   dependency_item_t *ditem;
   size_t len;
   int vl;
+
 
   ocoms_output_verbose(40, 0, "mca: base: component_find: examining dyanmic %s MCA component \"%s\"",
                      target_file->type, target_file->name);
@@ -614,6 +632,11 @@ static int open_component(component_file_item_t *target_file,
   snprintf(struct_name, len, "mca_%s_%s_component", target_file->type,
            target_file->name);
 
+  {
+      const char *tmp[4] = {component_template, target_file->type, target_file->name, "component"};
+      ocoms_string_concat_delimited(struct_name, tmp, 4, "_");
+  }
+
   mitem = OBJ_NEW(ocoms_mca_base_component_list_item_t);
   if (NULL == mitem) {
     free(struct_name);
@@ -622,6 +645,7 @@ static int open_component(component_file_item_t *target_file,
     free_dependency_list(&dependencies);
     return OCOMS_ERR_OUT_OF_RESOURCE;
   }
+
 
   component_struct = (ocoms_mca_base_component_t*)lt_dlsym(component_handle, struct_name);
   if (NULL == component_struct) {
@@ -833,7 +857,12 @@ static int check_dependency(char *line, component_file_item_t *target_file,
     target_file->status = FAILED_TO_LOAD;
     return OCOMS_ERR_OUT_OF_RESOURCE;
   }
-  snprintf(buffer, BUFSIZ, component_template, type);
+  {
+      const char *tmp[2] = {component_template, type};
+      ocoms_string_concat_delimited(buffer, tmp, 2, "_");
+      strcat(buffer, "_");
+  }
+
   len = strlen(buffer);
   strncat(buffer, name, BUFSIZ - len);
 
