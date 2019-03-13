@@ -23,7 +23,7 @@ struct ocoms_common_cuda_function_table {
 };
 typedef struct ocoms_common_cuda_function_table ocoms_common_cuda_function_table_t;
 
-void mca_cuda_convertor_init(ocoms_convertor_t* convertor, const void *pUserBuf);
+void ocoms_cuda_convertor_init(ocoms_convertor_t* convertor, const void *pUserBuf);
 bool ocoms_cuda_check_bufs(char *dest, char *src);
 void* ocoms_cuda_memcpy(void * dest, const void * src, size_t size, ocoms_convertor_t* convertor);
 void* ocoms_cuda_memcpy_sync(void * dest, void * src, size_t size);

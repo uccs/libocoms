@@ -556,7 +556,7 @@ int32_t ocoms_convertor_prepare_for_recv( ocoms_convertor_t* convertor,
 
     convertor->flags |= CONVERTOR_RECV;
 #if OCOMS_CUDA_SUPPORT
-    mca_cuda_convertor_init(convertor, pUserBuf);
+    ocoms_cuda_convertor_init(convertor, pUserBuf);
 #endif
 
     OCOMS_CONVERTOR_PREPARE( convertor, datatype, count, pUserBuf );
@@ -595,7 +595,7 @@ int32_t ocoms_convertor_prepare_for_send( ocoms_convertor_t* convertor,
 {
     convertor->flags |= CONVERTOR_SEND;
 #if OCOMS_CUDA_SUPPORT
-    mca_cuda_convertor_init(convertor, pUserBuf);
+    ocoms_cuda_convertor_init(convertor, pUserBuf);
 #endif
 
     OCOMS_CONVERTOR_PREPARE( convertor, datatype, count, pUserBuf );

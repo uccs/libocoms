@@ -42,7 +42,7 @@ void ocoms_cuda_add_initialization_function(int (*fptr)(ocoms_common_cuda_functi
  * is enabled or not.  If CUDA is not enabled, then short circuit out
  * for all future calls.
  */
-void mca_cuda_convertor_init(ocoms_convertor_t* convertor, const void *pUserBuf)
+void ocoms_cuda_convertor_init(ocoms_convertor_t* convertor, const void *pUserBuf)
 {   
     /* Only do the initialization on the first GPU access */
     if (!initialized) {
