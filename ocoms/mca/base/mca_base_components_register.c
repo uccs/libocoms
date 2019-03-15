@@ -57,9 +57,9 @@ int ocoms_mca_base_framework_components_register (ocoms_mca_base_framework_t *fr
 
     /* Find and load requested components */
     ret = ocoms_mca_base_component_find(NULL, framework->framework_name,
-                                  framework->framework_static_components,
-                                  ignore_requested ? NULL : framework->framework_selection,
-                                  &components_found, open_dso_components);
+                                        framework->framework_static_components,
+                                        ignore_requested ? NULL : framework->framework_selection,
+                                        &components_found, open_dso_components, flags);
 
     if (OCOMS_SUCCESS != ret) {
         return ret;

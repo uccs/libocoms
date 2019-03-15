@@ -177,10 +177,10 @@ void ocoms_string_concat_delimited(char *dest, const char **input, int count, ch
  * available components.
  */
 int ocoms_mca_base_component_find(const char *directory, const char *type, 
-                            const ocoms_mca_base_component_t *static_components[], 
-                            const char *requested_components,
-                            ocoms_list_t *found_components,
-                            bool open_dso_components)
+                                  const ocoms_mca_base_component_t *static_components[],
+                                  const char *requested_components,
+                                  ocoms_list_t *found_components,
+                                  bool open_dso_components, ocoms_mca_base_open_flag_t flags)
 {
     char **requested_component_names = NULL;
     ocoms_mca_base_component_list_item_t *cli;
@@ -222,7 +222,7 @@ int ocoms_mca_base_component_find(const char *directory, const char *type,
                             type);
     }
 #endif
-    if (include_mode) {
+    if (include_mode && !(flags & MCA_BASE_FRAMEWORK_FLAG_NO_COMPONENT_FIND_CHECK)) {
         ret = component_find_check (type, requested_component_names, found_components);
     } else {
         ret = OCOMS_SUCCESS;
@@ -258,7 +258,8 @@ int ocoms_mca_base_component_find_finalize(void)
 }
 
 int ocoms_mca_base_components_filter (const char *framework_name, ocoms_list_t *components, int output_id,
-                                const char *filter_names, uint32_t filter_flags)
+                                      const char *filter_names, uint32_t filter_flags,
+                                      ocoms_mca_base_open_flag_t flags)
 {
     ocoms_mca_base_component_list_item_t *cli, *next;
     char **requested_component_names = NULL;
@@ -309,7 +310,7 @@ int ocoms_mca_base_components_filter (const char *framework_name, ocoms_list_t *
         }
     }
 
-    if (include_mode) {
+    if (include_mode && !(flags & MCA_BASE_FRAMEWORK_FLAG_NO_COMPONENT_FIND_CHECK)) {
         ret = component_find_check (framework_name, requested_component_names, components);
     } else {
         ret = OCOMS_SUCCESS;

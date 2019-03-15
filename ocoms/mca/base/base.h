@@ -149,10 +149,10 @@ OCOMS_DECLSPEC char * ocoms_mca_base_component_to_string(const ocoms_mca_base_co
 /* ocoms_mca_base_component_find.c */
 
 OCOMS_DECLSPEC int ocoms_mca_base_component_find(const char *directory, const char *type,
-                                          const ocoms_mca_base_component_t *static_components[],
-					  const char *requested_components,
-                                          ocoms_list_t *found_components,
-                                          bool open_dso_components);
+                                                 const ocoms_mca_base_component_t *static_components[],
+                                                 const char *requested_components,
+                                                 ocoms_list_t *found_components,
+                                                 bool open_dso_components, ocoms_mca_base_open_flag_t flags);
 
 /**
  * Parse the requested component string and return an ocoms_argv of the requested
@@ -180,7 +180,8 @@ int ocoms_mca_base_component_parse_requested (const char *requested, bool *inclu
  * filter flags.
  */
 OCOMS_DECLSPEC int ocoms_mca_base_components_filter (const char *framework_name, ocoms_list_t *components, int output_id,
-					      const char *filter_names, uint32_t filter_flags);
+                                                     const char *filter_names, uint32_t filter_flags,
+                                                     ocoms_mca_base_open_flag_t flags);
 
 
 
