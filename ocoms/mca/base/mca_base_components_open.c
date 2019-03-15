@@ -39,7 +39,7 @@
 /*
  * Local functions
  */
-static int open_components(ocoms_mca_base_framework_t *framework);
+static int open_components(ocoms_mca_base_framework_t *framework, ocoms_mca_base_open_flag_t flags);
 
 struct ocoms_mca_base_dummy_framework_list_item_t {
     ocoms_list_item_t super;
@@ -57,15 +57,15 @@ int ocoms_mca_base_framework_components_open (ocoms_mca_base_framework_t *framew
     if (flags & MCA_BASE_OPEN_FIND_COMPONENTS) {
         /* Find and load requested components */
         int ret = ocoms_mca_base_component_find(NULL, framework->framework_name,
-                                          framework->framework_static_components,
-                                          framework->framework_selection,
-                                          &framework->framework_components, true);
+                                                framework->framework_static_components,
+                                                framework->framework_selection,
+                                                &framework->framework_components, true, flags);
         if (OCOMS_SUCCESS != ret) {
             return ret;
         }
     }
     /* Open all registered components */
-    return open_components (framework);
+    return open_components (framework, flags);
 }
 
 int ocoms_mca_base_components_open (const char *type_name, int output_id,
@@ -123,7 +123,7 @@ int ocoms_mca_base_components_open (const char *type_name, int output_id,
  * components is in the requested_components_array, try to open it.
  * If it opens, add it to the components_available list.
  */
-static int open_components(ocoms_mca_base_framework_t *framework)
+static int open_components(ocoms_mca_base_framework_t *framework, ocoms_mca_base_open_flag_t flags)
 {
     ocoms_list_t *components = &framework->framework_components;
     uint32_t open_only_flags = MCA_BASE_METADATA_PARAM_NONE;
@@ -152,8 +152,8 @@ static int open_components(ocoms_mca_base_framework_t *framework)
     /* If ocoms_mca_base_framework_register_components was called with the MCA_BASE_COMPONENTS_ALL flag 
        we need to trim down and close any extra components we do not want open */
     ret = ocoms_mca_base_components_filter (framework->framework_name, &framework->framework_components,
-                                      framework->framework_output, framework->framework_selection,
-                                      open_only_flags);
+                                            framework->framework_output, framework->framework_selection,
+                                            open_only_flags, flags);
     if (OCOMS_SUCCESS != ret) {
         return ret;
     }

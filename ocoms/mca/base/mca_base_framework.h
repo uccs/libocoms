@@ -112,7 +112,7 @@ typedef enum {
     MCA_BASE_FRAMEWORK_FLAG_NOREGISTER = 1,
     /** Internal. Don't set outside ocoms_mca_base_framework.h */
     MCA_BASE_FRAMEWORK_FLAG_REGISTERED = 2,
-
+    MCA_BASE_FRAMEWORK_FLAG_NO_COMPONENT_FIND_CHECK = 3,
     /**
      * The upper 16 bits are reserved for project specific flags.
      */
