@@ -570,69 +570,59 @@ AC_DEFINE_UNQUOTED([OCOMS_ENABLE_CRDEBUG], [$ocoms_want_prd],
 #
 # Check to see if user wants CUDA support in datatype and convertor code.
 #
+
 AC_ARG_WITH([cuda],
-            [AC_HELP_STRING([--with-cuda(=DIR)],
-            [Build cuda support, optionally adding DIR/include, DIR/lib, and DIR/lib64])])
-AC_MSG_CHECKING([if --with-cuda is set])
+            [AS_HELP_STRING([--with-cuda=(DIR)], [Enable the use of CUDA (default is guess).])],
+            [], [with_cuda=guess])
 
-# CUDA support is off by default.  User has to request it.
-AS_IF([test "$with_cuda" = "no" -o "x$with_cuda" = "x"],
-      [ocoms_check_cuda_happy="no"
-       AC_MSG_RESULT([not set (--with-cuda=$with_cuda)])],
-      [AS_IF([test "$with_cuda" = "yes"],
-             [AS_IF([test "x`ls /usr/local/cuda/include/cuda.h 2> /dev/null`" = "x"],
-                    [AC_MSG_RESULT([not found in standard location])
-                     AC_MSG_WARN([Expected file /usr/local/cuda/include/cuda.h not found])
-                     AC_MSG_ERROR([Cannot continue])],
-                    [AC_MSG_RESULT([found])
-                     ocoms_check_cuda_happy="yes"
-                     with_cuda="/usr/local/cuda"])],
-             [AS_IF([test ! -d "$with_cuda"],
-                    [AC_MSG_RESULT([not found])
-                     AC_MSG_WARN([Directory $with_cuda not found])
-                     AC_MSG_ERROR([Cannot continue])],
-                    [AS_IF([test "x`ls $with_cuda/include/cuda.h 2> /dev/null`" = "x"],
-                           [AC_MSG_RESULT([not found])
-                            AC_MSG_WARN([Expected file $with_cuda/include/cuda.h not found])
-                            AC_MSG_ERROR([Cannot continue])],
-                           [ocoms_check_cuda_happy="yes"
-                            AC_MSG_RESULT([found ($with_cuda/include/cuda.h)])])])])])
+AS_IF([test "x$with_cuda" = "xno"],
+    [cuda_happy=no],
+    [
+     save_CPPFLAGS="$CPPFLAGS"
+     save_LDFLAGS="$LDFLAGS"
 
-# Check for optional libdir setting
-AC_ARG_WITH([cuda-libdir],
-            [AC_HELP_STRING([--with-cuda-libdir=DIR],
-            [Search for cuda libraries in DIR])])
-AC_MSG_CHECKING([if --with-cuda-libdir is set])
+     CUDA_CPPFLAGS=""
+     CUDA_LDFLAGS=""
 
-# Only check for the extra cuda libdir if we have passed the --with-cuda tests.
-AS_IF([test "$ocoms_check_cuda_happy" = "yes"],
-      [AS_IF([test "$with_cuda_libdir" != "yes" -a "$with_cuda_libdir" != "no" -a "x$with_cuda_libdir" != "x"],
-             [AS_IF([test ! -d "$with_cuda_libdir"],
-                    [AC_MSG_RESULT([not found])
-                     AC_MSG_WARN([Directory $with_cuda_libdir not found])
-                     AC_MSG_ERROR([Cannot continue])],
-                    [AS_IF([test "x`ls $with_cuda_libdir/libcuda.* 2> /dev/null`" = "x"],
-                           [AC_MSG_RESULT([not found])
-                            AC_MSG_WARN([Expected file $with_cuda_libdir/libcuda.* not found])
-                            AC_MSG_ERROR([Cannot continue])],
-                           [AC_MSG_RESULT([ok - found directory ($with_cuda_libdir)])])])])],
-      [AC_MSG_RESULT([not applicable since --with-cuda is not set])])
+     AS_IF([test ! -z "$with_cuda" -a "x$with_cuda" != "xyes" -a "x$with_cuda" != "xguess"],
+           [ucx_check_cuda_dir="$with_cuda"
+            AS_IF([test -d "$with_cuda/lib64"], [libsuff="64"], [libsuff=""])
+            ucx_check_cuda_libdir="$with_cuda/lib$libsuff"
+            CUDA_CPPFLAGS="-I$with_cuda/include"
+            CUDA_LDFLAGS="-L$ucx_check_cuda_libdir"])
 
-AC_MSG_CHECKING([if have cuda support])
-if test "$ocoms_check_cuda_happy" = "yes"; then
-    AC_MSG_RESULT([yes (-I$with_cuda/include -L$with_cuda_libdir -lcuda)])
-    CUDA_SUPPORT=1
-    ocoms_datatype_CPPFLAGS="-I$with_cuda/include"
-    ocoms_datatype_LIBS="-L$with_cuda_libdir -lcuda"
-    AC_SUBST([ocoms_datatype_CPPFLAGS])
-    AC_SUBST([ocoms_datatype_LIBS])
-else
-    AC_MSG_RESULT([no])
-    CUDA_SUPPORT=0
-fi
+     AS_IF([test ! -z "$with_cuda_libdir" -a "x$with_cuda_libdir" != "xyes"],
+           [ucx_check_cuda_libdir="$with_cuda_libdir"
+            CUDA_LDFLAGS="-L$ucx_check_cuda_libdir"])
 
-AM_CONDITIONAL([OCOMS_cuda_support], [test "x$CUDA_SUPPORT" = "x1"])
-AC_DEFINE_UNQUOTED([OCOMS_CUDA_SUPPORT],$CUDA_SUPPORT,
-                   [Whether we want cuda device pointer support])
+     CPPFLAGS+=" $CUDA_CPPFLAGS"
+     LDFLAGS+=" $CUDA_LDFLAGS"
+
+     # Check cuda header files
+              AC_CHECK_HEADERS([cuda.h cuda_runtime.h],
+                      [cuda_happy="yes"], [cuda_happy="no"])
+
+     # Check cuda libraries
+     AS_IF([test "x$cuda_happy" = "xyes"],
+            [AC_CHECK_LIB([cuda], [cuPointerGetAttribute],
+                          [CUDA_LDFLAGS+=" -lcuda"], [cuda_happy="no"])])
+     AS_IF([test "x$cuda_happy" = "xyes"],
+            [AC_CHECK_LIB([cudart], [cudaGetDeviceCount],
+                          [CUDA_LDFLAGS+=" -lcudart"], [cuda_happy="no"])])
+
+     CPPFLAGS="$save_CPPFLAGS"
+     LDFLAGS="$save_LDFLAGS"
+
+    AS_IF([test "x$cuda_happy" = "xyes"],
+        [AC_SUBST([ocoms_datatype_CPPFLAGS], ["$CUDA_CPPFLAGS"])
+         AC_SUBST([ocoms_datatype_LIBS], ["$CUDA_LDFLAGS"])
+         AC_DEFINE_UNQUOTED([OCOMS_CUDA_SUPPORT], 1,
+                   [Whether we want cuda device pointer support])],
+            [AS_IF([test "x$with_cuda" != "xguess"],
+                [AC_MSG_ERROR([CUDA support is requested but cuda packages cannot be found])],
+                [AC_MSG_WARN([CUDA not found])])])
+    ]) # "x$with_cuda" = "xno"
+
+AM_CONDITIONAL([OCOMS_cuda_support], [test "x$cuda_happy" != xno])
 
 ])dnl
