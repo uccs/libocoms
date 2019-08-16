@@ -816,4 +816,27 @@ ocoms_hash_table_get_next_key_uint64(ocoms_hash_table_t * ht,
   return OCOMS_ERROR;
 }
 
-/* there was/is no traversal for the ptr case; it would go here */
+int                             /* OCOMS_ return code */
+ocoms_hash_table_get_first_key_ptr(ocoms_hash_table_t * ht,
+                                  void * *key, size_t *key_size, void * *value,
+                                  void * *node)
+{
+    return ocoms_hash_table_get_next_key_ptr(ht, key, key_size, value, NULL, node);
+}
+
+int                             /* OCOMS_ return code */
+ocoms_hash_table_get_next_key_ptr(ocoms_hash_table_t * ht,
+                                 void * *key, size_t *key_size, void * *value,
+                                 void * in_node, void * *out_node)
+{
+    ocoms_hash_element_t * elt;
+    if (OCOMS_SUCCESS == ocoms_hash_table_get_next_elt(ht, (ocoms_hash_element_t *) in_node, &elt)) {
+        *key       = (void *)elt->key.ptr.key;
+        *key_size  = elt->key.ptr.key_size;
+        *value     = elt->value;
+        *out_node  = elt;
+        return OCOMS_SUCCESS;
+    }
+    return OCOMS_ERROR;
+}
+

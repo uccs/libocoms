@@ -297,7 +297,65 @@ OCOMS_DECLSPEC int ocoms_hash_table_get_first_key_uint64(ocoms_hash_table_t *tab
 OCOMS_DECLSPEC int ocoms_hash_table_get_next_key_uint64(ocoms_hash_table_t *table, uint64_t *key,
                                        void **value, void *in_node,
                                        void **out_node);
+/**
+ *  Get the first ptr bit key from the hash table, which can be used later to
+ *  get the next key
+ *  @param  table    The hash table pointer (IN)
+ *  @param  key      The first key (OUT)
+ *  @param  key_size The first key size (OUT)
+ *  @param  value    The value corresponding to this key (OUT)
+ *  @param  node     The pointer to the hash table internal node which stores
+ *                   the key-value pair (this is required for subsequent calls
+ *                   to get_next_key) (OUT)
+ *  @return OCOMS error code
+ *
+ */
 
+OCOMS_DECLSPEC int ocoms_hash_table_get_first_key_ptr(ocoms_hash_table_t *table, void* *key,
+                                                    size_t *key_size, void **value, void **node);
+
+
+/**
+ *  Get the next ptr bit key from the hash table, knowing the current key
+ *  @param  table    The hash table pointer (IN)
+ *  @param  key      The key (OUT)
+ *  @param  key_size The key size (OUT)
+ *  @param  value    The value corresponding to this key (OUT)
+ *  @param  in_node  The node pointer from previous call to either get_first
+                     or get_next (IN)
+                     *  @param  out_node The pointer to the hash table internal node which stores
+                     *                   the key-value pair (this is required for subsequent calls
+                     *                   to get_next_key) (OUT)
+                     *  @return OCOMS error code
+                     *
+                     */
+
+OCOMS_DECLSPEC int ocoms_hash_table_get_next_key_ptr(ocoms_hash_table_t *table, void* *key,
+                                                   size_t *key_size, void **value,
+                                                   void *in_node, void **out_node);
+/**
+ * Loop over a hash table.
+ *
+ * @param[in] key Key for each item
+ * @param[in] type Type of key (ui32|ui64|ptr)
+ * @param[in] value Storage for each item
+ * @param[in] ht Hash table to iterate over
+ *
+ * This macro provides a simple way to loop over the items in an ocoms_hash_table_t. It
+ * is not safe to call ocoms_hash_table_remove* from within the loop.
+ *
+ * Example Usage:
+ *
+ * uint64_t key;
+ * void * value;
+ * OCOMS_HASH_TABLE_FOREACH(key, uint64, value, ht) {
+ *    do_something(key, value);
+ *
+}
+*/
+#define OCOMS_HASH_TABLE_FOREACH(key, type, value, ht) \
+    for (void *_nptr=NULL;                                   \
+         OCOMS_SUCCESS == ocoms_hash_table_get_next_key_##type(ht, &key, (void **)&value, _nptr, &_nptr);)
 END_C_DECLS
 
 #endif  /* OCOMS_HASH_TABLE_H */
