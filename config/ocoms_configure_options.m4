@@ -596,7 +596,7 @@ AS_IF([test "x$with_cuda" = "xno"],
             CUDA_LDFLAGS="-L$ucx_check_cuda_libdir"])
 
      CPPFLAGS+=" $CUDA_CPPFLAGS"
-     LDFLAGS+=" $CUDA_LDFLAGS"
+     LDFLAGS+=" $CUDA_LDFLAGS -L$ucx_check_cuda_libdir/stubs"
 
      # Check cuda header files
               AC_CHECK_HEADERS([cuda.h cuda_runtime.h],
