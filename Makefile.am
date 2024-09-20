@@ -19,6 +19,10 @@
 # $HEADER$
 #
 
+# Workaround for gcc 14.x - implicit function declarations are now handled as errors
+# Details: https://gcc.gnu.org/gcc-14/porting_to.html
+AM_CFLAGS = -Wno-implicit-function-declaration
+
 SUBDIRS = config ocoms $(MCA_PROJECT_SUBDIRS)
 EXTRA_DIST = README VERSION LICENSE autogen.pl
 
